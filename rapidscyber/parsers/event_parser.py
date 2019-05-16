@@ -6,27 +6,34 @@ from abc import ABC, abstractmethod
 log = logging.getLogger("EventParser")
 
 class EventParser(ABC):
+    """This is an abstract class for all event log parsers.
+    """
     def __init__(self, event_regex, columns, event_types_filter=None):
         self._event_types_filter = event_types_filter
         self._event_regex = event_regex
         self._columns = columns
 
     @property
-    def event_types(self):
-        return self._event_types
+    def event_types_filter(self):
+        """arr[str]: This property is an optional filter which holds the events to be parsed.
+           The events listed here should match regex configuration key values.
+        """
+        return self._event_types_filter
 
     @property
     def event_regex(self):
+        """dict: Keys represent event type and values are a dictionary representing regex for the event type."""
         return self._event_regex
 
     @property
     def columns(self):
+        """arr[str]: describes the dataframe columns to create for parsed key/value pairs from the event"""
         return self._columns
 
     @abstractmethod
     def parse(self, dataframe, raw_column):
         """Abstract method 'parse' triggers the parsing functionality.
-            Subclasses are required to implement and execute any parsing pre-processing steps. """
+           Subclasses are required to implement and execute any parsing pre-processing steps. """
         log.info("Begin parsing of dataframe")
         pass
 
