@@ -7,6 +7,7 @@ class TestEventParserImpl(EventParser):
     def parse(self, dataframe, raw_column):
         return None
 
+
 class TestEventParser(object):
     def setup(self):
         # Create Test Event Parser Implementation
@@ -34,7 +35,7 @@ class TestEventParser(object):
             test_dataframe, "Raw", "eventTypeId1"
         )
         expected_parsed_dataframe = cudf.DataFrame(
-            [("eventTypeId", ["1", "1"]), ("username", ["hello", "bar"])]
+            [("eventTypeId", ["1", "1"]), ("username", ["foo", "bar"])]
         )
         # Equality checks issue: https://github.com/rapidsai/cudf/issues/1750
         assert parsed_dataframe.to_pandas().equals(
