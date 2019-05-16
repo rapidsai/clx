@@ -5,7 +5,6 @@ from abc import ABC, abstractmethod
 
 log = logging.getLogger("EventParser")
 
-
 class EventParser(ABC):
     def __init__(self, event_regex, columns, event_types_filter=None):
         self._event_types_filter = event_types_filter

@@ -7,7 +7,6 @@ class TestEventParserImpl(EventParser):
     def parse(self, dataframe, raw_column):
         return None
 
-
 class TestEventParser(object):
     def setup(self):
         # Create Test Event Parser Implementation
