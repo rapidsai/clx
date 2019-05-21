@@ -1,5 +1,6 @@
 import cudf
 import logging
+import nvstrings
 
 from abc import ABC, abstractmethod
 
@@ -77,5 +78,4 @@ class EventParser(ABC):
         """Filter based on whether a string contains a regex pattern
         """
         df["present"] = df[column].str.contains(pattern)
-        print("Pattern", df[df.present == True])
         return df[df.present == True]
