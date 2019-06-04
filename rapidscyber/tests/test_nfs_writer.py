@@ -1,9 +1,11 @@
 import glob
 from pathlib import Path
 
+import os
 import cudf
 import pandas
 import pytest
+import shutil
 
 from factory.factory import Factory
 from reader.nfs_reader import NFSReader
@@ -26,6 +28,8 @@ expected_df = df.to_pandas()
 @pytest.mark.parametrize("df", [df])
 def test_write_data_text(test_output_base_path, expected_df, df):
     test_output_path = "%s/person.csv" % (test_output_base_path)
+    if os.path.exists(test_output_path):
+        os.remove(test_output_path)
     config = {"output_path": test_output_path, "output_format": "text"}
     writer = NFSWriter(config["output_path"], config["output_format"])
     writer.write_data(df)
@@ -50,6 +54,8 @@ def test_write_data_text(test_output_base_path, expected_df, df):
 @pytest.mark.parametrize("df", [df])
 def test_write_data_parquet(test_output_base_path, expected_df, df):
     test_output_path = "%s/person_parquet" % (test_output_base_path)
+    if os.path.exists(test_output_path) and os.path.isdir(test_output_path):
+        shutil.rmtree(test_output_path)
     config = {"output_path": test_output_path, "output_format": "parquet"}
     writer = NFSWriter(config["output_path"], config["output_format"])
     writer.write_data(df)
