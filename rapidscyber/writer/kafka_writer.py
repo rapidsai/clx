@@ -3,7 +3,7 @@ import logging
 from confluent_kafka import KafkaError
 from confluent_kafka import Producer
 
-from rapidscyber.parser.parser_helper import ParserHelper
+from parsers.parser_helper import ParserHelper
 
 
 class KafkaWriter:

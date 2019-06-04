@@ -4,9 +4,9 @@ import cudf
 import pandas
 import pytest
 
-from rapidscyber.factory.factory import Factory
-from rapidscyber.reader.nfs_reader import NFSReader
-from rapidscyber.writer.nfs_writer import NFSWriter
+from factory.factory import Factory
+from reader.nfs_reader import NFSReader
+from writer.nfs_writer import NFSWriter
 
 test_input_base_path = str(Path("test_input").resolve())
 expected_df = cudf.DataFrame(

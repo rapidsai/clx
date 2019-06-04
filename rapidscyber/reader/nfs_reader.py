@@ -1,6 +1,6 @@
 import cudf
 import logging
-from rapidscyber.reader.file_reader import FileReader
+from reader.file_reader import FileReader
 
 
 class NFSReader(FileReader):

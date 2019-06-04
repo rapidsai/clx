@@ -3,7 +3,7 @@ import os
 
 import cudf
 
-from rapidscyber.writer.file_writer import FileWriter
+from writer.file_writer import FileWriter
 
 
 class NFSWriter(FileWriter):

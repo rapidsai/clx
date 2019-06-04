@@ -1,10 +1,10 @@
 import pytest
 
-from rapidscyber.factory.factory import Factory
-from rapidscyber.reader.kafka_reader import KafkaReader
-from rapidscyber.reader.nfs_reader import NFSReader
-from rapidscyber.writer.kafka_writer import KafkaWriter
-from rapidscyber.writer.nfs_writer import NFSWriter
+from factory.factory import Factory
+from reader.kafka_reader import KafkaReader
+from reader.nfs_reader import NFSReader
+from writer.kafka_writer import KafkaWriter
+from writer.nfs_writer import NFSWriter
 
 kafka_config = {
     "kafka_brokers": "localhost:8191",

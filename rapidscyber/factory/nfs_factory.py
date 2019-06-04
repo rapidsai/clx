@@ -1,6 +1,6 @@
-from rapidscyber.factory.abstract_factory import AbstractFactory
-from rapidscyber.reader.nfs_reader import NFSReader
-from rapidscyber.writer.nfs_writer import NFSWriter
+from factory.abstract_factory import AbstractFactory
+from reader.nfs_reader import NFSReader
+from writer.nfs_writer import NFSWriter
 
 
 class NFSFactory(AbstractFactory):

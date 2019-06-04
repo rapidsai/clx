@@ -2,14 +2,14 @@ import pytest
 import cudf
 from mock import patch
 from confluent_kafka import Producer, KafkaError
-from rapidscyber.writer.kafka_writer import KafkaWriter
-from rapidscyber.parsers.parser_helper import ParserHelper
+from writer.kafka_writer import KafkaWriter
+from parsers.parser_helper import ParserHelper
 
 producer_conf = {"bootstrap.servers": "localhost:8191", "session.timeout.ms": 10000}
 
 
 @patch(
-    "rapidscyber.parsers.parser_helper.ParserHelper.generate_delimited_ouput_col",
+    "parsers.parser_helper.ParserHelper.generate_delimited_ouput_col",
     return_value=cudf.DataFrame(
         [
             ("firstname", ["Emma", "Ava", "Sophia"]),

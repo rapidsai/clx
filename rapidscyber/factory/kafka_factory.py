@@ -4,9 +4,9 @@ from confluent_kafka import Consumer
 from confluent_kafka import KafkaError
 from confluent_kafka import Producer
 
-from rapidscyber.factory.abstract_factory import AbstractFactory
-from rapidscyber.reader.kafka_reader import KafkaReader
-from rapidscyber.writer.kafka_writer import KafkaWriter
+from factory.abstract_factory import AbstractFactory
+from reader.kafka_reader import KafkaReader
+from writer.kafka_writer import KafkaWriter
 
 
 class KafkaFactory(AbstractFactory):
