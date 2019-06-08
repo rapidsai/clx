@@ -11,9 +11,9 @@ class AbstractFactory(ABC):
         self._config = val
 
     @abstractmethod
-    def getReader(self):
+    def get_reader(self):
         pass
 
     @abstractmethod
-    def getWriter(self):
+    def get_writer(self):
         pass

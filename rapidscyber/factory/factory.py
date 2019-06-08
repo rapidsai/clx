@@ -1,10 +1,18 @@
 import logging
+import sys
 
 from factory.kafka_factory import KafkaFactory
-from factory.nfs_factory import NFSFactory
+from factory.fs_factory import FileSystemFactory
 
 
 class Factory:
+
+    __cls_dict = {"kafka": "KafkaFactory", "fs": "FileSystemFactory"}
+
+    @staticmethod
+    def cls_dict():
+        return Factory.__cls_dict
+
     class InstanceGenerator(object):
         def __init__(self, func):
             self.func = func
@@ -14,24 +22,26 @@ class Factory:
             try:
                 target_cls = globals()[class_name](config)
                 return target_cls
-            except:
-                logging.error("unknown class name: { %s }" % (class_name))
-                raise IOError("unknown class name: { %s }" % (class_name))
+            except KeyError as error:
+                logging.error(error)
+                logging.exception(error)
+                sys.exit(1)
 
     @InstanceGenerator
-    def getInstance(io_comp, config):
+    def get_instance(io_comp, config):
         io_comp = io_comp.lower()
-        if io_comp == "kafka":
-            return "KafkaFactory", config
-        elif io_comp == "nfs":
-            return "NFSFactory", config
+        if io_comp and io_comp in Factory.cls_dict():
+            return Factory.cls_dict()[io_comp], config
         else:
-            pass
+            raise KeyError(
+                "Dictionary doesn't have { %s } corresponding component class."
+                % (io_comp)
+            )
 
     @staticmethod
-    def getIOReader(io_comp, config):
-        return Factory.getInstance(io_comp, config).getReader()
+    def get_reader(io_comp, config):
+        return Factory.get_instance(io_comp, config).get_reader()
 
     @staticmethod
-    def getIOWriter(io_comp, config):
-        return Factory.getInstance(io_comp, config).getWriter()
+    def get_writer(io_comp, config):
+        return Factory.get_instance(io_comp, config).get_writer()

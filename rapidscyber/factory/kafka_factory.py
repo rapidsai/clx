@@ -13,13 +13,13 @@ class KafkaFactory(AbstractFactory):
     def __init__(self, config):
         self._config = config
 
-    def getReader(self):
-        consumer = self._createConsumer()
+    def get_reader(self):
+        consumer = self._create_consumer()
         reader = KafkaReader(self.config["batch_size"], consumer)
         return reader
 
-    def getWriter(self):
-        producer = self._createProducer()
+    def get_writer(self):
+        producer = self._create_producer()
         writer = KafkaWriter(
             self.config["publisher_kafka_topic"],
             self.config["batch_size"],
@@ -28,7 +28,7 @@ class KafkaFactory(AbstractFactory):
         )
         return writer
 
-    def _createConsumer(self):
+    def _create_consumer(self):
         logging.info("creating kafka consumer instance")
         consumer_conf = {
             "bootstrap.servers": self.config["kafka_brokers"],
@@ -44,7 +44,7 @@ class KafkaFactory(AbstractFactory):
         logging.info("created kafka consumer instance")
         return c
 
-    def _createProducer(self):
+    def _create_producer(self):
         logging.info("creating kafka producer instance")
         producer_conf = {
             "bootstrap.servers": self.config["kafka_brokers"],

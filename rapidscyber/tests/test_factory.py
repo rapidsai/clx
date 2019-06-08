@@ -2,9 +2,9 @@ import pytest
 
 from factory.factory import Factory
 from reader.kafka_reader import KafkaReader
-from reader.nfs_reader import NFSReader
 from writer.kafka_writer import KafkaWriter
-from writer.nfs_writer import NFSWriter
+from reader.fs_reader import FileSystemReader
+from writer.fs_writer import FileSystemWriter
 
 kafka_config = {
     "kafka_brokers": "localhost:8191",
@@ -15,7 +15,7 @@ kafka_config = {
     "output_delimiter": ",",
 }
 
-nfs_config = {
+fs_config = {
     "input_path": "test_input",
     "output_path": "test_output",
     "schema": ["_col1", "_col2", "_col3"],
@@ -28,28 +28,28 @@ nfs_config = {
 
 
 @pytest.mark.parametrize("kafka_config", [kafka_config])
-def test_getIoReaderKafka(kafka_config):
-    reader = Factory.getIOReader("kafka", kafka_config)
+def test_get_io_reader_kafka(kafka_config):
+    reader = Factory.get_reader("kafka", kafka_config)
     expected_cls = KafkaReader
     assert isinstance(reader, expected_cls)
 
 
 @pytest.mark.parametrize("kafka_config", [kafka_config])
-def test_getIoWriterKafka(kafka_config):
-    writer = Factory.getIOWriter("kafka", kafka_config)
+def test_get_io_writer_kafka(kafka_config):
+    writer = Factory.get_writer("kafka", kafka_config)
     expected_cls = KafkaWriter
     assert isinstance(writer, expected_cls)
 
 
-@pytest.mark.parametrize("nfs_config", [nfs_config])
-def test_getIoReaderNFS(nfs_config):
-    reader = Factory.getIOReader("nfs", nfs_config)
-    expected_cls = NFSReader
+@pytest.mark.parametrize("fs_config", [fs_config])
+def test_get_io_reader_fs(fs_config):
+    reader = Factory.get_reader("fs", fs_config)
+    expected_cls = FileSystemReader
     assert isinstance(reader, expected_cls)
 
 
-@pytest.mark.parametrize("nfs_config", [nfs_config])
-def test_getIoWriterNFS(nfs_config):
-    writer = Factory.getIOWriter("nfs", nfs_config)
-    expected_cls = NFSWriter
+@pytest.mark.parametrize("fs_config", [fs_config])
+def test_get_io_writer_fs(fs_config):
+    writer = Factory.get_writer("fs", fs_config)
+    expected_cls = FileSystemWriter
     assert isinstance(writer, expected_cls)

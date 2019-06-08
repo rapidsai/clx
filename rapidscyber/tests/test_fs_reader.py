@@ -3,12 +3,11 @@ from pathlib import Path
 import cudf
 import pandas
 import pytest
-
+import os
 from factory.factory import Factory
-from reader.nfs_reader import NFSReader
-from writer.nfs_writer import NFSWriter
+from reader.fs_reader import FileSystemReader
 
-test_input_base_path = str(Path("test_input").resolve())
+test_input_base_path = "%s/input" % os.path.dirname(os.path.realpath(__file__))
 expected_df = cudf.DataFrame(
     [
         ("firstname", ["Emma", "Ava", "Sophia"]),
@@ -31,11 +30,11 @@ def test_fetch_data_text(test_input_base_path, expected_df):
         "header": 0,
         "input_format": "text",
     }
-    reader = NFSReader(config)
+    reader = FileSystemReader(config)
     fetched_df = reader.fetch_data()
     assert fetched_df.to_pandas().equals(expected_df)
 
-    reader_from_factory = Factory.getIOReader("nfs", config)
+    reader_from_factory = Factory.get_reader("fs", config)
     fetched_df2 = reader_from_factory.fetch_data()
     assert fetched_df2.to_pandas().equals(expected_df)
 
@@ -50,11 +49,11 @@ def test_fetch_data_parquet(test_input_base_path, expected_df):
         "input_format": "parquet",
     }
 
-    reader = NFSReader(config)
+    reader = FileSystemReader(config)
     fetched_df = reader.fetch_data()
     assert fetched_df.to_pandas().equals(expected_df)
 
-    reader_from_factory = Factory.getIOReader("nfs", config)
+    reader_from_factory = Factory.get_reader("fs", config)
     fetched_df2 = reader_from_factory.fetch_data()
     assert fetched_df2.to_pandas().equals(expected_df)
 
@@ -69,10 +68,10 @@ def test_fetch_data_orc(test_input_base_path, expected_df):
         "input_format": "orc",
     }
 
-    reader = NFSReader(config)
+    reader = FileSystemReader(config)
     fetched_df = reader.fetch_data()
     assert fetched_df.to_pandas().equals(expected_df)
 
-    reader_from_factory = Factory.getIOReader("nfs", config)
+    reader_from_factory = Factory.get_reader("fs", config)
     fetched_df2 = reader_from_factory.fetch_data()
     assert fetched_df2.to_pandas().equals(expected_df)

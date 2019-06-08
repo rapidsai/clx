@@ -1,18 +1,18 @@
 import glob
 from pathlib import Path
-
+import csv
 import os
 import cudf
 import pandas
 import pytest
 import shutil
+import pandas as pd
 
 from factory.factory import Factory
-from reader.nfs_reader import NFSReader
-from writer.nfs_writer import NFSWriter
+from writer.fs_writer import FileSystemWriter
 
 
-test_output_base_path = str(Path("test_output").resolve())
+test_output_base_path = "%s/target" % os.path.dirname(os.path.realpath(__file__))
 df = cudf.DataFrame(
     [
         ("firstname", ["Emma", "Ava", "Sophia"]),
@@ -31,22 +31,18 @@ def test_write_data_text(test_output_base_path, expected_df, df):
     if os.path.exists(test_output_path):
         os.remove(test_output_path)
     config = {"output_path": test_output_path, "output_format": "text"}
-    writer = NFSWriter(config["output_path"], config["output_format"])
+    writer = FileSystemWriter(config["output_path"], config["output_format"])
     writer.write_data(df)
 
-    config = {
-        "input_path": test_output_path,
-        "schema": ["firstname", "lastname", "gender"],
-        "delimiter": ",",
-        "required_cols": ["firstname", "lastname", "gender"],
-        "dtype": ["str", "str", "str"],
-        "header": 0,
-        "input_format": "text",
-    }
-    reader = NFSReader(config)
-    fetched_df = reader.fetch_data()
-
-    assert fetched_df.to_pandas().equals(expected_df)
+    with open(test_output_path) as f:
+        reader = csv.reader(f)
+        data = []
+        for row in reader:
+            data.append(row)
+    assert data[0] == ["firstname", "lastname", "gender"]
+    assert data[1] == ["Emma", "Olivia", "F"]
+    assert data[2] == ["Ava", "Isabella", "F"]
+    assert data[3] == ["Sophia", "Charlotte", "F"]
 
 
 @pytest.mark.parametrize("test_output_base_path", [test_output_base_path])
@@ -57,19 +53,8 @@ def test_write_data_parquet(test_output_base_path, expected_df, df):
     if os.path.exists(test_output_path) and os.path.isdir(test_output_path):
         shutil.rmtree(test_output_path)
     config = {"output_path": test_output_path, "output_format": "parquet"}
-    writer = NFSWriter(config["output_path"], config["output_format"])
+    writer = FileSystemWriter(config["output_path"], config["output_format"])
     writer.write_data(df)
-
     output_files = glob.glob("%s/*" % (test_output_path))
-    config = {
-        "input_path": output_files[0],
-        "schema": ["firstname", "lastname", "gender"],
-        "delimiter": ",",
-        "required_cols": ["firstname", "lastname", "gender"],
-        "dtype": ["str", "str", "str"],
-        "header": 0,
-        "input_format": "parquet",
-    }
-    reader = NFSReader(config)
-    fetched_df = reader.fetch_data()
-    assert fetched_df.to_pandas().equals(expected_df)
+    result = pd.read_parquet(output_files[0], engine="pyarrow")
+    assert result.equals(expected_df)

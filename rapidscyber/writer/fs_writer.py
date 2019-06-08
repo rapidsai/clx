@@ -6,7 +6,7 @@ import cudf
 from writer.file_writer import FileWriter
 
 
-class NFSWriter(FileWriter):
+class FileSystemWriter(FileWriter):
     def __init__(self, output_path, output_format="text"):
         self._output_path = output_path
         self._output_format = output_format

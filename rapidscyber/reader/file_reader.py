@@ -1,8 +1,6 @@
 from abc import ABC
 from abc import abstractmethod
 
-import cudf
-
 
 class FileReader(ABC):
     @property

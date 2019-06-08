@@ -3,7 +3,7 @@ import logging
 from reader.file_reader import FileReader
 
 
-class NFSReader(FileReader):
+class FileSystemReader(FileReader):
     def __init__(self, config):
         self._config = config
         self._has_data = True
