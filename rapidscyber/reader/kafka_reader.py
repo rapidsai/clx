@@ -22,6 +22,8 @@ class KafkaReader:
         events = []
         rec_cnt = 0
         running = True
+        current_time = time.time()
+        time_window = 30
         try:
             while running:
                 msg = self.consumer.poll(timeout=1.0)
@@ -29,10 +31,14 @@ class KafkaReader:
                     continue
                 elif not msg.error():
                     data = msg.value().decode("utf-8")
-                    if rec_cnt < self._batch_size:
+                    if (
+                        rec_cnt < self._batch_size
+                        and (time.time() - current_time) < time_window
+                    ):
                         events.append(data)
                         rec_cnt += 1
                     else:
+                        events.append(data)
                         running = False
                 elif msg.error().code() != KafkaError._PARTITION_EOF:
                     logging.error(msg.error())

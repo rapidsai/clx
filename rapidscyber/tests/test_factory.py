@@ -7,11 +7,11 @@ from reader.fs_reader import FileSystemReader
 from writer.fs_writer import FileSystemWriter
 
 kafka_config = {
-    "kafka_brokers": "localhost:8191",
+    "kafka_brokers": "localhost:9092",
     "group_id": "cyber-dp",
     "batch_size": 100,
-    "consumer_kafka_topics": ["localhost:9092", "localhost:9092"],
-    "publisher_kafka_topic": "localhost:9092",
+    "consumer_kafka_topics": ["consumer_topic_t1", "consumer_topic_t2"],
+    "publisher_kafka_topic": "publisher_topic_t1",
     "output_delimiter": ",",
 }
 
