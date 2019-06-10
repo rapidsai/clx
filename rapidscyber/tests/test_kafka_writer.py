@@ -1,6 +1,5 @@
 import pytest
 import cudf
-from mock import patch
 from confluent_kafka import Producer, KafkaError
 from writer.kafka_writer import KafkaWriter
 
