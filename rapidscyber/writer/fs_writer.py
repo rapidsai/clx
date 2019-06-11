@@ -15,10 +15,13 @@ class FileSystemWriter(FileWriter):
         def wrapper(self, df, output_path):
             dir = os.path.dirname(output_path)
             if not os.path.isdir(dir):
-                raise IOError("output directory { %s } not exist" % (dir))
+                logging.info("output directory { %s } not exist" % (dir))
+                logging.info("creating output directory { %s }..." % (dir))
+                os.makedirs(dir)
+                logging.info("created output directory { %s }..." % (dir))
             if os.path.exists(output_path):
                 raise IOError("output path { %s } already exist" % (output_path))
-            logging.info("writing data to loaction {%s}" % (output_path))
+            logging.info("writing data to location {%s}" % (output_path))
             fun(self, df, output_path)
 
         return wrapper
