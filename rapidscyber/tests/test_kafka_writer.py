@@ -23,6 +23,6 @@ producer = mock()
 @pytest.mark.parametrize("input_df", [input_df])
 def test_write_data(kafka_topic, batch_size, delimiter, producer, input_df):
     writer = KafkaWriter(kafka_topic, batch_size, delimiter, producer)
-    when(writer.producer).__len__().thenReturn(3)
+    when(writer.producer).__len__().thenReturn(1)
     writer.write_data(input_df)
     verify(writer.producer, times=3).produce(...)
