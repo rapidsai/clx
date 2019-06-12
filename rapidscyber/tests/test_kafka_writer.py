@@ -1,20 +1,28 @@
-import pytest
 import cudf
+from mockito import when, mock, verify
 from confluent_kafka import Producer, KafkaError
-from writer.kafka_writer import KafkaWriter
+from rapidscyber.io.writer.kafka_writer import KafkaWriter
 
-producer_conf = {"bootstrap.servers": "localhost:8191", "session.timeout.ms": 10000}
+input_df = cudf.DataFrame(
+    [
+        ("firstname", ["Emma", "Ava", "Sophia"]),
+        ("lastname", ["Olivia", "Isabella", "Charlotte"]),
+        ("gender", ["F", "F", "F"]),
+    ]
+)
+kafka_topic = "publisher_topic_t1"
+batch_size = 100
+delimiter = ","
+producer = mock()
 
 
-@pytest.mark.parametrize("producer_conf", [producer_conf])
-def test_write_data(producer_conf):
-    input_df = cudf.DataFrame(
-        [
-            ("firstname", ["Emma", "Ava", "Sophia"]),
-            ("lastname", ["Olivia", "Isabella", "Charlotte"]),
-            ("gender", ["F", "F", "F"]),
-        ]
-    )
-    producer = Producer(producer_conf)
-    kafka_writer_obj = KafkaWriter("rapidscyber", 1000, ",", producer)
-    kafka_writer_obj.write_data(input_df)
+@pytest.mark.parametrize("kafka_topic", [kafka_topic])
+@pytest.mark.parametrize("batch_size", [batch_size])
+@pytest.mark.parametrize("delimiter", [delimiter])
+@pytest.mark.parametrize("producer", [producer])
+@pytest.mark.parametrize("input_df", [input_df])
+def test_write_data(kafka_topic, batch_size, delimiter, producer, input_df):
+    writer = KafkaWriter(kafka_topic, batch_size, delimiter, producer)
+    when(writer.producer).__len__().thenReturn(3)
+    writer.write_data(input_df)
+    verify(writer.producer, times=3).produce(...)
