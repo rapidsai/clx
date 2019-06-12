@@ -1,6 +1,6 @@
 import cudf
 import pandas
-from parsers.event_parser import EventParser
+from rapidscyber.parsers.event_parser import EventParser
 
 
 class TestEventParserImpl(EventParser):

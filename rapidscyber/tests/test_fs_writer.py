@@ -8,8 +8,8 @@ import pytest
 import shutil
 import pandas as pd
 
-from factory.factory import Factory
-from writer.fs_writer import FileSystemWriter
+from rapidscyber.io.factory.factory import Factory
+from rapidscyber.io.writer.fs_writer import FileSystemWriter
 
 
 test_output_base_path = "%s/target" % os.path.dirname(os.path.realpath(__file__))
@@ -20,13 +20,14 @@ df = cudf.DataFrame(
         ("gender", ["F", "F", "F"]),
     ]
 )
+# Temporarily changing over cuDF to pandasDF because of issue with equality checks.
+# Issue: https://github.com/rapidsai/cudf/issues/1750
 expected_df = df.to_pandas()
 
 
 @pytest.mark.parametrize("test_output_base_path", [test_output_base_path])
-@pytest.mark.parametrize("expected_df", [expected_df])
 @pytest.mark.parametrize("df", [df])
-def test_write_data_text(test_output_base_path, expected_df, df):
+def test_write_data_text(test_output_base_path, df):
     test_output_path = "%s/person.csv" % (test_output_base_path)
     if os.path.exists(test_output_path):
         os.remove(test_output_path)

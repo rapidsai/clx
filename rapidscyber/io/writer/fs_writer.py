@@ -3,7 +3,7 @@ import os
 
 import cudf
 
-from writer.file_writer import FileWriter
+from rapidscyber.io.writer.file_writer import FileWriter
 
 
 class FileSystemWriter(FileWriter):

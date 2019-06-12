@@ -1,6 +1,6 @@
-from factory.abstract_factory import AbstractFactory
-from reader.fs_reader import FileSystemReader
-from writer.fs_writer import FileSystemWriter
+from rapidscyber.io.factory.abstract_factory import AbstractFactory
+from rapidscyber.io.reader.fs_reader import FileSystemReader
+from rapidscyber.io.writer.fs_writer import FileSystemWriter
 
 
 class FileSystemFactory(AbstractFactory):

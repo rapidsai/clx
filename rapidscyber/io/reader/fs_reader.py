@@ -1,6 +1,6 @@
 import cudf
 import logging
-from reader.file_reader import FileReader
+from rapidscyber.io.reader.file_reader import FileReader
 
 
 class FileSystemReader(FileReader):

@@ -4,10 +4,13 @@ import cudf
 import pandas
 import pytest
 import os
-from factory.factory import Factory
-from reader.fs_reader import FileSystemReader
+from rapidscyber.io.factory.factory import Factory
+from rapidscyber.io.reader.fs_reader import FileSystemReader
 
 test_input_base_path = "%s/input" % os.path.dirname(os.path.realpath(__file__))
+
+# Temporarily changing over cuDF to pandasDF because of issue with equality checks.
+# Issue: https://github.com/rapidsai/cudf/issues/1750
 expected_df = cudf.DataFrame(
     [
         ("firstname", ["Emma", "Ava", "Sophia"]),
@@ -32,11 +35,10 @@ def test_fetch_data_text(test_input_base_path, expected_df):
     }
     reader = FileSystemReader(config)
     fetched_df = reader.fetch_data()
-    assert fetched_df.to_pandas().equals(expected_df)
 
-    reader_from_factory = Factory.get_reader("fs", config)
-    fetched_df2 = reader_from_factory.fetch_data()
-    assert fetched_df2.to_pandas().equals(expected_df)
+    # Temporarily changing over cuDF to pandasDF because of issue with equality checks.
+    # Issue: https://github.com/rapidsai/cudf/issues/1750
+    assert fetched_df.to_pandas().equals(expected_df)
 
 
 @pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
@@ -51,11 +53,10 @@ def test_fetch_data_parquet(test_input_base_path, expected_df):
 
     reader = FileSystemReader(config)
     fetched_df = reader.fetch_data()
-    assert fetched_df.to_pandas().equals(expected_df)
 
-    reader_from_factory = Factory.get_reader("fs", config)
-    fetched_df2 = reader_from_factory.fetch_data()
-    assert fetched_df2.to_pandas().equals(expected_df)
+    # Temporarily changing over cuDF to pandasDF because of issue with equality checks.
+    # Issue: https://github.com/rapidsai/cudf/issues/1750
+    assert fetched_df.to_pandas().equals(expected_df)
 
 
 @pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
@@ -70,8 +71,7 @@ def test_fetch_data_orc(test_input_base_path, expected_df):
 
     reader = FileSystemReader(config)
     fetched_df = reader.fetch_data()
-    assert fetched_df.to_pandas().equals(expected_df)
 
-    reader_from_factory = Factory.get_reader("fs", config)
-    fetched_df2 = reader_from_factory.fetch_data()
-    assert fetched_df2.to_pandas().equals(expected_df)
+    # Temporarily changing over cuDF to pandasDF because of issue with equality checks.
+    # Issue: https://github.com/rapidsai/cudf/issues/1750
+    assert fetched_df.to_pandas().equals(expected_df)

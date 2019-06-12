@@ -1,8 +1,8 @@
 import logging
 import sys
 
-from factory.kafka_factory import KafkaFactory
-from factory.fs_factory import FileSystemFactory
+from rapidscyber.io.factory.kafka_factory import KafkaFactory
+from rapidscyber.io.factory.fs_factory import FileSystemFactory
 
 
 class Factory:
