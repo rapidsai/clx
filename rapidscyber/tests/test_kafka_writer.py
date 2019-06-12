@@ -1,6 +1,6 @@
 import cudf
+import pytest
 from mockito import when, mock, verify
-from confluent_kafka import Producer, KafkaError
 from rapidscyber.io.writer.kafka_writer import KafkaWriter
 
 input_df = cudf.DataFrame(
