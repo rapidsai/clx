@@ -1,6 +1,6 @@
 import cudf
 import pandas
-from parser.event_parser import EventParser
+from rapidscyber.parsers.event_parser import EventParser
 
 
 class TestEventParserImpl(EventParser):
@@ -12,7 +12,7 @@ class TestEventParser(object):
     def setup(self):
         # Create Test Event Parser Implementation
         event_type1_regex = {
-            "eventTypeId": "eventId: ([0-9$]+)",
+            "eventTypeId": "eventTypeId: ([0-9$]+)",
             "username": "username: ([a-z\.\-0-9$]+)",
         }
         event_regex = {"eventTypeId1": event_type1_regex}
