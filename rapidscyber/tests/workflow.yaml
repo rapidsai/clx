@@ -1,0 +1,23 @@
+name: my-workflow
+source:
+        type: fs
+        input_format: csv
+        input_path: /rapids/cyshare/github/brhodes10/rapidscyber/rapidscyber/tests/input/person.csv
+        schema:
+                - firstname
+                - lastname
+                - gender
+        delimiter: ","
+        required_cols:
+                - firstname
+                - lastname
+                - gender
+        dtype:
+                - str
+                - str
+                - str
+        header: 0
+destination:
+        type: fs
+        output_format: csv
+        output_path: /rapids/cyshare/github/brhodes10/rapidscyber/rapidscyber/tests/output/out.csv

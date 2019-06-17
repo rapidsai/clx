@@ -12,7 +12,7 @@ from rapidscyber.io.factory.factory import Factory
 from rapidscyber.io.writer.fs_writer import FileSystemWriter
 
 
-test_output_base_path = "%s/target" % os.path.dirname(os.path.realpath(__file__))
+test_output_base_path = "%s/output" % os.path.dirname(os.path.realpath(__file__))
 df = cudf.DataFrame(
     [
         ("firstname", ["Emma", "Ava", "Sophia"]),

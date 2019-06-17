@@ -1,4 +1,4 @@
-from workflow.workflow import Workflow
+from rapidscyber.workflow.workflow import Workflow
 
 
 class TestWorkflowImpl(Workflow):
@@ -10,7 +10,7 @@ class TestWorkflowImpl(Workflow):
 class TestWorkflow(object):
     def setup(self):
         # Create Test Workflow Implementation
-        test_pipeline = TestWorkflowImpl()
+        self.test_workflow = TestWorkflowImpl()
 
-    def test_pipeline(self):
-        pass
+    def test_workflow(self):
+        self.test_workflow.run_workflow()
