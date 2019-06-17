@@ -1,4 +1,4 @@
-name: my-workflow
+name: test-workflow-implementation
 source:
         type: fs
         input_format: csv
@@ -20,4 +20,4 @@ source:
 destination:
         type: fs
         output_format: csv
-        output_path: /rapids/cyshare/github/brhodes10/rapidscyber/rapidscyber/tests/output/out.csv
+        output_path: /rapids/cyshare/github/brhodes10/rapidscyber/rapidscyber/tests/output/output_config.csv

@@ -5,7 +5,6 @@ import logging
 import sys
 import yaml
 
-
 log = logging.getLogger("Workflow")
 
 
@@ -13,7 +12,8 @@ class Workflow(ABC):
 
     DEFAULT_CONFIG_FILE = "workflow.yaml"
 
-    def __init__(self, source=None, destination=None):
+    def __init__(self, source=None, destination=None, name="Workflow"):
+        # Check to see if default workflow yaml file exists. If so, set workflow configurations from file.
         dirname, filename = path.split(
             path.abspath(sys.modules[self.__module__].__file__)
         )
@@ -21,30 +21,37 @@ class Workflow(ABC):
         if path.exists(config_filepath):
             log.info("Config file detected: {0}".format(config_filepath))
             self._set_workflow_config(config_filepath)
-            self._io_reader = Factory.get_reader(self._source["type"], self._source)
-            self._io_writer = Factory.get_writer(
-                self._destination["type"], self._destination
-            )
         else:
             log.info("No config file detected: {0}".format(config_filepath))
-        # If source and destination are passed in, then set those. If not, then read the config file
+
+        # If source or destination are passed in as parameters, update source and dest configurations.
         if source:
-            self._source = source
-            self._io_reader = Factory.get_reader(self._source["type"], self._source)
+            self.source = source
+            self._io_reader = Factory.get_reader(self.source["type"], self.source)
         if destination:
-            self._destination = destination
+            self.destination = destination
             self._io_writer = Factory.get_writer(
-                self._destination["type"], self._destination
+                self._destination["type"], self.destination
             )
 
     def _set_workflow_config(self, yaml_file):
+        # Receives a yaml file path with Workflow configurations and sets appropriate values for properties in this class
         log.info("Setting configurations from config file {0}".format(yaml_file))
         with open(yaml_file, "r") as ymlfile:
             config = yaml.load(ymlfile)
         if config["source"]:
-            self._source = config["source"]
+            self.source = config["source"]
         if config["destination"]:
-            self._destination = config["destination"]
+            self.destination = config["destination"]
+        if config["name"]:
+            self.name = config["name"]
+        self._io_reader = Factory.get_reader(self.source["type"], self.source)
+        self._io_writer = Factory.get_writer(self.destination["type"], self.destination)
+
+    @property
+    def name(self):
+        """str: The name of the workflow for logging purposes."""
+        return self._name
 
     @property
     def source(self):
@@ -53,7 +60,7 @@ class Workflow(ABC):
 
     def set_source(self, source):
         self._source = source
-        self._io_reader = Factory.get_reader(self._source["type"], self._source)
+        self._io_reader = Factory.get_reader(self.source["type"], self.source)
 
     @property
     def destination(self):
@@ -63,7 +70,7 @@ class Workflow(ABC):
     def set_destination(self, destination):
         self._destination = destination
         self._io_writer = Factory.get_writer(
-            self._source["destination"], self._destination
+            self.source["destination"], self.destination
         )
 
     def _get_parser(self, parser_config):
@@ -71,6 +78,7 @@ class Workflow(ABC):
         pass
 
     def run_workflow(self):
+        log.info("Running workflow {0}.".format(self.name))
         try:
             while (
                 self._io_reader.has_data
@@ -85,7 +93,7 @@ class Workflow(ABC):
             self.stop_workflow()
 
     def stop_workflow(self):
-        log.info("Workflow stopped")
+        log.info("Workflow {0} stopped.".format(self.name))
 
     @abstractmethod
     def workflow(self, dataframe):
