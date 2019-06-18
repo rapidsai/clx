@@ -31,13 +31,19 @@ destination = {"type": "fs", "output_format": "csv", "output_path": "/path/to/ou
 @pytest.mark.parametrize("input_path", [input_path])
 @pytest.mark.parametrize("output_path", [output_path_param])
 def test_workflow_parameters(input_path, output_path):
+    """Tests the initialization and running of a workflow with passed in parameters"""
+    # Create source and destination configurations
     source_config = source
     source_config["input_path"] = input_path
     dest_config = destination
     dest_config["output_path"] = output_path
+
+    # Create new workflow with source and destination configurations
     test_workflow = TestWorkflowImpl(
         source=source_config, destination=dest_config, name="my-new-workflow-name"
     )
+
+    # Run workflow and check output data
     if os.path.exists(output_path):
         os.remove(output_path)
     test_workflow.run_workflow()
@@ -55,6 +61,7 @@ def test_workflow_parameters(input_path, output_path):
 @pytest.mark.parametrize("input_path", [input_path])
 @pytest.mark.parametrize("output_path", [output_path_config])
 def test_workflow_config(input_path, output_path):
+    """Tests the initialization and running of a workflow with a configuration yaml file"""
     # Write workflow.yaml file
     workflow_config = {}
     workflow_config["source"] = source
