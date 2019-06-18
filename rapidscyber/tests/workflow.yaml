@@ -16,7 +16,7 @@ source:
                 - str
                 - str
                 - str
-        header: 1
+        header: 0
 destination:
         type: fs
         output_format: csv

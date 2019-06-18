@@ -26,12 +26,12 @@ class Workflow(ABC):
 
         # If source or destination are passed in as parameters, update source and dest configurations.
         if source:
-            self.source = source
-            self._io_reader = Factory.get_reader(self.source["type"], self.source)
+            self._source = source
+            self._io_reader = Factory.get_reader(self._source["type"], self._source)
         if destination:
-            self.destination = destination
+            self._destination = destination
             self._io_writer = Factory.get_writer(
-                self._destination["type"], self.destination
+                self._destination["type"], self._destination
             )
 
     def _set_workflow_config(self, yaml_file):
@@ -40,13 +40,15 @@ class Workflow(ABC):
         with open(yaml_file, "r") as ymlfile:
             config = yaml.load(ymlfile)
         if config["source"]:
-            self.source = config["source"]
+            self._source = config["source"]
         if config["destination"]:
-            self.destination = config["destination"]
+            self._destination = config["destination"]
         if config["name"]:
-            self.name = config["name"]
-        self._io_reader = Factory.get_reader(self.source["type"], self.source)
-        self._io_writer = Factory.get_writer(self.destination["type"], self.destination)
+            self._name = config["name"]
+        self._io_reader = Factory.get_reader(self._source["type"], self._source)
+        self._io_writer = Factory.get_writer(
+            self._destination["type"], self._destination
+        )
 
     @property
     def name(self):

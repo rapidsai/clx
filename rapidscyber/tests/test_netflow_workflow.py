@@ -1,7 +1,9 @@
-from rapidscyber.workflow.workflow import NetflowWorkflow
+import cudf
+import pytest
+from rapidscyber.workflow.netflow_workflow import NetflowWorkflow
 
 
-def test_netflow_workflow(self):
+def test_netflow_workflow():
     """Tests the netflow dataframe enrichment"""
     netflow_workflow = NetflowWorkflow()
     input_df = cudf.DataFrame(
@@ -24,4 +26,4 @@ def test_netflow_workflow(self):
         ]
     )
     # Equality checks issue: https://github.com/rapidsai/cudf/issues/1750
-    assert actual_df.to_pandas().equals(expected_df.to_pandas().equals())
+    assert actual_df.to_pandas().equals(expected_df.to_pandas())
