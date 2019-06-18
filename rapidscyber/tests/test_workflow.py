@@ -1,6 +1,7 @@
 import csv
 import os
 import pytest
+import yaml
 from rapidscyber.workflow.workflow import Workflow
 
 
@@ -10,28 +11,35 @@ class TestWorkflowImpl(Workflow):
         return dataframe
 
 
-cwd = os.getcwd()
-input_path = cwd + "/tests/input/person.csv"
-output_path = cwd + "/tests/output/output_parameters.csv"
+dirname, filename = os.path.split(os.path.abspath(__file__))
+input_path = dirname + "/input/person.csv"
+output_path_param = dirname + "/output/output_parameters.csv"
+output_path_config = dirname + "/output/output_config.csv"
+source = {
+    "type": "fs",
+    "input_format": "csv",
+    "input_path": "/path/to/input",
+    "schema": ["firstname", "lastname", "gender"],
+    "delimiter": ",",
+    "required_cols": ["firstname", "lastname", "gender"],
+    "dtype": ["str", "str", "str"],
+    "header": 0,
+}
+destination = {"type": "fs", "output_format": "csv", "output_path": "/path/to/output"}
 
 
 @pytest.mark.parametrize("input_path", [input_path])
-@pytest.mark.parametrize("output_path", [output_path])
+@pytest.mark.parametrize("output_path", [output_path_param])
 def test_workflow_parameters(input_path, output_path):
-    source = {
-        "type": "fs",
-        "input_format": "csv",
-        "input_path": input_path,
-        "schema": ["firstname", "lastname", "gender"],
-        "delimiter": ",",
-        "required_cols": ["firstname", "lastname", "gender"],
-        "dtype": ["str", "str", "str"],
-        "header": 0,
-    }
-    destination = {"type": "fs", "output_format": "csv", "output_path": output_path}
+    source_config = source
+    source_config["input_path"] = input_path
+    dest_config = destination
+    dest_config["output_path"] = output_path
     test_workflow = TestWorkflowImpl(
-        source=source, destination=destination, name="my-new-workflow-name"
+        source=source_config, destination=dest_config, name="my-new-workflow-name"
     )
+    if os.path.exists(output_path):
+        os.remove(output_path)
     test_workflow.run_workflow()
     with open(output_path) as f:
         reader = csv.reader(f)
@@ -42,13 +50,25 @@ def test_workflow_parameters(input_path, output_path):
     assert data[1] == ["Emma", "Olivia", "F", "enriched"]
     assert data[2] == ["Ava", "Isabella", "F", "enriched"]
     assert data[3] == ["Sophia", "Charlotte", "F", "enriched"]
-    os.remove(output_path)
 
 
-def test_workflow_config():
-    output_path = "tests/output/output_config.csv"
+@pytest.mark.parametrize("input_path", [input_path])
+@pytest.mark.parametrize("output_path", [output_path_config])
+def test_workflow_config(input_path, output_path):
+    # Write workflow.yaml file
+    workflow_config = {}
+    workflow_config["source"] = source
+    workflow_config["source"]["input_path"] = input_path
+    workflow_config["destination"] = destination
+    workflow_config["destination"]["output_path"] = output_path
+    workflow_config["name"] = "my-workflow"
+    workflow_yaml_file = dirname + "/workflow.yaml"
+    with open(workflow_yaml_file, "w") as f:
+        yaml.dump(workflow_config, f)
     if os.path.exists(output_path):
         os.remove(output_path)
+
+    # Run workflow
     test_workflow = TestWorkflowImpl()
     test_workflow.run_workflow()
     with open(output_path) as f:
@@ -60,4 +80,3 @@ def test_workflow_config():
     assert data[1] == ["Emma", "Olivia", "F", "enriched"]
     assert data[2] == ["Ava", "Isabella", "F", "enriched"]
     assert data[3] == ["Sophia", "Charlotte", "F", "enriched"]
-    os.remove(output_path)

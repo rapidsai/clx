@@ -33,6 +33,8 @@ class Workflow(ABC):
             self._io_writer = Factory.get_writer(
                 self._destination["type"], self._destination
             )
+        if name:
+            self._name = name
 
     def _set_workflow_config(self, yaml_file):
         # Receives a yaml file path with Workflow configurations and sets appropriate values for properties in this class
