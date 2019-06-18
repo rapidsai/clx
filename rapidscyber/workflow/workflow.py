@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
-from os import path
+import os
 from rapidscyber.io.factory.factory import Factory
 import logging
-import sys
 import yaml
 
 log = logging.getLogger("Workflow")
@@ -10,19 +9,22 @@ log = logging.getLogger("Workflow")
 
 class Workflow(ABC):
 
-    DEFAULT_CONFIG_FILE = "workflow.yaml"
+    DEFAULT_CONFIG_PATH = os.environ("HOME") + "/.config/rapidscyber"
+    BACKUP_CONFIG_PATH = "/etc/rapidscyber/"
 
     def __init__(self, source=None, destination=None, name="Workflow"):
-        # Check to see if default workflow yaml file exists. If so, set workflow configurations from file.
-        dirname, filename = path.split(
-            path.abspath(sys.modules[self.__module__].__file__)
-        )
-        config_filepath = dirname + "/" + self.DEFAULT_CONFIG_FILE
-        if path.exists(config_filepath):
-            log.info("Config file detected: {0}".format(config_filepath))
-            self._set_workflow_config(config_filepath)
+        # Check to see if workflow yaml file exists. If so, set workflow configurations from file.
+        config_file = "{0}/{1}/workflow.yaml"
+        if os.path.exists(config_file.format(self.DEFAULT_CONFIG_PATH, name)):
+            filepath = config_file.format(self.DEFAULT_CONFIG_PATH, name)
+            log.info("Config file detected: {0}".format(filepath))
+            self._set_workflow_config(filepath)
+        elif os.path.exists(config_file.format(self.BACKUP_CONFIG_PATH, name)):
+            filepath = config_file.format(self.BACKUP_CONFIG_PATH, name)
+            log.info("Config file detected: {0}".format(filepath))
+            self._set_workflow_config(filepath)
         else:
-            log.info("No config file detected: {0}".format(config_filepath))
+            log.info("No config file detected.")
 
         # If source or destination are passed in as parameters, update source and dest configurations.
         if source:
