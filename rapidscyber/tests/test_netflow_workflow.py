@@ -5,7 +5,7 @@ from rapidscyber.workflow.netflow_workflow import NetflowWorkflow
 
 def test_netflow_workflow():
     """Tests the netflow dataframe enrichment"""
-    netflow_workflow = NetflowWorkflow()
+    netflow_workflow = NetflowWorkflow("netflow-workflow")
     input_df = cudf.DataFrame(
         [
             ("firstname", ["Emma", "Ava", "Sophia"]),

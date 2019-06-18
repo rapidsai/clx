@@ -9,14 +9,18 @@ log = logging.getLogger("Workflow")
 
 class Workflow(ABC):
 
-    DEFAULT_CONFIG_PATH = os.environ("HOME") + "/.config/rapidscyber"
+    DEFAULT_CONFIG_PATH = "/.config/rapidscyber"
     BACKUP_CONFIG_PATH = "/etc/rapidscyber/"
 
-    def __init__(self, source=None, destination=None, name="Workflow"):
+    def __init__(self, name, source=None, destination=None):
         # Check to see if workflow yaml file exists. If so, set workflow configurations from file.
         config_file = "{0}/{1}/workflow.yaml"
-        if os.path.exists(config_file.format(self.DEFAULT_CONFIG_PATH, name)):
-            filepath = config_file.format(self.DEFAULT_CONFIG_PATH, name)
+        if os.path.exists(
+            config_file.format(os.getenv("HOME") + self.DEFAULT_CONFIG_PATH, name)
+        ):
+            filepath = config_file.format(
+                os.getenv("HOME") + self.DEFAULT_CONFIG_PATH, name
+            )
             log.info("Config file detected: {0}".format(filepath))
             self._set_workflow_config(filepath)
         elif os.path.exists(config_file.format(self.BACKUP_CONFIG_PATH, name)):
@@ -47,8 +51,6 @@ class Workflow(ABC):
             self._source = config["source"]
         if config["destination"]:
             self._destination = config["destination"]
-        if config["name"]:
-            self._name = config["name"]
         self._io_reader = Factory.get_reader(self._source["type"], self._source)
         self._io_writer = Factory.get_writer(
             self._destination["type"], self._destination

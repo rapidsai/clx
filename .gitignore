@@ -5,3 +5,4 @@ __pycache__/
 .idea/
 # Test output
 rapidscyber/tests/output
+rapidscyber/tests/.config
