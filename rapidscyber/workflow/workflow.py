@@ -37,7 +37,7 @@ class Workflow(ABC):
         if source:
             self._source = source
             self._io_reader = Factory.get_reader(self._source["type"], self._source)
-        if destination is not None:
+        if destination:
             self._destination = destination
             self._io_writer = Factory.get_writer(
                 self._destination["type"], self._destination
