@@ -15,12 +15,10 @@ class Workflow(ABC):
     def __init__(self, name, source=None, destination=None):
         # Check to see if workflow yaml file exists. If so, set workflow configurations from file.
         config_file = "{0}/{1}/workflow.yaml"
-        if os.path.exists(
-            config_file.format(os.getenv("HOME") + self.DEFAULT_CONFIG_PATH, name)
-        ):
-            filepath = config_file.format(
-                os.getenv("HOME") + self.DEFAULT_CONFIG_PATH, name
-            )
+        home_dir = os.getenv("HOME")
+        default_path = home_dir + self.DEFAULT_CONFIG_PATH
+        if os.path.exists(onfig_file.format(default_path, name)):
+            filepath = config_file.format(default_path, name)
             log.info("Config file detected: {0}".format(filepath))
             self._set_workflow_config(filepath)
         elif os.path.exists(config_file.format(self.BACKUP_CONFIG_PATH, name)):
@@ -39,8 +37,20 @@ class Workflow(ABC):
             self._io_writer = Factory.get_writer(
                 self._destination["type"], self._destination
             )
-        if name:
-            self._name = name
+        self._name = name
+
+        if self._source is None:
+            raise Exception(
+                "Source is not properly defined. source={0}. Please update source parameter or workflow config file.".format(
+                    self._source
+                )
+            )
+        if self._destination is None:
+            raise Exception(
+                "Destination is not properly defined. destination={0}. Please update destination parameter or workflow config file.".format(
+                    self._destination
+                )
+            )
 
     def _set_workflow_config(self, yaml_file):
         # Receives a yaml file path with Workflow configurations and sets appropriate values for properties in this class
@@ -49,8 +59,20 @@ class Workflow(ABC):
             config = yaml.load(ymlfile)
         if config["source"]:
             self._source = config["source"]
+        else:
+            raise Exception(
+                "Source configuration not detected in configuration file at {0}".format(
+                    yaml_file
+                )
+            )
         if config["destination"]:
             self._destination = config["destination"]
+        else:
+            raise Exception(
+                "Destination configuration not detected in configuration file at {0}".format(
+                    yaml_file
+                )
+            )
         self._io_reader = Factory.get_reader(self._source["type"], self._source)
         self._io_writer = Factory.get_writer(
             self._destination["type"], self._destination
