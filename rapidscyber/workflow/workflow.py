@@ -50,24 +50,20 @@ class Workflow(ABC):
             config = yaml.load(ymlfile)
         if "source" in config:
             self._source = config["source"]
-        else:
-            raise Exception(
-                "Source configuration not detected in configuration file at {0}".format(
-                    yaml_file
-                )
-            )
         if "destination" in config:
             self._destination = config["destination"]
-        else:
-            raise Exception(
-                "Destination configuration not detected in configuration file at {0}".format(
+        try:
+            self._io_reader = Factory.get_reader(self._source["type"], self._source)
+            self._io_writer = Factory.get_writer(
+                self._destination["type"], self._destination
+            )
+        except:
+            log.error(
+                "Error creating I/O reader and writer. Please check configurations in workflow config file at {0}".format(
                     yaml_file
                 )
             )
-        self._io_reader = Factory.get_reader(self._source["type"], self._source)
-        self._io_writer = Factory.get_writer(
-            self._destination["type"], self._destination
-        )
+            raise
 
     @property
     def name(self):
