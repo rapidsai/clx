@@ -36,6 +36,7 @@ def set_workflow_config():
         "output_path": "/path/to/output",
     }
     workflow_config = {"source": source, "destination": destination}
+    return workflow_config, source, destination
 
 
 @pytest.fixture
@@ -51,6 +52,8 @@ def test_workflow_parameters(
 ):
     """Tests the initialization and running of a workflow with passed in parameters"""
     # Create source and destination configurations
+    source = set_workflow_config[1]
+    destination = set_workflow_config[2]
     source["input_path"] = input_path
     destination["output_path"] = output_path
     # Create new workflow with source and destination configurations
@@ -78,15 +81,17 @@ def test_workflow_parameters(
 def test_workflow_config(mock_env_home, set_workflow_config, input_path, output_path):
     """Tests the initialization and running of a workflow with a configuration yaml file"""
     # Write workflow.yaml file
+    workflow_name = "test-workflow-config"
+    workflow_config = set_workflow_config[0]
     workflow_config["destination"]["output_path"] = output_path
-    workflow_config["input"]["input_path"] = input_path
-    write_config_file(workflow_config, "test-workflow-config")
+    workflow_config["source"]["input_path"] = input_path
+    write_config_file(workflow_config, workflow_name)
 
     if os.path.exists(output_path):
         os.remove(output_path)
 
     # Run workflow
-    test_workflow = TestWorkflowImpl(name)
+    test_workflow = TestWorkflowImpl(workflow_name)
     test_workflow.run_workflow()
     with open(output_path) as f:
         reader = csv.reader(f)
@@ -101,18 +106,18 @@ def test_workflow_config(mock_env_home, set_workflow_config, input_path, output_
 
 def test_workflow_config_error(mock_env_home, set_workflow_config):
     """Tests the error handling on incomplete workflow.yaml configuration file"""
-    # Write workflow.yaml file
+    workflow_name = "test-workflow-error"
     test_config = {}
-    test_config["source"] = source
-    write_config_file(test_config, "test-workflow-error")
-    with pytest.raises(IOError):
-        test_workflow = TestWorkflowImpl(name)
+    test_config["source"] = set_workflow_config[1]
+    write_config_file(test_config, workflow_name)
+    with pytest.raises(Exception):
+        test_workflow = TestWorkflowImpl(workflow_name)
 
     test_config = {}
-    test_config["destination"] = destination
-    write_config_file(test_config, "test-workflow-error")
-    with pytest.raises(IOError):
-        test_workflow = TestWorkflowImpl(name)
+    test_config["destination"] = set_workflow_config[2]
+    write_config_file(test_config, workflow_name)
+    with pytest.raises(Exception):
+        test_workflow = TestWorkflowImpl(workflow_name)
 
 
 def write_config_file(workflow_config, workflow_name):

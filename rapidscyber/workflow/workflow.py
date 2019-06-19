@@ -13,11 +13,16 @@ class Workflow(ABC):
     BACKUP_CONFIG_PATH = "/etc/rapidscyber/"
 
     def __init__(self, name, source=None, destination=None):
+        # Initialize properties
+        self._source = None
+        self._destination = None
+        self._name = name
+
         # Check to see if workflow yaml file exists. If so, set workflow configurations from file.
         config_file = "{0}/{1}/workflow.yaml"
         home_dir = os.getenv("HOME")
         default_path = home_dir + self.DEFAULT_CONFIG_PATH
-        if os.path.exists(onfig_file.format(default_path, name)):
+        if os.path.exists(config_file.format(default_path, name)):
             filepath = config_file.format(default_path, name)
             log.info("Config file detected: {0}".format(filepath))
             self._set_workflow_config(filepath)
@@ -32,24 +37,10 @@ class Workflow(ABC):
         if source:
             self._source = source
             self._io_reader = Factory.get_reader(self._source["type"], self._source)
-        if destination:
+        if destination is not None:
             self._destination = destination
             self._io_writer = Factory.get_writer(
                 self._destination["type"], self._destination
-            )
-        self._name = name
-
-        if self._source is None:
-            raise Exception(
-                "Source is not properly defined. source={0}. Please update source parameter or workflow config file.".format(
-                    self._source
-                )
-            )
-        if self._destination is None:
-            raise Exception(
-                "Destination is not properly defined. destination={0}. Please update destination parameter or workflow config file.".format(
-                    self._destination
-                )
             )
 
     def _set_workflow_config(self, yaml_file):
@@ -57,7 +48,7 @@ class Workflow(ABC):
         log.info("Setting configurations from config file {0}".format(yaml_file))
         with open(yaml_file, "r") as ymlfile:
             config = yaml.load(ymlfile)
-        if config["source"]:
+        if "source" in config:
             self._source = config["source"]
         else:
             raise Exception(
@@ -65,7 +56,7 @@ class Workflow(ABC):
                     yaml_file
                 )
             )
-        if config["destination"]:
+        if "destination" in config:
             self._destination = config["destination"]
         else:
             raise Exception(

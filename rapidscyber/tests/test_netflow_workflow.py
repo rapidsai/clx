@@ -21,7 +21,8 @@ def test_netflow_workflow():
             ("resp_bytes", ["0"]),
             ("conn_state", ["SH"]),
             ("local_orig", ["-"]),
-            ("local_resp", ["-"])("missed_bytes", ["0"]),
+            ("local_resp", ["-"]),
+            ("missed_bytes", ["0"]),
             ("history", ["F"]),
             ("orig_pkts count", ["2"]),
             ("orig_ip_bytes", ["80"]),
@@ -46,13 +47,15 @@ def test_netflow_workflow():
             ("resp_bytes", ["0"]),
             ("conn_state", ["SH"]),
             ("local_orig", ["-"]),
-            ("local_resp", ["-"])("missed_bytes", ["0"]),
+            ("local_resp", ["-"]),
+            ("missed_bytes", ["0"]),
             ("history", ["F"]),
             ("orig_pkts count", ["2"]),
             ("orig_ip_bytes", ["80"]),
             ("resp_pkts", ["0"]),
             ("resp_ip_bytes", ["0"]),
-            ("tunnel_parents", ["-"])("netflow_enriched", ["netflow_enriched"]),
+            ("tunnel_parents", ["-"]),
+            ("netflow_enriched", ["netflow_enriched"]),
         ]
     )
     # Equality checks issue: https://github.com/rapidsai/cudf/issues/1750
