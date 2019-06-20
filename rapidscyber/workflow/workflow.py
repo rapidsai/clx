@@ -97,10 +97,10 @@ class Workflow(ABC):
         try:
             while (
                 self._io_reader.has_data
-            ):  # for a file this will be true only once. for streaming this will always return true
+            ):
                 dataframe = (
                     self._io_reader.fetch_data()
-                )  # if kafka queue is empty just return None,
+                )
                 if dataframe:
                     enriched_dataframe = self.workflow(dataframe)
                     self._io_writer.write_data(enriched_dataframe)
