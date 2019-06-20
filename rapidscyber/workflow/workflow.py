@@ -21,15 +21,15 @@ class Workflow(ABC):
         # Check to see if workflow yaml file exists. If so, set workflow configurations from file.
         config_file = "{0}/{1}/workflow.yaml"
         home_dir = os.getenv("HOME")
-        default_path = home_dir + self.DEFAULT_CONFIG_PATH
-        if os.path.exists(config_file.format(default_path, name)):
-            filepath = config_file.format(default_path, name)
-            log.info("Config file detected: {0}".format(filepath))
-            self._set_workflow_config(filepath)
-        elif os.path.exists(config_file.format(self.BACKUP_CONFIG_PATH, name)):
-            filepath = config_file.format(self.BACKUP_CONFIG_PATH, name)
-            log.info("Config file detected: {0}".format(filepath))
-            self._set_workflow_config(filepath)
+        default_dir = home_dir + self.DEFAULT_CONFIG_PATH
+        default_filepath = config_file.format(default_dir, name)
+        backup_filepath = config_file.format(self.BACKUP_CONFIG_PATH, name)
+        if os.path.exists(default_filepath):
+            log.info("Config file detected: {0}".format(default_filepath))
+            self._set_workflow_config(default_filepath)
+        elif os.path.exists(backup_filepath):
+            log.info("Config file detected: {0}".format(backup_filepath))
+            self._set_workflow_config(backup_filepath)
         else:
             log.info("No config file detected.")
 
@@ -46,13 +46,11 @@ class Workflow(ABC):
     def _set_workflow_config(self, yaml_file):
         # Receives a yaml file path with Workflow configurations and sets appropriate values for properties in this class
         log.info("Setting configurations from config file {0}".format(yaml_file))
-        with open(yaml_file, "r") as ymlfile:
-            config = yaml.load(ymlfile)
-        if "source" in config:
-            self._source = config["source"]
-        if "destination" in config:
-            self._destination = config["destination"]
         try:
+            with open(yaml_file, "r") as ymlfile:
+                config = yaml.load(ymlfile)
+            self._source = config["source"]
+            self._destination = config["destination"]
             self._io_reader = Factory.get_reader(self._source["type"], self._source)
             self._io_writer = Factory.get_writer(
                 self._destination["type"], self._destination
