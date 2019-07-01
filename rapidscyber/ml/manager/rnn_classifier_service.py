@@ -1,5 +1,4 @@
 import torch
-import torch.nn as nn
 import logging
 from rapidscyber.ml.model.rnn_classifier import RNNClassifier
 
@@ -7,7 +6,6 @@ log = logging.getLogger("RNNClassifierService")
 
 
 class RNNClassifierService:
-    
     def __init__(self, model, optimizer, criterion, train_loader=None, b_size=64):
         self.__classifier = model
         self.train_loader = train_loader
@@ -53,13 +51,13 @@ class RNNClassifierService:
                     )
                 )
         return self.__classifier, total_loss
-    
+
     def get_type_id(self, output):
         pred = output.data.max(1, keepdim=True)[1]
         type_id = pred.cpu().numpy()[0][0]
         return type_id
 
-    #Inference
+    # Inference
     def predict(self, domains):
         type_ids = []
         for domain in domains:

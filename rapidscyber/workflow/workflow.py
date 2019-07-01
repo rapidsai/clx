@@ -95,12 +95,8 @@ class Workflow(ABC):
     def run_workflow(self):
         log.info("Running workflow {0}.".format(self.name))
         try:
-            while (
-                self._io_reader.has_data
-            ):
-                dataframe = (
-                    self._io_reader.fetch_data()
-                )
+            while self._io_reader.has_data:
+                dataframe = self._io_reader.fetch_data()
                 if dataframe:
                     enriched_dataframe = self.workflow(dataframe)
                     self._io_writer.write_data(enriched_dataframe)

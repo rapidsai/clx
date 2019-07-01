@@ -1,15 +1,17 @@
 import pytest
 import os
-import torch.nn as nn
 from rapidscyber.ml.model.rnn_classifier import RNNClassifier
 from rapidscyber.ml.manager.rnn_classifier_builder import RNNClassifierBuilder
 
 char_vocab = 128
-hidden_size = 100 
-n_domain_type = 2 
+hidden_size = 100
+n_domain_type = 2
 n_layers = 3
-model_filepath = "%s/input/rnn_classifier_2019-06-28_18_12_35.pth" % os.path.dirname(os.path.realpath(__file__))
-expected_module = 'rapidscyber.ml.model.rnn_classifier'
+model_filepath = "%s/input/rnn_classifier_2019-06-28_18_12_35.pth" % os.path.dirname(
+    os.path.realpath(__file__)
+)
+expected_module = "rapidscyber.ml.model.rnn_classifier"
+
 
 @pytest.mark.parametrize("char_vocab", [char_vocab])
 @pytest.mark.parametrize("hidden_size", [hidden_size])
@@ -20,6 +22,7 @@ def test_build_model(char_vocab, hidden_size, n_domain_type, n_layers, expected_
     builder = RNNClassifierBuilder(char_vocab, hidden_size, n_domain_type, n_layers)
     actual_module = builder.build_model().module.__module__
     assert actual_module == expected_module
+
 
 @pytest.mark.parametrize("model_filepath", [model_filepath])
 @pytest.mark.parametrize("expected_module", [expected_module])

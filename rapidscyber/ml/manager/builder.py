@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
 import logging
-from abc import ABC, abstractmethod, abstractclassmethod
+from abc import ABC, abstractmethod
 
 log = logging.getLogger("Builder")
+
 
 class Builder(ABC):
     @abstractmethod
@@ -13,7 +14,7 @@ class Builder(ABC):
     @abstractmethod
     def load_model(self):
         pass
-    
+
     @staticmethod
     def parallelize(model):
         gpu_count = torch.cuda.device_count()

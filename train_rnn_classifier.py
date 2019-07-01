@@ -16,9 +16,12 @@ def train(epoch, rnn_classifier_service):
     for iter in range(1, epoch + 1):
         model, total_loss = rnn_classifier_service.train_model(iter)
         now = datetime.now()
-        output_file = './rapidscyber/trained_models/rnn_classifier_{}.pth'.format(now.strftime('%Y-%m-%d_%H_%M_%S'))
+        output_file = "./rapidscyber/trained_models/rnn_classifier_{}.pth".format(
+            now.strftime("%Y-%m-%d_%H_%M_%S")
+        )
         log.info("saving model to file: %s" % (output_file))
         torch.save(model, output_file)
+
 
 def main():
 
@@ -42,13 +45,11 @@ def main():
     model = builder.build_model()
     optimizer = torch.optim.RMSprop(model.parameters(), lr=0.001, weight_decay=0.0)
     criterion = nn.CrossEntropyLoss()
-    rnn_classifier_service = RNNClassifierService(model,
-                                             optimizer,
-                                             criterion,
-                                             train_loader=train_loader,
-                                             b_size=b_size
-                                             )
+    rnn_classifier_service = RNNClassifierService(
+        model, optimizer, criterion, train_loader=train_loader, b_size=b_size
+    )
     train(epoch, rnn_classifier_service)
+
 
 def load_data(data_filepath):
     try:
@@ -57,7 +58,7 @@ def load_data(data_filepath):
             rows = list(reader)
         return rows
     except:
-        log.error('Error occured while reading a file.')
+        log.error("Error occured while reading a file.")
         raise
 
 
