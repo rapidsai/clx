@@ -1,6 +1,7 @@
 import glob
 import os
 import logging
+import torch
 import torch.nn as nn
 from rapidscyber.workflow.workflow import Workflow
 from rapidscyber.ml.manager.rnn_classifier_service import RNNClassifierService
