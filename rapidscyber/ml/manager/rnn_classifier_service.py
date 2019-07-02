@@ -61,7 +61,7 @@ class RNNClassifierService:
     def predict(self, domains):
         type_ids = []
         for domain in domains:
-            input, seq_lengths, target = self.make_variables(domain, [])
+            input, seq_lengths, target = self.make_variables([domain], [])
             output = self.__classifier(input, seq_lengths)
             type_id = self.get_type_id(output)
             if type_id == 1:
