@@ -28,7 +28,7 @@ def test_netflow_workflow():
             ("orig_ip_bytes", ["80"]),
             ("resp_pkts", ["0"]),
             ("resp_ip_bytes", ["0"]),
-            ("domain", ["test.com"]),
+            ("domain", ["fbgfbfgb"]),
             ("tunnel_parents", ["-"]),
         ]
     )
@@ -55,7 +55,7 @@ def test_netflow_workflow():
             ("orig_ip_bytes", ["80"]),
             ("resp_pkts", ["0"]),
             ("resp_ip_bytes", ["0"]),
-            ("domain", ["test.com"]),
+            ("domain", ["fbgfbfgb"]),
             ("tunnel_parents", ["-"]),
             ("prediction", [0]),
         ]

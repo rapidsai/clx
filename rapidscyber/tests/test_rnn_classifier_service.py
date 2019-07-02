@@ -1,3 +1,4 @@
+import os
 import pytest
 import torch
 from mockito import when, mock, verify
@@ -7,7 +8,7 @@ from torch.utils.data import DataLoader
 
 
 input_rows = [
-    ["movierulz.com", "1"],
+    ["cnn.com", "1"],
     ["studytour.com.tw", "1"],
     ["bankmobile.com", "1"],
     ["bakercityherald.com", "0"],
@@ -15,6 +16,8 @@ input_rows = [
 dataset = DGADataset()
 dataset.set_attributes(input_rows)
 data_loader = DataLoader(dataset=dataset, batch_size=2, shuffle=True)
+
+model_filepath = "%s/input/rnn_classifier_2019-07-01_17_01_39.pth" % os.path.dirname(os.path.realpath(__file__))
 
 model = mock()
 optimizer = mock()
@@ -33,14 +36,16 @@ def test_train_model(model, optimizer, criterion, data_loader):
     service.train_model(1)
     verify(service.classifier, times=2).zero_grad()
 
-
-@pytest.mark.parametrize("model", [model])
+@pytest.mark.parametrize("model_filepath", [model_filepath])
 @pytest.mark.parametrize("optimizer", [optimizer])
 @pytest.mark.parametrize("criterion", [criterion])
-def test_predict(model, optimizer, criterion):
+def test_predict(model_filepath, optimizer, criterion):
+    model = torch.load(model_filepath)
+    model.eval()
+    if torch.cuda.is_available():
+       model.cuda()
     service = RNNClassifierService(model, optimizer, criterion)
-    when(service).get_type_id(...).thenReturn(1)
-    domains = ["nvidia.com", "google.com"]
+    domains = ["nvidia.com", "dfsdfsdf"]
     actual = service.predict(domains)
-    expected = [1, 1]
+    expected = [1,0]
     assert actual == expected

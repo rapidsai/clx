@@ -1,3 +1,4 @@
+import time
 import torch
 import logging
 from rapidscyber.ml.model.rnn_classifier import RNNClassifier
@@ -52,22 +53,22 @@ class RNNClassifierService:
                 )
         return self.__classifier, total_loss
 
-    def get_type_id(self, output):
-        pred = output.data.max(1, keepdim=True)[1]
-        type_id = pred.cpu().numpy()[0][0]
-        return type_id
-
-    # Inference
-    def predict(self, domains):
+    def get_type_ids(self, output):
         type_ids = []
-        for domain in domains:
-            input, seq_lengths, target = self.make_variables([domain], [])
-            output = self.__classifier(input, seq_lengths)
-            type_id = self.get_type_id(output)
+        pred = output.data.max(1, keepdim=True)[1]
+        for elm in pred.cpu().numpy():
+            type_id = elm[0]
             if type_id == 1:
                 type_ids.append(type_id)
             else:
                 type_ids.append(0)
+        return type_ids
+
+    # Inference
+    def predict(self, domains):
+        input, seq_lengths, target = self.make_variables(domains, [])
+        output = self.__classifier(input, seq_lengths)
+        type_ids = self.get_type_ids(output)
         return type_ids
 
     def make_variables(self, domains, types):
@@ -113,3 +114,4 @@ class RNNClassifierService:
     def str2ascii_arr(self, msg):
         arr = [ord(c) for c in msg]
         return arr, len(arr)
+

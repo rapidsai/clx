@@ -7,7 +7,7 @@ char_vocab = 128
 hidden_size = 100
 n_domain_type = 2
 n_layers = 3
-model_filepath = "%s/input/rnn_classifier_2019-06-28_18_12_35.pth" % os.path.dirname(
+model_filepath = "%s/input/rnn_classifier_2019-07-01_17_01_39.pth" % os.path.dirname(
     os.path.realpath(__file__)
 )
 expected_module = "rapidscyber.ml.model.rnn_classifier"
