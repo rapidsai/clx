@@ -26,9 +26,12 @@ class RNNClassifierService:
     def criterion(self):
         return self.__criterion
 
-    def get_loss(self, output, target):
+    def get_item(self, output, target):
         loss = self.criterion(output, target)
-        return loss
+        self.classifier.zero_grad()
+        loss.backward()
+        self.optimizer.step() 
+        return loss.item()
 
     # Training
     def train_model(self, epoch):
@@ -37,11 +40,8 @@ class RNNClassifierService:
         for i, (domains, types) in enumerate(self.train_loader, 1):
             input, seq_lengths, target = self.make_variables(domains, types)
             output = self.classifier(input, seq_lengths)
-            loss = self.get_loss(output, target)
-            total_loss += loss.item()
-            self.classifier.zero_grad()
-            loss.backward()
-            self.optimizer.step()  
+            loss = self.get_item(output, target) 
+            total_loss += loss
             domains_len = len(domains)
             if i % 10 == 0:
                 print(
