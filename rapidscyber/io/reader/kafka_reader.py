@@ -1,6 +1,7 @@
 import logging
+import time
 
-from confluent_kafka import Consumer
+# import sys
 from confluent_kafka import KafkaError
 
 # KafkaReader class
@@ -32,8 +33,8 @@ class KafkaReader:
                 elif not msg.error():
                     data = msg.value().decode("utf-8")
                     if (
-                        rec_cnt < self._batch_size
-                        and (time.time() - current_time) < time_window
+                            rec_cnt < self._batch_size
+                            and (time.time() - current_time) < time_window
                     ):
                         events.append(data)
                         rec_cnt += 1
@@ -48,13 +49,18 @@ class KafkaReader:
             df = cudf.dataframe.DataFrame()
             df["Raw"] = events
             return df
-        except:
-            logging.error("closing kafka consumer...")
+        except KeyboardInterrupt:
             self.close_consumer()
-            logging.error("closed kafka consumer...")
-            sys.stderr.write("%% Aborted by user\n")
-            logging.error("%% Aborted by user\n")
+            # sys.stderr.write("%% Aborted by user\n")
+            logging.warning("%% Aborted by user\n")
+        except:
+            logging.error("Error fetching data from kafka topic.")
+            raise
 
     def close_consumer(self):
+        logging.info("Closing kafka consumer...")
         if self.consumer is not None:
             self.consumer.close()
+            logging.info("Kafka consumer closed.")
+        else:
+            logging.warning("No kafka consumer is defined.")
