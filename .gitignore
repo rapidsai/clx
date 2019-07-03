@@ -1,0 +1,8 @@
+# Python
+__pycache__/
+.pytest_cache/
+# IDE
+.idea/
+# Test output
+rapidscyber/tests/output
+rapidscyber/tests/.config
