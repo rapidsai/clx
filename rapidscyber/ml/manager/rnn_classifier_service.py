@@ -17,6 +17,10 @@ class RNNClassifierService:
     @property
     def classifier(self):
         return self.__classifier
+    
+    @property
+    def optimizer(self):
+        return self.__optimizer
 
     @property
     def criterion(self):
@@ -24,22 +28,20 @@ class RNNClassifierService:
 
     def get_loss(self, output, target):
         loss = self.criterion(output, target)
-        item = loss.item()
-        loss.backward()
-        return item
+        return loss
 
     # Training
     def train_model(self, epoch):
         total_loss = 0
         train_loader_len = len(self.train_loader.dataset)
         for i, (domains, types) in enumerate(self.train_loader, 1):
-            log.info(domains)
-            log.info(types)
             input, seq_lengths, target = self.make_variables(domains, types)
-            output = self.__classifier(input, seq_lengths)
-            total_loss += self.get_loss(output, target)
-            self.__classifier.zero_grad()
-            self.__optimizer.step()
+            output = self.classifier(input, seq_lengths)
+            loss = self.get_loss(output, target)
+            total_loss += loss.item()
+            self.classifier.zero_grad()
+            loss.backward()
+            self.optimizer.step()  
             domains_len = len(domains)
             if i % 10 == 0:
                 print(
@@ -51,7 +53,7 @@ class RNNClassifierService:
                         total_loss / i * domains_len,
                     )
                 )
-        return self.__classifier, total_loss
+        return self.classifier, total_loss
 
     def get_type_ids(self, output):
         type_ids = []
@@ -67,7 +69,7 @@ class RNNClassifierService:
     # Inference
     def predict(self, domains):
         input, seq_lengths, target = self.make_variables(domains, [])
-        output = self.__classifier(input, seq_lengths)
+        output = self.classifier(input, seq_lengths)
         type_ids = self.get_type_ids(output)
         return type_ids
 
