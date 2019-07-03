@@ -34,7 +34,7 @@ def test_train_model(model, optimizer, criterion, data_loader):
     )
     when(service).get_item(..., ...).thenReturn(0.5)
     service.train_model(1)
-    # since given batch size is 2 and input record count 2 is four it calls classifier for 2 times.
+    # since given batch size is 2 and input record count is 4 it calls classifier for 2 times.
     verify(service.classifier, times=2)
 
 
