@@ -6,9 +6,8 @@ from rapidscyber.ml.model.rnn_classifier import RNNClassifier
 class DGADetector(AbstractDetector):
     def init_model(self, char_vocab=128, hidden_size=100, n_domain_type=2, n_layers=3):
         if self.model is None:
-            if self.model is None:
-                model = RNNClassifier(char_vocab, hidden_size, n_domain_type, n_layers)
-                self.leverage_model(model)
+            model = RNNClassifier(char_vocab, hidden_size, n_domain_type, n_layers)
+            self.leverage_model(model)
 
     # Training
     def train_model(self, epoch, data_loader):
