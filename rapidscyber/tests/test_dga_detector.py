@@ -1,6 +1,5 @@
 import os
 import pytest
-import torch
 from mockito import when, mock, verify
 from rapidscyber.ml.dataset_api.dga_dataset import DGADataset
 from rapidscyber.ml.provider.dga_detector import DGADetector

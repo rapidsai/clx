@@ -1,5 +1,4 @@
 import torch
-import torch.nn as nn
 from rapidscyber.ml.provider.abstract_detector import AbstractDetector
 from rapidscyber.ml.model.rnn_classifier import RNNClassifier
 

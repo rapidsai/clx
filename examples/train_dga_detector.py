@@ -1,8 +1,6 @@
 import csv
 import argparse
 import logging
-import torch
-import torch.nn as nn
 from datetime import datetime
 from rapidscyber.ml.provider.dga_detector import DGADetector
 from rapidscyber.ml.dataset_api.dga_dataset import DGADataset
