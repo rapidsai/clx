@@ -1,54 +1,40 @@
 import csv
-import torch
 import argparse
 import logging
+import torch
 import torch.nn as nn
 from datetime import datetime
-from rapidscyber.ml.manager.rnn_classifier_builder import RNNClassifierBuilder
-from rapidscyber.ml.manager.rnn_classifier_service import RNNClassifierService
+from rapidscyber.ml.provider.dga_detector import DGADetector
 from rapidscyber.ml.dataset_api.dga_dataset import DGADataset
 from torch.utils.data import DataLoader
 
-log = logging.getLogger("train_rnn_classifier")
+log = logging.getLogger("train_dga_detector")
 
 
-def train(epoch, rnn_classifier_service):
+def train(epoch, dd, data_loader):
     for iter in range(1, epoch + 1):
-        model, total_loss = rnn_classifier_service.train_model(iter)
+        dd.train_model(iter, data_loader)
         now = datetime.now()
-        output_file = "./rapidscyber/trained_models/rnn_classifier_{}.pth".format(
+        output_filepath = "./rapidscyber/trained_models/rnn_classifier_{}.pth".format(
             now.strftime("%Y-%m-%d_%H_%M_%S")
         )
-        log.info("saving model to file: %s" % (output_file))
-        torch.save(model, output_file)
+        log.info("saving model to filepath: %s" % (output_filepath))
+        dd.save_model(output_filepath)
 
 
 def main():
 
-    n_domain_type = 2
-    hidden_size = 100
-    n_layers = 3
-    char_vocab = 128
-    learning_rate = 0.001
-
     input_path = args["input_path"]
     b_size = int(args["batch_size"])
     epoch = int(args["epoch"])
-
     log.info("input_path : %s" % (input_path))
-    rows = load_data(input_path)
-    dataset = DGADataset()
-    dataset.set_attributes(rows)
-    train_loader = DataLoader(dataset=dataset, batch_size=b_size, shuffle=True)
 
-    builder = RNNClassifierBuilder(char_vocab, hidden_size, n_domain_type, n_layers)
-    model = builder.build_model()
-    optimizer = torch.optim.RMSprop(model.parameters(), lr=0.001, weight_decay=0.0)
-    criterion = nn.CrossEntropyLoss()
-    rnn_classifier_service = RNNClassifierService(
-        model, optimizer, criterion, train_loader=train_loader, b_size=b_size
-    )
-    train(epoch, rnn_classifier_service)
+    rows = load_data(input_path)
+    dataset = DGADataset(rows)
+    data_loader = DataLoader(dataset=dataset, batch_size=b_size, shuffle=True)
+    dd = DGADetector()
+    dd.init_model()
+    train(epoch, dd, data_loader)
 
 
 def load_data(data_filepath):

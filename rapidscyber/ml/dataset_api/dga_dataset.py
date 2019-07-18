@@ -2,11 +2,11 @@ from torch.utils.data import Dataset
 
 
 class DGADataset(Dataset):
-    def __init__(self):
-        self.domains = None
-        self.types = None
-        self.len = 0
-        self.type_list = None
+    def __init__(self, rows):
+        self.domains = [row[0] for row in rows]
+        self.types = [row[1] for row in rows]
+        self.len = len(self.types)
+        self.type_list = list(sorted(set(self.types)))
 
     def __getitem__(self, index):
         return self.domains[index], self.types[index]
@@ -19,9 +19,3 @@ class DGADataset(Dataset):
 
     def get_type(self, id):
         return self.type_list[id]
-
-    def set_attributes(self, rows):
-        self.domains = [row[0] for row in rows]
-        self.types = [row[1] for row in rows]
-        self.len = len(self.types)
-        self.type_list = list(sorted(set(self.types)))
