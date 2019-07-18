@@ -9,7 +9,5 @@ RUN source activate rapids \
     && cd /rapidscyber \
     && python setup.py install
 
-RUN echo "source activate rapids" > ~/.bashrc
-
 WORKDIR /rapidscyber
 CMD source activate rapids && sh /rapids/notebooks/utils/start-jupyter.sh
