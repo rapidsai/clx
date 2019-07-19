@@ -11,12 +11,15 @@ log = logging.getLogger("train_dga_detector")
 
 def train(epoch, dd, data_loader):
     for iter in range(1, epoch + 1):
-        dd.train_model(iter, data_loader)
+        print("*********")
+        print("Epoch: %s" % (iter))
+        print("*********")
+        dd.train_model(data_loader)
         now = datetime.now()
         output_filepath = "./rapidscyber/trained_models/rnn_classifier_{}.pth".format(
             now.strftime("%Y-%m-%d_%H_%M_%S")
         )
-        log.info("saving model to filepath: %s" % (output_filepath))
+        print("saving model to filepath: %s" % (output_filepath))
         dd.save_model(output_filepath)
 
 

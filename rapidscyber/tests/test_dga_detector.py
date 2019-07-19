@@ -42,7 +42,6 @@ def test_predict(dd):
 @pytest.mark.parametrize("data_loader", [data_loader])
 def test_train_model(dd, data_loader):
     model = mock()
-    total_loss = 1
-    when(dd).train_model(1, data_loader).thenReturn(model, 1)
-    dd.train_model(1, data_loader)
+    when(dd).train_model(data_loader).thenReturn(1)
+    dd.train_model(data_loader)
     verify(dd, times=2).model

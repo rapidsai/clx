@@ -4,10 +4,10 @@ import torch.nn as nn
 from abc import ABC, abstractmethod
 from rapidscyber.ml.model.rnn_classifier import RNNClassifier
 
-log = logging.getLogger("AbstractDetector")
+log = logging.getLogger("Detector")
 
 
-class AbstractDetector(ABC):
+class Detector(ABC):
     def __init__(self):
         self.__model = None
         self.__optimizer = None
@@ -41,28 +41,28 @@ class AbstractDetector(ABC):
         model = torch.load(file_path)
         model.eval()
         self.__model = model
-        self.__set_cuda()
+        self.__set_model2cuda()
         self.__set_optimizer()
 
     def save_model(self, file_path):
-        torch.save(self.__model, file_path)
+        torch.save(self.model, file_path)
 
     def __set_parallelism(self):
         gpu_count = torch.cuda.device_count()
         if gpu_count > 1:
             log.info("%s GPUs!" % (gpu_count))
-            self.__model = nn.DataParallel(self.__model)
-            self.__set_cuda()
+            self.__model = nn.DataParallel(self.model)
+            self.__set_model2cuda()
 
     def __set_optimizer(self):
         self.__optimizer = torch.optim.RMSprop(
-            self.__model.parameters(), lr=0.001, weight_decay=0.0
+            self.model.parameters(), lr=0.001, weight_decay=0.0
         )
 
-    def __set_cuda(self):
+    def __set_model2cuda(self):
         if torch.cuda.is_available():
             log.info("Setting cuda")
-            self.__model.cuda()
+            self.model.cuda()
 
     def leverage_model(self, model):
         self.__model = model
