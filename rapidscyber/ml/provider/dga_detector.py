@@ -50,7 +50,7 @@ class DGADetector(Detector):
         seq_tensor, seq_lengths, perm_idx = self.__pad_sequences(
             vectorized_seqs, seq_lengths
         )
-        if types is not None:
+        if (types and train_dataset) is not None:
             types_tensor = self.__types2tensor(types, train_dataset)
             if len(types):
                 types_tensor = types_tensor[perm_idx]
