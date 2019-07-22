@@ -2,6 +2,10 @@ version: '3'
 services:
   rapidscyber:
     build: .
+    ports:
+      - "8888:8888"
+      - "8787:8787"
+      - "8686:8686"
 
   #Below configurations were modified from: https://github.com/confluentinc/cp-docker-images/blob/5.2.2-post/examples/kafka-single-node/docker-compose.yml
   zookeeper:
