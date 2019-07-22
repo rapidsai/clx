@@ -10,7 +10,7 @@ to distinguish between the legitimate and DGA domain names.
 
 class DGADetector(Detector):
     """
-    This function instantiates a RNNClassifier model to train and also optimizes to scale it 
+    This function instantiates RNNClassifier model to train. And also optimizes to scale it 
     and keep running on parallelism. 
     """
     def init_model(self, char_vocab=128, hidden_size=100, n_domain_type=2, n_layers=3):
@@ -19,8 +19,8 @@ class DGADetector(Detector):
             self.leverage_model(model)
 
     """
-    This function is used for training RNNClassifier model with given training dataset 
-    and return total loss to determine accuracy.
+    This function is used for training RNNClassifier model with a given training dataset. 
+    It returns total loss to determine model prediction accuracy.
     """
     def train_model(self, data_loader):
         total_loss = 0
@@ -44,7 +44,7 @@ class DGADetector(Detector):
         return total_loss
 
     """
-    This function accepts one argument(array of domains) to classify domain names as benign/malicious and 
+    This function accepts array of domains as an argument to classify domain names as benign/malicious and 
     returns the learned label for each object in the array.
     Example: 
         detector.predict(['nvidia.com', 'asfnfdjds']) = [1,0]
