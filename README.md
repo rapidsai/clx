@@ -50,3 +50,15 @@ RAPIDSCyber and Kafka
 docker-compose up
 ```
 
+### Install from Source
+
+```aidl
+# Run tests
+pip install pytest
+pytest
+
+# Build and install
+python setup.py install
+```
+
+
