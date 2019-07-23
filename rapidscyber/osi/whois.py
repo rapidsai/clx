@@ -14,7 +14,7 @@ class WhoIsLookupClient(object):
     def __init__(self, sep=",", datetime_format="%m-%d-%Y %H:%M:%S"):
         self.sep = sep
         self.datetime_format = datetime_format
-    
+
     # Function to access parsed WHOIS data for a given domain
     def whois(self, domains, arr2str=True):
         result = []

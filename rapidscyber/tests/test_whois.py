@@ -72,4 +72,3 @@ def test_flatten_datetime_array(client, datetime_1, datetime_2):
         "updated_date": "05-17-2020 00:00:00,05-18-2020 00:00:00",
     }
     assert actual_output == expected_output
-

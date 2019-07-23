@@ -57,23 +57,19 @@ class FarsightLookupClient(object):
         if params:
             url += "?{0}".format(urllib.parse.urlencode(params))
         response = requests.get(url, headers=self.headers, proxies=self.proxy_args)
-        return self.__extract_response(response)
+        try:
+            response.raise_for_status()
+            self.__extract_response(response, res)
+        except requests.exceptions.HTTPError as e:
+            log.error("Error: " + str(e))
+        return res
 
     # convert response to json format.
-    def __extract_response(self, response):
-        res = []
+    def __extract_response(self, response, res):
         raw_result = response.text
-        status = response.status_code
-        if status == 200:
-            try:
-                for rec in raw_result.split("\n"):
-                    if rec.strip():
-                        res.append(json.loads(rec))
-            except (urllib.error.HTTPError, urllib.error.URLError) as e:
-                raise QueryError(str(e))
-        else:
-            log.error("Unsuccessful query: ", raw_result)
-        return res
+        for rec in raw_result.split("\n"):
+            if rec.strip():
+                res.append(json.loads(rec))
 
     # initialize proxy arguments.
     def __get_proxy_args(self, http_proxy, https_proxy):
@@ -83,7 +79,7 @@ class FarsightLookupClient(object):
         if https_proxy:
             proxy_args["https"] = https_proxy
         return proxy_args
-    
+
     # initialize query parameters
     def __get_params(self, before, after):
         params = {}
