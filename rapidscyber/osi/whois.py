@@ -21,9 +21,8 @@ class WhoIsLookupClient(object):
         for domain in domains:
             resp = self.__whois(domain)
             if arr2str:
-                resp_keys = resp.keys()
-                resp = self.flatten_str_array(resp, resp_keys)
-                resp = self.flatten_datetime_array(resp, resp_keys)
+                resp = self.flatten_str_array(resp)
+                resp = self.flatten_datetime_array(resp)
             result.append(resp)
         return result
 
@@ -31,16 +30,16 @@ class WhoIsLookupClient(object):
         response = whois.whois(domain)
         return response
 
-    def flatten_str_array(self, resp, resp_keys):
+    def flatten_str_array(self, resp):
         for key in self.str_arr_keys:
-            if key in resp_keys and isinstance(resp[key], list):
+            if key in resp.keys() and isinstance(resp[key], list):
                 resp[key] = self.sep.join(resp[key])
         return resp
 
-    def flatten_datetime_array(self, resp, resp_keys):
+    def flatten_datetime_array(self, resp):
         for key in self.datetime_arr_keys:
             values = []
-            if key in resp_keys:
+            if key in resp.keys():
                 if isinstance(resp[key], list):
                     for ts in resp[key]:
                         values.append(ts.strftime(self.datetime_format))

@@ -13,7 +13,6 @@ class DGADetector(Detector):
     This function instantiates RNNClassifier model to train. And also optimizes to scale it 
     and keep running on parallelism. 
     """
-
     def init_model(self, char_vocab=128, hidden_size=100, n_domain_type=2, n_layers=3):
         if self.model is None:
             model = RNNClassifier(char_vocab, hidden_size, n_domain_type, n_layers)
@@ -23,27 +22,25 @@ class DGADetector(Detector):
     This function is used for training RNNClassifier model with a given training dataset. 
     It returns total loss to determine model prediction accuracy.
     """
-
-    def train_model(self, gdf):
+    def train_model(self, data_loader):
         total_loss = 0
-        # dataset_len = len(data_loader.dataset)
-        input, seq_lengths, perm_idx = self.__create_variables(gdf["domains"])
-        types_tensor = self.__create_types_tensor(perm_idx, gdf)
-        model_result = self.model(input, seq_lengths)
-        loss = self.__get_loss(model_result, types_tensor)
-        total_loss += loss
-        domains_len = len(domains)
-        """
-        if i % 10 == 0:
-            print(
-                "[{}/{} ({:.0f}%)]\tLoss: {:.2f}".format(
-                    i * domains_len,
-                    dataset_len,
-                    100.0 * i * domains_len / dataset_len,
-                    total_loss / i * domains_len,
+        dataset_len = len(data_loader.dataset)
+        for i, (domains, types) in enumerate(data_loader, 1):
+            input, seq_lengths, perm_idx = self.__create_variables(domains)
+            types_tensor = self.__create_types_tensor(perm_idx, types=types, train_dataset=data_loader.dataset)
+            model_result = self.model(input, seq_lengths)
+            loss = self.__get_loss(model_result, types_tensor)
+            total_loss += loss
+            domains_len = len(domains)
+            if i % 10 == 0:
+                print(
+                    "[{}/{} ({:.0f}%)]\tLoss: {:.2f}".format(
+                        i * domains_len,
+                        dataset_len,
+                        100.0 * i * domains_len / dataset_len,
+                        total_loss / i * domains_len,
+                    )
                 )
-            )
-        """
         return total_loss
 
     """
@@ -52,7 +49,6 @@ class DGADetector(Detector):
     Example: 
         detector.predict(['nvidia.com', 'asfnfdjds']) = [1,0]
     """
-
     def predict(self, domains):
         input, seq_lengths, perm_idx = self.__create_variables(domains)
         model_result = self.model(input, seq_lengths)
@@ -66,15 +62,16 @@ class DGADetector(Detector):
             vectorized_seqs, seq_lengths
         )
         return seq_tensor, seq_lengths, perm_idx
-
+    
     # Create types tensor variable and sorts in the same order of sequence tensor
-    def __create_types_tensor(self, perm_idx, gdf):
-        types_tensor = self.__types2tensor(types, gdf["types"])
-        if len(types):
-            types_tensor = types_tensor[perm_idx]
-        if torch.cuda.is_available():
-            types_tensor = self.__set_var2cuda(types_tensor)
-        return types_tensor
+    def __create_types_tensor(self, perm_idx, types=None, train_dataset=None):
+        if (types and train_dataset) is not None:
+            types_tensor = self.__types2tensor(types, train_dataset)
+            if len(types):
+                types_tensor = types_tensor[perm_idx]
+            if torch.cuda.is_available():
+                types_tensor = self.__set_var2cuda(types_tensor)
+            return types_tensor
 
     def __vectorize_seqs(self, domains):
         sequence_and_length = [self.__str2ascii_arr(domain) for domain in domains]
@@ -82,6 +79,7 @@ class DGADetector(Detector):
         seq_lengths = torch.LongTensor([sl[1] for sl in sequence_and_length])
         return vectorized_seqs, seq_lengths
 
+    
     def __pad_sequences(self, vectorized_seqs, seq_lengths):
         seq_tensor = torch.zeros((len(vectorized_seqs), seq_lengths.max())).long()
         for idx, (seq, seq_len) in enumerate(zip(vectorized_seqs, seq_lengths)):
@@ -94,7 +92,7 @@ class DGADetector(Detector):
         if torch.cuda.is_available():
             seq_tensor = self.__set_var2cuda(seq_tensor)
             seq_lengths = self.__set_var2cuda(seq_lengths)
-
+            
         return seq_tensor, seq_lengths, perm_idx
 
     def __str2ascii_arr(self, msg):
@@ -127,3 +125,4 @@ class DGADetector(Detector):
     # Set variable to cuda.
     def __set_var2cuda(self, tensor):
         return tensor.cuda()
+        
