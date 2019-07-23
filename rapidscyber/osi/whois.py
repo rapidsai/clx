@@ -11,10 +11,11 @@ class WhoIsLookupClient(object):
     str_arr_keys = ["domain_name", "name_servers", "status", "emails", "dnssec"]
     datetime_arr_keys = ["creation_date", "updated_date", "expiration_date"]
 
-    def __init__(self, sep=",", time_format="%m-%d-%Y %H:%M:%S"):
+    def __init__(self, sep=",", datetime_format="%m-%d-%Y %H:%M:%S"):
         self.sep = sep
-        self.time_format = time_format
-
+        self.datetime_format = datetime_format
+    
+    # Function to access parsed WHOIS data for a given domain
     def whois(self, domains, arr2str=True):
         result = []
         for domain in domains:
@@ -40,9 +41,9 @@ class WhoIsLookupClient(object):
             values = []
             if key in resp.keys():
                 if isinstance(resp[key], list):
-                    for elm in resp[key]:
-                        values.append(elm.strftime(self.time_format))
+                    for ts in resp[key]:
+                        values.append(ts.strftime(self.datetime_format))
                     resp[key] = self.sep.join(values)
                 else:
-                    resp[key] = resp[key].strftime(self.time_format)
+                    resp[key] = resp[key].strftime(self.datetime_format)
         return resp

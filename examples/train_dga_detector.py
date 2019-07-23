@@ -1,20 +1,22 @@
+import cudf
 import csv
 import argparse
 import logging
+import torch.utils.dlpack as dlpack
 from datetime import datetime
 from rapidscyber.ml.provider.dga_detector import DGADetector
 from rapidscyber.ml.dataset_api.dga_dataset import DGADataset
-from torch.utils.data import DataLoader
+from rapidscyber.io.reader.fs_reader import FileSystemReader
 
 log = logging.getLogger("train_dga_detector")
 
 
-def train(epoch, dd, data_loader):
+def train(epoch, dd, gdf):
     for iter in range(1, epoch + 1):
         print("*********")
         print("Epoch: %s" % (iter))
         print("*********")
-        dd.train_model(data_loader)
+        dd.train_model(gdf)
         now = datetime.now()
         output_filepath = "./rapidscyber/trained_models/rnn_classifier_{}.pth".format(
             now.strftime("%Y-%m-%d_%H_%M_%S")
@@ -30,23 +32,25 @@ def main():
     epoch = int(args["epoch"])
     log.info("input_path : %s" % (input_path))
 
-    rows = load_data(input_path)
-    dataset = DGADataset(rows)
-    data_loader = DataLoader(dataset=dataset, batch_size=b_size, shuffle=True)
     dd = DGADetector()
     dd.init_model()
-    train(epoch, dd, data_loader)
+    gdf = load_input(input_path)
+    train(epoch, dd, gdf)
 
 
-def load_data(data_filepath):
-    try:
-        with open(data_filepath, "rt") as f:
-            reader = csv.reader(f)
-            rows = list(reader)
-        return rows
-    except:
-        log.error("Error occured while reading a file.")
-        raise
+def load_input(input_path):
+    config = {
+        "input_path": input_path,
+        "schema": ["domain", "types"],
+        "delimiter": ",",
+        "required_cols": ["domains", "types"],
+        "dtype": ["str", "int"],
+        "header": 0,
+        "input_format": "text",
+    }
+    reader = FileSystemReader(config)
+    gdf = reader.fetch_data()
+    return gdf
 
 
 def parse_cmd_args():

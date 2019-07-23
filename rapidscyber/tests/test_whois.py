@@ -35,13 +35,13 @@ def test_flatten_str_array(client, datetime_1, datetime_2):
         ],
     }
     actual_output = client.flatten_str_array(response)
-    epxpected_output = {
+    expected_output = {
         "domain_name": "NVIDIA.COM",
         "registrar": "Safenames Ltd",
         "emails": "abuse@safenames.net,wadmpfvzi5ei@idp.email,hostmaster@safenames.net",
         "updated_date": [datetime_1, datetime_2],
     }
-    assert actual_output == epxpected_output
+    assert actual_output == expected_output
 
 
 @pytest.mark.parametrize("client", [client])
@@ -59,7 +59,7 @@ def test_flatten_datetime_array(client, datetime_1, datetime_2):
         "updated_date": [datetime_1, datetime_2],
     }
     actual_output = client.flatten_datetime_array(response)
-    epxpected_output = {
+    expected_output = {
         "domain_name": "NVIDIA.COM",
         "registrar": "Safenames Ltd",
         "emails": [
@@ -69,4 +69,4 @@ def test_flatten_datetime_array(client, datetime_1, datetime_2):
         ],
         "updated_date": "05-17-2020 00:00:00,05-18-2020 00:00:00",
     }
-    assert actual_output == epxpected_output
+    assert actual_output == expected_output

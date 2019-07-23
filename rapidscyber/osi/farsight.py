@@ -18,7 +18,7 @@ class FarsightLookupClient(object):
         self.limit = limit
         self.proxy_args = self.__get_proxy_args(http_proxy, https_proxy)
 
-    # This a batch version of querying DNSDB by given oname and time ranges.
+    # batch version of querying DNSDB by given domain name and time ranges.
     def query_rrset(self, oname, rrtype=None, bailiwick=None, before=None, after=None):
         quoted_name = self.__quote(oname)
         if bailiwick:
@@ -35,7 +35,7 @@ class FarsightLookupClient(object):
             path = "rrset/name/%s" % quoted_name
         return self.__query(path, before, after)
 
-    # Query matches only a single DNSDB record of given oname and time ranges.
+    # query matches only a single DNSDB record of given oname and time ranges.
     def query_rdata_name(self, rdata_name, rrtype=None, before=None, after=None):
         quoted_name = self.__quote(rdata_name)
         if rrtype:
@@ -49,6 +49,7 @@ class FarsightLookupClient(object):
         path = "rdata/ip/%s" % rdata_ip.replace("/", ",")
         return self.__query(path, before, after)
 
+    # queries dnsdb.
     def __query(self, path, before=None, after=None):
         res = []
         url = "%s/lookup/%s" % (self.server, path)
@@ -58,6 +59,7 @@ class FarsightLookupClient(object):
         response = requests.get(url, headers=self.headers, proxies=self.proxy_args)
         return self.__extract_response(response)
 
+    # convert response to json format.
     def __extract_response(self, response):
         res = []
         raw_result = response.text
@@ -73,6 +75,7 @@ class FarsightLookupClient(object):
             log.error("Unsuccessful query: ", raw_result)
         return res
 
+    # initialize proxy arguments.
     def __get_proxy_args(self, http_proxy, https_proxy):
         proxy_args = {}
         if http_proxy:
@@ -80,7 +83,8 @@ class FarsightLookupClient(object):
         if https_proxy:
             proxy_args["https"] = https_proxy
         return proxy_args
-
+    
+    # initialize query parameters
     def __get_params(self, before, after):
         params = {}
         if self.limit:
