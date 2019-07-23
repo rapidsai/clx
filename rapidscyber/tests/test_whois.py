@@ -34,7 +34,8 @@ def test_flatten_str_array(client, datetime_1, datetime_2):
             datetime.datetime(2020, 5, 18),
         ],
     }
-    actual_output = client.flatten_str_array(response)
+    resp_keys = response.keys()
+    actual_output = client.flatten_str_array(response, resp_keys)
     expected_output = {
         "domain_name": "NVIDIA.COM",
         "registrar": "Safenames Ltd",
@@ -58,7 +59,8 @@ def test_flatten_datetime_array(client, datetime_1, datetime_2):
         ],
         "updated_date": [datetime_1, datetime_2],
     }
-    actual_output = client.flatten_datetime_array(response)
+    resp_keys = response.keys()
+    actual_output = client.flatten_datetime_array(response, resp_keys)
     expected_output = {
         "domain_name": "NVIDIA.COM",
         "registrar": "Safenames Ltd",
