@@ -1,16 +1,31 @@
-from abc import ABC, abstractmethod
-import os
-from rapidscyber.io.factory.factory import Factory
+import functools
 import logging
+import os
+import time
 import yaml
+from rapidscyber.io.factory.factory import Factory
+from abc import ABC, abstractmethod
 
 log = logging.getLogger("Workflow")
-
 
 class Workflow(ABC):
 
     DEFAULT_CONFIG_PATH = "/.config/rapidscyber"
     BACKUP_CONFIG_PATH = "/etc/rapidscyber/"
+
+    def benchmark(function):
+        """ 
+           Decorator used to capture a benchmark for a given function
+        """
+        @functools.wraps(function)
+        def wrapper(self, *args, **kwargs):
+            start = time.time()
+            ret =  function(self, *args, **kwargs)
+            end = time.time()
+            runtime = end - start
+            log.info(f"Workflow benchmark for function {function.__name__!r}: {runtime:.4f} seconds")
+            return ret
+        return wrapper
 
     def __init__(self, name, source=None, destination=None):
         # Initialize properties
@@ -92,6 +107,7 @@ class Workflow(ABC):
         """TODO: Private helper function that fetches a specific parser based upon configuration"""
         pass
 
+    @benchmark
     def run_workflow(self):
         log.info("Running workflow {0}.".format(self.name))
         try:
