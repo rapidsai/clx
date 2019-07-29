@@ -3,9 +3,11 @@ import os
 import pytest
 import yaml
 from rapidscyber.workflow.workflow import Workflow
+from mockito import mock
 
 
 class TestWorkflowImpl(Workflow):
+    @Workflow.benchmark
     def workflow(self, dataframe):
         dataframe["enriched"] = "enriched"
         return dataframe
@@ -119,6 +121,22 @@ def test_workflow_config_error(mock_env_home, set_workflow_config):
     with pytest.raises(Exception):
         test_workflow = TestWorkflowImpl(workflow_name)
 
+@pytest.mark.parametrize("input_path", [input_path])
+@pytest.mark.parametrize("output_path", [output_path_param_test])
+def test_benchmark_decorator(mock_env_home, set_workflow_config, input_path, output_path):
+    func = mock()
+    benchmarked_func = Workflow.benchmark(func)
+
+    source = set_workflow_config[1]
+    destination = set_workflow_config[2]
+    source["input_path"] = input_path
+    destination["output_path"] = output_path
+    # Create new workflow with source and destination configurations
+    test_workflow = TestWorkflowImpl(
+        source=source, destination=destination, name="test-workflow"
+    )
+    benchmarked_func(test_workflow.run_workflow())
+    assert not func.called
 
 def write_config_file(workflow_config, workflow_name):
     """Helper function to write workflow.yaml configuration file"""
