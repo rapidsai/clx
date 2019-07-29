@@ -24,8 +24,7 @@ class Workflow(ABC):
             ret =  function(self, *args, **kwargs)
             end = time.time()
             runtime = end - start
-            log.info(f"Workflow benchmark for function {function.__name__!r}: {rr
-            untime:.4f} seconds")
+            log.info(f"Workflow benchmark for function {function.__name__!r}: {runtime:.4f} seconds")
             return ret
         return wrapper
 
@@ -36,8 +35,8 @@ class Workflow(ABC):
         self._name = name
 
         # Check to see if workflow yaml file exists. If so, set workflow configurations from file.
-        default_filepath = _get_default_filepath(name)
-        backup_filepath = _get_backup_filepath(name)
+        default_filepath = self._get_default_filepath(name)
+        backup_filepath = self._get_backup_filepath(name)
         if os.path.exists(default_filepath):
             log.info("Config file detected: {0}".format(default_filepath))
             self._set_workflow_config(default_filepath)
@@ -59,12 +58,13 @@ class Workflow(ABC):
 
     def _get_default_filepath(self, workflow_name):
         home_dir = os.getenv("HOME")
-        default_sub_dir = home_dir + self.DEFAULT_CONFIG_PATH
-        default_filepath = "{home_dir}/{default_sub_dir}/{workflow_name}/{filename}".format(home_dir=home_dir, default_sub_dir=default_sub_dir, workflow_name=workflow_name, filename=self.CONFIG_FILE_NAME)
+        default_filepath = "{home_dir}/{default_sub_dir}/{workflow_name}/{filename}".format(home_dir=home_dir, default_sub_dir=self.DEFAULT_CONFIG_PATH, workflow_name=workflow_name, filename=self.CONFIG_FILE_NAME)
+        log.info("default filepath:" + default_filepath)
         return default_filepath
 
     def _get_backup_filepath(self, workflow_name):
-        backup_filepath = "{backup_dir}/{workflow_name}/{file_name}".format(self.BACKUP_CONFIG_PATH, workflow_name, self.CONFIG_FILE_NAME)
+        backup_filepath = "{backup_dir}/{workflow_name}/{filename}".format(backup_dir=self.BACKUP_CONFIG_PATH, workflow_name=workflow_name, filename=self.CONFIG_FILE_NAME)
+        log.info("backup filepath:" + backup_filepath)
         return backup_filepath
 
     def _set_workflow_config(self, yaml_file):
@@ -116,7 +116,6 @@ class Workflow(ABC):
         """TODO: Private helper function that fetches a specific parser based upon configuration"""
         pass
 
-    @benchmark
     def run_workflow(self):
         log.info("Running workflow {0}.".format(self.name))
         try:

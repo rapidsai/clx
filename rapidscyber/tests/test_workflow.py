@@ -3,24 +3,19 @@ import os
 import pytest
 import yaml
 from rapidscyber.workflow.workflow import Workflow
-from mockito import mock
-
+from mockito import spy,verify
+from cudf import DataFrame
 
 class TestWorkflowImpl(Workflow):
     def workflow(self, dataframe):
-        enriched_df = self.helper_function(dataframe)
-        return enriched_df
-
-    @Workflow.benchmark
-    def helper_function(self, dataframe):
         dataframe["enriched"] = "enriched"
-
+        return dataframe
 
 dirname = os.path.split(os.path.abspath(__file__))[0]
 input_path = dirname + "/input/person.csv"
 output_path_param_test = dirname + "/output/output_parameters.csv"
+output_path_benchmark_test = dirname + "/output/output_benchmark.csv"
 output_path_config_test = dirname + "/output/output_config.csv"
-
 
 @pytest.fixture
 def set_workflow_config():
@@ -125,9 +120,11 @@ def test_workflow_config_error(mock_env_home, set_workflow_config):
         test_workflow = TestWorkflowImpl(workflow_name)
 
 @pytest.mark.parametrize("input_path", [input_path])
-@pytest.mark.parametrize("output_path", [output_path_param_test])
+@pytest.mark.parametrize("output_path", [output_path_benchmark_test])
 def test_benchmark_decorator(mock_env_home, set_workflow_config, input_path, output_path):
-    func = mock()
+    #Dummy function
+    def func(self):
+       return DataFrame()
     benchmarked_func = Workflow.benchmark(func)
 
     source = set_workflow_config[1]
@@ -135,11 +132,13 @@ def test_benchmark_decorator(mock_env_home, set_workflow_config, input_path, out
     source["input_path"] = input_path
     destination["output_path"] = output_path
     # Create new workflow with source and destination configurations
-    test_workflow = TestWorkflowImpl(
+    tb = spy(TestWorkflowImpl(
         source=source, destination=destination, name="test-workflow"
-    )
-    benchmarked_func(test_workflow.run_workflow())
-    assert not func.called
+    ))
+    benchmarked_func(tb.run_workflow)
+    
+    #Verify that run_workflow was not called, instead expect that benchmark wrapper function will be called
+    verify(tb, times=0).run_workflow(...)
 
 def write_config_file(workflow_config, workflow_name):
     """Helper function to write workflow.yaml configuration file"""
