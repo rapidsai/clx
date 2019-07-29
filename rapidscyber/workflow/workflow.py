@@ -14,23 +14,8 @@ class Workflow(ABC):
     BACKUP_CONFIG_PATH = "/etc/rapidscyber/"
     CONFIG_FILE_NAME = "workflow.yaml"
 
-    class benchmark:
-        def __init__(self, func):
-            functools.update_wrapper(self, func)
-            self.func = func
-
-        def __call__(self, *args, **kwargs):
-            """
-                Used to time other functions
-            """
-            start = time.time()
-            end = time.time()
-            runtime = end - start
-            logging.info(f"Benchmark for {self.func.__name__!r}: {run_time:.4f} secs")
-            return self.func(*args, **kwargs)
-
     def benchmark(function):
-        """ 
+        """
            Decorator used to capture a benchmark for a given function
         """
         @functools.wraps(function)
@@ -39,7 +24,8 @@ class Workflow(ABC):
             ret =  function(self, *args, **kwargs)
             end = time.time()
             runtime = end - start
-            log.info(f"Workflow benchmark for function {function.__name__!r}: {runtime:.4f} seconds")
+            log.info(f"Workflow benchmark for function {function.__name__!r}: {rr
+            untime:.4f} seconds")
             return ret
         return wrapper
 
