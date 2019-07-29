@@ -3,11 +3,10 @@ import logging
 import os
 import time
 import yaml
-from abc import ABC, abstractmethod
 from rapidscyber.io.factory.factory import Factory
+from abc import ABC, abstractmethod
 
 log = logging.getLogger("Workflow")
-
 
 class Workflow(ABC):
 
@@ -29,6 +28,20 @@ class Workflow(ABC):
             runtime = end - start
             logging.info(f"Benchmark for {self.func.__name__!r}: {run_time:.4f} secs")
             return self.func(*args, **kwargs)
+
+    def benchmark(function):
+        """ 
+           Decorator used to capture a benchmark for a given function
+        """
+        @functools.wraps(function)
+        def wrapper(self, *args, **kwargs):
+            start = time.time()
+            ret =  function(self, *args, **kwargs)
+            end = time.time()
+            runtime = end - start
+            log.info(f"Workflow benchmark for function {function.__name__!r}: {runtime:.4f} seconds")
+            return ret
+        return wrapper
 
     def __init__(self, name, source=None, destination=None):
         # Initialize properties
@@ -58,7 +71,6 @@ class Workflow(ABC):
                 self._destination["type"], self._destination
             )
 
-    @w
     def _get_default_filepath(self, workflow_name):
         home_dir = os.getenv("HOME")
         default_sub_dir = home_dir + self.DEFAULT_CONFIG_PATH
