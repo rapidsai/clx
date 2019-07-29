@@ -1,8 +1,10 @@
-from abc import ABC, abstractmethod
-import os
-from rapidscyber.io.factory.factory import Factory
+import functools
 import logging
+import os
+import time
 import yaml
+from abc import ABC, abstractmethod
+from rapidscyber.io.factory.factory import Factory
 
 log = logging.getLogger("Workflow")
 
@@ -11,6 +13,22 @@ class Workflow(ABC):
 
     DEFAULT_CONFIG_PATH = "/.config/rapidscyber"
     BACKUP_CONFIG_PATH = "/etc/rapidscyber/"
+    CONFIG_FILE_NAME = "workflow.yaml"
+
+    class benchmark:
+        def __init__(self, func):
+            functools.update_wrapper(self, func)
+            self.func = func
+
+        def __call__(self, *args, **kwargs):
+            """
+                Used to time other functions
+            """
+            start = time.time()
+            end = time.time()
+            runtime = end - start
+            logging.info(f"Benchmark for {self.func.__name__!r}: {run_time:.4f} secs")
+            return self.func(*args, **kwargs)
 
     def __init__(self, name, source=None, destination=None):
         # Initialize properties
@@ -19,11 +37,8 @@ class Workflow(ABC):
         self._name = name
 
         # Check to see if workflow yaml file exists. If so, set workflow configurations from file.
-        config_file = "{0}/{1}/workflow.yaml"
-        home_dir = os.getenv("HOME")
-        default_dir = home_dir + self.DEFAULT_CONFIG_PATH
-        default_filepath = config_file.format(default_dir, name)
-        backup_filepath = config_file.format(self.BACKUP_CONFIG_PATH, name)
+        default_filepath = _get_default_filepath(name)
+        backup_filepath = _get_backup_filepath(name)
         if os.path.exists(default_filepath):
             log.info("Config file detected: {0}".format(default_filepath))
             self._set_workflow_config(default_filepath)
@@ -42,6 +57,17 @@ class Workflow(ABC):
             self._io_writer = Factory.get_writer(
                 self._destination["type"], self._destination
             )
+
+    @w
+    def _get_default_filepath(self, workflow_name):
+        home_dir = os.getenv("HOME")
+        default_sub_dir = home_dir + self.DEFAULT_CONFIG_PATH
+        default_filepath = "{home_dir}/{default_sub_dir}/{workflow_name}/{filename}".format(home_dir=home_dir, default_sub_dir=default_sub_dir, workflow_name=workflow_name, filename=self.CONFIG_FILE_NAME)
+        return default_filepath
+
+    def _get_backup_filepath(self, workflow_name):
+        backup_filepath = "{backup_dir}/{workflow_name}/{file_name}".format(self.BACKUP_CONFIG_PATH, workflow_name, self.CONFIG_FILE_NAME)
+        return backup_filepath
 
     def _set_workflow_config(self, yaml_file):
         # Receives a yaml file path with Workflow configurations and sets appropriate values for properties in this class
@@ -92,6 +118,7 @@ class Workflow(ABC):
         """TODO: Private helper function that fetches a specific parser based upon configuration"""
         pass
 
+    @benchmark
     def run_workflow(self):
         log.info("Running workflow {0}.".format(self.name))
         try:
