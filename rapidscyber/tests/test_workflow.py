@@ -7,10 +7,13 @@ from mockito import mock
 
 
 class TestWorkflowImpl(Workflow):
-    @Workflow.benchmark
     def workflow(self, dataframe):
+        enriched_df = self.helper_function(dataframe)
+        return enriched_df
+
+    @Workflow.benchmark
+    def helper_function(self, dataframe):
         dataframe["enriched"] = "enriched"
-        return dataframe
 
 
 dirname = os.path.split(os.path.abspath(__file__))[0]
