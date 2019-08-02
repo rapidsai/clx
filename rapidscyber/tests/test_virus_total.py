@@ -1,7 +1,7 @@
 import os
 import pytest
 import requests
-from mockito import when, mock, verify
+from mockito import when, mock
 from rapidscyber.osi.virus_total import VirusTotalClient
 
 api_key = "dummy-api-key"
