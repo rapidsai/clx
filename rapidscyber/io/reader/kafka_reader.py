@@ -53,7 +53,7 @@ class KafkaReader(Reader):
             return df
         except:
             logging.error("Error fetching data from kafka")
-            self.close_consumer()
+            self.close()
 
     def close(self):
         logging.info("Closing kafka reader...")
