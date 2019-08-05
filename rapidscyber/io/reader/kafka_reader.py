@@ -1,3 +1,4 @@
+import cudf
 import logging
 import time
 from confluent_kafka import KafkaError
