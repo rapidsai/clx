@@ -1,17 +1,29 @@
 import pytest
 import datetime
 from rapidscyber.osi.whois import WhoIsLookupClient
+from mockito import when, mock
 
 
-domains = ["nvidia.com", "google.com"]
+domains = ["nvidia.com"]
 datetime_1 = datetime.datetime(2020, 5, 17)
 datetime_2 = datetime.datetime(2020, 5, 18)
 client = WhoIsLookupClient()
+
+response_dict = {
+    "domain_name": "NVIDIA.COM",
+    "registrar": "Safenames Ltd",
+    "emails": [
+        "abuse@safenames.net",
+        "wadmpfvzi5ei@idp.email",
+        "hostmaster@safenames.net",
+    ],
+}
 
 
 @pytest.mark.parametrize("client", [client])
 @pytest.mark.parametrize("domains", [domains])
 def test_whois(client, domains):
+    when(client).request_server(...).thenReturn(response_dict)
     result = client.whois(domains)
     assert result[0]["domain_name"] == "NVIDIA.COM"
     assert len(result) == len(domains)

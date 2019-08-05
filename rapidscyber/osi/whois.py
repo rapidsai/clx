@@ -19,7 +19,7 @@ class WhoIsLookupClient(object):
     def whois(self, domains, arr2str=True):
         result = []
         for domain in domains:
-            resp = self.__whois(domain)
+            resp = self.request_server(domain)
             if arr2str:
                 resp_keys = resp.keys()
                 resp = self.flatten_str_array(resp, resp_keys)
@@ -27,9 +27,8 @@ class WhoIsLookupClient(object):
             result.append(resp)
         return result
 
-    def __whois(self, domain):
-        response = whois.whois(domain)
-        return response
+    def request_server(self, domain):
+        return whois.whois(domain)
 
     def flatten_str_array(self, resp, resp_keys):
         for key in self.str_arr_keys:

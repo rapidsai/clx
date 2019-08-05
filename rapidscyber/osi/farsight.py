@@ -49,6 +49,10 @@ class FarsightLookupClient(object):
         path = "rdata/ip/%s" % rdata_ip.replace("/", ",")
         return self.__query(path, before, after)
 
+    def get(self, url):
+        response = requests.get(url, headers=self.headers, proxies=self.proxy_args)
+        return response
+
     # queries dnsdb.
     def __query(self, path, before=None, after=None):
         res = []
@@ -56,7 +60,7 @@ class FarsightLookupClient(object):
         params = self.__get_params(before, after)
         if params:
             url += "?{0}".format(urllib.parse.urlencode(params))
-        response = requests.get(url, headers=self.headers, proxies=self.proxy_args)
+        response = self.get(url)
         try:
             response.raise_for_status()
             self.__extract_response(response, res)
