@@ -34,9 +34,11 @@ class KafkaReader(Reader):
             while running:
                 msg = self.consumer.poll(timeout=1.0)
                 if msg is None:
+                    log.debug("No message received.")
                     continue
                 elif not msg.error():
                     data = msg.value().decode("utf-8")
+                    log.debug("Message received.")
                     if (
                         rec_cnt < self._batch_size
                         and (time.time() - current_time) < self.time_window
