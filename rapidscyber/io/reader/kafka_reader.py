@@ -1,7 +1,7 @@
 import logging
 import time
 from confluent_kafka import KafkaError
-
+from rapidscyber.io.reader.reader import Reader
 # KafkaReader class
 class KafkaReader(Reader):
     def __init__(self, batch_size, consumer, time_window=30):

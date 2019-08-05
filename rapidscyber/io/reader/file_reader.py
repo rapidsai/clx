@@ -1,6 +1,6 @@
 from abc import ABC
 from abc import abstractmethod
-
+from rapidscyber.io.reader.reader import Reader
 
 class FileReader(Reader):
     @property
@@ -29,6 +29,10 @@ class FileReader(Reader):
 
     @abstractmethod
     def read_orc(self):
+        pass
+
+    @abstractmethod
+    def close(self):
         pass
 
     @abstractmethod

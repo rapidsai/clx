@@ -49,3 +49,6 @@ class FileSystemReader(FileReader):
             )
         self.has_data = False
         return df
+
+    def close():
+       log.info("Closed fs reader")
