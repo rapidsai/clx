@@ -105,6 +105,7 @@ class Workflow(ABC):
                     enriched_dataframe = self.workflow(dataframe)
                     self._io_writer.write_data(enriched_dataframe)
         except KeyboardInterrupt:
+            logging.info("User aborted workflow")
             self.stop_workflow()
 
     def stop_workflow(self):

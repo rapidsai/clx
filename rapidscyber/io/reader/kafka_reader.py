@@ -2,12 +2,13 @@ import logging
 import time
 from confluent_kafka import KafkaError
 from rapidscyber.io.reader.reader import Reader
-# KafkaReader class
+
 class KafkaReader(Reader):
     def __init__(self, batch_size, consumer, time_window=30):
         self._batch_size = batch_size
         self._consumer = consumer
         self._has_data = True
+        # Max window of time that queued events will wait to be pushed to workflow
         self._time_window = time_window
 
     @property
@@ -53,7 +54,7 @@ class KafkaReader(Reader):
             return df
         except:
             logging.error("Error fetching data from kafka")
-            self.close_consumer()
+            raise
 
     def close(self):
         logging.info("Closing kafka reader...")

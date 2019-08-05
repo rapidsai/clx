@@ -1,13 +1,13 @@
 import logging
 
 from confluent_kafka import Consumer
-from confluent_kafka import KafkaError
 from confluent_kafka import Producer
 
 from rapidscyber.io.factory.abstract_factory import AbstractFactory
 from rapidscyber.io.reader.kafka_reader import KafkaReader
 from rapidscyber.io.writer.kafka_writer import KafkaWriter
 
+log = logging.getLogger(__name__)
 
 class KafkaFactory(AbstractFactory):
     def __init__(self, config):
@@ -29,7 +29,7 @@ class KafkaFactory(AbstractFactory):
         return writer
 
     def _create_consumer(self):
-        logging.info("creating kafka consumer instance")
+        log.info("creating kafka consumer instance")
         consumer_conf = {
             "bootstrap.servers": self.config["kafka_brokers"],
             "group.id": self.config["group_id"],
@@ -41,17 +41,17 @@ class KafkaFactory(AbstractFactory):
         c.subscribe(
             self.config["consumer_kafka_topics"], on_assign=self.print_assignment
         )
-        logging.info("created kafka consumer instance")
+        log.info("created kafka consumer instance")
         return c
 
     def _create_producer(self):
-        logging.info("creating kafka producer instance")
+        log.info("creating kafka producer instance")
         producer_conf = {
             "bootstrap.servers": self.config["kafka_brokers"],
             "session.timeout.ms": 10000,
         }
         producer = Producer(producer_conf)
-        logging.info("created producer instance")
+        log.info("created producer instance")
         return producer
 
     def print_assignment(self, consumer, partitions):
