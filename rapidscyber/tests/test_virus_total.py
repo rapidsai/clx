@@ -8,6 +8,8 @@ api_key = "dummy-api-key"
 client = VirusTotalClient(api_key=api_key)
 response = mock(spec=requests.Response)
 response.status_code = 200
+# FYI, adding only one common key and it's value to response text for testing. 
+# Since each function generates different output based on given input.
 response.text = {"response_code": 1}
 resp_dict = dict(status_code=response.status_code, json_resp=response.text)
 
