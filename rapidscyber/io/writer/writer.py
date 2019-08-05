@@ -1,13 +1,8 @@
 from abc import ABC, abstractmethod
 
-
-class FileWriter(Writer):
+class Writer(ABC):
     @abstractmethod
-    def write_as_text(self):
-        pass
-
-    @abstractmethod
-    def write_as_parquet(self):
+    def close(self):
         pass
 
     @abstractmethod

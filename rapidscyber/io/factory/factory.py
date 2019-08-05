@@ -1,10 +1,6 @@
 import logging
 import sys
 
-from rapidscyber.io.factory.kafka_factory import KafkaFactory
-from rapidscyber.io.factory.fs_factory import FileSystemFactory
-
-
 class Factory:
 
     __cls_dict = {"kafka": "KafkaFactory", "fs": "FileSystemFactory"}

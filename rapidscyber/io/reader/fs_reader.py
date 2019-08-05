@@ -1,7 +1,5 @@
 import cudf
-import logging
 from rapidscyber.io.reader.file_reader import FileReader
-
 
 class FileSystemReader(FileReader):
     def __init__(self, config):

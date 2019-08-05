@@ -1,10 +1,9 @@
 import logging
 import time
-from confluent_kafka import Consumer
 from confluent_kafka import KafkaError
 
 # KafkaReader class
-class KafkaReader:
+class KafkaReader(Reader):
     def __init__(self, batch_size, consumer, time_window=30):
         self._batch_size = batch_size
         self._consumer = consumer
@@ -18,6 +17,10 @@ class KafkaReader:
     @property
     def has_data(self):
         return self._has_data
+
+    @property
+    def time_window(self):
+        return self._time_window
 
     def fetch_data(self):
         events = []
@@ -49,10 +52,11 @@ class KafkaReader:
             df["Raw"] = events
             return df
         except:
-            logging.error("closing kafka consumer...")
+            logging.error("Error fetching data from kafka")
             self.close_consumer()
-            logging.error("closed kafka consumer...")
 
-    def close_consumer(self):
+    def close(self):
+        logging.info("Closing kafka reader...")
         if self.consumer is not None:
             self.consumer.close()
+        logging.info("Closed kafka reader.")

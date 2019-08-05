@@ -108,6 +108,9 @@ class Workflow(ABC):
             self.stop_workflow()
 
     def stop_workflow(self):
+        log.info("Closing workflow...")
+        self._io_reader.close()
+        self._io_writer.close()
         log.info("Workflow {0} stopped.".format(self.name))
 
     @abstractmethod

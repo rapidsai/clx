@@ -39,3 +39,6 @@ class FileSystemWriter(FileWriter):
             self.write_as_parquet(df, self._output_path)
         else:
             self.write_as_text(df, self._output_path)
+
+    def close(self):
+        logging.info("Closed writer")

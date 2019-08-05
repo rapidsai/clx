@@ -1,8 +1,6 @@
-from abc import ABC
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
-
-class FileReader(Reader):
+class Reader(ABC):
     @property
     def has_data(self):
         return self._has_data
@@ -20,15 +18,7 @@ class FileReader(Reader):
         self._config = val
 
     @abstractmethod
-    def read_text(self):
-        pass
-
-    @abstractmethod
-    def read_parquet(self):
-        pass
-
-    @abstractmethod
-    def read_orc(self):
+    def close(self):
         pass
 
     @abstractmethod
