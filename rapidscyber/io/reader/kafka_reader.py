@@ -1,5 +1,5 @@
 import logging
-
+import time
 from confluent_kafka import Consumer
 from confluent_kafka import KafkaError
 
