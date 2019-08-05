@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-
+from rapidscyber.io.writer.writer import Writer
 
 class FileWriter(Writer):
     @abstractmethod
