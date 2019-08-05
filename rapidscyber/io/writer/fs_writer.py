@@ -1,10 +1,10 @@
+import cudf
 import logging
 import os
 
-import cudf
-
 from rapidscyber.io.writer.file_writer import FileWriter
 
+log = logging.getLogger(__name__)
 
 class FileSystemWriter(FileWriter):
     def __init__(self, output_path, output_format="text"):
@@ -15,13 +15,13 @@ class FileSystemWriter(FileWriter):
         def wrapper(self, df, output_path):
             dir = os.path.dirname(output_path)
             if not os.path.isdir(dir):
-                logging.info("output directory { %s } not exist" % (dir))
-                logging.info("creating output directory { %s }..." % (dir))
+                log.info("output directory { %s } not exist" % (dir))
+                log.info("creating output directory { %s }..." % (dir))
                 os.makedirs(dir)
-                logging.info("created output directory { %s }..." % (dir))
+                log.info("created output directory { %s }..." % (dir))
             if os.path.exists(output_path):
                 raise IOError("output path { %s } already exist" % (output_path))
-            logging.info("writing data to location {%s}" % (output_path))
+            log.info("writing data to location {%s}" % (output_path))
             fun(self, df, output_path)
 
         return wrapper
@@ -41,4 +41,4 @@ class FileSystemWriter(FileWriter):
             self.write_as_text(df, self._output_path)
 
     def close(self):
-        logging.info("Closed writer")
+        log.info("Closed writer")

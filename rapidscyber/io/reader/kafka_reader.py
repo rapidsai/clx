@@ -3,6 +3,8 @@ import time
 from confluent_kafka import KafkaError
 from rapidscyber.io.reader.reader import Reader
 
+log = logging.getLogger(__name__)
+
 class KafkaReader(Reader):
     def __init__(self, batch_size, consumer, time_window=30):
         self._batch_size = batch_size
@@ -45,7 +47,7 @@ class KafkaReader(Reader):
                         events.append(data)
                         running = False
                 elif msg.error().code() != KafkaError._PARTITION_EOF:
-                    logging.error(msg.error())
+                    log.error(msg.error())
                     running = False
                 else:
                     running = False
@@ -53,11 +55,11 @@ class KafkaReader(Reader):
             df["Raw"] = events
             return df
         except:
-            logging.error("Error fetching data from kafka")
+            log.error("Error fetching data from kafka")
             raise
 
     def close(self):
-        logging.info("Closing kafka reader...")
+        log.info("Closing kafka reader...")
         if self.consumer is not None:
             self.consumer.close()
-        logging.info("Closed kafka reader.")
+        log.info("Closed kafka reader.")

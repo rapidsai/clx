@@ -1,5 +1,7 @@
 import logging
 
+log = logging.getLogger(__name__)
+
 class KafkaWriter:
     def __init__(self, kafka_topic, batch_size, delimiter, producer):
         self._kafka_topic = kafka_topic
@@ -21,7 +23,7 @@ class KafkaWriter:
         for rec in out_df.to_records():
             self.producer.produce(self._kafka_topic, rec["delimited_ouput"])
             if len(self.producer) > self._batch_size:
-                logging.debug(
+                log.debug(
                     "batch reached, calling poll... producer unsent: %s",
                     len(self.producer),
                 )
@@ -39,7 +41,7 @@ class KafkaWriter:
         return gdf
 
     def close(self):
-        logging.info("Closing kafka writer...")
+        log.info("Closing kafka writer...")
         if self._producer is not None:
             self._producer.flush()
-        logging.info("Closed kafka writer.")
+        log.info("Closed kafka writer.")

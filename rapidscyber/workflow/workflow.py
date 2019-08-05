@@ -4,7 +4,7 @@ from rapidscyber.io.factory.factory import Factory
 import logging
 import yaml
 
-log = logging.getLogger("Workflow")
+log = logging.getLogger(__name__)
 
 
 class Workflow(ABC):
