@@ -1,4 +1,5 @@
 import cudf
+import logging
 from rapidscyber.io.reader.file_reader import FileReader
 
 log = logging.getLogger(__name__)

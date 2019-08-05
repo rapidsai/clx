@@ -1,4 +1,6 @@
 import logging
+from rapidscyber.io.factory.kafka_factory import KafkaFactory
+from rapidscyber.io.factory.fs_factory import FileSystemFactory
 
 log = logging.getLogger(__name__)
 
@@ -17,6 +19,8 @@ class Factory:
         def __call__(self, *args, **kwargs):
             class_name, config = self.func(*args, **kwargs)
             try:
+#                for k,v in globals().items():
+#                   log.info("GLOBALS " + k + " " + v)
                 target_cls = globals()[class_name](config)
                 return target_cls
             except KeyError as error:
