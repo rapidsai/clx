@@ -34,14 +34,13 @@ rdata_name_response = mock(
     spec=requests.Response,
 )
 
-
 @pytest.mark.parametrize("server", [server])
 @pytest.mark.parametrize("apikey", [apikey])
 @pytest.mark.parametrize("ip", [ip])
 @pytest.mark.parametrize("ip_response", [ip_response])
 def test_query_rdata_ip(server, apikey, ip, ip_response):
     client = FarsightLookupClient(server, apikey, limit=1)
-    when(client).get(...).thenReturn(ip_response)
+    when(requests).get(...).thenReturn(ip_response)
     result = client.query_rdata_ip(ip)
     assert len(result) == 1
 
@@ -52,7 +51,7 @@ def test_query_rdata_ip(server, apikey, ip, ip_response):
 @pytest.mark.parametrize("ip_response", [ip_response])
 def test_query_rdata_ip2(server, apikey, ip, ip_response):
     client = FarsightLookupClient(server, apikey, limit=1)
-    when(client).get(...).thenReturn(ip_response)
+    when(requests).get(...).thenReturn(ip_response)
     result = client.query_rdata_ip(ip, before=1428433465, after=1538014110)
     assert len(result) == 1
 
@@ -62,7 +61,7 @@ def test_query_rdata_ip2(server, apikey, ip, ip_response):
 @pytest.mark.parametrize("rrset_response", [rrset_response])
 def test_query_rrset(server, apikey, rrset_response):
     client = FarsightLookupClient(server, apikey)
-    when(client).get(...).thenReturn(rrset_response)
+    when(requests).get(...).thenReturn(rrset_response)
     result = client.query_rrset("www.dnsdb.info")
     result = result[0]
     assert "count" in result
@@ -80,7 +79,7 @@ def test_query_rrset(server, apikey, rrset_response):
 @pytest.mark.parametrize("rrset_response", [rrset_response])
 def test_query_rrset2(server, apikey, rrset_response):
     client = FarsightLookupClient(server, apikey)
-    when(client).get(...).thenReturn(rrset_response)
+    when(requests).get(...).thenReturn(rrset_response)
     result = client.query_rrset(
         "www.dnsdb.info",
         rrtype="CNAME",
@@ -104,7 +103,7 @@ def test_query_rrset2(server, apikey, rrset_response):
 @pytest.mark.parametrize("rdata_name_response", [rdata_name_response])
 def test_query_rdata_name(server, apikey, rdata_name_response):
     client = FarsightLookupClient(server, apikey)
-    when(client).get(...).thenReturn(rdata_name_response)
+    when(requests).get(...).thenReturn(rdata_name_response)
     result = client.query_rdata_name("www.farsightsecurity.com")
     result = result[0]
     assert "count" in result
@@ -120,7 +119,7 @@ def test_query_rdata_name(server, apikey, rdata_name_response):
 @pytest.mark.parametrize("rdata_name_response", [rdata_name_response])
 def test_query_rdata_name2(server, apikey, rdata_name_response):
     client = FarsightLookupClient(server, apikey)
-    when(client).get(...).thenReturn(rdata_name_response)
+    when(requests).get(...).thenReturn(rdata_name_response)
     result = client.query_rdata_name(
         "www.farsightsecurity.com", rrtype="PTR", before=1386638408, after=1561176503
     )
