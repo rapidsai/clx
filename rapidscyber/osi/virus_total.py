@@ -1,5 +1,6 @@
 import os
-from requests import get, post
+import json
+import requests
 from os.path import abspath, basename
 
 
@@ -136,11 +137,11 @@ class VirusTotalClient(object):
         return self.validate_response(resp)
 
     def post(self, endpoint, params, **kwargs):
-        resp = post(endpoint, params=params, **kwargs)
+        resp = requests.post(endpoint, params=params, **kwargs)
         return self.validate_response(resp)
 
     def get(self, endpoint, params, **kwargs):
-        resp = get(endpoint, params=params, **kwargs)
+        resp = requests.get(endpoint, params=params, **kwargs)
         return self.validate_response(resp)
 
     def __create_vt_endpoint_dict(self):
@@ -159,7 +160,7 @@ class VirusTotalClient(object):
 
     def validate_response(self, response):
         if response.status_code == 200:
-            json_resp = response.json()
+            json_resp = json.loads(response.text)
             return dict(status_code=response.status_code, json_resp=json_resp)
         return dict(
             status_code=response.status_code, error=response.text, resp=response.content
