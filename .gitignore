@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+.pytest_cache/
+build/
+dist/
+rapidscyber.egg-info/
+
+# IDE
+.idea/
+# Test output
+rapidscyber/tests/output
+rapidscyber/tests/.config
