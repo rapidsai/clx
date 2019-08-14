@@ -92,10 +92,10 @@ def verify():
 def main():
     setup()
     t_run_workflow = threading.Thread(target=run_workflow, name='t_run_workflow') 
-    t_send_data = threading.Thread(target=send_data, name='t_send_data')
     t_run_workflow.daemon = True
     t_run_workflow.start()
     time.sleep(15)
+    t_send_data = threading.Thread(target=send_data, name='t_send_data')
     t_send_data.start()
     t_send_data.join()
     verify()
