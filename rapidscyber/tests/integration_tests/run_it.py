@@ -78,12 +78,12 @@ def verify():
         "bootstrap.servers": bootstrap_server,
         "group.id": "int-test",
         "session.timeout.ms": 10000,
-        "default.topic.config": {"auto.offset.reset": "largest"}
+        "default.topic.config": {"auto.offset.reset": "earliest"}
     }
     consumer = Consumer(consumer_conf)
     consumer.subscribe([topics[1]])
     # Adding extra iteration would allow consumer to prepare and start polling messages.
-    for i in range(1,25):
+    for i in range(1, 25):
         enriched_msg = consumer.poll(timeout=1.0)
         if enriched_msg is not None and not enriched_msg.error():
             data = enriched_msg.value().decode("utf-8")
