@@ -7,7 +7,7 @@ from confluent_kafka.admin import AdminClient, NewTopic, NewPartitions, ConfigRe
 from confluent_kafka import Producer, Consumer
 from rapidscyber.workflow import netflow_workflow
 
-bootstrap_server = "kafka:29092"
+bootstrap_server = "kafka:9092"
 topics = ["input", "cyber-enriched-data"]
 msg = "cyber test"
 consumer = None
@@ -78,7 +78,7 @@ def verify():
         "bootstrap.servers": bootstrap_server,
         "group.id": "int-test",
         "session.timeout.ms": 10000,
-        "default.topic.config": {"auto.offset.reset": "smallest"}
+        "default.topic.config": {"auto.offset.reset": "largest"}
     }
     consumer = Consumer(consumer_conf)
     consumer.subscribe([topics[1]])
