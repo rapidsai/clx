@@ -1,5 +1,6 @@
 import logging
 
+log = logging.getLogger(__name__)
 from confluent_kafka import KafkaError
 from confluent_kafka import Producer
 
@@ -25,7 +26,7 @@ class KafkaWriter:
         for rec in out_df.to_records():
             self.producer.produce(self._kafka_topic, rec["delimited_ouput"])
             if len(self.producer) > self._batch_size:
-                logging.debug(
+                log.debug(
                     "batch reached, calling poll... producer unsent: %s",
                     len(self.producer),
                 )
