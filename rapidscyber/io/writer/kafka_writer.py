@@ -1,6 +1,8 @@
 import logging
 
-log = logging.getLogger(__name__)
+from confluent_kafka import KafkaError
+from confluent_kafka import Producer
+
 
 class KafkaWriter:
     def __init__(self, kafka_topic, batch_size, delimiter, producer):
@@ -23,10 +25,11 @@ class KafkaWriter:
         for rec in out_df.to_records():
             self.producer.produce(self._kafka_topic, rec["delimited_ouput"])
             if len(self.producer) > self._batch_size:
-                log.debug(
+                logging.debug(
                     "batch reached, calling poll... producer unsent: %s",
                     len(self.producer),
                 )
+                self.producer.poll(0)
 
     def _generate_delimited_ouput_col(self, gdf):
         first_col = gdf.columns[0]
@@ -39,9 +42,3 @@ class KafkaWriter:
                 gdf[col], sep=self.delimiter
             )
         return gdf
-
-    def close(self):
-        log.info("Closing kafka writer...")
-        if self._producer is not None:
-            self._producer.flush()
-        log.info("Closed kafka writer.")
