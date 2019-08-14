@@ -1,9 +1,6 @@
 import logging
 
 log = logging.getLogger(__name__)
-from confluent_kafka import KafkaError
-from confluent_kafka import Producer
-
 
 class KafkaWriter:
     def __init__(self, kafka_topic, batch_size, delimiter, producer):
@@ -43,3 +40,9 @@ class KafkaWriter:
                 gdf[col], sep=self.delimiter
             )
         return gdf
+
+    def close(self):
+        log.info("Closing kafka writer...")
+        if self._producer is not None:
+            self._producer.flush()
+        log.info("Closed kafka writer.")
