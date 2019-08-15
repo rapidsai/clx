@@ -1,15 +1,15 @@
-import logging
+import sys
 import time
-#import multiprocessing
+import logging
 logging.basicConfig(filename="run_it.out", level=logging.DEBUG)
-
+import threading
 from confluent_kafka.admin import AdminClient, NewTopic, NewPartitions, ConfigResource, ConfigSource
 from confluent_kafka import Producer, Consumer
 from rapidscyber.workflow import netflow_workflow
 
-bootstrap_server = "kafka:29092"
+bootstrap_server = "kafka:9092"
 topics = ["input", "cyber-enriched-data"]
-msgs = ["cyber test 1", "cyber test 2"]
+msg = "cyber test"
 consumer = None
 wf = None
 produce = None
@@ -63,9 +63,11 @@ def send_data():
     }
     producer = Producer(producer_conf)
     print("Kafka producer created.")
-    for msg in msgs:
-        print("Sending msg to workflow: " + msg)
-        producer.produce(topics[0], msg)
+    for i in range(1, 13):
+        time.sleep(1)
+        message = '%s %s'%(msg, i) 
+        print("Sending msg to workflow: " + message)
+        producer.produce(topics[0], message)
 
 def teardown():
     print("teardown")
@@ -73,34 +75,32 @@ def teardown():
 def verify():
     print("Verifying messages were processed by workflow...")
     consumer_conf = {
-        "bootstrap.servers": "kafka:29092",
+        "bootstrap.servers": bootstrap_server,
         "group.id": "int-test",
         "session.timeout.ms": 10000,
-        "default.topic.config": {"auto.offset.reset": "smallest"}
+        "default.topic.config": {"auto.offset.reset": "earliest"}
     }
     consumer = Consumer(consumer_conf)
     consumer.subscribe([topics[1]])
-    for i in range(1,10):
-        time.sleep(1)
+    # Adding extra iteration would allow consumer to prepare and start polling messages.
+    for i in range(1, 25):
         enriched_msg = consumer.poll(timeout=1.0)
-        print("Enriched msg processed... " + enriched_msg)
+        if enriched_msg is not None and not enriched_msg.error():
+            data = enriched_msg.value().decode("utf-8")
+            print("Enriched msg processed... " + data)
 
 def main():
     setup()
-    send_data()
+    t_run_workflow = threading.Thread(target=run_workflow, name='t_run_workflow') 
+    t_run_workflow.daemon = True
+    t_run_workflow.start()
     time.sleep(15)
-    run_workflow()
-    #time.sleep(15)
-    #process_run_workflow = multiprocessing.Process(target=run_workflow)
-    #process_send_data = multiprocessing.Process(target=send_data)
-    #process_run_workflow.start()
-    #time.sleep(10)
-    #process_send_data.start()
-    #time.sleep(10)
-    #process_send_data.terminate()
-    #process_run_workflow.terminate()
+    t_send_data = threading.Thread(target=send_data, name='t_send_data')
+    t_send_data.start()
+    t_send_data.join()
     verify()
     teardown()
+    sys.exit()
 
 if __name__ == "__main__":
     main()

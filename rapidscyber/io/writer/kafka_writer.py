@@ -27,6 +27,7 @@ class KafkaWriter:
                     "batch reached, calling poll... producer unsent: %s",
                     len(self.producer),
                 )
+                self.producer.poll(0)
 
     def _generate_delimited_ouput_col(self, gdf):
         first_col = gdf.columns[0]
