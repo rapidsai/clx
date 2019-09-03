@@ -19,4 +19,4 @@ def test_read_data(batch_size, consumer):
     ).thenRaise(Exception())
     with pytest.raises(Exception):
         reader.fetch_data()
-    verify(reader.consumer, times=2).poll(...)
+        verify(reader.consumer, times=1).poll(...)
