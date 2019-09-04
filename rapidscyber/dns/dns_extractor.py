@@ -44,14 +44,14 @@ class DNSExtractor(object):
         Example:- 
             input:
                     4    3                2          1           0
-                1  ac  com              cnn       news      forums
-                2       ac              cnn       news      forums
-                3                       com        cnn           b
+                0  ac  com              cnn       news      forums
+                1       ac              cnn       news      forums
+                2                       com        cnn           b
             output:
                   4    3                2          1           0  tld4    tld3             tld2                 tld1                        tld0
-               1 ac  com              cnn       news      forums    ac  com.ac       cnn.com.ac      news.cnn.com.ac      forums.news.cnn.com.ac
-               2      ac              cnn       news      forums            ac           cnn.ac          news.cnn.ac          forums.news.cnn.ac
-               3                      com        cnn           b                            com              cnn.com                   b.cnn.com
+               0 ac  com              cnn       news      forums    ac  com.ac       cnn.com.ac      news.cnn.com.ac      forums.news.cnn.com.ac
+               1      ac              cnn       news      forums            ac           cnn.ac          news.cnn.ac          forums.news.cnn.ac
+               2                      com        cnn           b                            com              cnn.com                   b.cnn.com
         
         Adding last element for max tld column.
         Example:-
@@ -77,15 +77,15 @@ class DNSExtractor(object):
         Example:- 
             input:
                    4    3                2          1           0  tld4    tld3             tld2                 tld1                        tld0
-                1 ac  com              cnn       news      forums    ac  com.ac       cnn.com.ac      news.cnn.com.ac      forums.news.cnn.com.ac
-                2     ac               cnn       news      forums            ac           cnn.ac          news.cnn.ac          forums.news.cnn.ac
-                3                      com        cnn           b                            com              cnn.com                   b.cnn.com
+                0 ac  com              cnn       news      forums    ac  com.ac       cnn.com.ac      news.cnn.com.ac      forums.news.cnn.com.ac
+                1     ac               cnn       news      forums            ac           cnn.ac          news.cnn.ac          forums.news.cnn.ac
+                2                      com        cnn           b                            com              cnn.com                   b.cnn.com
         
             output:
                                   hostname      domain        suffix  sd_prefix  sd_suffix
-                1   forums.news.cnn.com.ac         cnn        com.ac     forums       news
-                2       forums.news.cnn.ac         cnn            ac     forums       news
-                3                b.cnn.com         cnn           com          b           
+                0   forums.news.cnn.com.ac         cnn        com.ac     forums       news
+                1       forums.news.cnn.ac         cnn            ac     forums       news
+                2                b.cnn.com         cnn           com          b           
         """
         tmp_suffix_df = DataFrame()
         # Iterating over each tld column starting from tld0 until it finds a match.
@@ -155,15 +155,15 @@ class DNSExtractor(object):
                 ["hostname", "domain", "suffix", "subdomain"]
             input:
                                             url
-                1 http://forums.news.cnn.com.ac/
-                2             forums.news.cnn.ac
-                3               ftp://b.cnn.com/
+                0 http://forums.news.cnn.com.ac/
+                1             forums.news.cnn.ac
+                2               ftp://b.cnn.com/
         
             output:    
                                   hostname      domain        suffix    subdomain
-                1   forums.news.cnn.com.ac         cnn        com.ac  forums.news
-                2       forums.news.cnn.ac         cnn            ac  forums.news
-                3                b.cnn.com         cnn           com            b
+                0   forums.news.cnn.com.ac         cnn        com.ac  forums.news
+                1       forums.news.cnn.ac         cnn            ac  forums.news
+                2                b.cnn.com         cnn           com            b
         """
         req_cols = self.__verify_req_cols(req_cols)
         hostnames = self.extract_hostnames(url_df_col)
@@ -189,15 +189,15 @@ class DNSExtractor(object):
                 ["hostname", "domain", "suffix", "subdomain"]
             input:
                                   hostname      domain        suffix  sd_prefix  sd_suffix
-                1   forums.news.cnn.com.ac         cnn        com.ac     forums       news
-                2       forums.news.cnn.ac         cnn            ac     forums       news
-                3                b.cnn.com         cnn           com          b           
+                0   forums.news.cnn.com.ac         cnn        com.ac     forums       news
+                1       forums.news.cnn.ac         cnn            ac     forums       news
+                2                b.cnn.com         cnn           com          b           
         
             output:    
                                   hostname      domain        suffix    subdomain
-                1   forums.news.cnn.com.ac         cnn        com.ac  forums.news
-                2       forums.news.cnn.ac         cnn            ac  forums.news
-                3                b.cnn.com         cnn           com            b
+                0   forums.news.cnn.com.ac         cnn        com.ac  forums.news
+                1       forums.news.cnn.ac         cnn            ac  forums.news
+                2                b.cnn.com         cnn           com            b
         """
         clean_output_df = DataFrame()
         # reset index, since output_df is the result of multiple temp_df contactination.
