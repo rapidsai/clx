@@ -1,6 +1,7 @@
 import cudf
 import logging
 import nvstrings
+import yaml
 
 from abc import ABC, abstractmethod
 
@@ -79,3 +80,10 @@ class EventParser(ABC):
         """
         df["present"] = df[column].str.contains(pattern)
         return df[df.present == True]
+
+    def _load_regex_yaml(self, yaml_file):
+        """Returns a dictionary of the regex contained in the given yaml file"""
+        with open(yaml_file) as yaml_file:
+            regex_dict = yaml.safe_load(yaml_file)
+            regex_dict = {k: v[0] for k, v in regex_dict.items()}
+        return regex_dict
