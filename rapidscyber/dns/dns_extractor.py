@@ -25,10 +25,12 @@ class DnsVarsProvider:
         suffix_list_path = "%s/resources/suffix_list.txt" % os.path.dirname(
             os.path.realpath(__file__)
         )
+        log.info("Read suffix data at location %s." %(suffix_list_path))
         # Read suffix list csv file
         suffix_df = cudf.io.csv.read_csv(
             suffix_list_path, names=["suffix"], header=None, dtype=["str"]
         )
+        log.info("Read suffix data is finished")
         suffix_df = suffix_df[suffix_df["suffix"].str.contains("^[^//]+$")]
         return suffix_df
 
