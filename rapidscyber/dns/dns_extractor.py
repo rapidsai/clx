@@ -1,7 +1,6 @@
 import os
 import cudf
 import logging
-import nvstrings
 from cudf import DataFrame
 from singleton_decorator import singleton
 
