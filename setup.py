@@ -4,7 +4,7 @@ install_requires = ["confluent_kafka"]
 
 setup(
       name="rapidscyber",
-      version="0.2.0",
+      version="0.3.0",
       description="RAPIDS Cyber",
       author="NVIDIA Corporation",
       packages=find_packages(include=["rapidscyber", "rapidscyber.*"]),
