@@ -38,12 +38,11 @@ class SplunkNotableParser(EventParser):
             ip_len = ip + "_len"
             # Calculate ip column value length.
             parsed_dataframe[ip_len] = parsed_dataframe[ip].str.len()
-            tmp_dataframe = cudf.DataFrame()
             # Retrieve empty ip column records.
             tmp_dataframe = parsed_dataframe[parsed_dataframe[ip_len] == 0]
             # Retrieve non empty ip column records.
             parsed_dataframe = parsed_dataframe[parsed_dataframe[ip_len] != 0]
-
+            
             if not tmp_dataframe.empty:
                 log.debug("tmp_dataframe size %s" % (str(tmp_dataframe.shape)))
                 # Assign ip2 column values to empty ip column values.
