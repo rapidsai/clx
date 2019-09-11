@@ -46,3 +46,11 @@ id:
    - (?<="id":").*?(?=")
 ip_address:
    - IP Address:\s\(([0-9\.]+)
+message_ip:
+   - message.ip="([\w\.]+)
+message_hostname:
+   - message.hostname="([\w\.]+)
+message_username:
+   - message.user_name="([\w\.\@]+)
+message_description:
+   - message\.description="([\w\.\s]+)
