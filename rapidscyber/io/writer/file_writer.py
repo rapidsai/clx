@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
+from rapidscyber.io.writer.writer import Writer
 
-
-class FileWriter(ABC):
+class FileWriter(Writer):
     @abstractmethod
     def write_as_text(self):
         pass
