@@ -10,6 +10,7 @@ TEST_DATA5 = '1566345700, search_name="Manual Notable Event - Rule", _time="1554
 TEST_DATA6 = '1566345700, search_name="Endpoint - FireEye NX alert for Incident Review (Minor) - Rule", category="riskware-callback", dest_ip="10.15.90.150", occurred="Mar 09 2019 02:36:00 UTC", signature="Android.Adware.Batmobil", src_ip="10.15.90.151", dest_port="80", src_port="40472", orig_time="1552098960", info_max_time="1552099380.000000000", info_min_time="1552098780.000000000", info_search_time="1552052094.393543000", severity="minr", src_host="ip-10.5.13.compute.internal"'
 TEST_DATA7 = '1566345700, search_name=\\"Endpoint - Host With Malware Detected (Quarantined or Waived) - Rule\\", count=\\"1\\", dest=\\"TEST-01\\", dest_priority=\\"medium\\", info_max_time=\\"1511389440.000000000\\", info_min_time=\\"1511388840.000000000\\", info_search_time=\\"1511389197.841039000\\", info_sid=\\"rt_scheduler_dGNhcnJvbGxAbnZpZGlhLmNvbQ__SplunkEnterpriseSecuritySuite__RMD5c5145919d43bdffc_at_1511389196_22323\\", lastTime=\\"1511388996.202094\\"'
 
+
 def test_splunk_notable_parser():
     """Test splunk notable parsing"""
 
@@ -111,7 +112,10 @@ def test_splunk_notable_parser():
     test_output_df4 = snp.parse(test_input_df4, raw_colname)
     assert len(test_output_df4.columns) == 24
     assert test_output_df4["time"][0] == "1566345700"
-    assert test_output_df4["search_name"][0] == "Endpoint - Brute Force against Known User - Rule"
+    assert (
+        test_output_df4["search_name"][0]
+        == "Endpoint - Brute Force against Known User - Rule"
+    )
     assert test_output_df4["orig_time"][0] == ""
     assert test_output_df4["urgency"][0] == ""
     assert test_output_df4["user"][0] == "pjame"
@@ -134,7 +138,7 @@ def test_splunk_notable_parser():
     assert test_output_df4["message_username"][0] == ""
     assert test_output_df4["message_hostname"][0] == ""
     assert test_output_df4["message_description"][0] == ""
-    
+
     test_input_df5 = cudf.DataFrame()
     test_input_df5[raw_colname] = [TEST_DATA5]
     test_output_df5 = snp.parse(test_input_df5, raw_colname)
@@ -163,13 +167,16 @@ def test_splunk_notable_parser():
     assert test_output_df5["message_username"][0] == ""
     assert test_output_df5["message_hostname"][0] == ""
     assert test_output_df5["message_description"][0] == ""
-    
+
     test_input_df6 = cudf.DataFrame()
     test_input_df6[raw_colname] = [TEST_DATA6]
     test_output_df6 = snp.parse(test_input_df6, raw_colname)
     assert len(test_output_df6.columns) == 24
     assert test_output_df6["time"][0] == "1566345700"
-    assert test_output_df6["search_name"][0] == "Endpoint - FireEye NX alert for Incident Review (Minor) - Rule"
+    assert (
+        test_output_df6["search_name"][0]
+        == "Endpoint - FireEye NX alert for Incident Review (Minor) - Rule"
+    )
     assert test_output_df6["orig_time"][0] == ""
     assert test_output_df6["urgency"][0] == ""
     assert test_output_df6["user"][0] == ""
@@ -192,13 +199,16 @@ def test_splunk_notable_parser():
     assert test_output_df6["message_username"][0] == ""
     assert test_output_df6["message_hostname"][0] == ""
     assert test_output_df6["message_description"][0] == ""
-    
+
     test_input_df7 = cudf.DataFrame()
     test_input_df7[raw_colname] = [TEST_DATA7]
     test_output_df7 = snp.parse(test_input_df7, raw_colname)
     assert len(test_output_df7.columns) == 24
     assert test_output_df7["time"][0] == "1566345700"
-    assert test_output_df7["search_name"][0] == "Endpoint - Host With Malware Detected (Quarantined or Waived) - Rule"
+    assert (
+        test_output_df7["search_name"][0]
+        == "Endpoint - Host With Malware Detected (Quarantined or Waived) - Rule"
+    )
     assert test_output_df7["orig_time"][0] == ""
     assert test_output_df7["urgency"][0] == ""
     assert test_output_df7["user"][0] == ""
@@ -221,4 +231,3 @@ def test_splunk_notable_parser():
     assert test_output_df7["message_username"][0] == ""
     assert test_output_df7["message_hostname"][0] == ""
     assert test_output_df7["message_description"][0] == ""
-    

@@ -22,7 +22,7 @@ class SplunkNotableParser(EventParser):
     def parse(self, dataframe, raw_column):
         """Parses the Splunk notable raw event"""
         # Cleaning raw data to be consistent.
-        dataframe[raw_column] = dataframe[raw_column].str.replace('\\\\','')
+        dataframe[raw_column] = dataframe[raw_column].str.replace("\\\\", "")
         parsed_dataframe = self.parse_raw_event(dataframe, raw_column, self.EVENT_NAME)
         # Replace null values of all columns with empty.
         parsed_dataframe = parsed_dataframe.fillna("")
@@ -44,7 +44,7 @@ class SplunkNotableParser(EventParser):
             tmp_dataframe = parsed_dataframe[parsed_dataframe[ip_len] == 0]
             # Retrieve non empty ip column records.
             parsed_dataframe = parsed_dataframe[parsed_dataframe[ip_len] != 0]
-            
+
             if not tmp_dataframe.empty:
                 log.debug("tmp_dataframe size %s" % (str(tmp_dataframe.shape)))
                 # Assign ip2 column values to empty ip column values.
