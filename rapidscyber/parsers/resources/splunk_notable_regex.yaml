@@ -15,9 +15,9 @@ security_domain:
 severity:
    - severity=\"([A-Za-z]+)
 src_ip:
-   - src_ip=\"([\w\.]+)
+   - src_ip=\"([\w\.\-]+)
 src_ip2:
-   - src=\"([0-9\.]+)
+   - src=\"([\w\.\-]+)
 src_mac:
    - smac=([\w\:]+)
 src_port:
@@ -27,15 +27,15 @@ urgency:
 user:
    - user=\"([A-Za-z0-9]+)
 dest_ip:
-   - dest_ip=\"([\w\.]+)
+   - dest_ip=\"([\w\.\-]+)
 dest_ip2:
-   - dest=\"([0-9\.]+)
+   - dest=\"([\w\.\-]+)
 dest_mac:
    - dmac=([\w\:]+)
 dest_port:
    - dest_port=\"(\d+)
 dest_priority:
-   - dest_priority=\\+"([A-Za-z]+)
+   - dest_priority="([A-Za-z]+)
 device_name:
    - Device Name:\s([0-9A-Za-z\_\-]+)
 event_name:
