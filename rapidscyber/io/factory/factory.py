@@ -1,9 +1,8 @@
 import logging
-import sys
-
 from rapidscyber.io.factory.kafka_factory import KafkaFactory
 from rapidscyber.io.factory.fs_factory import FileSystemFactory
 
+log = logging.getLogger(__name__)
 
 class Factory:
 
@@ -23,9 +22,9 @@ class Factory:
                 target_cls = globals()[class_name](config)
                 return target_cls
             except KeyError as error:
-                logging.error(error)
-                logging.exception(error)
-                sys.exit(1)
+                log.error(error)
+                log.exception(error)
+                raise
 
     @InstanceGenerator
     def get_instance(io_comp, config):
