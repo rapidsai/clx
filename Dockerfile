@@ -6,7 +6,7 @@ ADD . /clx/
 
 SHELL ["/bin/bash", "-c"]
 RUN source activate rapids \
-    && cd /rapidscyber \
+    && cd /clx \
     && python setup.py install
 
 WORKDIR /clx
