@@ -3,10 +3,10 @@ from setuptools import setup, find_packages
 install_requires = ["confluent_kafka"]
 
 setup(
-      name="rapidscyber",
+      name="clx",
       version="0.3.0",
-      description="RAPIDS Cyber",
+      description="CLX",
       author="NVIDIA Corporation",
-      packages=find_packages(include=["rapidscyber", "rapidscyber.*"]),
+      packages=find_packages(include=["clx", "clx.*"]),
       install_requires=install_requires,
 )

@@ -2,12 +2,12 @@ ARG version=cuda9.2-runtime-ubuntu16.04
 
 FROM rapidsai/rapidsai:${version}
 
-ADD . /rapidscyber/
+ADD . /clx/
 
 SHELL ["/bin/bash", "-c"]
 RUN source activate rapids \
     && cd /rapidscyber \
     && python setup.py install
 
-WORKDIR /rapidscyber
+WORKDIR /clx
 CMD source activate rapids && sh /rapids/notebooks/utils/start-jupyter.sh
