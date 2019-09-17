@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 import cudf
-import rapidscyber.parsers.zeek as zeek
+import clx.parsers.zeek as zeek
 
 def test_parse_log_file(tmpdir):
 
