@@ -2,6 +2,7 @@ import cudf
 import logging
 from rapidscyber.io.reader.file_reader import FileReader
 
+log = logging.getLogger(__name__)
 
 class FileSystemReader(FileReader):
     def __init__(self, config):
@@ -51,3 +52,6 @@ class FileSystemReader(FileReader):
             )
         self.has_data = False
         return df
+
+    def close(self):
+       log.info("Closed fs reader")

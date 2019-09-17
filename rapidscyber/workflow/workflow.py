@@ -6,7 +6,7 @@ import yaml
 from rapidscyber.io.factory.factory import Factory
 from abc import ABC, abstractmethod
 
-log = logging.getLogger("Workflow")
+log = logging.getLogger(__name__)
 
 class Workflow(ABC):
 
@@ -129,9 +129,13 @@ class Workflow(ABC):
                     enriched_dataframe = self.workflow(dataframe)
                     self._io_writer.write_data(enriched_dataframe)
         except KeyboardInterrupt:
+            logging.info("User aborted workflow")
             self.stop_workflow()
 
     def stop_workflow(self):
+        log.info("Closing workflow...")
+        self._io_reader.close()
+        self._io_writer.close()
         log.info("Workflow {0} stopped.".format(self.name))
 
     @abstractmethod
