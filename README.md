@@ -1,14 +1,14 @@
-# RAPIDSCyber
+# CLX
 
-RAPIDSCyber provides a simple API for analysts, data scientists and engineers to quickly get started with applying [RAPIDS](https://rapids.ai/) to real-world cyber use cases.
+CLX provides a simple API for analysts, data scientists and engineers to quickly get started with applying [RAPIDS](https://rapids.ai/) to real-world cyber use cases.
 
 ## Getting Started
 
-RAPIDSCyber is built around the structure of a Workflow. A Workflow is simply a series of data transformations performed on a gpu [dataframe](https://github.com/rapidsai/cudf) that contains raw cyber data, with the goal of surfacing meaningful cyber analytical output. Data can be read or written to Kafka or a file as part of the Workflow. 
+CLX is built around the structure of a Workflow. A Workflow is simply a series of data transformations performed on a gpu [dataframe](https://github.com/rapidsai/cudf) that contains raw cyber data, with the goal of surfacing meaningful cyber analytical output. Data can be read or written to Kafka or a file as part of the Workflow. 
 
 Example Netflow Workflow reading and writing to file:
 ```python
-from rapidscyber.workflow import netflow_workflow
+from clx.workflow import netflow_workflow
 
 source = {
    "type": "fs",
@@ -34,18 +34,18 @@ wf.run_workflow()
 
 ### Docker 
 
-RAPIDSCyber 
+CLX 
 ```aidl
-docker build -t rapidscyber .
+docker build -t clx .
 docker run --runtime=nvidia \
   --rm -it \
   -p 8888:8888 \
   -p 8787:8787 \
   -p 8686:8686 \
-  rapidscyber:latest
+  clx:latest
 ```
 
-RAPIDSCyber and Kafka
+CLX and Kafka
 ```aidl
 docker-compose up
 ```
