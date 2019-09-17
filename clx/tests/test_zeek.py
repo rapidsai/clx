@@ -1,5 +1,4 @@
 import pytest
-import pandas as pd
 import numpy as np
 
 import cudf
@@ -16,7 +15,7 @@ def test_parse_log_file(tmpdir):
         #fields\tts\tuid\tid.orig_h\tid.orig_p\tid.resp_h\tid.resp_p\tproto\tservice\tduration\torig_bytes\tresp_bytes\tconn_state\tlocal_orig\tmissed_bytes\thistory\torig_pkts\torig_ip_bytes\tresp_pkts\tresp_ip_bytes\ttunnel_parents\n\
         #types\ttime\tstring\taddr\tport\taddr\tport\tenum\tstring\tinterval\tcount\tcount\tstring\tbool\tcount\tstring\tcount\tcount\tcount\tcount\tset[string]\n"
 
-    actual = pd.DataFrame()
+    actual = cudf.DataFrame()
     actual["ts"] = [1421927450.370337, 1421927658.777193]
     actual["ts"] = actual["ts"].astype("float64")
     actual["uid"] = ["CFlyqZgM1g71BYPB6", "CnKVxKIj403JsAK5k"]
@@ -49,6 +48,8 @@ def test_parse_log_file(tmpdir):
     actual["resp_ip_bytes"] = actual["resp_ip_bytes"].astype("int64")
     actual["tunnel_parents"] = ["(empty)", "(empty)"]
 
+
+
     footer = "#close^I2015-01-24-16-50-35"
 
     fname = tmpdir.mkdir("tmp_clx_zeek_test").join("tst_zeek_conn_log.csv")
@@ -60,23 +61,23 @@ def test_parse_log_file(tmpdir):
         f.write(header + content + footer)
 
     parsed = zeek.parse_log_file(fname)
-    assert np.allclose(parsed["ts"].to_pandas(), actual["ts"])
-    assert parsed["uid"].to_pandas().equals(actual["uid"])
-    assert parsed["id.orig_h"].to_pandas().equals(actual["id.orig_h"])
-    assert parsed["id.orig_p"].to_pandas().equals(actual["id.orig_p"])
-    assert parsed["id.resp_h"].to_pandas().equals(actual["id.resp_h"])
-    assert parsed["id.resp_p"].to_pandas().equals(actual["id.resp_p"])
-    assert parsed["proto"].to_pandas().equals(actual["proto"])
-    assert parsed["service"].to_pandas().equals(actual["service"])
-    assert np.allclose(parsed["duration"].to_pandas(), actual["duration"])
-    assert parsed["orig_bytes"].to_pandas().equals(actual["orig_bytes"])
-    assert parsed["resp_bytes"].to_pandas().equals(actual["resp_bytes"])
-    assert parsed["conn_state"].to_pandas().equals(actual["conn_state"])
-    assert parsed["local_orig"].to_pandas().equals(actual["local_orig"])
-    assert parsed["missed_bytes"].to_pandas().equals(actual["missed_bytes"])
-    assert parsed["history"].to_pandas().equals(actual["history"])
-    assert parsed["orig_pkts"].to_pandas().equals(actual["orig_pkts"])
-    assert parsed["orig_ip_bytes"].to_pandas().equals(actual["orig_ip_bytes"])
-    assert parsed["resp_pkts"].to_pandas().equals(actual["resp_pkts"])
-    assert parsed["resp_ip_bytes"].to_pandas().equals(actual["resp_ip_bytes"])
-    assert parsed["tunnel_parents"].to_pandas().equals(actual["tunnel_parents"])
+    assert np.allclose(parsed["ts"], actual["ts"])
+    assert parsed["uid"].equals(actual["uid"])
+    assert parsed["id.orig_h"].equals(actual["id.orig_h"])
+    assert parsed["id.orig_p"].equals(actual["id.orig_p"])
+    assert parsed["id.resp_h"].equals(actual["id.resp_h"])
+    assert parsed["id.resp_p"].equals(actual["id.resp_p"])
+    assert parsed["proto"].equals(actual["proto"])
+    assert parsed["service"].equals(actual["service"])
+    assert np.allclose(parsed["duration"], actual["duration"])
+    assert parsed["orig_bytes"].equals(actual["orig_bytes"])
+    assert parsed["resp_bytes"].equals(actual["resp_bytes"])
+    assert parsed["conn_state"].equals(actual["conn_state"])
+    assert parsed["local_orig"].equals(actual["local_orig"])
+    assert parsed["missed_bytes"].equals(actual["missed_bytes"])
+    assert parsed["history"].equals(actual["history"])
+    assert parsed["orig_pkts"].equals(actual["orig_pkts"])
+    assert parsed["orig_ip_bytes"].equals(actual["orig_ip_bytes"])
+    assert parsed["resp_pkts"].equals(actual["resp_pkts"])
+    assert parsed["resp_ip_bytes"].equals(actual["resp_ip_bytes"])
+    assert parsed["tunnel_parents"].equals(actual["tunnel_parents"])
