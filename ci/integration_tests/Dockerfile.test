@@ -2,14 +2,14 @@ ARG version=cuda9.2-runtime-ubuntu16.04
 
 FROM rapidsai/rapidsai:${version}
 
-ADD . /rapidscyber/
+ADD . /clx/
 
-ADD ./ci/integration_tests/run_integration_test.py /rapidscyber/run_integration_test.py
+ADD ./ci/integration_tests/run_integration_test.py /clx/run_integration_test.py
 
 SHELL ["/bin/bash", "-c"]
 RUN source activate rapids \
-    && cd /rapidscyber \
+    && cd /clx \
     && python setup.py install
 
-WORKDIR /rapidscyber
+WORKDIR /clx
 CMD source activate rapids && python run_integration_test.py

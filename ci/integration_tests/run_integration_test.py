@@ -4,7 +4,7 @@ import logging
 import threading
 from confluent_kafka.admin import AdminClient, NewTopic, NewPartitions, ConfigResource, ConfigSource
 from confluent_kafka import Producer, Consumer
-from rapidscyber.workflow import netflow_workflow
+from clx.workflow import netflow_workflow
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 log = logging.getLogger("integration_test")
 
