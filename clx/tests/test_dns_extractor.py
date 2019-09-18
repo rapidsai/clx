@@ -19,6 +19,8 @@ input_df = DataFrame(
                 "a.news.uk",
                 "a.news.co.uk",
                 "https://a.news.co.uk",
+                "107-193-100-2.lightspeed.cicril.sbcglobal.net",
+                "a23-44-13-2.deploy.static.akamaitechnologies.com",
             ],
         )
     ]
@@ -38,6 +40,8 @@ def test_parse_url(input_df):
             (
                 "domain",
                 [
+                    "sbcglobal",
+                    "akamaitechnologies",
                     "cnn",
                     "cnn",
                     "google",
@@ -55,6 +59,8 @@ def test_parse_url(input_df):
             (
                 "suffix",
                 [
+                    "net",
+                    "com",
                     "com.ac",
                     "ac",
                     "com",
@@ -71,7 +77,7 @@ def test_parse_url(input_df):
             ),
         ]
     )
-    output_df = dns.parse_url(input_df["url"], req_cols=["domain", "suffix"])
+    output_df = dns.parse_url(input_df["url"], req_cols={"domain", "suffix"})
     assert output_df.equals(expected_output_df)
 
 
@@ -82,6 +88,8 @@ def test2_parse_url(input_df):
             (
                 "hostname",
                 [
+                    "107-193-100-2.lightspeed.cicril.sbcglobal.net",
+                    "a23-44-13-2.deploy.static.akamaitechnologies.com",
                     "forums.news.cnn.com.ac",
                     "forums.news.cnn.ac",
                     "www.google.com",
@@ -99,6 +107,8 @@ def test2_parse_url(input_df):
             (
                 "subdomain",
                 [
+                    "107-193-100-2.lightspeed.cicril",
+                    "a23-44-13-2.deploy.static",
                     "forums.news",
                     "forums.news",
                     "www",
@@ -116,6 +126,8 @@ def test2_parse_url(input_df):
             (
                 "domain",
                 [
+                    "sbcglobal",
+                    "akamaitechnologies",
                     "cnn",
                     "cnn",
                     "google",
@@ -133,6 +145,8 @@ def test2_parse_url(input_df):
             (
                 "suffix",
                 [
+                    "net",
+                    "com",
                     "com.ac",
                     "ac",
                     "com",
@@ -172,6 +186,8 @@ def test_extract_hostname(input_df):
                     "a.news.uk",
                     "a.news.co.uk",
                     "a.news.co.uk",
+                    "107-193-100-2.lightspeed.cicril.sbcglobal.net",
+                    "a23-44-13-2.deploy.static.akamaitechnologies.com",
                 ],
             )
         ]
@@ -239,5 +255,5 @@ def test_parse_url_invalid_req_cols(input_df):
         % (["hostname", "subdomain", "domain", "suffix"])
     )
     with pytest.raises(ValueError) as actual_error:
-        output_df = dns.parse_url(input_df["url"], req_cols=["test"])
+        output_df = dns.parse_url(input_df["url"], req_cols={"test"})
         assert actual_error == expected_error
