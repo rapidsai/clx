@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-install_requires = ["confluent_kafka"]
+install_requires = ["confluent_kafka", "python-whois", "requests", "singleton_decorator"]
 
 setup(
       name="clx",
