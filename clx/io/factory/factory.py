@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 
 class Factory:
 
-    __cls_dict = {"kafka": "KafkaFactory", "fs": "FileSystemFactory"}
+    __cls_dict = {"kafka": "KafkaFactory", "fs": "FileSystemFactory", "dask_fs": "DaskFileSystemFactory"}
 
     @staticmethod
     def cls_dict():
