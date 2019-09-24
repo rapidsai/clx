@@ -1,6 +1,7 @@
 import logging
 from clx.io.factory.kafka_factory import KafkaFactory
 from clx.io.factory.fs_factory import FileSystemFactory
+from clx.io.factory.dask_fs_factory import DaskFileSystemFactory
 
 log = logging.getLogger(__name__)
 

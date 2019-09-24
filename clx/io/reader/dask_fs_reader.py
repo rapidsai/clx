@@ -36,19 +36,25 @@ class DaskFileSystemReader(FileReader):
         df = None
         input_format = self.config["input_format"].lower()
         if "parquet" == input_format:
+            required_cols = self.config.get("required_cols", None)
             df = self.read_parquet(
-                self.config["input_path"], self.config["required_cols"]
+                self.config["input_path"], required_cols
             )
         elif "orc" == input_format:
             df = self.read_orc(self.config["input_path"])
         else:
+            schema = self.config.get("schema", None)
+            delimiter = self.config.get("delimiter", ",")
+            required_cols = self.config.get("required_cols", None)
+            dtype = self.config.get("dtype", None)
+            header = self.config.get("header", 0)
             df = self.read_text(
                 self.config["input_path"],
-                self.config["schema"],
-                self.config["delimiter"],
-                self.config["required_cols"],
-                self.config["dtype"],
-                self.config["header"],
+                schema,
+                delimiter,
+                required_cols,
+                dtype,
+                header
             )
         self.has_data = False
         return df

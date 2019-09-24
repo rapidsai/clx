@@ -1,6 +1,5 @@
 from clx.io.factory.abstract_factory import AbstractFactory
-from clx.io.reader.fs_reader import DaskFileSystemReader
-from clx.io.writer.fs_writer import FileSystemWriter
+from clx.io.reader.dask_fs_reader import DaskFileSystemReader
 
 
 class DaskFileSystemFactory(AbstractFactory):
