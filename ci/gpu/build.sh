@@ -22,6 +22,8 @@ export HOME=$WORKSPACE
 
 # Switch to project root; also root of repo checkout
 cd $WORKSPACE
+export GIT_DESCRIBE_TAG=`git describe --tags`
+export MINOR_VERSION=`echo $GIT_DESCRIBE_TAG | grep -o -E '([0-9]+\.[0-9]+)'`
 
 ################################################################################
 # SETUP - Check environment
@@ -42,8 +44,8 @@ g++ --version
 conda config --set ssl_verify False
 
 conda install \
-    "custrings=0.10.*" \
-    "cugraph=0.10.*"
+    "custrings=${MINOR_VERSION}" \
+    "cugraph=${MINOR_VERSION}"
 
 ################################################################################
 # INSTALL - Build package

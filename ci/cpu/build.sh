@@ -46,7 +46,7 @@ conda config --set ssl_verify False
 # BUILD - Conda package build
 ################################################################################
 
-conda build conda/recipes/rapidscyber --python=${PYTHON}
+conda build conda/recipes/clx --python=${PYTHON}
 
 ################################################################################
 # UPLOAD - Conda package
