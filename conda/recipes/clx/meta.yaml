@@ -21,6 +21,8 @@ requirements:
   build:
     - python x.x
     - setuptools
+    - nvstrings {{ minor_version }}.*
+    - cugraph {{ minor_version }}.*
   run:
     - python x.x
     - nvstrings {{ minor_version }}.*
