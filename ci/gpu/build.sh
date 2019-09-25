@@ -44,7 +44,7 @@ g++ --version
 conda config --set ssl_verify False
 
 conda install \
-    "custrings=${MINOR_VERSION}" \
+    "nvstrings=${MINOR_VERSION}" \
     "cugraph=${MINOR_VERSION}"
 
 ################################################################################

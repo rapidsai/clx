@@ -23,7 +23,7 @@ requirements:
     - setuptools
   run:
     - python x.x
-    - custrings {{ minor_version }}.*
+    - nvstrings {{ minor_version }}.*
     - cugraph {{ minor_version }}.*
 
 test:
