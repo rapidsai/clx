@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
 
-install_requires = ["confluent_kafka"]
+install_requires = ["confluent_kafka", "python-whois", "requests", "singleton_decorator"]
 
 setup(
-      name="rapidscyber",
-      version="0.2.0",
-      description="RAPIDS Cyber",
+      name="clx",
+      version="0.10.0",
+      description="CLX",
       author="NVIDIA Corporation",
-      packages=find_packages(include=["rapidscyber", "rapidscyber.*"]),
+      packages=find_packages(include=["clx", "clx.*"]),
       install_requires=install_requires,
 )

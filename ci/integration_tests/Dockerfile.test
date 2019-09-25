@@ -4,10 +4,12 @@ FROM rapidsai/rapidsai:${version}
 
 ADD . /clx/
 
+ADD ./ci/integration_tests/run_integration_test.py /clx/run_integration_test.py
+
 SHELL ["/bin/bash", "-c"]
 RUN source activate rapids \
     && cd /clx \
     && python setup.py install
 
 WORKDIR /clx
-CMD source activate rapids && sh /rapids/notebooks/utils/start-jupyter.sh
+CMD source activate rapids && python run_integration_test.py
