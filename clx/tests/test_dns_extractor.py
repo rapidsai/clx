@@ -27,10 +27,19 @@ input_df = DataFrame(
 )
 
 
-def test_dns_vars_Provider():
-    sv = dns.DnsVarsProvider()
-    sv2 = dns.DnsVarsProvider()
+def test_dns_vars_provider():
+    sv = dns.DnsVarsProvider.get_instance()
+    sv2 = dns.DnsVarsProvider.get_instance()
     assert sv is sv2
+
+
+def test2_dns_vars_provider():
+    expected_error = Exception("This is a singleton class")
+
+    with pytest.raises(Exception) as actual_error:
+        sv = dns.DnsVarsProvider()
+        sv = dns.DnsVarsProvider()
+        assert actual_error == expected_error
 
 
 @pytest.mark.parametrize("input_df", [input_df])
@@ -40,39 +49,39 @@ def test_parse_url(input_df):
             (
                 "domain",
                 [
-                    "sbcglobal",
-                    "akamaitechnologies",
-                    "cnn",
-                    "cnn",
                     "google",
-                    "pydata",
-                    "worldbank",
-                    "cnn",
-                    "news",
-                    "news",
-                    "news",
                     "gmail",
                     "github",
+                    "pydata",
+                    "worldbank",
                     "waiterrant",
+                    "cnn",
+                    "cnn",
+                    "cnn",
+                    "news",
+                    "news",
+                    "news",
+                    "sbcglobal",
+                    "akamaitechnologies",
                 ],
             ),
             (
                 "suffix",
                 [
-                    "net",
                     "com",
-                    "com.ac",
-                    "ac",
+                    "com",
                     "com",
                     "org",
                     "org.kg",
+                    "blogspot.com",
+                    "com.ac",
+                    "ac",
                     "com",
                     "uk",
                     "co.uk",
                     "co.uk",
+                    "net",
                     "com",
-                    "com",
-                    "blogspot.com",
                 ],
             ),
         ]
@@ -88,77 +97,77 @@ def test2_parse_url(input_df):
             (
                 "hostname",
                 [
-                    "107-193-100-2.lightspeed.cicril.sbcglobal.net",
-                    "a23-44-13-2.deploy.static.akamaitechnologies.com",
-                    "forums.news.cnn.com.ac",
-                    "forums.news.cnn.ac",
                     "www.google.com",
+                    "gmail.com",
+                    "github.com",
                     "pandas.pydata.org",
                     "www.worldbank.org.kg",
+                    "waiterrant.blogspot.com",
+                    "forums.news.cnn.com.ac",
+                    "forums.news.cnn.ac",
                     "b.cnn.com",
                     "a.news.uk",
                     "a.news.co.uk",
                     "a.news.co.uk",
-                    "gmail.com",
-                    "github.com",
-                    "waiterrant.blogspot.com",
+                    "107-193-100-2.lightspeed.cicril.sbcglobal.net",
+                    "a23-44-13-2.deploy.static.akamaitechnologies.com",
                 ],
             ),
             (
                 "subdomain",
                 [
-                    "107-193-100-2.lightspeed.cicril",
-                    "a23-44-13-2.deploy.static",
-                    "forums.news",
-                    "forums.news",
                     "www",
+                    "",
+                    "",
                     "pandas",
                     "www",
+                    "",
+                    "forums.news",
+                    "forums.news",
                     "b",
                     "a",
                     "a",
                     "a",
-                    "",
-                    "",
-                    "",
+                    "107-193-100-2.lightspeed.cicril",
+                    "a23-44-13-2.deploy.static",
                 ],
             ),
             (
                 "domain",
                 [
-                    "sbcglobal",
-                    "akamaitechnologies",
-                    "cnn",
-                    "cnn",
                     "google",
-                    "pydata",
-                    "worldbank",
-                    "cnn",
-                    "news",
-                    "news",
-                    "news",
                     "gmail",
                     "github",
+                    "pydata",
+                    "worldbank",
                     "waiterrant",
+                    "cnn",
+                    "cnn",
+                    "cnn",
+                    "news",
+                    "news",
+                    "news",
+                    "sbcglobal",
+                    "akamaitechnologies",
                 ],
             ),
             (
                 "suffix",
                 [
-                    "net",
                     "com",
-                    "com.ac",
-                    "ac",
+                    "com",
                     "com",
                     "org",
                     "org.kg",
+                    "blogspot.com",
+                    "com.ac",
+                    "ac",
                     "com",
                     "uk",
                     "co.uk",
                     "co.uk",
+                    "net",
                     "com",
-                    "com",
-                    "blogspot.com",
                 ],
             ),
         ]
