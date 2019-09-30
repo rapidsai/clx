@@ -71,6 +71,7 @@ class Workflow(ABC):
         # Receives a yaml file path with Workflow configurations and sets appropriate values for properties in this class
         log.info("Setting configurations from config file {0}".format(yaml_file))
         try:
+            config = None
             with open(yaml_file, "r") as ymlfile:
                 config = yaml.load(ymlfile)
             self._source = config["source"]
@@ -79,6 +80,7 @@ class Workflow(ABC):
             self._io_writer = Factory.get_writer(
                 self._destination["type"], self._destination
             )
+            self._config = config
         except:
             log.error(
                 "Error creating I/O reader and writer. Please check configurations in workflow config file at {0}".format(

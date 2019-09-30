@@ -1,0 +1,85 @@
+import logging
+import clx
+import clx.ml
+import cudf
+from clx.workflow.workflow import Workflow
+
+log = logging.getLogger(__name__)
+
+class SplunkAlertWorkflow(Workflow):
+    def __init__(self, name, source=None, destination=None, interval="day", threshold=None):
+        self.interval = interval
+        self._threshold = threshold
+        Workflow.__init__(self, name, source, destination)
+
+    @property
+    def interval(self):
+        """Interval can be set to day or hour by which z score will be calculated"""
+        return self._interval
+
+    @interval.setter
+    def interval(self, interval):
+        if interval != "day" and interval != "hour":
+            raise Exception("interval='" + interval + "': interval must be set to 'day' or 'hour'")
+        else:
+            self._interval = interval
+
+    @property
+    def threshold(self):
+        """Threshold by which to flag z score. Threshold will be flagged for scores >threshold or <-threshold"""
+        return self._threshold
+
+    def workflow(self, dataframe):
+        log.debug("Processing splunk alert workflow data...")
+        interval = self._interval
+        threshold = float(self._threshold)
+        # Create alerts dataframe
+        alerts_gdf = dataframe
+        alerts_gdf['time'] = alerts_gdf['time'].astype('int')
+        alerts_gdf = alerts_gdf.rename(columns={'search_name': 'rule'})
+        if interval == "day":
+            alerts_gdf[interval] = alerts_gdf.time.applymap(self.__round2day)
+        else: #hour
+            alerts_gdf[interval] = alerts_gdf.time.applymap(self.__round2hour)
+
+        # Group alerts by interval and pivot table
+        day_rule_df= alerts_gdf[['rule',interval,'time']].groupby(['rule', interval]).count().reset_index()
+        day_rule_df.columns = ['rule', interval, 'count']
+        day_rule_piv = self.__pivot_table(day_rule_df, interval, 'rule', 'count').fillna(0)
+        
+        # Calculate rolling zscore
+        r_zscores = cudf.DataFrame()
+        for rule in day_rule_piv.columns[1:]:
+            x = day_rule_piv[rule]
+            r_zscores[rule] = clx.ml.rzscore(x, 7)
+        r_zscores[interval] = day_rule_piv[interval]
+
+        # Flag z score anomalies
+        output = self.__flag_anamolies(r_zscores, threshold)
+        log.debug(output)
+        return output
+
+    def __flag_anamolies(self, zc_df, threshold):
+        zc_df_pd = zc_df.to_pandas()
+        for col in zc_df.columns:
+            if col is not self._interval:
+                zc_df_pd.loc[(zc_df_pd[col] > threshold) | (zc_df_pd[col] < (-1.0*threshold)), col + "_flag"] = 'FLAG'
+        return cudf.from_pandas(zc_df_pd)
+
+    def __pivot_table(self, gdf, index_col, piv_col, v_col):
+        index_list = gdf[index_col].unique()
+        piv_gdf = cudf.DataFrame([(index_col, list(range(len(index_list))))])
+        piv_gdf[index_col] = index_list
+        for group in gdf[piv_col].unique():
+            temp_df = gdf[gdf[piv_col] == group]
+            temp_df = temp_df[[index_col, v_col]]
+            temp_df.columns = [index_col, group]
+            piv_gdf = piv_gdf.merge(temp_df, on=[index_col], how='left')
+        piv_gdf.set_index(index_col)
+        return piv_gdf.sort_index()
+
+    def __round2day(self, epoch_time):
+        return int(epoch_time/86400)*86400
+
+    def __round2hour(self, epoch_time):
+        return int(epoch_time/3600)*3600    
