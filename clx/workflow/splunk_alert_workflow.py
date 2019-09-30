@@ -63,6 +63,7 @@ class SplunkAlertWorkflow(Workflow):
         zc_df_pd = zc_df.to_pandas()
         for col in zc_df.columns:
             if col is not self._interval:
+                # TODO: Investigate cudf implementation
                 zc_df_pd.loc[(zc_df_pd[col] > threshold) | (zc_df_pd[col] < (-1.0*threshold)), col + "_flag"] = 'FLAG'
         return cudf.from_pandas(zc_df_pd)
 
