@@ -7,9 +7,10 @@ from clx.workflow.workflow import Workflow
 log = logging.getLogger(__name__)
 
 class SplunkAlertWorkflow(Workflow):
-    def __init__(self, name, source=None, destination=None, interval="day", threshold=None):
+    def __init__(self, name, source=None, destination=None, interval="day", threshold=2.5, window=7):
         self.interval = interval
         self._threshold = threshold
+        self._window = window
         Workflow.__init__(self, name, source, destination)
 
     @property
@@ -28,6 +29,11 @@ class SplunkAlertWorkflow(Workflow):
     def threshold(self):
         """Threshold by which to flag z score. Threshold will be flagged for scores >threshold or <-threshold"""
         return self._threshold
+
+    @property
+    def window(self):
+        """Window by which to calculate rolling z score"""
+        return self._window
 
     def workflow(self, dataframe):
         log.debug("Processing splunk alert workflow data...")
@@ -51,21 +57,21 @@ class SplunkAlertWorkflow(Workflow):
         r_zscores = cudf.DataFrame()
         for rule in day_rule_piv.columns[1:]:
             x = day_rule_piv[rule]
-            r_zscores[rule] = clx.ml.rzscore(x, 7)
-        r_zscores[interval] = day_rule_piv[interval]
-
+            r_zscores[rule] = clx.ml.rzscore(x, self._window)
+        
         # Flag z score anomalies
         output = self.__flag_anamolies(r_zscores, threshold)
+        output[interval] = day_rule_piv[interval]
         log.debug(output)
         return output
 
     def __flag_anamolies(self, zc_df, threshold):
-        zc_df_pd = zc_df.to_pandas()
         for col in zc_df.columns:
-            if col is not self._interval:
-                # TODO: Investigate cudf implementation
-                zc_df_pd.loc[(zc_df_pd[col] > threshold) | (zc_df_pd[col] < (-1.0*threshold)), col + "_flag"] = 'FLAG'
-        return cudf.from_pandas(zc_df_pd)
+            if col != self._interval:
+                zc_df[col] = zc_df[col].abs()
+                zc_df[col] = zc_df[col].where(zc_df[col] > threshold, None)
+                zc_df[col + "_flag"] = zc_df[col].notna()
+        return zc_df
 
     def __pivot_table(self, gdf, index_col, piv_col, v_col):
         index_list = gdf[index_col].unique()

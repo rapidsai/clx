@@ -4,9 +4,10 @@ from clx.workflow.splunk_alert_workflow import SplunkAlertWorkflow
 
 @pytest.mark.parametrize("threshold", [2.0])
 @pytest.mark.parametrize("interval", ["day"])
-def test_splunk_alert_workflow(threshold, interval):
+@pytest.mark.parametrize("window", [7])
+def test_splunk_alert_workflow(threshold, interval, window):
     """Tests the splunk alert analysis workflow"""
-    sa_workflow = SplunkAlertWorkflow("splunk-alert-workflow", threshold=threshold, interval=interval)
+    sa_workflow = SplunkAlertWorkflow("splunk-alert-workflow", threshold=threshold, interval=interval, window=window)
     input_df = cudf.DataFrame(
         [
             ("severity", [None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,]),
@@ -20,8 +21,8 @@ def test_splunk_alert_workflow(threshold, interval):
             ("src_port", [None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,]),
             ("dest_port", [None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,]),
             ("user", [None,None,"brianyork",None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,]),
-            ("src_ip", [None,"192.168.59.84",None,"192.168.172.243","10.189.19.88","10.32.147.85","10.100.39.222","10.171.62.205","192.168.9.119","10.210.231.211","192.168.235.136","192.168.44.11","172.28.154.115","192.168.0.177","192.168.129.37","172.22.157.95","192.168.134.147","10.47.244.14","192.168.230.24","192.168.111.5","10.93.90.124","192.168.202.136","192.168.118.52","192.168.213.23",]),
-            ("dest_ip", ["10.226.81.142",None,None,"192.168.146.232","10.118.31.23","192.168.133.48","10.163.189.207","10.238.179.52","192.168.121.26","10.232.12.129","172.16.143.49","192.168.227.201","172.30.219.153","192.168.89.18","192.168.188.143","192.168.186.30","172.19.75.153","192.168.42.226","192.168.199.12","172.17.151.181","192.168.154.106","172.29.197.57","172.30.255.229","172.25.131.162",]),
+            ("src_ip", [None,"192.168.0.123",None,"192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123",]),
+            ("dest_ip", ["192.168.0.123",None,None,"192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123","192.168.0.123",]),
             ("host", ["my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com",]),
             ("splunk_server", ["my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com","my.splunkcloud.com",]),
             ("event_type", ["Threat"," "," ",None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,]),
@@ -36,22 +37,22 @@ def test_splunk_alert_workflow(threshold, interval):
     actual_df = sa_workflow.workflow(input_df)
     expected_df = cudf.DataFrame()
     expected_df["day"] = [1515888000,1515974400,1516060800,1516233600,1516320000,1516492800,1516579200,1516752000,1516924800,1517097600,1517184000,1517270400,1517616000,1517702400,1517788800,1518048000,1518134400,1518220800,1515628800,1515801600]
-    expected_df["Access - Privileged user accessing more than expected number of machines in period - Rule_flag"] = [None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,"FLAG"]
-    expected_df["Endpoint - Host With Malware Detected (Quarantined or Waived) - Rule_flag"] = [None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,"FLAG",None]
-    expected_df["Threat - HX events to Incident Review - Rule_flag"] = [None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,"FLAG",None]
-    expected_df["Threat - Source And Destination Matches - Threat Gen_flag"] = [None,None,None,None,None,None,None,None,None,None,None,None,None,None,"FLAG", "FLAG",None,None,"FLAG",None]
+    expected_df["Access - Privileged user accessing more than expected number of machines in period - Rule_flag"] = [False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,True]
+    expected_df["Endpoint - Host With Malware Detected (Quarantined or Waived) - Rule_flag"] = [False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,True,False]
+    expected_df["Threat - HX events to Incident Review - Rule_flag"] = [False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,True,False]
+    expected_df["Threat - Source And Destination Matches - Threat Gen_flag"] = [False,False,False,False,False,False,False,False,False,False,False,False,False,False,True, True,False,False,True,False]
     for col in expected_df.columns:
         assert expected_df[col].equals(actual_df[col])
 
-
 @pytest.mark.parametrize("threshold", [1.5, 3.05, 1.0])
 @pytest.mark.parametrize("interval", ["hour"])
-def test_splunk_alert_workflow(threshold, interval):
+@pytest.mark.parametrize("window", [24, 48])
+def test_splunk_alert_workflow_hour(threshold, interval, window):
     sa_workflow = SplunkAlertWorkflow("splunk-alert-workflow", threshold=threshold, interval=interval)
 
 @pytest.mark.parametrize("threshold", [2.0])
 @pytest.mark.parametrize("interval", ["minute"])
-def test_splunk_alert_workflow(threshold, interval):
+def test_splunk_alert_workflow_min(threshold, interval):
     with pytest.raises(Exception) as e:
         sa_workflow = SplunkAlertWorkflow("splunk-alert-workflow", threshold=threshold, interval=interval)
     
