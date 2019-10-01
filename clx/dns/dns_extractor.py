@@ -2,16 +2,32 @@ import os
 import cudf
 import logging
 from cudf import DataFrame
-from singleton_decorator import singleton
 
 log = logging.getLogger(__name__)
 
 
-@singleton
 class DnsVarsProvider:
+
+    __instance = None
+
+    @staticmethod
+    def get_instance():
+        if DnsVarsProvider.__instance == None:
+            DnsVarsProvider()
+        return DnsVarsProvider.__instance
+
     def __init__(self):
-        self.__suffix_df = self.__load_suffix_df()
-        self.__allowed_output_cols = {"hostname", "subdomain", "domain", "suffix"}
+        if DnsVarsProvider.__instance != None:
+            raise Exception("This is a singleton class")
+        else:
+            DnsVarsProvider.__instance = self
+            DnsVarsProvider.__instance.__suffix_df = self.__load_suffix_df()
+            DnsVarsProvider.__instance.__allowed_output_cols = {
+                "hostname",
+                "subdomain",
+                "domain",
+                "suffix",
+            }
 
     @property
     def suffix_df(self):
@@ -101,16 +117,16 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict, output_df):
     """
     Example:- 
         input:
-               4    3                2          1           0  tld4    tld3             tld2                 tld1                        tld0
-            0 ac  com              cnn       news      forums    ac  com.ac       cnn.com.ac      news.cnn.com.ac      forums.news.cnn.com.ac
-            1     ac               cnn       news      forums            ac           cnn.ac          news.cnn.ac          forums.news.cnn.ac
-            2                      com        cnn           b                            com              cnn.com                   b.cnn.com
+               4    3                2          1           0  tld4    tld3             tld2                 tld1                        tld0    idx
+            0 ac  com              cnn       news      forums    ac  com.ac       cnn.com.ac      news.cnn.com.ac      forums.news.cnn.com.ac      0
+            1     ac               cnn       news      forums            ac           cnn.ac          news.cnn.ac          forums.news.cnn.ac      1
+            2                      com        cnn           b                            com              cnn.com                   b.cnn.com      2
     
         output:
-                              hostname      domain        suffix       subdomain
-            0   forums.news.cnn.com.ac         cnn        com.ac     forums.news
-            1       forums.news.cnn.ac         cnn            ac     forums.news
-            2                b.cnn.com         cnn           com               b           
+                              hostname      domain        suffix       subdomain   idx
+            0   forums.news.cnn.com.ac         cnn        com.ac     forums.news     0
+            2       forums.news.cnn.ac         cnn            ac     forums.news     1
+            1                b.cnn.com         cnn           com               b     2      
     """
 
     tmp_suffix_df = DataFrame()
@@ -130,6 +146,7 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict, output_df):
             joined_recs_df = merged_df[merged_df[tld_r_col].isna() == False]
             if not joined_recs_df.empty:
                 temp_df = DataFrame()
+                temp_df["idx"] = joined_recs_df["idx"]
                 if col_dict["hostname"]:
                     temp_df["hostname"] = joined_recs_df["tld0"]
                 if col_dict["domain"]:
@@ -152,6 +169,9 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict, output_df):
                 if i < col_len:
                     # Skip for last iteration. Since there won't be any entries to process further.
                     input_df = merged_df[merged_df[tld_r_col].isna()]
+    # Release memory. Once tld_col column is no longer needed.
+    tmp_suffix_df.drop(tld_col)
+    input_df.drop(tld_col)
     return output_df
 
 
@@ -160,6 +180,8 @@ def _create_output_df(req_cols):
     Create cuDF dataframe with set of predefined columns.
     """
     output_df = DataFrame([(col, "") for col in req_cols])
+    # Add temp index column to preserve input index.
+    output_df["idx"] = 0
     # Remove empty record i.e, added while creating dataframe.
     output_df = output_df[:0]
     return output_df
@@ -210,7 +232,7 @@ def parse_url(url_df_col, req_cols=None):
             2                b.cnn.com         cnn           com            b
     """
     # Singleton object.
-    sv = DnsVarsProvider()
+    sv = DnsVarsProvider.get_instance()
     req_cols = _verify_req_cols(req_cols, sv.allowed_output_cols)
     col_dict = _create_col_dict(req_cols, sv.allowed_output_cols)
     hostnames = extract_hostnames(url_df_col)
@@ -221,11 +243,17 @@ def parse_url(url_df_col, req_cols=None):
     hostname_split_df = generate_tld_cols(hostname_split_df, hostnames, col_len)
     log.info("Successfully generated tld columns.")
     output_df = _create_output_df(req_cols)
+    # Assign input index to idx column.
+    hostname_split_df["idx"] = url_df_col.index
     log.info("Extracting tld...")
     output_df = _extract_tld(
         hostname_split_df, sv.suffix_df, col_len, col_dict, output_df
     )
-    # reset index, since output_df is the result of multiple temp_df contactination.
+    # Sort index based on given input index order.
+    output_df = output_df.sort_values("idx", ascending=True)
+    # Drop temp index column.
+    output_df.drop_column("idx")
+    # Reset the index.
     output_df = output_df.reset_index(drop=True)
     log.info("Extracting tld is successfully completed.")
     return output_df
