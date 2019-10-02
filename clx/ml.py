@@ -20,7 +20,4 @@ def rzscore(input_series, window):
     # Convert pandas Series to gpu Series
     zscore_gdf = cudf.from_pandas(z_score)
     zscore_series = zscore_gdf['zscore']
-
-    print(zscore_series)
-
     return zscore_series
