@@ -73,6 +73,7 @@ class SplunkAlertWorkflow(Workflow):
                 zc_df[col + "_flag"] = zc_df[col].notna()
         return zc_df
 
+    #cuDF Feature request: https://github.com/rapidsai/cudf/issues/1214
     def __pivot_table(self, gdf, index_col, piv_col, v_col):
         index_list = gdf[index_col].unique()
         piv_gdf = cudf.DataFrame([(index_col, list(range(len(index_list))))])

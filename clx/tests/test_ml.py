@@ -6,10 +6,21 @@ def test_rzscore():
     series = cudf.Series(sequence)
     zscores_df = cudf.DataFrame()
     zscores_df['zscore'] = clx.ml.rzscore(series, 7)
-    expected_zscores_arr = [float('NaN'), float('NaN'), float('NaN'), float('NaN'), float('NaN'), float('NaN'), float('NaN'),-0.66483855880834, -0.7401410439505697, 0.23676013879409535, 3.3090095948710756, 1.1734538188742984, -1.071714854816058, -0.5456968661530742, 0.2550541099647308, 1.6711139882517698, 0.04452587482515405, -0.7965172698391981, 0.18293323079510138, -0.7376624385994839, 7.172294479823011, 1.8032118470366378, -0.9852135580890902]
+    zscores_df['zscore'] = zscores_df['zscore'].round(decimals=9)
+    expected_zscores_arr = [float('NaN'), float('NaN'), float('NaN'), float('NaN'), float('NaN'), float('NaN'),2.374423424, -0.645941275, -0.683973734, 0.158832461, 1.847751909, 0.880026019, -0.950835449, -0.360593742, 0.111407599, 1.228914145, -0.074966331, -0.570321249, 0.327849973, -0.934372308, 2.296828498, 1.282966989, -0.795223674]
     expected_zscores_df = cudf.DataFrame()
     expected_zscores_df['zscore'] = expected_zscores_arr
-    # TODO: Revisit. The following assertion fails. Checking equality by individual element instead.
+    # TODO: Revisit. The following assertion fails using cuDF.
+    # Tried rounding first: https://github.com/rapidsai/cudf/issues/2921
+    # expected_zscores_df = expected_zscores_df.fillna(0)
+    # zscores_df = zscores_df.fillna(0)
+    # expected_zscores_df['zscore'] = expected_zscores_df['zscore'].round(5)
+    # zscores_df['zscore'] = zscores_df['zscore'].round(5)
     # assert expected_zscores_df['zscore'].equals(zscores_df['zscore'])
-    for i in range(len(expected_zscores_arr)):
-      assert expected_zscores_df['zscore'][i] == zscores_df['zscore'][i]
+    
+    # Pandas equality check
+    expected_zscores_df_pd = expected_zscores_df.to_pandas().fillna(0)
+    zscores_df_pd = zscores_df.to_pandas().fillna(0)
+    expected_zscores_df_pd['zscore'] = expected_zscores_df_pd['zscore'].round(10)
+    zscores_df_pd['zscore'] = zscores_df_pd['zscore'].round(10)
+    assert expected_zscores_df_pd['zscore'].equals(zscores_df_pd['zscore'])

@@ -1,4 +1,3 @@
-# Machine Learning functional utilities
 import logging
 import cudf
 import pandas as pd
@@ -13,12 +12,15 @@ def rzscore(input_series, window):
     
     # Calculate rolling zscore
     r_window = input_series_pdf.rolling(window=window) # get data from rolling time window
-    mean = r_window.mean().shift(1) # calculate mean in window
-    std_window = r_window.std(ddof=0).shift(1) # calculate std in window
+    mean = r_window.mean() # calculate mean in window
+    std_window = r_window.std(ddof=0) # calculate std in window
     z_score = (input_series_pdf-mean)/std_window # calculate z score in window
     z_score.columns = ['zscore']
 
     # Convert pandas Series to gpu Series
     zscore_gdf = cudf.from_pandas(z_score)
     zscore_series = zscore_gdf['zscore']
+
+    print(zscore_series)
+
     return zscore_series
