@@ -11,13 +11,14 @@ class TestEventParserImpl(EventParser):
 class TestEventParser(object):
     def setup(self):
         # Create Test Event Parser Implementation
-        event_type1_regex = {
+        event_name = "eventName"
+        columns = {"eventTypeId", "username"}
+        self.event_regex = {
             "eventTypeId": "eventTypeId: ([0-9$]+)",
             "username": "username: ([a-z\.\-0-9$]+)",
         }
-        event_regex = {"eventTypeId1": event_type1_regex}
-        columns = ["eventTypeId", "username"]
-        self.event_parser = TestEventParserImpl(event_regex, columns)
+        self.event_parser = TestEventParserImpl(columns, event_name)
+        
 
     def test_parse_raw_event(self):
         test_dataframe = cudf.DataFrame(
@@ -32,7 +33,7 @@ class TestEventParser(object):
             ]
         )
         parsed_dataframe = self.event_parser.parse_raw_event(
-            test_dataframe, "Raw", "eventTypeId1"
+            test_dataframe, "Raw", self.event_regex
         )
         expected_parsed_dataframe = cudf.DataFrame(
             [("eventTypeId", ["1", "1"]), ("username", ["foo", "bar"])]
