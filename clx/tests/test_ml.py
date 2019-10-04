@@ -15,5 +15,4 @@ def test_rzscore():
     # Check that columns are equal
     expected_zscores_df['zscore'] = expected_zscores_df['zscore'].fillna(0)
     zscores_df['zscore'] = zscores_df['zscore'].fillna(0)
-    diff_series = expected_zscores_df['zscore'] - zscores_df['zscore']
     assert np.allclose(expected_zscores_df['zscore'], zscores_df['zscore'])
