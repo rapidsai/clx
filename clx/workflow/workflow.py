@@ -13,6 +13,7 @@ class Workflow(ABC):
     DEFAULT_CONFIG_PATH = "/.config/clx"
     BACKUP_CONFIG_PATH = "/etc/clx/"
     CONFIG_FILE_NAME = "workflow.yaml"
+    DEFAULT_PARAMS = ["name", "destination", "source"]
 
     def benchmark(function):
         """
@@ -71,6 +72,7 @@ class Workflow(ABC):
         # Receives a yaml file path with Workflow configurations and sets appropriate values for properties in this class
         log.info("Setting configurations from config file {0}".format(yaml_file))
         try:
+            config = None
             with open(yaml_file, "r") as ymlfile:
                 config = yaml.load(ymlfile)
             self._source = config["source"]
@@ -79,6 +81,11 @@ class Workflow(ABC):
             self._io_writer = Factory.get_writer(
                 self._destination["type"], self._destination
             )
+            # Set attributes for custom workflow properties
+            for key in config.keys():
+                if key not in self.DEFAULT_PARAMS:
+                    setattr(self, key, config[key])
+
         except:
             log.error(
                 "Error creating I/O reader and writer. Please check configurations in workflow config file at {0}".format(
