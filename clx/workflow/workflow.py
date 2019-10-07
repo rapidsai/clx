@@ -132,9 +132,9 @@ class Workflow(ABC):
                 dataframe = (
                     self._io_reader.fetch_data()
                 )
-                if dataframe:
-                    enriched_dataframe = self.workflow(dataframe)
-                    self._io_writer.write_data(enriched_dataframe)
+
+                enriched_dataframe = self.workflow(dataframe)
+                self._io_writer.write_data(enriched_dataframe)
         except KeyboardInterrupt:
             logging.info("User aborted workflow")
             self.stop_workflow()

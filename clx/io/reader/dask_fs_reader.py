@@ -1,10 +1,10 @@
-import cudf
+import dask, dask_cudf
 import logging
 from clx.io.reader.file_reader import FileReader
 
 log = logging.getLogger(__name__)
 
-class FileSystemReader(FileReader):
+class DaskFileSystemReader(FileReader):
     def __init__(self, config):
         self._config = config
         self._has_data = True
@@ -12,7 +12,7 @@ class FileSystemReader(FileReader):
     def read_text(
         self, input_path, schema, delimiter, required_cols, datatypes, header
     ):
-        df = cudf.read_csv(
+        df = dask_cudf.read_csv(
             input_path,
             names=schema,
             delimiter=delimiter,
@@ -25,11 +25,11 @@ class FileSystemReader(FileReader):
         return df
 
     def read_parquet(self, input_path, required_cols):
-        df = cudf.read_parquet(input_path, columns=required_cols)
+        df = dask_cudf.read_parquet(input_path, columns=required_cols)
         return df
 
     def read_orc(self, input_path):
-        df = cudf.read_orc(input_path, engine="cudf")
+        df = dask_cudf.read_orc(input_path, engine="cudf")
         return df
 
     def fetch_data(self):
@@ -38,7 +38,7 @@ class FileSystemReader(FileReader):
         if "parquet" == input_format:
             required_cols = self.config.get("required_cols", None)
             df = self.read_parquet(
-                self.config["input_path"], self.config["required_cols"]
+                self.config["input_path"], required_cols
             )
         elif "orc" == input_format:
             df = self.read_orc(self.config["input_path"])
@@ -50,11 +50,11 @@ class FileSystemReader(FileReader):
             header = self.config.get("header", 0)
             df = self.read_text(
                 self.config["input_path"],
-                self.config["schema"],
-                self.config["delimiter"],
-                self.config["required_cols"],
-                self.config["dtype"],
-                self.config["header"],
+                schema,
+                delimiter,
+                required_cols,
+                dtype,
+                header
             )
         self.has_data = False
         return df
