@@ -34,8 +34,14 @@ def main():
 
     df = cudf.read_csv(file_path, names=["domain", "type"])
     dataset_len = df["domain"].count()
-    partitioned_dfs = df.partition_by_hash(["domain"], int(dataset_len / batch_size))
-    train(partitioned_dfs, dataset_len, epoch)
+    
+    prev_chunk_offset = 0
+    partitioned_dfs = []
+    while prev_chunk_offset <= dataset_len:
+        curr_chunk_offset = prev_chunk_offset + batch_size
+        partitioned_dfs.append(df.iloc[prev_chunk_offset:curr_chunk_offset:1])
+        prev_chunk_offset = curr_chunk_offset
+    train(partitioned_dfs,  dataset_len, epoch)
 
 
 def parse_cmd_args():
