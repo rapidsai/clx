@@ -54,6 +54,8 @@ cd clx/
 pytest
 ```
 
+If it applies, please run the [integration test](https://github.com/rapidsai/clx/blob/master/ci/integration_tests/README.md).
+
 Then build
 ```
 python setup.py install
