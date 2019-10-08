@@ -1,10 +1,10 @@
 # CLX Integration Testing
 
-CLX integrates with Kafka for the ability to read and write data from/to a Kafka queue. An integration test environment has been created to simulate and test this interaction
+CLX integrates with [Kafka](https://kafka.apache.org/) for the ability to read and write data from/to a Kafka queue. An integration test environment has been created to simulate and test this interaction.
 
 ## Running the Integration Test
 
-To run the integration test simply. This will run the integration test `run_integration_test.py`.
+To run the integration test simply run the following. This will run the integration test `run_integration_test.py`.
 
 ```
 cd ci/integration_tests
