@@ -64,6 +64,4 @@ python setup.py install
 
 ### Contributing
 
-For contributing guildelines please reference our [guide for contributing](https://github.com/rapidsai/cudf/blob/master/CONTRIBUTING.md)
-
-
+For contributing guildelines please reference our [guide for contributing](https://github.com/rapidsai/clx/blob/master/CONTRIBUTING.md)

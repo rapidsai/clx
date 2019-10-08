@@ -2,7 +2,7 @@
 
 ## Code formatting
 
-CLX uses pre-commit hooks to assist with code formatting. Install [pre-commit]() using one of the following commands
+CLX uses pre-commit hooks to assist with code formatting. Install [pre-commit](https://pre-commit.com/) using one of the following commands
 
 ```
 conda install pre_commit
@@ -22,11 +22,10 @@ The base of the CLX environment or docker container is from the [RAPIDS release 
 In any case you wish to use a different build environment, such as the [RAPIDS nightly containers](https://hub.docker.com/r/rapidsai/rapidsai-nightly), alter your docker build command as such:
 
 ```
-# First download the rapids container you wish
 docker pull rapidsai/rapidsai-nightly:cuda10.0-runtime-ubuntu18.04
-# Then build the docker image by passing in build arguments
+
 docker build -t clx:dev --build-arg repository=rapidsai-nightly --build-arg version=cuda10.0-runtime-ubuntu18.04 .
-# Start a new container
+
 docker run --runtime=nvidia \
   --rm -it \
   -p 8888:8888 \
@@ -51,6 +50,7 @@ pip install mockito && pip install cupy-cuda100
 
 First run tests
 ```
+cd clx/
 pytest
 ```
 
@@ -58,5 +58,3 @@ Then build
 ```
 python setup.py install
 ```
-
-
