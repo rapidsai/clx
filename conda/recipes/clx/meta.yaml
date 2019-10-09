@@ -31,7 +31,7 @@ requirements:
   run:
     - python x.x
     - nvstrings {{ minor_version }}.*
-    - cugraph {{ minor_version }}.*i
+    - cugraph {{ minor_version }}.*
     - yaml
     - python-confluent-kafka
     - mock
