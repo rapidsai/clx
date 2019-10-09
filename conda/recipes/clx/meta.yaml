@@ -23,6 +23,7 @@ requirements:
     - setuptools
     - nvstrings {{ minor_version }}.*
     - cugraph {{ minor_version }}.*
+    - requests
     - yaml
     - python-confluent-kafka
     - mock
@@ -32,6 +33,7 @@ requirements:
     - python x.x
     - nvstrings {{ minor_version }}.*
     - cugraph {{ minor_version }}.*
+    - requests
     - yaml
     - python-confluent-kafka
     - mock
