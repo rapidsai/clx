@@ -23,10 +23,20 @@ requirements:
     - setuptools
     - nvstrings {{ minor_version }}.*
     - cugraph {{ minor_version }}.*
+    - yaml
+    - python-confluent-kafka
+    - mock
+    - pandas
+    - pytest
   run:
     - python x.x
     - nvstrings {{ minor_version }}.*
-    - cugraph {{ minor_version }}.*
+    - cugraph {{ minor_version }}.*i
+    - yaml
+    - python-confluent-kafka
+    - mock
+    - pandas
+    - pytest
 
 test:
   imports:
