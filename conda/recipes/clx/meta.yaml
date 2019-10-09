@@ -28,6 +28,7 @@ requirements:
     - python-confluent-kafka
     - mock
     - pandas
+    - python-whois
     - pytest
   run:
     - python x.x
@@ -38,6 +39,7 @@ requirements:
     - python-confluent-kafka
     - mock
     - pandas
+    - python-whois
     - pytest
 
 test:
