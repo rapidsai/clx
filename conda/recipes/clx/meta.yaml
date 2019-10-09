@@ -28,7 +28,6 @@ requirements:
     - mock
     - pandas
     - pytest
-    - python-whois
   run:
     - python x.x
     - nvstrings {{ minor_version }}.*
@@ -38,7 +37,6 @@ requirements:
     - mock
     - pandas
     - pytest
-    - python-whois
 
 test:
   imports:
