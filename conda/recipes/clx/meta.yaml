@@ -21,7 +21,7 @@ build:
 
 requirements:
   build:
-    - python x.x
+    - python
     - setuptools
     - nvstrings {{ minor_version }}.*
     - cugraph {{ minor_version }}.*
@@ -38,7 +38,7 @@ requirements:
     - cudatoolkit {{ cuda_version }}.*
   
   run:
-    - python x.x
+    - python
     - nvstrings {{ minor_version }}.*
     - cugraph {{ minor_version }}.*
     - requests
