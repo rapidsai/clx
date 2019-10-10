@@ -6,6 +6,7 @@
 {% set minor_version =  version.split('.')[0] + '.' + version.split('.')[1] %}
 {% set git_revision_count=environ.get('GIT_DESCRIBE_NUMBER', 0) %}
 {% set py_version=environ.get('CONDA_PY', 36) %}
+{% set cuda_version=environ.get('CUDA_REL', '0') %}
 
 package:
   name: clx
@@ -24,6 +25,7 @@ requirements:
     - setuptools
     - nvstrings {{ minor_version }}.*
     - cugraph {{ minor_version }}.*
+    - cuda
     - requests
     - yaml
     - python-confluent-kafka
@@ -32,6 +34,10 @@ requirements:
     - python-whois
     - pytest
     - pytorch
+
+  host:
+    - cudatoolkit {{ cuda_version }}.*
+  
   run:
     - python x.x
     - nvstrings {{ minor_version }}.*

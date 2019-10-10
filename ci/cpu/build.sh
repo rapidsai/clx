@@ -15,6 +15,7 @@ export PATH=/conda/bin:/usr/local/cuda/bin:$PATH
 
 # Set home to the job's workspace
 export HOME=$WORKSPACE
+export CUDA_REL=${CUDA_VERSION%.*}
 
 # Switch to project root; also root of repo checkout
 cd $WORKSPACE
