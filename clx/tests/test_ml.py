@@ -1,6 +1,6 @@
 import clx.ml
 import cudf
-import numpy as np
+import cupy as cp
 
 def test_rzscore():
     sequence = [3,4,5,6,1,10,34,2,1,11,45,34,2,9,19,43,24,13,23,10,98,84,10]
@@ -14,4 +14,4 @@ def test_rzscore():
     # Check that columns are equal
     expected_zscores_df['zscore'] = expected_zscores_df['zscore'].fillna(0)
     zscores_df['zscore'] = zscores_df['zscore'].fillna(0)
-    assert np.allclose(expected_zscores_df['zscore'], zscores_df['zscore'])
+    assert cp.allclose(expected_zscores_df['zscore'], zscores_df['zscore'])
