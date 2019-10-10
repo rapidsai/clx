@@ -4,19 +4,19 @@ log = logging.getLogger(__name__)
 
 def rzscore(series, window):
     """
-    Calculates rolling zscore
+    Calculates rolling z-score
 
     Parameters
     ----------
     series : cudf.Series
-        Column to caluclate rolling zscore
+        Series for which to calculate rolling z-score
     window : int
-        Description of arg2
+        Window size
 
     Returns
     -------
     cudf.Series
-        Column with rolling zscore values
+        Series with rolling z-score values
     """
     rolling = series.rolling(window=window)
     mean = rolling.mean()
