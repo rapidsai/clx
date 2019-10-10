@@ -31,6 +31,7 @@ requirements:
     - pandas
     - python-whois
     - pytest
+    - pytorch
   run:
     - python x.x
     - nvstrings {{ minor_version }}.*
@@ -42,6 +43,7 @@ requirements:
     - pandas
     - python-whois
     - pytest
+    - pytorch
 
 test:
   imports:
