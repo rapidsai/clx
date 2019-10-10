@@ -25,7 +25,6 @@ requirements:
     - setuptools
     - nvstrings {{ minor_version }}.*
     - cugraph {{ minor_version }}.*
-    - cuda
     - requests
     - yaml
     - python-confluent-kafka
