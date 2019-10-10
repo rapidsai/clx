@@ -1,4 +1,4 @@
-ARG version=cuda9.2-runtime-ubuntu16.04
+ARG version=cuda10.0-runtime-ubuntu18.04
 
 FROM rapidsai/rapidsai:${version}
 

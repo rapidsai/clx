@@ -1,6 +1,7 @@
+ARG repository=rapidsai
 ARG version=cuda10.0-runtime-ubuntu18.04
 
-FROM rapidsai/rapidsai:${version}
+FROM rapidsai/${repository}:${version}
 
 ADD . /clx/
 

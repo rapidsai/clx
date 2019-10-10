@@ -36,6 +36,7 @@ wf.run_workflow()
 
 CLX 
 ```aidl
+docker pull rapidsai/rapidsai:cuda10.0-runtime-ubuntu18.04
 docker build -t clx .
 docker run --runtime=nvidia \
   --rm -it \
@@ -61,4 +62,6 @@ pytest
 python setup.py install
 ```
 
+### Contributing
 
+For contributing guildelines please reference our [guide for contributing](https://github.com/rapidsai/clx/blob/master/CONTRIBUTING.md).
