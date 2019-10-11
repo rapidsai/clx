@@ -20,9 +20,19 @@ build:
   string: py{{ py_version }}_{{ git_revision_count }}
 
 requirements:
-  host:
-    - cudatoolkit {{ cuda_version }}.*
-  
+  build:
+    - python
+    - setuptools
+    - nvstrings {{ minor_version }}.*
+    - cugraph {{ minor_version }}.*
+    - requests
+    - yaml
+    - python-confluent-kafka
+    - mock
+    - pandas
+    - python-whois
+    - pytest
+    - pytorch
   run:
     - python
     - nvstrings {{ minor_version }}.*
