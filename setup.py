@@ -8,5 +8,6 @@ setup(
       description="CLX",
       author="NVIDIA Corporation",
       packages=find_packages(include=["clx", "clx.*"]),
+      package_data={'clx.parsers':['resources/*.yaml']},
       install_requires=install_requires,
 )
