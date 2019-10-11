@@ -4,7 +4,7 @@
 
 set -e
 
-export UPLOADFILE=`conda build conda/recipes/dask-cuda --python=$PYTHON --output`
+export UPLOADFILE=`conda build conda/recipes/clx --python=$PYTHON --output`
 CUDA_REL=${CUDA_VERSION%.*}
 
 SOURCE_BRANCH=master
