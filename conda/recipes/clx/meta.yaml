@@ -20,20 +20,6 @@ build:
   string: py{{ py_version }}_{{ git_revision_count }}
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - nvstrings {{ minor_version }}.*
-    - cugraph {{ minor_version }}.*
-    - requests
-    - yaml
-    - python-confluent-kafka
-    - mock
-    - pandas
-    - python-whois
-    - pytest
-    - pytorch
-
   host:
     - cudatoolkit {{ cuda_version }}.*
   
@@ -51,8 +37,8 @@ requirements:
     - pytorch
 
 test:
-  commands:
-    - python -c "import clx"
+  imports:
+    - clx
 
 
 about:
