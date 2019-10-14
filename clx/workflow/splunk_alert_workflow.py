@@ -61,7 +61,6 @@ class SplunkAlertWorkflow(Workflow):
         day_rule_df= alerts_gdf[['rule',interval,'time']].groupby(['rule', interval]).count().reset_index()
         day_rule_df.columns = ['rule', interval, 'count']
         day_rule_piv = self.__pivot_table(day_rule_df, interval, 'rule', 'count').fillna(0)
-        print(day_rule_piv.columns)
 
         # Calculate rolling zscore
         r_zscores = cudf.DataFrame()
