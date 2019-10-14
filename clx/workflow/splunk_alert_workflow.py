@@ -39,6 +39,7 @@ class SplunkAlertWorkflow(Workflow):
         log.debug("Processing splunk alert workflow data...")
         interval = self._interval
         threshold = float(self._threshold)
+
         # Create alerts dataframe
         alerts_gdf = dataframe
         alerts_gdf['time'] = alerts_gdf['time'].astype('int')
@@ -69,6 +70,7 @@ class SplunkAlertWorkflow(Workflow):
         for col in zc_df.columns:
             if col != self._interval:
                 zc_df[col] = zc_df[col].abs()
+                zc_df[col] = zc_df[col].nans_to_nulls()
                 zc_df[col] = zc_df[col].where(zc_df[col] > threshold, None)
                 zc_df[col + "_flag"] = zc_df[col].notna()
         return zc_df
