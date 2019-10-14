@@ -94,9 +94,7 @@ class SplunkAlertWorkflow(Workflow):
             temp_df.columns = [index_col, group]
             piv_gdf = piv_gdf.merge(temp_df, on=[index_col], how='left')
         piv_gdf = piv_gdf.set_index(index_col)
-        print(piv_gdf.index)
         piv_gdf = piv_gdf.sort_index()
-        print(piv_gdf.index)
         return piv_gdf
 
     def __round2day(self, epoch_time):
