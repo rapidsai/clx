@@ -44,7 +44,7 @@ g++ --version
 # FIX Added to deal with Anancoda SSL verification issues during conda builds
 conda config --set ssl_verify False
 
-conda install nvstrings=${MINOR_VERSION} cugraph=${MINOR_VERSION} \
+conda install nvstrings=${MINOR_VERSION} cugraph=${MINOR_VERSION} dask-cudf=${MINOR_VERSION} \
    requests yaml python-confluent-kafka python-whois dask
 
 pip install mockito
