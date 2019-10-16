@@ -1,12 +1,13 @@
 import logging
 from clx.io.factory.kafka_factory import KafkaFactory
 from clx.io.factory.fs_factory import FileSystemFactory
+from clx.io.factory.dask_fs_factory import DaskFileSystemFactory
 
 log = logging.getLogger(__name__)
 
 class Factory:
 
-    __cls_dict = {"kafka": "KafkaFactory", "fs": "FileSystemFactory"}
+    __cls_dict = {"kafka": "KafkaFactory", "fs": "FileSystemFactory", "dask_fs": "DaskFileSystemFactory"}
 
     @staticmethod
     def cls_dict():

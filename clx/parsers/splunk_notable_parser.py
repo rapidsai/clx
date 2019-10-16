@@ -16,14 +16,14 @@ class SplunkNotableParser(EventParser):
         regex_filepath = (
             os.path.dirname(os.path.abspath(__file__)) + "/" + self.REGEX_FILE
         )
-        event_regex[self.EVENT_NAME] = self._load_regex_yaml(regex_filepath)
-        EventParser.__init__(self, event_regex)
+        self.event_regex = self._load_regex_yaml(regex_filepath)
+        EventParser.__init__(self, event_regex.keys(), self.EVENT_NAME)
 
     def parse(self, dataframe, raw_column):
         """Parses the Splunk notable raw event"""
         # Cleaning raw data to be consistent.
         dataframe[raw_column] = dataframe[raw_column].str.replace("\\\\", "")
-        parsed_dataframe = self.parse_raw_event(dataframe, raw_column, self.EVENT_NAME)
+        parsed_dataframe = self.parse_raw_event(dataframe, raw_column, self.event_regex)
         # Replace null values of all columns with empty.
         parsed_dataframe = parsed_dataframe.fillna("")
         # Post-processing: for src_ip and dest_ip.
