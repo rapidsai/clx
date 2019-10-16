@@ -66,5 +66,5 @@ python setup.py build_ext --inplace
 if hasArg --skip-tests; then
     logger "Skipping Tests..."
 else
-    py.test --cache-clear --junitxml=${WORKSPACE}/junit-clx.xml -v
+    py.test --ignore=ci --cache-clear --junitxml=${WORKSPACE}/junit-clx.xml -v
 fi
