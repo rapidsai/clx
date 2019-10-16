@@ -45,6 +45,9 @@ Next install test dependencies. The following cupy dependency is for CUDA 10.0 -
 ```
 pip install mockito && pip install cupy-cuda100
 ```
+```
+conda install -c conda-forge -c rapidsai python-whois
+```
 
 ## Building from Source
 

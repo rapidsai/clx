@@ -61,6 +61,11 @@ pytest
 # Build and install
 python setup.py install
 ```
+### Conda install
+
+```
+conda install -c conda-forge -c rapidsai-nightly cudatoolkit=10.0 clx 
+```
 
 ### Contributing
 
