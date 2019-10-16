@@ -3,14 +3,17 @@ import clx
 import clx.ml
 import cudf
 from clx.workflow.workflow import Workflow
+from clx.parsers.splunk_notable_parser import SplunkNotableParser
 
 log = logging.getLogger(__name__)
 
 class SplunkAlertWorkflow(Workflow):
-    def __init__(self, name, source=None, destination=None, interval="day", threshold=2.5, window=7):
+    def __init__(self, name, source=None, destination=None, interval="day", threshold=2.5, window=7, raw_data_col_name="_raw"):
         self.interval = interval
         self._threshold = threshold
         self._window = window
+        self._snp = SplunkNotableParser()
+        self._raw_data_col_name = raw_data_col_name
         Workflow.__init__(self, name, source, destination)
 
     @property
@@ -35,13 +38,19 @@ class SplunkAlertWorkflow(Workflow):
         """Window by which to calculate rolling z score"""
         return self._window
 
+    @property
+    def raw_data_col_name(self):
+        """Dataframe column name containing raw splunk alert data"""
+        return self._raw_data_col_name
+
     def workflow(self, dataframe):
         log.debug("Processing splunk alert workflow data...")
+        parsed_df = self._snp.parse(dataframe, self._raw_data_col_name)
         interval = self._interval
         threshold = float(self._threshold)
 
         # Create alerts dataframe
-        alerts_gdf = dataframe
+        alerts_gdf = parsed_df
         alerts_gdf['time'] = alerts_gdf['time'].astype('int')
         alerts_gdf = alerts_gdf.rename(columns={'search_name': 'rule'})
         if interval == "day":
@@ -53,16 +62,16 @@ class SplunkAlertWorkflow(Workflow):
         day_rule_df= alerts_gdf[['rule',interval,'time']].groupby(['rule', interval]).count().reset_index()
         day_rule_df.columns = ['rule', interval, 'count']
         day_rule_piv = self.__pivot_table(day_rule_df, interval, 'rule', 'count').fillna(0)
-        
+
         # Calculate rolling zscore
         r_zscores = cudf.DataFrame()
-        for rule in day_rule_piv.columns[1:]:
+        for rule in day_rule_piv.columns:
             x = day_rule_piv[rule]
             r_zscores[rule] = clx.ml.rzscore(x, self._window)
         
         # Flag z score anomalies
         output = self.__flag_anamolies(r_zscores, threshold)
-        output[interval] = day_rule_piv[interval]
+        output[interval] = day_rule_piv.index
         log.debug(output)
         return output
 
@@ -85,8 +94,9 @@ class SplunkAlertWorkflow(Workflow):
             temp_df = temp_df[[index_col, v_col]]
             temp_df.columns = [index_col, group]
             piv_gdf = piv_gdf.merge(temp_df, on=[index_col], how='left')
-        piv_gdf.set_index(index_col)
-        return piv_gdf.sort_index()
+        piv_gdf = piv_gdf.set_index(index_col)
+        piv_gdf = piv_gdf.sort_index()
+        return piv_gdf
 
     def __round2day(self, epoch_time):
         return int(epoch_time/86400)*86400
