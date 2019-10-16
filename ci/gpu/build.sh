@@ -16,6 +16,7 @@ function hasArg {
 # Set path and build parallel level
 export PATH=/conda/bin:/usr/local/cuda/bin:$PATH
 export CUDA_REL=${CUDA_VERSION%.*}
+export CUDA_SHORT=${CUDA_REL//./}
 
 # Set home to the job's workspace
 export HOME=$WORKSPACE
@@ -44,7 +45,10 @@ g++ --version
 conda config --set ssl_verify False
 
 conda install nvstrings=${MINOR_VERSION} cugraph=${MINOR_VERSION} \
-    requests yaml python-confluent-kafka mock python-whois
+    requests yaml python-confluent-kafka mock python-whois dask
+
+pip install mockito
+pip install cupy-cuda${CUDA_SHORT}
 
 ################################################################################
 # INSTALL - Build package
