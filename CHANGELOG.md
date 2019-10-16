@@ -6,6 +6,8 @@
 
 ## Bug Fixes
 
+ - PR #39 Fix gpuCI builds
+
 
 # clx 0.10.0 (Date TBD)
 

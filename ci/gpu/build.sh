@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#/usr/bin/env bash
 set -e
 NUMARGS=$#
 ARGS=$*
@@ -16,6 +16,7 @@ function hasArg {
 # Set path and build parallel level
 export PATH=/conda/bin:/usr/local/cuda/bin:$PATH
 export CUDA_REL=${CUDA_VERSION%.*}
+export CUDA_SHORT=${CUDA_REL//./}
 
 # Set home to the job's workspace
 export HOME=$WORKSPACE
@@ -43,15 +44,20 @@ g++ --version
 # FIX Added to deal with Anancoda SSL verification issues during conda builds
 conda config --set ssl_verify False
 
-conda install nvstrings=${MINOR_VERSION} cugraph=${MINOR_VERSION} \
-    requests yaml python-confluent-kafka mock python-whois
+conda install nvstrings=${MINOR_VERSION} cugraph=${MINOR_VERSION} dask-cudf=${MINOR_VERSION} \
+   requests yaml python-confluent-kafka python-whois dask
+
+pip install mockito
+pip install cupy-cuda${CUDA_SHORT}
+
+conda list
 
 ################################################################################
 # INSTALL - Build package
 ################################################################################
 
 cd $WORKSPACE
-python setup.py install
+python setup.py build_ext --inplace
 
 ################################################################################
 # TEST - Test python package
@@ -60,5 +66,5 @@ python setup.py install
 if hasArg --skip-tests; then
     logger "Skipping Tests..."
 else
-    py.test --cache-clear --junitxml=${WORKSPACE}/junit-clx.xml -v
+    py.test --ignore=ci --cache-clear --junitxml=${WORKSPACE}/junit-clx.xml -v
 fi
