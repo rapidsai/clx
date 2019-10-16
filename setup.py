@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-install_requires = ["confluent_kafka", "python-whois", "requests", "singleton_decorator"]
+install_requires = ["confluent_kafka", "python-whois", "requests"]
 
 setup(
       name="clx",
@@ -8,5 +8,6 @@ setup(
       description="CLX",
       author="NVIDIA Corporation",
       packages=find_packages(include=["clx", "clx.*"]),
+      package_data={'clx.parsers':['resources/*.yaml']},
       install_requires=install_requires,
 )
