@@ -8,7 +8,8 @@ log = logging.getLogger(__name__)
 
 
 class Detector(ABC):
-    def __init__(self):
+    def __init__(self, lr=0.001):
+        self.lr = lr
         self.__model = None
         self.__optimizer = None
         self.__criterion = nn.CrossEntropyLoss()
@@ -56,7 +57,7 @@ class Detector(ABC):
 
     def __set_optimizer(self):
         self.__optimizer = torch.optim.RMSprop(
-            self.model.parameters(), lr=0.001, weight_decay=0.0
+            self.model.parameters(), self.lr, weight_decay=0.0
         )
 
     def __set_model2cuda(self):
