@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#/usr/bin/env bash
 set -e
 NUMARGS=$#
 ARGS=$*
@@ -45,17 +45,19 @@ g++ --version
 conda config --set ssl_verify False
 
 conda install nvstrings=${MINOR_VERSION} cugraph=${MINOR_VERSION} \
-    requests yaml python-confluent-kafka mock python-whois dask
+   requests yaml python-confluent-kafka python-whois dask
 
 pip install mockito
 pip install cupy-cuda${CUDA_SHORT}
+
+conda list
 
 ################################################################################
 # INSTALL - Build package
 ################################################################################
 
 cd $WORKSPACE
-python setup.py install
+python setup.py build_ext --inplace
 
 ################################################################################
 # TEST - Test python package
