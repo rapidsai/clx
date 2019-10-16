@@ -2,7 +2,7 @@ import numpy as np
 
 import cudf
 import nvstrings
-from cudf import rmm
+import rmm
 
 def ip_to_int(values):
     """Convert string column of IP addresses to integer values.
