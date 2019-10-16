@@ -32,7 +32,7 @@ requirements:
     - requests
     - yaml
     - python-confluent-kafka
-    - mock
+    - dask
     - pandas
     - python-whois
     - pytest
