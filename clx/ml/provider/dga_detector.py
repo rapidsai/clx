@@ -35,10 +35,10 @@ class DGADetector(Detector):
         total_loss = 0
         i = 0
         for df in partitioned_dfs:
-            domains_len = df['domain'].count()
+            domains_len = df["domain"].count()
             if domains_len > 0:
-                types_tensor = self.__create_types_tensor(df['type'])
-                df = df.drop(['type', 'domain'])
+                types_tensor = self.__create_types_tensor(df["type"])
+                df = df.drop(["type", "domain"])
                 input, seq_lengths = self.__create_variables(df)
                 model_result = self.model(input, seq_lengths)
                 loss = self.__get_loss(model_result, types_tensor)
@@ -69,17 +69,16 @@ class DGADetector(Detector):
         temp_df = self.str2ascii(df, domains_len)
         # Assigning sorted domains index to return learned labels as per the given input order.
         df.index = temp_df.index
-        df['domain'] = temp_df['domain']
-        temp_df = temp_df.drop('domain')
+        df["domain"] = temp_df["domain"]
+        temp_df = temp_df.drop("domain")
         input, seq_lengths = self.__create_variables(temp_df)
         model_result = self.model(input, seq_lengths)
         pred = model_result.data.max(1, keepdim=True)[1]
         type_ids = pred.view(-1).tolist()
-        df['is_dga'] = type_ids
+        df["is_dga"] = type_ids
         df = df.sort_index()
-        return df['is_dga']
+        return df["is_dga"]
 
-   
     def __create_types_tensor(self, type_series):
         """Create types tensor variable in the same order of sequence tensor"""
         types = type_series.to_array()
@@ -89,9 +88,11 @@ class DGADetector(Detector):
         return types_tensor
 
     def __create_variables(self, df):
-        """Creates vectorized sequence for given domains and wraps around cuda for parallel processing."""
+        """
+        Creates vectorized sequence for given domains and wraps around cuda for parallel processing.
+        """
         seq_len_arr = df["len"].to_array()
-        df  = df.drop('len')
+        df = df.drop("len")
         seq_len_tensor = torch.LongTensor(seq_len_arr)
         seq_tensor = self.__df2tensor(df)
         # Return variables
@@ -102,22 +103,26 @@ class DGADetector(Detector):
         return seq_tensor, seq_len_tensor
 
     def __df2tensor(self, ascii_df):
-        """Converts gdf -> dlpack tensor -> torch tensor"""
+        """
+        Converts gdf -> dlpack tensor -> torch tensor
+        """
         dlpack_ascii_tensor = ascii_df.to_dlpack()
         seq_tensor = from_dlpack(dlpack_ascii_tensor).long()
         return seq_tensor
 
     def str2ascii(self, df, domains_len):
-        """This function sorts domain name entries in desc order based on the length of domain and converts domain name to ascii characters."""
+        """
+        This function sorts domain name entries in desc order based on the length of domain and converts domain name to ascii characters.
+        """
         df["len"] = df["domain"].str.len()
         df = df.sort_values("len", ascending=False)
         splits = df["domain"].str.findall("[\w\.\-\@]")
         split_df = cudf.DataFrame()
         columns_cnt = len(splits)
-        
+
         for i in range(0, columns_cnt):
             split_df[i] = splits[i]
-        
+
         # https://github.com/rapidsai/cudf/issues/3123
         # Replace null's with ^.
         split_df = split_df.fillna("^")
@@ -126,31 +131,32 @@ class DGADetector(Detector):
             ascii_darr = rmm.device_array(domains_len, dtype=np.int32)
             split_df[col].data.code_points(ascii_darr.device_ctypes_pointer.value)
             temp_df[col] = ascii_darr
-        
-        # https://github.com/rapidsai/cudf/issues/3123   
+
+        # https://github.com/rapidsai/cudf/issues/3123
         # Replace ^ ascii value 94 with 0.
         temp_df = temp_df.replace(94, 0)
-        temp_df['len']  = df['len']
-        if 'type' in df.columns:
-            temp_df['type'] = df['type']
-        temp_df['domain']  = df['domain']
+        temp_df["len"] = df["len"]
+        if "type" in df.columns:
+            temp_df["type"] = df["type"]
+        temp_df["domain"] = df["domain"]
         temp_df.index = df.index
         return temp_df
 
-
     def evaluate_model(self, test_partitioned_dfs, dataset_len):
-        """This function evaluates the trained model to verify it's accuracy."""
+        """
+        This function evaluates the trained model to verify it's accuracy.
+        """
         print("Evaluating trained model ...")
         correct = 0
         for df in test_partitioned_dfs:
-            target = self.__create_types_tensor(df['type'])
-            df = df.drop(['type', 'domain'])
-            input, seq_lengths  = self.__create_variables(df)
+            target = self.__create_types_tensor(df["type"])
+            df = df.drop(["type", "domain"])
+            input, seq_lengths = self.__create_variables(df)
             output = self.model(input, seq_lengths)
             pred = output.data.max(1, keepdim=True)[1]
             correct += pred.eq(target.data.view_as(pred)).cpu().sum()
-        accuracy=float(correct)/dataset_len
-        print('Test set: Accuracy: {}/{} ({})\n'.format(correct, dataset_len, accuracy))
+        accuracy = float(correct) / dataset_len
+        print("Test set: Accuracy: {}/{} ({})\n".format(correct, dataset_len, accuracy))
         return accuracy
 
     def __get_loss(self, model_result, types_tensor):
@@ -161,6 +167,7 @@ class DGADetector(Detector):
         return loss.item()
 
     def __set_var2cuda(self, tensor):
-        """Set variable to cuda."""
+        """
+        Set variable to cuda.
+        """
         return tensor.cuda()
-    
