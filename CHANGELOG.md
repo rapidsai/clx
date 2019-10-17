@@ -6,6 +6,7 @@
 
 ## Bug Fixes
 
+ - PR #41 Fix unit test
  - PR #39 Fix gpuCI builds
 
 

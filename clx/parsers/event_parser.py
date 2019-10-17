@@ -44,7 +44,7 @@ class EventParser(ABC):
         )
         parsed_gdf = cudf.DataFrame([(col, [""]) for col in self.columns])
         parsed_gdf = parsed_gdf[:0]
-        event_specific_columns = set(event_regex.keys())
+        event_specific_columns = event_regex.keys()
         # Applies regex pattern for each expected output column to raw data
         for col in event_specific_columns:
             regex_pattern = event_regex.get(col)

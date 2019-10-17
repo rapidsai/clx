@@ -12,7 +12,7 @@ class TestEventParser(object):
     def setup(self):
         # Create Test Event Parser Implementation
         event_name = "eventName"
-        columns = {"eventTypeId", "username"}
+        columns = ["eventTypeId", "username"]
         self.event_regex = {
             "eventTypeId": "eventTypeId: ([0-9$]+)",
             "username": "username: ([a-z\.\-0-9$]+)",
