@@ -4,7 +4,7 @@ install_requires = ["confluent_kafka", "python-whois", "requests"]
 
 setup(
       name="clx",
-      version="0.10.0",
+      version="0.11.0",
       description="CLX",
       author="NVIDIA Corporation",
       packages=find_packages(include=["clx", "clx.*"]),
