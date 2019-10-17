@@ -38,9 +38,6 @@ class TestEventParser(object):
         expected_parsed_dataframe = cudf.DataFrame(
             [("username", ["foo", "bar"]),("eventTypeId", ["1", "1"])]
         )
-        print(expected_parsed_dataframe)
-        print(parsed_dataframe)
         # Equality checks issue: https://github.com/rapidsai/cudf/issues/1750
-        assert parsed_dataframe.to_pandas().equals(
-            expected_parsed_dataframe.to_pandas()
-        )
+        for col in parsed_dataframe.columns:
+            assert parsed_dataframe[col].equals(expected_parsed_dataframe[col])
