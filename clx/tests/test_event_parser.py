@@ -36,7 +36,7 @@ class TestEventParser(object):
             test_dataframe, "Raw", self.event_regex
         )
         expected_parsed_dataframe = cudf.DataFrame(
-            [("username", ["foo", "bar"]),("eventTypeId", ["1", "1"])]
+            [("eventTypeId", ["1", "1"]), ("username", ["foo", "bar"])]
         )
         # Equality checks issue: https://github.com/rapidsai/cudf/issues/1750
         for col in parsed_dataframe.columns:
