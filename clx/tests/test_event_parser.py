@@ -12,7 +12,7 @@ class TestEventParser(object):
     def setup(self):
         # Create Test Event Parser Implementation
         event_name = "eventName"
-        columns = {"eventTypeId", "username"}
+        columns = ["eventTypeId", "username"]
         self.event_regex = {
             "eventTypeId": "eventTypeId: ([0-9$]+)",
             "username": "username: ([a-z\.\-0-9$]+)",
@@ -39,5 +39,6 @@ class TestEventParser(object):
             [("eventTypeId", ["1", "1"]), ("username", ["foo", "bar"])]
         )
         # Equality checks issue: https://github.com/rapidsai/cudf/issues/1750
-        for col in parsed_dataframe.columns:
-            assert parsed_dataframe[col].equals(expected_parsed_dataframe[col])
+        assert parsed_dataframe.to_pandas().equals(
+            expected_parsed_dataframe.to_pandas()
+        )
