@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-install_requires = ["confluent_kafka", "python-whois", "requests"]
+install_requires = ["confluent_kafka", "python-whois", "requests", "pytorch"]
 
 setup(
       name="clx",
