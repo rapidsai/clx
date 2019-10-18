@@ -14,7 +14,7 @@
 # clx 0.10.0 (Date TBD)
 
 ## New Features
-
+ - PR #37 Add DGA detection feature.
  - PR #14 Integrate repo with gpuCI
 
 ## Improvements
