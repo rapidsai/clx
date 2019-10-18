@@ -45,7 +45,7 @@ g++ --version
 conda config --set ssl_verify False
 
 conda install nvstrings=${MINOR_VERSION} cugraph=${MINOR_VERSION} dask-cudf=${MINOR_VERSION} \
-   requests yaml python-confluent-kafka python-whois dask pytorch
+   requests yaml python-confluent-kafka python-whois dask pytorch torchvision
 
 pip install mockito
 pip install cupy-cuda${CUDA_SHORT}
