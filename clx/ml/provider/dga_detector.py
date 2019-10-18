@@ -2,7 +2,7 @@ import cudf
 import torch
 import logging
 import numpy as np
-from librmm_cffi import librmm as rmm
+import rmm
 from torch.utils.dlpack import from_dlpack
 from clx.ml.provider.detector import Detector
 from clx.ml.model.rnn_classifier import RNNClassifier

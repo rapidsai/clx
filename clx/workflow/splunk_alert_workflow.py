@@ -1,6 +1,6 @@
 import logging
 import clx
-import clx.ml
+import clx.mlstats
 import cudf
 from clx.workflow.workflow import Workflow
 from clx.parsers.splunk_notable_parser import SplunkNotableParser
@@ -67,7 +67,7 @@ class SplunkAlertWorkflow(Workflow):
         r_zscores = cudf.DataFrame()
         for rule in day_rule_piv.columns:
             x = day_rule_piv[rule]
-            r_zscores[rule] = clx.ml.rzscore(x, self._window)
+            r_zscores[rule] = clx.mlstats.rzscore(x, self._window)
         
         # Flag z score anomalies
         output = self.__flag_anamolies(r_zscores, threshold)
