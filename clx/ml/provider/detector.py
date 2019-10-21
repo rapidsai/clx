@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from clx.ml.model.rnn_classifier import RNNClassifier
 
 log = logging.getLogger(__name__)
-
+torch.cuda.set_device(0)
 
 class Detector(ABC):
     def __init__(self, lr=0.001):
