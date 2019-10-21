@@ -17,7 +17,6 @@ function hasArg {
 export PATH=/conda/bin:/usr/local/cuda/bin:$PATH
 export CUDA_REL=${CUDA_VERSION%.*}
 export CUDA_SHORT=${CUDA_REL//./}
-export NVIDIA_VISIBLE_DEVICES=0
 
 # Set home to the job's workspace
 export HOME=$WORKSPACE
