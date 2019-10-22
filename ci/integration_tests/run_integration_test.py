@@ -83,6 +83,7 @@ def send_test_data(bootstrap_server, topic):
         time.sleep(1)
         log.info("Sending msg to workflow: " + message)
         producer.produce(topic, message)
+    producer.flush()
 
 def verify(bootstrap_server, output_topic):
     """

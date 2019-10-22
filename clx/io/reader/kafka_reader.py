@@ -54,7 +54,7 @@ class KafkaReader(Reader):
                     running = False
                 else:
                     running = False
-            df = cudf.dataframe.DataFrame()
+            df = cudf.DataFrame()
             df["Raw"] = events
             return df
         except:
