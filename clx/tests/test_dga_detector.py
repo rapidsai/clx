@@ -5,6 +5,9 @@ from cudf import DataFrame
 from mockito import when, mock, verify
 from clx.ml.provider.dga_detector import DGADetector
 from clx.ml.model.rnn_classifier import RNNClassifier
+import logging
+
+log = logging.getLogger(__name__)
 
 test_dataset_len = 4
 test_df1 = cudf.DataFrame(
@@ -66,6 +69,8 @@ model_filepath = "%s/input/rnn_classifier_2019-10-21_22_40_57.pth" % os.path.dir
 
 
 def test_load_model():
+    print(">>>>>>>>> current device %s<<<<<<<<<" %(torch.cuda.current_device()))
+    log.info(">>>>>>>>> current device %s<<<<<<<<<" %(torch.cuda.current_device()))
     dd = DGADetector()
     dd.load_model(model_filepath)
     assert isinstance(dd.model, RNNClassifier)
