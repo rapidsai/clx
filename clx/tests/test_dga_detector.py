@@ -1,5 +1,6 @@
 import os
 import cudf
+import torch
 import pytest
 from cudf import DataFrame
 from mockito import when, mock, verify
@@ -69,6 +70,8 @@ model_filepath = "%s/input/rnn_classifier_2019-10-21_22_40_57.pth" % os.path.dir
 
 
 def test_load_model():
+    log.info('>>>>>>>>>>>device count %s <<<<<<<<' %(torch.cuda.device_count()))
+    print('>>>>>>>>>>>device count %s <<<<<<<<' %(torch.cuda.device_count()))
     print(">>>>>>>>> current device %s<<<<<<<<<" %(torch.cuda.current_device()))
     log.info(">>>>>>>>> current device %s<<<<<<<<<" %(torch.cuda.current_device()))
     dd = DGADetector()
