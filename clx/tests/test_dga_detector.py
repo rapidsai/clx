@@ -60,7 +60,7 @@ test_df2 = cudf.DataFrame(
 
 test_partitioned_dfs = [test_df1, test_df2]
 
-model_filepath = "%s/input/rnn_classifier_2019-10-15_20_33_04.pth" % os.path.dirname(
+model_filepath = "%s/input/rnn_classifier_2019-10-21_22_40_57.pth" % os.path.dirname(
     os.path.realpath(__file__)
 )
 
@@ -68,7 +68,7 @@ model_filepath = "%s/input/rnn_classifier_2019-10-15_20_33_04.pth" % os.path.dir
 def test_load_model():
     dd = DGADetector()
     dd.load_model(model_filepath)
-    assert isinstance(dd.model.module, RNNClassifier)
+    assert isinstance(dd.model, RNNClassifier)
 
 
 def test_predict():

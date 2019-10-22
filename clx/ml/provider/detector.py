@@ -54,6 +54,8 @@ class Detector(ABC):
             log.info("%s GPUs!" % (gpu_count))
             self.__model = nn.DataParallel(self.model)
             self.__set_model2cuda()
+        else:
+            self.__set_model2cuda()
 
     def __set_optimizer(self):
         self.__optimizer = torch.optim.RMSprop(
