@@ -6,6 +6,7 @@
 
 ## Bug Fixes
 
+ - PR #44 Fix Kafka IO
  - PR #42 Include DNS parser in module
  - PR #41 Fix unit test
  - PR #39 Fix gpuCI builds
