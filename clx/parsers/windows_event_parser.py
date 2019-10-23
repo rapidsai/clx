@@ -11,11 +11,12 @@ class WindowsEventParser(EventParser):
     REGEX_FILE = "resources/windows_event_regex.yaml"
     EVENT_NAME = "windows event"
 
-    def __init__(self):
+    def __init__(self, interested_events=None):
         event_regex = {}
         regex_filepath = (
             os.path.dirname(os.path.abspath(__file__)) + "/" + self.REGEX_FILE
         )
+        self.interested_events = interested_events
         self.event_regex = self._load_regex_yaml(regex_filepath)
         EventParser.__init__(self, self.get_columns(), self.EVENT_NAME)
 
@@ -46,6 +47,20 @@ class WindowsEventParser(EventParser):
             .str.replace("\\\\n", "|")
         )
         return dataframe
+
+    def _load_regex_yaml(self, yaml_file):
+        event_regex = EventParser._load_regex_yaml(self, yaml_file)
+        if self.interested_events is not None:
+            for eventcode in self.interested_events:
+                required_event_regex = {}
+                if eventcode not in event_regex:
+                    raise KeyError(
+                        "Regex for eventcode %s is not available in the config file. Please choose from %s"
+                        % (eventcode, list(event_regex.keys()))
+                    )
+                required_event_regex[eventcode] = event_regex[eventcode]
+            return required_event_regex
+        return event_regex
 
     def get_columns(self):
         columns = set()
