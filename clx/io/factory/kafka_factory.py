@@ -15,7 +15,7 @@ class KafkaFactory(AbstractFactory):
 
     def get_reader(self):
         consumer = self._create_consumer()
-        if self.config["time_window"]:
+        if "time_window" in self.config:
             reader = KafkaReader(self.config["batch_size"], consumer, time_window=self.config["time_window"])
         else:
             reader = KafkaReader(self.config["batch_size"], consumer)
