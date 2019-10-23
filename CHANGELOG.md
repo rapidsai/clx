@@ -3,6 +3,7 @@
 ## New Features
 
 ## Improvements
+ - PR #43 Functionality to parse selected windows events
 
 ## Bug Fixes
 
