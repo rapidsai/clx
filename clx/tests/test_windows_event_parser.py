@@ -697,7 +697,7 @@ def test_windows_event_parser():
 
 
 def test2_windows_event_parser():
-    wep = WindowsEventParser(interested_events={"5156"})
+    wep = WindowsEventParser(interested_eventcodes={"5156"})
     test_input_df = cudf.DataFrame()
     raw_colname = "_raw"
     test_input_df[raw_colname] = TEST_DATA
@@ -724,5 +724,5 @@ def test3_windows_event_parser():
         "Regex for eventcode 24 is not available in the config file. Please choose from ['4624', '4625', '4634', '4647', '4648', '4672', '4673', '4720', '4722', '4723', '4724', '4725', '4726', '4732', '4738', '4740', '4743', '4756', '4767', '4768', '4769', '4770', '4771', '4781', '4782', '4798', '5156', '5157']"
     )
     with pytest.raises(KeyError) as actual_error:
-        wep = WindowsEventParser(interested_events={"5156", "24"})
+        wep = WindowsEventParser(interested_eventcodes={"5156", "24"})
         assert actual_error == expected_error

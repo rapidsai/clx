@@ -11,12 +11,12 @@ class WindowsEventParser(EventParser):
     REGEX_FILE = "resources/windows_event_regex.yaml"
     EVENT_NAME = "windows event"
 
-    def __init__(self, interested_events=None):
+    def __init__(self, interested_eventcodes=None):
         event_regex = {}
         regex_filepath = (
             os.path.dirname(os.path.abspath(__file__)) + "/" + self.REGEX_FILE
         )
-        self.interested_events = interested_events
+        self.interested_eventcodes = interested_eventcodes
         self.event_regex = self._load_regex_yaml(regex_filepath)
         EventParser.__init__(self, self.get_columns(), self.EVENT_NAME)
 
@@ -50,8 +50,8 @@ class WindowsEventParser(EventParser):
 
     def _load_regex_yaml(self, yaml_file):
         event_regex = EventParser._load_regex_yaml(self, yaml_file)
-        if self.interested_events is not None:
-            for eventcode in self.interested_events:
+        if self.interested_eventcodes is not None:
+            for eventcode in self.interested_eventcodes:
                 required_event_regex = {}
                 if eventcode not in event_regex:
                     raise KeyError(
