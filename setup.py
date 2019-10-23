@@ -10,7 +10,8 @@ setup(
       packages=find_packages(include=["clx", "clx.*"]),
       package_data={
             "clx.parsers":["resources/*.yaml"],
-            "clx.dns":["resources/*.txt"]
+            "clx.dns":["resources/*.txt"],
+            "clx.heuristics":["resources/*.csv"]
       },
       install_requires=install_requires
 )
