@@ -8,7 +8,7 @@ To run the integration test simply run the following. This will run the integrat
 
 ```
 cd ci/integration_tests
-docker-compose up
+docker-compose -f docker-compose.test.yml up
 ```
 
 To continue re-running the integration tests, don't forget to first destroy your current docker images/containers, before creating a new one.
