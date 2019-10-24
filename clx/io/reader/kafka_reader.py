@@ -33,29 +33,29 @@ class KafkaReader(Reader):
         current_time = time.time()
         try:
             while running:
-                msg = self.consumer.poll(timeout=1.0)
-                if msg is None:
-                    log.debug("No message received.")
-                    continue
-                elif not msg.error():
-                    data = msg.value().decode("utf-8")
-                    log.debug("Message received.")
-                    if (
-                        rec_cnt < self._batch_size
-                        and (time.time() - current_time) < self.time_window
-                    ):
+                # First check if batch size or time window has been exceeded
+                if (rec_cnt >= self._batch_size or (time.time() - current_time) >= self.time_window):
+                    log.debug("Exceeded record count (" + str(rec_cnt) + ") or time window (" + str(time.time() - current_time) +")")
+                    running = False
+                # Else poll next message in kafka queue
+                else:
+                    msg = self.consumer.poll(timeout=1.0)
+                    if msg is None:
+                        log.debug("No message received.")
+                        continue
+                    elif not msg.error():
+                        data = msg.value().decode("utf-8")
+                        log.debug("Message received.")
                         events.append(data)
                         rec_cnt += 1
-                    else:
-                        events.append(data)
+                    elif msg.error().code() != KafkaError._PARTITION_EOF:
+                        log.error(msg.error())
                         running = False
-                elif msg.error().code() != KafkaError._PARTITION_EOF:
-                    log.error(msg.error())
-                    running = False
-                else:
-                    running = False
-            df = cudf.dataframe.DataFrame()
+                    else:
+                        running = False
+            df = cudf.DataFrame()
             df["Raw"] = events
+            log.debug("Kafka reader batch aggregation complete. Dataframe size = " + str(df.shape))
             return df
         except:
             log.error("Error fetching data from kafka")
