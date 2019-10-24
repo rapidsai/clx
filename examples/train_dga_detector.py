@@ -103,11 +103,11 @@ def pre_process(dd, df, dataset_len, batch_size):
 def parse_cmd_args():
     # construct the argument parse and parse the arguments
     ap = argparse.ArgumentParser(description="Model training runner")
-    ap.add_argument("train_file_path", help="input dataset for model training")
-    ap.add_argument("test_file_path", help="input dataset for model testing")
-    ap.add_argument("output_dir", help="ouput directory to store trained model")
+    ap.add_argument("train_file_path", help="Input dataset for model training")
+    ap.add_argument("test_file_path", help="Input dataset for model testing")
+    ap.add_argument("output_dir", help="Output directory to store trained model")
     ap.add_argument(
-        "batch_size", help="dividing dataset into number of batches or sets or parts"
+        "batch_size", help="Dividing dataset into number of batches or sets or parts"
     )
     ap.add_argument(
         "epoch",

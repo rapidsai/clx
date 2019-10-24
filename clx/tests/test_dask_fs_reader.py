@@ -1,24 +1,19 @@
-from pathlib import Path
-
 import cudf
-import pandas
 import pytest
 import os
+from pathlib import Path
 from clx.io.factory.factory import Factory
 from clx.io.reader.dask_fs_reader import DaskFileSystemReader
 
 test_input_base_path = "%s/input" % os.path.dirname(os.path.realpath(__file__))
 
-# Temporarily changing over cuDF to pandasDF because of issue with equality checks.
-# Issue: https://github.com/rapidsai/cudf/issues/1750
 expected_df = cudf.DataFrame(
-    [
-        ("firstname", ["Emma", "Ava", "Sophia"]),
-        ("lastname", ["Olivia", "Isabella", "Charlotte"]),
-        ("gender", ["F", "F", "F"]),
-    ]
-).to_pandas()
-
+    {
+    "firstname": ["Emma", "Ava", "Sophia"],
+    "lastname": ["Olivia", "Isabella", "Charlotte"],
+    "gender": ["F", "F", "F"]
+}
+)
 
 @pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
 @pytest.mark.parametrize("expected_df", [expected_df])
@@ -36,9 +31,8 @@ def test_fetch_data_text(test_input_base_path, expected_df):
     reader = DaskFileSystemReader(config)
     fetched_df = reader.fetch_data().compute()
 
-    # Temporarily changing over cuDF to pandasDF because of issue with equality checks.
-    # Issue: https://github.com/rapidsai/cudf/issues/1750
-    assert fetched_df.to_pandas().equals(expected_df)
+    assert fetched_df.equals(expected_df)
+
 
 @pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
 @pytest.mark.parametrize("expected_df", [expected_df])
@@ -53,9 +47,8 @@ def test_fetch_data_parquet(test_input_base_path, expected_df):
     reader = DaskFileSystemReader(config)
     fetched_df = reader.fetch_data().compute()
 
-    # Temporarily changing over cuDF to pandasDF because of issue with equality checks.
-    # Issue: https://github.com/rapidsai/cudf/issues/1750
-    assert fetched_df.to_pandas().equals(expected_df)
+    assert fetched_df.equals(expected_df)
+
 
 @pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
 @pytest.mark.parametrize("expected_df", [expected_df])
@@ -70,6 +63,4 @@ def test_fetch_data_orc(test_input_base_path, expected_df):
     reader = DaskFileSystemReader(config)
     fetched_df = reader.fetch_data().compute()
 
-    # Temporarily changing over cuDF to pandasDF because of issue with equality checks.
-    # Issue: https://github.com/rapidsai/cudf/issues/1750
-    assert fetched_df.to_pandas().equals(expected_df)
+    assert fetched_df.equals(expected_df)
