@@ -4,7 +4,7 @@ import logging
 import numpy as np
 import rmm
 from torch.utils.dlpack import from_dlpack
-from clx.ml.provider.detector import Detector
+from clx.ml.detector import Detector
 from clx.ml.model.rnn_classifier import RNNClassifier
 
 log = logging.getLogger(__name__)

@@ -3,7 +3,7 @@ import cudf
 import pytest
 from cudf import DataFrame
 from mockito import when, mock, verify
-from clx.ml.provider.dga_detector import DGADetector
+from clx.ml.dga_detector import DGADetector
 from clx.ml.model.rnn_classifier import RNNClassifier
 
 test_dataset_len = 4
