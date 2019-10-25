@@ -10,7 +10,8 @@ batch_size = 100
 message = mock(Message)
 kafka_error = mock(KafkaError)
 when(kafka_error).code().thenReturn("test")
-when(message).value().thenReturn('test message'.encode('utf-8'))
+when(message).value().thenReturn("test message".encode("utf-8"))
+
 
 @pytest.mark.parametrize("batch_size", [batch_size])
 def test_read_data(batch_size):
@@ -21,11 +22,12 @@ def test_read_data(batch_size):
     # Always return no message error
     when(message).error().thenReturn(None)
     df = reader.fetch_data()
-    assert df.shape == (100,1)
+    assert df.shape == (100, 1)
     assert df.columns == ["Raw"]
     assert df["Raw"][0] == "test message"
     # Call to poll returned 100(Valid messages) + 1(None message) = 101
     verify(reader.consumer, times=101).poll(...)
+
 
 @pytest.mark.parametrize("batch_size", [batch_size])
 def test_read_data_message_error(batch_size):
@@ -42,6 +44,6 @@ def test_read_data_message_error(batch_size):
     verify(reader.consumer, times=2).poll(...)
 
     # Validate dataframe output
-    assert df.shape == (1,1)
+    assert df.shape == (1, 1)
     assert df.columns == ["Raw"]
     assert df["Raw"].tolist() == ["test message"]

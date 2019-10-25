@@ -6,6 +6,7 @@ from clx.ml.model.rnn_classifier import RNNClassifier
 
 log = logging.getLogger(__name__)
 
+
 class Detector(ABC):
     def __init__(self, lr=0.001):
         self.lr = lr

@@ -2,9 +2,10 @@ import logging
 
 log = logging.getLogger(__name__)
 
+
 class KafkaWriter:
 
-    #Column name of formatted output messages sent to kafka
+    # Column name of formatted output messages sent to kafka
     output_colname = "delimited_output"
 
     def __init__(self, kafka_topic, batch_size, delimiter, producer):
@@ -35,11 +36,11 @@ class KafkaWriter:
 
     def _generate_delimited_ouput_col(self, gdf):
         first_col = gdf.columns[0]
-        gdf[first_col] = gdf[first_col].astype('str').str.fillna("")
-        gdf[self.output_colname] = gdf[first_col].astype('str').str.rstrip()
+        gdf[first_col] = gdf[first_col].astype("str").str.fillna("")
+        gdf[self.output_colname] = gdf[first_col].astype("str").str.rstrip()
         for col in gdf.columns[1:-1]:
-            gdf[col] = gdf[col].astype('str').fillna("")
-            gdf[col] = gdf[col].astype('str').str.rstrip()
+            gdf[col] = gdf[col].astype("str").fillna("")
+            gdf[col] = gdf[col].astype("str").str.rstrip()
             gdf[self.output_colname] = gdf[self.output_colname].str.cat(
                 gdf[col], sep=self.delimiter
             )

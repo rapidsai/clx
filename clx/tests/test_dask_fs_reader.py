@@ -9,11 +9,12 @@ test_input_base_path = "%s/input" % os.path.dirname(os.path.realpath(__file__))
 
 expected_df = cudf.DataFrame(
     {
-    "firstname": ["Emma", "Ava", "Sophia"],
-    "lastname": ["Olivia", "Isabella", "Charlotte"],
-    "gender": ["F", "F", "F"]
-}
+        "firstname": ["Emma", "Ava", "Sophia"],
+        "lastname": ["Olivia", "Isabella", "Charlotte"],
+        "gender": ["F", "F", "F"],
+    }
 )
+
 
 @pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
 @pytest.mark.parametrize("expected_df", [expected_df])
