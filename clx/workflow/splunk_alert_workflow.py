@@ -106,7 +106,7 @@ class SplunkAlertWorkflow(Workflow):
     # cuDF Feature request: https://github.com/rapidsai/cudf/issues/1214
     def __pivot_table(self, gdf, index_col, piv_col, v_col):
         index_list = gdf[index_col].unique()
-        piv_gdf = cudf.DataFrame([(index_col, list(range(len(index_list))))])
+        piv_gdf = cudf.DataFrame({index_col: list(range(len(index_list)))})
         piv_gdf[index_col] = index_list
         for group in gdf[piv_col].unique():
             temp_df = gdf[gdf[piv_col] == group]

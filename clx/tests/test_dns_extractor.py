@@ -78,7 +78,9 @@ def test_parse_url(input_df):
         }
     )
     output_df = dns.parse_url(input_df["url"], req_cols={"domain", "suffix"})
-    assert output_df.equals(expected_output_df)
+
+    for col in expected_output_df.columns:
+        assert expected_output_df[col].equals(output_df[col])
 
 
 @pytest.mark.parametrize("input_df", [input_df])
@@ -152,7 +154,9 @@ def test2_parse_url(input_df):
         }
     )
     output_df = dns.parse_url(input_df["url"])
-    assert output_df.equals(expected_output_df)
+
+    for col in expected_output_df.columns:
+        assert expected_output_df[col].equals(output_df[col])
 
 
 @pytest.mark.parametrize("input_df", [input_df])
