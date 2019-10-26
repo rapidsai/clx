@@ -9,15 +9,13 @@ from clx.io.reader.fs_reader import FileSystemReader
 
 test_input_base_path = "%s/input" % os.path.dirname(os.path.realpath(__file__))
 
-# Temporarily changing over cuDF to pandasDF because of issue with equality checks.
-# Issue: https://github.com/rapidsai/cudf/issues/1750
 expected_df = cudf.DataFrame(
     [
         ("firstname", ["Emma", "Ava", "Sophia"]),
         ("lastname", ["Olivia", "Isabella", "Charlotte"]),
         ("gender", ["F", "F", "F"]),
     ]
-).to_pandas()
+)
 
 
 @pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
@@ -25,20 +23,19 @@ expected_df = cudf.DataFrame(
 def test_fetch_data_text(test_input_base_path, expected_df):
     test_input_path = "%s/person.csv" % (test_input_base_path)
     config = {
-        "input_path": test_input_path,
-        "schema": ["firstname", "lastname", "gender"],
+        "type": "fs",
+        "filepath": test_input_path,
+        "names": ["firstname", "lastname", "gender"],
         "delimiter": ",",
-        "required_cols": ["firstname", "lastname", "gender"],
+        "usecols": ["firstname", "lastname", "gender"],
         "dtype": ["str", "str", "str"],
         "header": 0,
-        "input_format": "text",
+        "input_format": "text"
     }
     reader = FileSystemReader(config)
     fetched_df = reader.fetch_data()
 
-    # Temporarily changing over cuDF to pandasDF because of issue with equality checks.
-    # Issue: https://github.com/rapidsai/cudf/issues/1750
-    assert fetched_df.to_pandas().equals(expected_df)
+    assert fetched_df.equals(expected_df)
 
 
 @pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
@@ -46,17 +43,16 @@ def test_fetch_data_text(test_input_base_path, expected_df):
 def test_fetch_data_parquet(test_input_base_path, expected_df):
     test_input_path = "%s/person.parquet" % (test_input_base_path)
     config = {
-        "input_path": test_input_path,
-        "required_cols": ["firstname", "lastname", "gender"],
-        "input_format": "parquet",
+        "type": "fs",
+        "filepath": test_input_path,
+        "columns": ["firstname", "lastname", "gender"],
+        "input_format": "parquet"
     }
 
     reader = FileSystemReader(config)
     fetched_df = reader.fetch_data()
 
-    # Temporarily changing over cuDF to pandasDF because of issue with equality checks.
-    # Issue: https://github.com/rapidsai/cudf/issues/1750
-    assert fetched_df.to_pandas().equals(expected_df)
+    assert fetched_df.equals(expected_df)
 
 
 @pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
@@ -64,14 +60,12 @@ def test_fetch_data_parquet(test_input_base_path, expected_df):
 def test_fetch_data_orc(test_input_base_path, expected_df):
     test_input_path = "%s/person.orc" % (test_input_base_path)
     config = {
-        "input_path": test_input_path,
-        "required_cols": ["firstname", "lastname", "gender"],
-        "input_format": "orc",
+        "type": "fs",
+        "filepath": test_input_path,
+        "input_format": "orc"
     }
 
     reader = FileSystemReader(config)
     fetched_df = reader.fetch_data()
 
-    # Temporarily changing over cuDF to pandasDF because of issue with equality checks.
-    # Issue: https://github.com/rapidsai/cudf/issues/1750
-    assert fetched_df.to_pandas().equals(expected_df)
+    assert fetched_df.equals(expected_df)

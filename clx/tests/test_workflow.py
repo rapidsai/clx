@@ -27,17 +27,18 @@ def set_workflow_config():
     source = {
         "type": "fs",
         "input_format": "csv",
-        "input_path": "/path/to/input",
-        "schema": ["firstname", "lastname", "gender"],
+        "filepath": "/path/to/input",
+        "names": ["firstname", "lastname", "gender"],
         "delimiter": ",",
-        "required_cols": ["firstname", "lastname", "gender"],
+        "usecols": ["firstname", "lastname", "gender"],
         "dtype": ["str", "str", "str"],
         "header": 0,
     }
     destination = {
         "type": "fs",
         "output_format": "csv",
-        "output_path": "/path/to/output",
+        "filepath": "/path/to/output",
+        "index": False
     }
     workflow_config = {"source": source, "destination": destination, "custom_workflow_param": "param_value"}
     return workflow_config, source, destination
@@ -58,8 +59,8 @@ def test_workflow_parameters(
     # Create source and destination configurations
     source = set_workflow_config[1]
     destination = set_workflow_config[2]
-    source["input_path"] = input_path
-    destination["output_path"] = output_path
+    source["filepath"] = input_path
+    destination["filepath"] = output_path
     # Create new workflow with source and destination configurations
     test_workflow = TestWorkflowImpl(
         source=source, destination=destination, name="test-workflow", custom_workflow_param="test_param"
@@ -89,8 +90,9 @@ def test_workflow_config(mock_env_home, set_workflow_config, input_path, output_
     # Write workflow.yaml file
     workflow_name = "test-workflow-config"
     workflow_config = set_workflow_config[0]
-    workflow_config["destination"]["output_path"] = output_path
-    workflow_config["source"]["input_path"] = input_path
+    workflow_config["destination"]["filepath"] = output_path
+    workflow_config["destination"]["index"] = False
+    workflow_config["source"]["filepath"] = input_path
     workflow_config["custom_workflow_param"] = "param_value"
     write_config_file(workflow_config, workflow_name)
 
@@ -139,8 +141,8 @@ def test_benchmark_decorator(mock_env_home, set_workflow_config, input_path, out
 
     source = set_workflow_config[1]
     destination = set_workflow_config[2]
-    source["input_path"] = input_path
-    destination["output_path"] = output_path
+    source["filepath"] = input_path
+    destination["filepath"] = output_path
     # Create new workflow with source and destination configurations
     tb = spy(TestWorkflowImpl(
         source=source, destination=destination, name="test-workflow"
