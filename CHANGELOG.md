@@ -7,6 +7,7 @@
 
 ## Bug Fixes
 
+ - PR #45 More Kafka IO fixes
  - PR #44 Fix Kafka IO
  - PR #42 Include DNS parser in module
  - PR #41 Fix unit test
