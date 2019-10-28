@@ -31,7 +31,7 @@ def test_write_data_text(test_output_base_path, df):
         os.remove(test_output_path)
     config = {
         "type": "fs",
-        "filepath": test_output_path,
+        "output_path": test_output_path,
         "output_format": "text", "index": False
     }
     writer = FileSystemWriter(config)
@@ -57,7 +57,7 @@ def test_write_data_parquet(test_output_base_path, expected_df, df):
         shutil.rmtree(test_output_path)
     config = {
         "type": "fs",
-        "filepath": test_output_path,
+        "output_path": test_output_path,
         "output_format": "parquet"}
     writer = FileSystemWriter(config)
     writer.write_data(df)

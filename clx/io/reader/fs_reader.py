@@ -13,10 +13,10 @@ class FileSystemReader(FileReader):
     def fetch_data(self):
         df = None
         input_format = self.config["input_format"].lower()
-        filepath = self.config["filepath"].lower()
+        filepath = self.config["input_path"].lower()
         del self.config["type"]
         del self.config["input_format"]
-        del self.config["filepath"]
+        del self.config["input_path"]
 
         if "parquet" == input_format:
             df = cudf.read_parquet(filepath, **self.config)

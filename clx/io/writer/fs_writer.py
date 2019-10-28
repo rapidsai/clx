@@ -13,10 +13,10 @@ class FileSystemWriter(FileWriter):
 
     def write_data(self, df):
         output_format = self.config["output_format"]
-        filepath = self.config["filepath"]
+        filepath = self.config["output_path"]
         del self.config["type"]
         del self.config["output_format"]
-        del self.config["filepath"]
+        del self.config["output_path"]
 
 
         dir = os.path.dirname(filepath)

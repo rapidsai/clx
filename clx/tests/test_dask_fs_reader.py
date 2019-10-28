@@ -24,7 +24,7 @@ def test_fetch_data_text(test_input_base_path, expected_df):
     test_input_path = "%s/person.csv" % (test_input_base_path)
     config = {
         "type": "dask_fs",
-        "filepath": test_input_path,
+        "input_path": test_input_path,
         "names": ["firstname", "lastname", "gender"],
         "delimiter": ",",
         "usecols": ["firstname", "lastname", "gender"],
@@ -43,7 +43,7 @@ def test_fetch_data_parquet(test_input_base_path, expected_df):
     test_input_path = "%s/person.parquet" % (test_input_base_path)
     config = {
         "type": "dask_fs",
-        "filepath": test_input_path,
+        "input_path": test_input_path,
         "columns": ["firstname", "lastname", "gender"],
         "input_format": "parquet",
     }
@@ -59,7 +59,7 @@ def test_fetch_data_orc(test_input_base_path, expected_df):
     test_input_path = "%s/person.orc" % (test_input_base_path)
     config = {
         "type": "dask_fs",
-        "filepath": test_input_path,
+        "input_path": test_input_path,
         "input_format": "orc"
     }
 

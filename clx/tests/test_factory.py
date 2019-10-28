@@ -22,7 +22,7 @@ kafka_config = {
 
 fs_reader_config = {
     "type": "fs",
-    "filepath": "test_input",
+    "input_path": "test_input",
     "names": ["_col1", "_col2", "_col3"],
     "delimiter": ",",
     "usecols": ["_col1", "_col2", "_col3"],
@@ -32,7 +32,7 @@ fs_reader_config = {
 
 fs_writer_config = {
     "type": "fs",
-    "filepath": "test_output",
+    "output_path": "test_output",
     "output_format": "text",
 }
 
@@ -81,7 +81,7 @@ def test_get_reader_text(test_input_base_path, expected_df):
     test_input_path = "%s/person.csv" % (test_input_base_path)
     config = {
         "type": "fs",
-        "filepath": test_input_path,
+        "input_path": test_input_path,
         "names": ["firstname", "lastname", "gender"],
         "delimiter": ",",
         "usecols": ["firstname", "lastname", "gender"],
@@ -103,7 +103,7 @@ def test_get_reader_parquet(test_input_base_path, expected_df):
     test_input_path = "%s/person.parquet" % (test_input_base_path)
     config = {
         "type": "fs",
-        "filepath": test_input_path,
+        "input_path": test_input_path,
         "usecols": ["firstname", "lastname", "gender"],
         "input_format": "parquet",
     }
@@ -121,7 +121,7 @@ def test_get_reader_orc(test_input_base_path, expected_df):
     test_input_path = "%s/person.orc" % (test_input_base_path)
     config = {
         "type": "fs",
-        "filepath": test_input_path,
+        "input_path": test_input_path,
         "usecols": ["firstname", "lastname", "gender"],
         "input_format": "orc",
     }
