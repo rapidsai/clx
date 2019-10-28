@@ -67,9 +67,9 @@ def major_ports(addr_col, port_col, min_conns=1, eph_min=10000):
     # Add IANA service names to node lists
     nodes_gdf = nodes_gdf.merge(iana_lookup_df, on=['port'], how='left')
 
-    # cudf bug: https://github.com/rapidsai/cudf/issues/3186
-    #nodes_gdf.loc[nodes_gdf["port"] >= eph_min, "service"] = "ephemeral"
-
+    # The following column update is blocked by https://github.com/rapidsai/cudf/issues/3186
+    # Doing workaround until fix.
+    # nodes_gdf.loc[nodes_gdf["port"] >= eph_min, "service"] = "ephemeral"
     nodes_eph_gdf = nodes_gdf[nodes_gdf["port"] >= eph_min]
     nodes_eph_gdf["service"] = "ephemeral"
     nodes_gdf = cudf.concat([nodes_gdf[nodes_gdf["port"] < eph_min], nodes_eph_gdf])
