@@ -44,3 +44,17 @@ def test_major_ports_min_conns():
     actual = ports.major_ports(input_addr_col, input_port_col, min_conns=2)
 
     assert actual.equals(expected)
+
+def test_major_ports_all_params():
+    input_addr_col = cudf.Series(["10.0.75.1","10.0.75.1","10.0.75.1","10.0.75.255","10.110.104.107", "10.110.104.107"])
+    input_port_col = cudf.Series([137,137,7680,137,7680, 7680])
+
+    expected = cudf.DataFrame()
+    expected["addr"] = ["10.0.75.1", "10.110.104.107"]
+    expected["port"] = [137, 7680]
+    expected["service"] = ["netbios-ns", "ephemeral"]
+    expected["conns"] = [2, 2]
+
+    actual = ports.major_ports(input_addr_col, input_port_col, min_conns=2, eph_min=7000)
+
+    assert actual.equals(expected)
