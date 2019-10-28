@@ -136,7 +136,7 @@ class Workflow(ABC):
                     enriched_dataframe = self.workflow(dataframe)
                     self._io_writer.write_data(enriched_dataframe)
                 else:
-                    log.debug("Dataframe is empty. Workflow processing skipped.")
+                    log.info("Dataframe is empty. Workflow processing skipped.")
         except KeyboardInterrupt:
             logging.info("User aborted workflow")
             self.stop_workflow()
