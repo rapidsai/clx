@@ -20,10 +20,10 @@ def test_major_ports_ephemeral():
     input_port_col = cudf.Series([50000,60000,20000,80])
 
     expected = cudf.DataFrame()
-    expected["addr"] = ["10.0.75.1","10.0.75.2","10.0.75.2"]
-    expected["port"] = [50000,80000,20000,80]
+    expected["addr"] = ["10.0.75.1","10.0.75.2","10.0.75.3","10.0.75.4"]
+    expected["port"] = [50000,60000,20000,80]
     expected["service"] = ["ephemeral","ephemeral","dnp","http"]
-    expected["conns"] = [1,1,1]
+    expected["conns"] = [1,1,1,1]
 
     actual = ports.major_ports(input_addr_col, input_port_col, eph_min=50000)
     
@@ -31,7 +31,7 @@ def test_major_ports_ephemeral():
 
 
 
-def test_major_ports_minn_conns():
+def test_major_ports_min_conns():
     input_addr_col = cudf.Series(["10.0.75.1","10.0.75.1","10.0.75.1","10.0.75.255","10.110.104.107"])
     input_port_col = cudf.Series([137,137,7680,137,7680])
 
