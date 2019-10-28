@@ -45,3 +45,14 @@ def test_read_data_message_error(batch_size):
     assert df.shape == (1,1)
     assert df.columns == ["Raw"]
     assert df["Raw"].tolist() == ["test message"]
+
+@pytest.mark.parametrize("batch_size", [5])
+def test_read_data_no_messages(batch_size):
+    consumer = mock(Consumer)
+    reader = KafkaReader(batch_size, consumer, time_window=5)
+    # Return no messages
+    when(reader.consumer).poll(timeout=1.0).thenReturn(None)
+    df = reader.fetch_data()
+
+    # Validate dataframe output
+    assert df.empty == True
