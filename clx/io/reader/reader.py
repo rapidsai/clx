@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class Reader(ABC):
     @property
     def has_data(self):

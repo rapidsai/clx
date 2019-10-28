@@ -3,6 +3,7 @@ from clx.workflow.workflow import Workflow
 
 log = logging.getLogger(__name__)
 
+
 class NetflowWorkflow(Workflow):
     def workflow(self, dataframe):
         """TODO: Implement netflow dataframe enrichment"""

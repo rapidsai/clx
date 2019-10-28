@@ -6,6 +6,7 @@ from clx.io.writer.file_writer import FileWriter
 
 log = logging.getLogger(__name__)
 
+
 class FileSystemWriter(FileWriter):
     def __init__(self, output_path, output_format="text"):
         self._output_path = output_path

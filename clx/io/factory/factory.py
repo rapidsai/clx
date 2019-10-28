@@ -5,9 +5,14 @@ from clx.io.factory.dask_fs_factory import DaskFileSystemFactory
 
 log = logging.getLogger(__name__)
 
+
 class Factory:
 
-    __cls_dict = {"kafka": "KafkaFactory", "fs": "FileSystemFactory", "dask_fs": "DaskFileSystemFactory"}
+    __cls_dict = {
+        "kafka": "KafkaFactory",
+        "fs": "FileSystemFactory",
+        "dask_fs": "DaskFileSystemFactory",
+    }
 
     @staticmethod
     def cls_dict():

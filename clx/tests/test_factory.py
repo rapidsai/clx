@@ -1,6 +1,5 @@
 import pytest
 import cudf
-import pandas
 import os
 
 from clx.io.factory.factory import Factory
@@ -31,15 +30,13 @@ fs_config = {
     "output_format": "text",
 }
 
-# Temporarily changing over cuDF to pandasDF because of issue with equality checks.
-# Issue: https://github.com/rapidsai/cudf/issues/1750
 expected_df = cudf.DataFrame(
-    [
-        ("firstname", ["Emma", "Ava", "Sophia"]),
-        ("lastname", ["Olivia", "Isabella", "Charlotte"]),
-        ("gender", ["F", "F", "F"]),
-    ]
-).to_pandas()
+    {
+        "firstname": ["Emma", "Ava", "Sophia"],
+        "lastname": ["Olivia", "Isabella", "Charlotte"],
+        "gender": ["F", "F", "F"],
+    }
+)
 
 
 @pytest.mark.parametrize("kafka_config", [kafka_config])
@@ -86,9 +83,7 @@ def test_get_reader_text(test_input_base_path, expected_df):
     reader_from_factory = Factory.get_reader("fs", config)
     fetched_df = reader_from_factory.fetch_data()
 
-    # Temporarily changing over cuDF to pandasDF because of issue with equality checks.
-    # Issue: https://github.com/rapidsai/cudf/issues/1750
-    assert fetched_df.to_pandas().equals(expected_df)
+    assert fetched_df.equals(expected_df)
 
 
 @pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
@@ -103,9 +98,7 @@ def test_get_reader_parquet(test_input_base_path, expected_df):
     reader_from_factory = Factory.get_reader("fs", config)
     fetched_df = reader_from_factory.fetch_data()
 
-    # Temporarily changing over cuDF to pandasDF because of issue with equality checks.
-    # Issue: https://github.com/rapidsai/cudf/issues/1750
-    assert fetched_df.to_pandas().equals(expected_df)
+    assert fetched_df.equals(expected_df)
 
 
 @pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
@@ -120,6 +113,4 @@ def test_get_reader_orc(test_input_base_path, expected_df):
     reader_from_factory = Factory.get_reader("fs", config)
     fetched_df = reader_from_factory.fetch_data()
 
-    # Temporarily changing over cuDF to pandasDF because of issue with equality checks.
-    # Issue: https://github.com/rapidsai/cudf/issues/1750
-    assert fetched_df.to_pandas().equals(expected_df)
+    assert fetched_df.equals(expected_df)
