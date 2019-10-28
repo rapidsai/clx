@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-install_requires = ["confluent_kafka", "python-whois", "requests"]
+install_requires = ["confluent_kafka", "python-whois", "requests", "torch"]
 
 setup(
       name="clx",
@@ -14,4 +14,3 @@ setup(
             "clx.heuristics":["resources/*.csv"]
       },
       install_requires=install_requires
-)

@@ -4,6 +4,7 @@ from clx.io.reader.file_reader import FileReader
 
 log = logging.getLogger(__name__)
 
+
 class DaskFileSystemReader(FileReader):
     def __init__(self, config):
         self._config = config
@@ -37,9 +38,7 @@ class DaskFileSystemReader(FileReader):
         input_format = self.config["input_format"].lower()
         if "parquet" == input_format:
             required_cols = self.config.get("required_cols", None)
-            df = self.read_parquet(
-                self.config["input_path"], required_cols
-            )
+            df = self.read_parquet(self.config["input_path"], required_cols)
         elif "orc" == input_format:
             df = self.read_orc(self.config["input_path"])
         else:
@@ -54,10 +53,10 @@ class DaskFileSystemReader(FileReader):
                 delimiter,
                 required_cols,
                 dtype,
-                header
+                header,
             )
         self.has_data = False
         return df
 
     def close(self):
-       log.info("Closed fs reader")
+        log.info("Closed fs reader")

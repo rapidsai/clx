@@ -9,13 +9,21 @@ from clx.io.writer.kafka_writer import KafkaWriter
 
 log = logging.getLogger(__name__)
 
+
 class KafkaFactory(AbstractFactory):
     def __init__(self, config):
         self._config = config
 
     def get_reader(self):
         consumer = self._create_consumer()
-        reader = KafkaReader(self.config["batch_size"], consumer)
+        if "time_window" in self.config:
+            reader = KafkaReader(
+                self.config["batch_size"],
+                consumer,
+                time_window=self.config["time_window"],
+            )
+        else:
+            reader = KafkaReader(self.config["batch_size"], consumer)
         return reader
 
     def get_writer(self):

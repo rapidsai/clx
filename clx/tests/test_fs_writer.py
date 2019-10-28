@@ -1,27 +1,25 @@
 import glob
-from pathlib import Path
 import csv
 import os
 import cudf
-import pandas
 import pytest
 import shutil
 import pandas as pd
 
+from pathlib import Path
 from clx.io.factory.factory import Factory
 from clx.io.writer.fs_writer import FileSystemWriter
 
 
 test_output_base_path = "%s/output" % os.path.dirname(os.path.realpath(__file__))
 df = cudf.DataFrame(
-    [
-        ("firstname", ["Emma", "Ava", "Sophia"]),
-        ("lastname", ["Olivia", "Isabella", "Charlotte"]),
-        ("gender", ["F", "F", "F"]),
-    ]
+    {
+        "firstname": ["Emma", "Ava", "Sophia"],
+        "lastname": ["Olivia", "Isabella", "Charlotte"],
+        "gender": ["F", "F", "F"],
+    }
 )
-# Temporarily changing over cuDF to pandasDF because of issue with equality checks.
-# Issue: https://github.com/rapidsai/cudf/issues/1750
+
 expected_df = df.to_pandas()
 
 

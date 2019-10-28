@@ -4,11 +4,11 @@ from mockito import when, mock, verify
 from clx.io.writer.kafka_writer import KafkaWriter
 
 input_df = cudf.DataFrame(
-    [
-        ("firstname", ["Emma", "Ava", "Sophia"]),
-        ("lastname", ["Olivia", "Isabella", "Charlotte"]),
-        ("gender", ["F", "F", "F"]),
-    ]
+    {
+        "firstname": ["Emma", "Ava", "Sophia"],
+        "lastname": ["Olivia", "Isabella", "Charlotte"],
+        "gender": ["F", "F", "F"],
+    }
 )
 kafka_topic = "publisher_topic_t1"
 batch_size = 100
