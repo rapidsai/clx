@@ -8,6 +8,7 @@ from abc import ABC, abstractmethod
 
 log = logging.getLogger(__name__)
 
+
 class Workflow(ABC):
 
     DEFAULT_CONFIG_PATH = "/.config/clx"
@@ -19,14 +20,18 @@ class Workflow(ABC):
         """
            Decorator used to capture a benchmark for a given function
         """
+
         @functools.wraps(function)
         def wrapper(self, *args, **kwargs):
             start = time.time()
-            ret =  function(self, *args, **kwargs)
+            ret = function(self, *args, **kwargs)
             end = time.time()
             runtime = end - start
-            log.info(f"Workflow benchmark for function {function.__name__!r}: {runtime:.4f} seconds")
+            log.info(
+                f"Workflow benchmark for function {function.__name__!r}: {runtime:.4f} seconds"
+            )
             return ret
+
         return wrapper
 
     def __init__(self, name, source=None, destination=None):
@@ -59,12 +64,21 @@ class Workflow(ABC):
 
     def _get_default_filepath(self, workflow_name):
         home_dir = os.getenv("HOME")
-        default_filepath = "{home_dir}/{default_sub_dir}/{workflow_name}/{filename}".format(home_dir=home_dir, default_sub_dir=self.DEFAULT_CONFIG_PATH, workflow_name=workflow_name, filename=self.CONFIG_FILE_NAME)
+        default_filepath = "{home_dir}/{default_sub_dir}/{workflow_name}/{filename}".format(
+            home_dir=home_dir,
+            default_sub_dir=self.DEFAULT_CONFIG_PATH,
+            workflow_name=workflow_name,
+            filename=self.CONFIG_FILE_NAME,
+        )
         log.info("default filepath:" + default_filepath)
         return default_filepath
 
     def _get_backup_filepath(self, workflow_name):
-        backup_filepath = "{backup_dir}/{workflow_name}/{filename}".format(backup_dir=self.BACKUP_CONFIG_PATH, workflow_name=workflow_name, filename=self.CONFIG_FILE_NAME)
+        backup_filepath = "{backup_dir}/{workflow_name}/{filename}".format(
+            backup_dir=self.BACKUP_CONFIG_PATH,
+            workflow_name=workflow_name,
+            filename=self.CONFIG_FILE_NAME,
+        )
         log.info("backup filepath:" + backup_filepath)
         return backup_filepath
 
@@ -126,12 +140,8 @@ class Workflow(ABC):
     def run_workflow(self):
         log.info("Running workflow {0}.".format(self.name))
         try:
-            while (
-                self._io_reader.has_data
-            ):
-                dataframe = (
-                    self._io_reader.fetch_data()
-                )
+            while self._io_reader.has_data:
+                dataframe = self._io_reader.fetch_data()
 
                 enriched_dataframe = self.workflow(dataframe)
                 self._io_writer.write_data(enriched_dataframe)

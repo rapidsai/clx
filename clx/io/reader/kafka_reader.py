@@ -6,6 +6,7 @@ from clx.io.reader.reader import Reader
 
 log = logging.getLogger(__name__)
 
+
 class KafkaReader(Reader):
     def __init__(self, batch_size, consumer, time_window=30):
         self._batch_size = batch_size
@@ -34,8 +35,17 @@ class KafkaReader(Reader):
         try:
             while running:
                 # First check if batch size or time window has been exceeded
-                if (rec_cnt >= self._batch_size or (time.time() - current_time) >= self.time_window):
-                    log.debug("Exceeded record count (" + str(rec_cnt) + ") or time window (" + str(time.time() - current_time) +")")
+                if (
+                    rec_cnt >= self._batch_size
+                    or (time.time() - current_time) >= self.time_window
+                ):
+                    log.debug(
+                        "Exceeded record count ("
+                        + str(rec_cnt)
+                        + ") or time window ("
+                        + str(time.time() - current_time)
+                        + ")"
+                    )
                     running = False
                 # Else poll next message in kafka queue
                 else:
@@ -55,7 +65,10 @@ class KafkaReader(Reader):
                         running = False
             df = cudf.DataFrame()
             df["Raw"] = events
-            log.debug("Kafka reader batch aggregation complete. Dataframe size = " + str(df.shape))
+            log.debug(
+                "Kafka reader batch aggregation complete. Dataframe size = "
+                + str(df.shape)
+            )
             return df
         except:
             log.error("Error fetching data from kafka")

@@ -2,6 +2,7 @@ from abc import ABC
 from abc import abstractmethod
 from clx.io.reader.reader import Reader
 
+
 class FileReader(Reader):
     @property
     def has_data(self):
