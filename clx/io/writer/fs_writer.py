@@ -14,9 +14,10 @@ class FileSystemWriter(FileWriter):
     def write_data(self, df):
         output_format = self.config["output_format"]
         filepath = self.config["output_path"]
-        del self.config["type"]
-        del self.config["output_format"]
-        del self.config["output_path"]
+        kwargs = self.config.copy()
+        del kwargs["type"]
+        del kwargs["output_format"]
+        del kwargs["output_path"]
 
 
         dir = os.path.dirname(filepath)
@@ -31,9 +32,9 @@ class FileSystemWriter(FileWriter):
         log.info("writing data to location {%s}" % (filepath))
 
         if "parquet" == output_format.lower():
-            cudf.io.parquet.to_parquet(df, filepath, **self.config)
+            cudf.io.parquet.to_parquet(df, filepath, **kwargs)
         else:
-            df.to_csv(filepath, **self.config)
+            df.to_csv(filepath, **kwargs)
 
     def close(self):
         log.info("Closed writer")
