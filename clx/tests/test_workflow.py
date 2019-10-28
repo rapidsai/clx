@@ -141,7 +141,6 @@ def test_workflow_config_error(mock_env_home, set_workflow_config):
     with pytest.raises(Exception):
         test_workflow = TestWorkflowImpl(workflow_name)
 
-<<<<<<< HEAD
 @pytest.mark.parametrize("input_path", [input_path_empty])
 @pytest.mark.parametrize("output_path", [output_path_empty])
 def test_workflow_no_data(mock_env_home, set_workflow_config, input_path, output_path):
@@ -164,8 +163,6 @@ def test_workflow_no_data(mock_env_home, set_workflow_config, input_path, output
 
     # Verify that no output file created.
     assert os.path.exists(output_path) == False
-=======
->>>>>>> branch-0.11
 
 @pytest.mark.parametrize("input_path", [input_path])
 @pytest.mark.parametrize("output_path", [output_path_benchmark_test])
