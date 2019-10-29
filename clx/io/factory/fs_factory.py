@@ -11,7 +11,4 @@ class FileSystemFactory(AbstractFactory):
         return FileSystemReader(self.config)
 
     def get_writer(self):
-        #return FileSystemWriter(
-        #    self.config["output_path"], self.config["output_format"]
-        #)
         return FileSystemWriter(self.config)
