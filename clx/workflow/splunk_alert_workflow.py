@@ -90,18 +90,22 @@ class SplunkAlertWorkflow(Workflow):
 
         # Flag z score anomalies
         output = self.__flag_anamolies(r_zscores, threshold)
-        output[interval] = day_rule_piv.index
         log.debug(output)
+        print(output)
+        for v in output['rule']:
+            print(v)
         return output
 
     def __flag_anamolies(self, zc_df, threshold):
+        output_df = cudf.DataFrame()
         for col in zc_df.columns:
             if col != self._interval:
-                zc_df[col] = zc_df[col].abs()
-                zc_df[col] = zc_df[col].nans_to_nulls()
-                zc_df[col] = zc_df[col].where(zc_df[col] > threshold, None)
-                zc_df[col + "_flag"] = zc_df[col].notna()
-        return zc_df
+                temp_df = cudf.DataFrame()
+                temp_df['time'] = zc_df.index[zc_df[col].abs() > threshold]
+                temp_df['rule'] = col
+                output_df = cudf.concat([output_df, temp_df])
+        output_df = output_df.reset_index(drop=True)
+        return output_df
 
     # cuDF Feature request: https://github.com/rapidsai/cudf/issues/1214
     def __pivot_table(self, gdf, index_col, piv_col, v_col):
