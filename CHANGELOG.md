@@ -3,6 +3,7 @@
 ## New Features
 
 ## Improvements
+ - PR #47 Update splunk workflow output
  - PR #43 Functionality to parse selected windows events
 
 ## Bug Fixes
