@@ -154,11 +154,17 @@ class Workflow(ABC):
     def run_workflow(self):
         log.info("Running workflow {0}.".format(self.name))
         try:
-            while self._io_reader.has_data:
-                dataframe = self._io_reader.fetch_data()
-
-                enriched_dataframe = self.workflow(dataframe)
-                self._io_writer.write_data(enriched_dataframe)
+            while (
+                self._io_reader.has_data
+            ):
+                dataframe = (
+                    self._io_reader.fetch_data()
+                )
+                if dataframe and not dataframe.empty:
+                    enriched_dataframe = self.workflow(dataframe)
+                    self._io_writer.write_data(enriched_dataframe)
+                else:
+                    log.info("Dataframe is empty. Workflow processing skipped.")
         except KeyboardInterrupt:
             logging.info("User aborted workflow")
             self.stop_workflow()
