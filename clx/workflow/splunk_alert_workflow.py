@@ -91,9 +91,6 @@ class SplunkAlertWorkflow(Workflow):
         # Flag z score anomalies
         output = self.__flag_anamolies(r_zscores, threshold)
         log.debug(output)
-        print(output)
-        for v in output['rule']:
-            print(v)
         return output
 
     def __flag_anamolies(self, zc_df, threshold):
