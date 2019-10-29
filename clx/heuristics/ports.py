@@ -73,39 +73,39 @@ def major_ports(addr_col, port_col, min_conns=1, eph_min=10000):
     """
 
     # Count the number of connections across each src ip-port pair
-    nodes_gdf = cudf.DataFrame([("addr", addr_col), ("port", port_col)])
-    nodes_gdf["conns"] = 1.0
-    nodes_gdf = nodes_gdf.groupby(["addr", "port"], as_index=False).count()
+    gdf = cudf.DataFrame([("addr", addr_col), ("port", port_col)])
+    gdf["conns"] = 1.0
+    gdf = gdf.groupby(["addr", "port"], as_index=False).count()
 
     # Calculate average number of connections across all ports for each ip
-    cnt_avg_gdf = nodes_gdf[["addr", "conns"]]
+    cnt_avg_gdf = gdf[["addr", "conns"]]
     cnt_avg_gdf = cnt_avg_gdf.groupby(["addr"], as_index=False).mean()
     cnt_avg_gdf = cnt_avg_gdf.rename(columns={"conns":"avg"})
 
     # Merge averages to dataframe
-    nodes_gdf = nodes_gdf.merge(cnt_avg_gdf, on=['addr'], how='left')
+    gdf = gdf.merge(cnt_avg_gdf, on=['addr'], how='left')
 
     # Filter out all ip-port pairs below average
-    nodes_gdf = nodes_gdf[nodes_gdf.conns>=nodes_gdf.avg]
+    gdf = gdf[gdf.conns>=gdf.avg]
     
     if min_conns > 1:
-        nodes_gdf = nodes_gdf[nodes_gdf.conns >= min_conns]
+        gdf = gdf[gdf.conns >= min_conns]
 
-    nodes_gdf = nodes_gdf.drop(['avg'])
+    gdf = gdf.drop(['avg'])
 
     resources = Resources.get_instance()
     iana_lookup_df = resources.iana_lookup_df
 
     # Add IANA service names to node lists
-    nodes_gdf = nodes_gdf.merge(iana_lookup_df, on=['port'], how='left')
+    gdf = gdf.merge(iana_lookup_df, on=['port'], how='left')
 
     # The following column update is blocked by https://github.com/rapidsai/cudf/issues/3186
     # Doing workaround until fix.
-    # nodes_gdf.loc[nodes_gdf["port"] >= eph_min, "service"] = "ephemeral"
-    nodes_eph_gdf = nodes_gdf[nodes_gdf["port"] >= eph_min]
-    nodes_eph_gdf["service"] = "ephemeral"
-    nodes_gdf = cudf.concat([nodes_gdf[nodes_gdf["port"] < eph_min], nodes_eph_gdf])
+    # gdf.loc[gdf["port"] >= eph_min, "service"] = "ephemeral"
+    eph_gdf = gdf[gdf["port"] >= eph_min]
+    eph_gdf["service"] = "ephemeral"
+    gdf = cudf.concat([gdf[gdf["port"] < eph_min], eph_gdf])
 
-    nodes_gdf = nodes_gdf.groupby(["addr", "port", "service"], dropna=False, as_index=False).sum()
+    gdf = gdf.groupby(["addr", "port", "service"], dropna=False, as_index=False).sum()
 
-    return nodes_gdf
+    return gdf
