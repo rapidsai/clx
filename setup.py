@@ -14,3 +14,4 @@ setup(
             "clx.heuristics":["resources/*.csv"]
       },
       install_requires=install_requires
+)
