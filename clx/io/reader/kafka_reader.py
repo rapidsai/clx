@@ -64,11 +64,9 @@ class KafkaReader(Reader):
                     else:
                         running = False
             df = cudf.DataFrame()
-            df["Raw"] = events
-            log.debug(
-                "Kafka reader batch aggregation complete. Dataframe size = "
-                + str(df.shape)
-            )
+            if len(events) > 0:
+                df["Raw"] = events
+            log.debug("Kafka reader batch aggregation complete. Dataframe size = " + str(df.shape))
             return df
         except:
             log.error("Error fetching data from kafka")
