@@ -38,6 +38,7 @@ requirements:
     - python-whois
     - pytest
     - pytorch
+    - torchvision
 
 test:
   imports:

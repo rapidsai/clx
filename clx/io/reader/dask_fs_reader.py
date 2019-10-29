@@ -4,6 +4,7 @@ from clx.io.reader.file_reader import FileReader
 
 log = logging.getLogger(__name__)
 
+
 class DaskFileSystemReader(FileReader):
     def __init__(self, config):
         self._config = config

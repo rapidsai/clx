@@ -4,6 +4,7 @@ from clx.io.reader.file_reader import FileReader
 
 log = logging.getLogger(__name__)
 
+
 class FileSystemReader(FileReader):
     def __init__(self, config):
         self._config = config
@@ -30,4 +31,4 @@ class FileSystemReader(FileReader):
         return df
 
     def close(self):
-       log.info("Closed fs reader")
+        log.info("Closed fs reader")

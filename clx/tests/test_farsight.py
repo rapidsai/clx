@@ -34,6 +34,7 @@ rdata_name_response = mock(
     spec=requests.Response,
 )
 
+
 @pytest.mark.parametrize("server", [server])
 @pytest.mark.parametrize("apikey", [apikey])
 @pytest.mark.parametrize("ip", [ip])

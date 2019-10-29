@@ -1,20 +1,18 @@
-from pathlib import Path
-
-import cudf
-import pandas
-import pytest
 import os
+import cudf
+import pytest
+from pathlib import Path
 from clx.io.factory.factory import Factory
 from clx.io.reader.fs_reader import FileSystemReader
 
 test_input_base_path = "%s/input" % os.path.dirname(os.path.realpath(__file__))
 
 expected_df = cudf.DataFrame(
-    [
-        ("firstname", ["Emma", "Ava", "Sophia"]),
-        ("lastname", ["Olivia", "Isabella", "Charlotte"]),
-        ("gender", ["F", "F", "F"]),
-    ]
+    {
+        "firstname": ["Emma", "Ava", "Sophia"],
+        "lastname": ["Olivia", "Isabella", "Charlotte"],
+        "gender": ["F", "F", "F"],
+    }
 )
 
 

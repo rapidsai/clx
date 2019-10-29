@@ -4,6 +4,7 @@ import numpy as np
 import cudf
 import clx.parsers.zeek as zeek
 
+
 def test_parse_log_file(tmpdir):
 
     header = "#separator\t\\x09\n\
@@ -48,14 +49,12 @@ def test_parse_log_file(tmpdir):
     actual["resp_ip_bytes"] = actual["resp_ip_bytes"].astype("int64")
     actual["tunnel_parents"] = ["(empty)", "(empty)"]
 
-
-
     footer = "#close^I2015-01-24-16-50-35"
 
     fname = tmpdir.mkdir("tmp_clx_zeek_test").join("tst_zeek_conn_log.csv")
     actual.to_csv(fname, sep="\t", index=False, header=False)
 
-    with open(fname, 'r+') as f:
+    with open(fname, "r+") as f:
         content = f.read()
         f.seek(0, 0)
         f.write(header + content + footer)
