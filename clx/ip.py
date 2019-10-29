@@ -15,6 +15,7 @@
 import cudf
 import nvstrings
 import rmm
+import numpy as np
 
 
 def ip_to_int(values):
