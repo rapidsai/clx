@@ -73,7 +73,7 @@ def major_ports(addr_col, port_col, min_conns=1, eph_min=10000):
     """
 
     # Count the number of connections across each src ip-port pair
-    gdf = cudf.DataFrame([("addr", addr_col), ("port", port_col)])
+    gdf = cudf.DataFrame({"addr": addr_col, "port": port_col})
     gdf["conns"] = 1.0
     gdf = gdf.groupby(["addr", "port"], as_index=False).count()
 
