@@ -19,9 +19,11 @@ class TestWorkflowImpl(Workflow):
 
 dirname = os.path.split(os.path.abspath(__file__))[0]
 input_path = dirname + "/input/person.csv"
+input_path_empty = dirname + "/input/empty.csv"
 output_path_param_test = dirname + "/output/output_parameters.csv"
 output_path_benchmark_test = dirname + "/output/output_benchmark.csv"
 output_path_config_test = dirname + "/output/output_config.csv"
+output_path_empty = dirname + "/output/empty.csv"
 
 
 @pytest.fixture
@@ -139,6 +141,28 @@ def test_workflow_config_error(mock_env_home, set_workflow_config):
     with pytest.raises(Exception):
         test_workflow = TestWorkflowImpl(workflow_name)
 
+@pytest.mark.parametrize("input_path", [input_path_empty])
+@pytest.mark.parametrize("output_path", [output_path_empty])
+def test_workflow_no_data(mock_env_home, set_workflow_config, input_path, output_path):
+    """ Test confirms that workflow is not run and output not written if no data is returned from the workflow io_reader
+    """
+   # Create source and destination configurations
+    source = set_workflow_config[1]
+    destination = set_workflow_config[2]
+    source["input_path"] = input_path
+    destination["output_path"] = output_path
+
+    # Create new workflow with source and destination configurations
+    test_workflow = spy(TestWorkflowImpl(
+        source=source, destination=destination, name="test-workflow-no-data", custom_workflow_param="test_param"
+    ))
+    test_workflow.run_workflow()
+    
+    # Verify workflow not run
+    verify(test_workflow, times=0).workflow(...)  
+
+    # Verify that no output file created.
+    assert os.path.exists(output_path) == False
 
 @pytest.mark.parametrize("input_path", [input_path])
 @pytest.mark.parametrize("output_path", [output_path_benchmark_test])
