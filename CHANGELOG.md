@@ -5,6 +5,7 @@
 ## Improvements
  - PR #47 Update splunk workflow output
  - PR #43 Functionality to parse selected windows events
+ - PR #46 Adding copyright
 
 ## Bug Fixes
 
