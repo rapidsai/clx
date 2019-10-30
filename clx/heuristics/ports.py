@@ -53,9 +53,9 @@ class Resources:
         return iana_lookup_df
 
 def major_ports(addr_col, port_col, min_conns=1, eph_min=10000):
-    """Find major ports by computing the mean number of connections per ip-port pair, and then filters out 
-    all ip-port pairs that don't cross this threshold. Also adds column for IANA service name corresponding
-    to each port.
+    """Find major ports for each address. This is done by computing the mean number of connections across all 
+    ports for each address and then filters out all ports that don't cross this threshold. Also adds column 
+    for IANA service name correspondingto each port.
 
         Parameters
         ----------
