@@ -17,7 +17,7 @@ import os
 import pytest
 import yaml
 from clx.workflow.workflow import Workflow
-from mockito import spy, verify
+from mockito import spy, verify, when
 from cudf import DataFrame
 
 
@@ -174,6 +174,32 @@ def test_workflow_no_data(mock_env_home, set_workflow_config, input_path, output
     
     # Verify workflow not run
     verify(test_workflow, times=0).workflow(...)  
+
+    # Verify that no output file created.
+    assert os.path.exists(output_path) == False
+
+@pytest.mark.parametrize("input_path", [input_path])
+@pytest.mark.parametrize("output_path", [output_path_empty])
+def test_workflow_no_enriched_data(mock_env_home, set_workflow_config, input_path, output_path):
+    """ Test confirms that if workflow produces no enriched data that no output file is created
+    """
+   # Create source and destination configurations
+    source = set_workflow_config[1]
+    destination = set_workflow_config[2]
+    source["input_path"] = input_path
+    destination["output_path"] = output_path
+
+    # Create new workflow with source and destination configurations
+    test_workflow = spy(TestWorkflowImpl(
+        source=source, destination=destination, name="test-workflow-no-data", custom_workflow_param="test_param"
+    ))
+    io_writer = spy(test_workflow._io_writer)
+
+    # Return empty dataframe when workflow runs
+    when(test_workflow).workflow(...).thenReturn(DataFrame())
+
+    # Verify io_writer does not write data
+    verify(io_writer, times=0).write_data(...)
 
     # Verify that no output file created.
     assert os.path.exists(output_path) == False
