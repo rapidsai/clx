@@ -178,7 +178,7 @@ def test_workflow_no_data(mock_env_home, set_workflow_config, input_path, output
     # Verify that no output file created.
     assert os.path.exists(output_path) == False
 
-@pytest.mark.parametrize("input_path", [input_path_empty])
+@pytest.mark.parametrize("input_path", [input_path])
 @pytest.mark.parametrize("output_path", [output_path_empty])
 def test_workflow_no_enriched_data(mock_env_home, set_workflow_config, input_path, output_path):
     """ Test confirms that if workflow produces no enriched data that no output file is created
