@@ -8,7 +8,6 @@
  - PR #46 Adding copyright
 
 ## Bug Fixes
-
  - PR #50 Workflow IO fix
  - PR #45 More Kafka IO fixes
  - PR #44 Fix Kafka IO
