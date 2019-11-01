@@ -35,10 +35,11 @@ expected_df = cudf.DataFrame(
 def test_fetch_data_text(test_input_base_path, expected_df):
     test_input_path = "%s/person.csv" % (test_input_base_path)
     config = {
+        "type": "dask_fs",
         "input_path": test_input_path,
-        "schema": ["firstname", "lastname", "gender"],
+        "names": ["firstname", "lastname", "gender"],
         "delimiter": ",",
-        "required_cols": ["firstname", "lastname", "gender"],
+        "usecols": ["firstname", "lastname", "gender"],
         "dtype": ["str", "str", "str"],
         "header": 0,
         "input_format": "text",
@@ -48,14 +49,14 @@ def test_fetch_data_text(test_input_base_path, expected_df):
 
     assert fetched_df.equals(expected_df)
 
-
 @pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
 @pytest.mark.parametrize("expected_df", [expected_df])
 def test_fetch_data_parquet(test_input_base_path, expected_df):
     test_input_path = "%s/person.parquet" % (test_input_base_path)
     config = {
+        "type": "dask_fs",
         "input_path": test_input_path,
-        "required_cols": ["firstname", "lastname", "gender"],
+        "columns": ["firstname", "lastname", "gender"],
         "input_format": "parquet",
     }
 
@@ -64,15 +65,14 @@ def test_fetch_data_parquet(test_input_base_path, expected_df):
 
     assert fetched_df.equals(expected_df)
 
-
 @pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
 @pytest.mark.parametrize("expected_df", [expected_df])
 def test_fetch_data_orc(test_input_base_path, expected_df):
     test_input_path = "%s/person.orc" % (test_input_base_path)
     config = {
+        "type": "dask_fs",
         "input_path": test_input_path,
-        "required_cols": ["firstname", "lastname", "gender"],
-        "input_format": "orc",
+        "input_format": "orc"
     }
 
     reader = DaskFileSystemReader(config)

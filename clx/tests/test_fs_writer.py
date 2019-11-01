@@ -33,7 +33,6 @@ df = cudf.DataFrame(
         "gender": ["F", "F", "F"],
     }
 )
-
 expected_df = df.to_pandas()
 
 
@@ -43,8 +42,12 @@ def test_write_data_text(test_output_base_path, df):
     test_output_path = "%s/person.csv" % (test_output_base_path)
     if os.path.exists(test_output_path):
         os.remove(test_output_path)
-    config = {"output_path": test_output_path, "output_format": "text"}
-    writer = FileSystemWriter(config["output_path"], config["output_format"])
+    config = {
+        "type": "fs",
+        "output_path": test_output_path,
+        "output_format": "text", "index": False
+    }
+    writer = FileSystemWriter(config)
     writer.write_data(df)
 
     with open(test_output_path) as f:
@@ -65,8 +68,11 @@ def test_write_data_parquet(test_output_base_path, expected_df, df):
     test_output_path = "%s/person_parquet" % (test_output_base_path)
     if os.path.exists(test_output_path) and os.path.isdir(test_output_path):
         shutil.rmtree(test_output_path)
-    config = {"output_path": test_output_path, "output_format": "parquet"}
-    writer = FileSystemWriter(config["output_path"], config["output_format"])
+    config = {
+        "type": "fs",
+        "output_path": test_output_path,
+        "output_format": "parquet"}
+    writer = FileSystemWriter(config)
     writer.write_data(df)
     output_files = glob.glob("%s/*" % (test_output_path))
     result = pd.read_parquet(output_files[0], engine="pyarrow")

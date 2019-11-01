@@ -35,18 +35,6 @@ class FileReader(Reader):
         self._config = val
 
     @abstractmethod
-    def read_text(self):
-        pass
-
-    @abstractmethod
-    def read_parquet(self):
-        pass
-
-    @abstractmethod
-    def read_orc(self):
-        pass
-
-    @abstractmethod
     def close(self):
         pass
 
