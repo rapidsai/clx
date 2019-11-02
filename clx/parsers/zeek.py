@@ -23,7 +23,7 @@ type_dict = {
     "interval": "float64",
     "string": "str",
     "pattern": "str",
-    "port": "int32",
+    "port": "int64",
     "addr": "str",
     "subnet": "str",
     "enum": "str",

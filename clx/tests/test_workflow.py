@@ -47,9 +47,9 @@ def set_workflow_config():
         "type": "fs",
         "input_format": "csv",
         "input_path": "/path/to/input",
-        "schema": ["firstname", "lastname", "gender"],
+        "names": ["firstname", "lastname", "gender"],
         "delimiter": ",",
-        "required_cols": ["firstname", "lastname", "gender"],
+        "usecols": ["firstname", "lastname", "gender"],
         "dtype": ["str", "str", "str"],
         "header": 0,
     }
@@ -57,6 +57,7 @@ def set_workflow_config():
         "type": "fs",
         "output_format": "csv",
         "output_path": "/path/to/output",
+        "index": False
     }
     workflow_config = {
         "source": source,
@@ -116,6 +117,7 @@ def test_workflow_config(mock_env_home, set_workflow_config, input_path, output_
     workflow_name = "test-workflow-config"
     workflow_config = set_workflow_config[0]
     workflow_config["destination"]["output_path"] = output_path
+    workflow_config["destination"]["index"] = False
     workflow_config["source"]["input_path"] = input_path
     workflow_config["custom_workflow_param"] = "param_value"
     write_config_file(workflow_config, workflow_name)

@@ -33,14 +33,19 @@ kafka_config = {
     "output_delimiter": ",",
 }
 
-fs_config = {
+fs_reader_config = {
+    "type": "fs",
     "input_path": "test_input",
-    "output_path": "test_output",
-    "schema": ["_col1", "_col2", "_col3"],
+    "names": ["_col1", "_col2", "_col3"],
     "delimiter": ",",
-    "required_cols": ["_col1", "_col2", "_col3"],
+    "usecols": ["_col1", "_col2", "_col3"],
     "dtype": ["str", "str", "str"],
     "input_format": "text",
+}
+
+fs_writer_config = {
+    "type": "fs",
+    "output_path": "test_output",
     "output_format": "text",
 }
 
@@ -67,16 +72,16 @@ def test_get_io_writer_kafka(kafka_config):
     assert isinstance(writer, expected_cls)
 
 
-@pytest.mark.parametrize("fs_config", [fs_config])
-def test_get_io_reader_fs(fs_config):
-    reader = Factory.get_reader("fs", fs_config)
+@pytest.mark.parametrize("fs_reader_config", [fs_reader_config])
+def test_get_io_reader_fs(fs_reader_config):
+    reader = Factory.get_reader("fs", fs_reader_config)
     expected_cls = FileSystemReader
     assert isinstance(reader, expected_cls)
 
 
-@pytest.mark.parametrize("fs_config", [fs_config])
-def test_get_io_writer_fs(fs_config):
-    writer = Factory.get_writer("fs", fs_config)
+@pytest.mark.parametrize("fs_writer_config", [fs_writer_config])
+def test_get_io_writer_fs(fs_writer_config):
+    writer = Factory.get_writer("fs", fs_writer_config)
     expected_cls = FileSystemWriter
     assert isinstance(writer, expected_cls)
 
@@ -86,10 +91,11 @@ def test_get_io_writer_fs(fs_config):
 def test_get_reader_text(test_input_base_path, expected_df):
     test_input_path = "%s/person.csv" % (test_input_base_path)
     config = {
+        "type": "fs",
         "input_path": test_input_path,
-        "schema": ["firstname", "lastname", "gender"],
+        "names": ["firstname", "lastname", "gender"],
         "delimiter": ",",
-        "required_cols": ["firstname", "lastname", "gender"],
+        "usecols": ["firstname", "lastname", "gender"],
         "dtype": ["str", "str", "str"],
         "header": 0,
         "input_format": "text",
@@ -105,8 +111,9 @@ def test_get_reader_text(test_input_base_path, expected_df):
 def test_get_reader_parquet(test_input_base_path, expected_df):
     test_input_path = "%s/person.parquet" % (test_input_base_path)
     config = {
+        "type": "fs",
         "input_path": test_input_path,
-        "required_cols": ["firstname", "lastname", "gender"],
+        "usecols": ["firstname", "lastname", "gender"],
         "input_format": "parquet",
     }
     reader_from_factory = Factory.get_reader("fs", config)
@@ -120,8 +127,9 @@ def test_get_reader_parquet(test_input_base_path, expected_df):
 def test_get_reader_orc(test_input_base_path, expected_df):
     test_input_path = "%s/person.orc" % (test_input_base_path)
     config = {
+        "type": "fs",
         "input_path": test_input_path,
-        "required_cols": ["firstname", "lastname", "gender"],
+        "usecols": ["firstname", "lastname", "gender"],
         "input_format": "orc",
     }
     reader_from_factory = Factory.get_reader("fs", config)
