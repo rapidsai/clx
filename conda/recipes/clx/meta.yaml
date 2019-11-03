@@ -29,14 +29,16 @@ requirements:
     - python
     - nvstrings {{ minor_version }}.*
     - cugraph {{ minor_version }}.*
+    - dask-cudf {{ minor_version }}.*
     - requests
     - yaml
     - python-confluent-kafka
-    - mock
+    - dask
     - pandas
     - python-whois
     - pytest
     - pytorch
+    - torchvision
 
 test:
   imports:

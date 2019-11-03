@@ -1,3 +1,17 @@
+# Copyright (c) 2019, NVIDIA CORPORATION.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import cudf
 import logging
 import time
@@ -5,6 +19,7 @@ from confluent_kafka import KafkaError
 from clx.io.reader.reader import Reader
 
 log = logging.getLogger(__name__)
+
 
 class KafkaReader(Reader):
     def __init__(self, batch_size, consumer, time_window=30):
@@ -33,29 +48,39 @@ class KafkaReader(Reader):
         current_time = time.time()
         try:
             while running:
-                msg = self.consumer.poll(timeout=1.0)
-                if msg is None:
-                    log.debug("No message received.")
-                    continue
-                elif not msg.error():
-                    data = msg.value().decode("utf-8")
-                    log.debug("Message received.")
-                    if (
-                        rec_cnt < self._batch_size
-                        and (time.time() - current_time) < self.time_window
-                    ):
+                # First check if batch size or time window has been exceeded
+                if (
+                    rec_cnt >= self._batch_size
+                    or (time.time() - current_time) >= self.time_window
+                ):
+                    log.debug(
+                        "Exceeded record count ("
+                        + str(rec_cnt)
+                        + ") or time window ("
+                        + str(time.time() - current_time)
+                        + ")"
+                    )
+                    running = False
+                # Else poll next message in kafka queue
+                else:
+                    msg = self.consumer.poll(timeout=1.0)
+                    if msg is None:
+                        log.debug("No message received.")
+                        continue
+                    elif not msg.error():
+                        data = msg.value().decode("utf-8")
+                        log.debug("Message received.")
                         events.append(data)
                         rec_cnt += 1
-                    else:
-                        events.append(data)
+                    elif msg.error().code() != KafkaError._PARTITION_EOF:
+                        log.error(msg.error())
                         running = False
-                elif msg.error().code() != KafkaError._PARTITION_EOF:
-                    log.error(msg.error())
-                    running = False
-                else:
-                    running = False
-            df = cudf.dataframe.DataFrame()
-            df["Raw"] = events
+                    else:
+                        running = False
+            df = cudf.DataFrame()
+            if len(events) > 0:
+                df["Raw"] = events
+            log.debug("Kafka reader batch aggregation complete. Dataframe size = " + str(df.shape))
             return df
         except:
             log.error("Error fetching data from kafka")

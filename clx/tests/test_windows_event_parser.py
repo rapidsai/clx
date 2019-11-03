@@ -1,3 +1,17 @@
+# Copyright (c) 2019, NVIDIA CORPORATION.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import cudf
 import pytest
 from clx.parsers.windows_event_parser import WindowsEventParser
@@ -694,3 +708,35 @@ def test_windows_event_parser():
         eventcode = parsed_rec["eventcode"]
         validate_func = VALIDATE_DICT.get(eventcode, unknown_record_type)
         validate_func(parsed_rec)
+
+
+def test2_windows_event_parser():
+    wep = WindowsEventParser(interested_eventcodes=["5156"])
+    test_input_df = cudf.DataFrame()
+    raw_colname = "_raw"
+    test_input_df[raw_colname] = TEST_DATA
+    test_output_df = wep.parse(test_input_df, raw_colname)
+    parsed_rec = test_output_df.to_records()[0]
+    assert parsed_rec["time"] == "04/03/2019 11:58:59 am"
+    assert parsed_rec["id"] == "c3f48bba-90a1-4999-84a6-4da9d964d31d"
+    assert parsed_rec["eventcode"] == "5156"
+    assert parsed_rec["application_information_process_id"] == "4"
+    assert parsed_rec["application_information_application_name"] == "system"
+    assert parsed_rec["network_information_direction"] == "inbound"
+    assert parsed_rec["network_information_source_address"] == "100.20.100.20"
+    assert parsed_rec["network_information_source_port"] == "138"
+    assert parsed_rec["network_information_destination_address"] == "100.20.100.30"
+    assert parsed_rec["network_information_destination_port"] == "138"
+    assert parsed_rec["network_information_protocol"] == "17"
+    assert parsed_rec["filter_information_filter_run_time_id"] == "0"
+    assert parsed_rec["filter_information_layer_name"] == "receive/accept"
+    assert parsed_rec["filter_information_layer_run_time_id"] == "44"
+
+
+def test3_windows_event_parser():
+    expected_error = KeyError(
+        "Regex for eventcode 24 is not available in the config file. Please choose from ['4624', '4625', '4634', '4647', '4648', '4672', '4673', '4720', '4722', '4723', '4724', '4725', '4726', '4732', '4738', '4740', '4743', '4756', '4767', '4768', '4769', '4770', '4771', '4781', '4782', '4798', '5156', '5157']"
+    )
+    with pytest.raises(KeyError) as actual_error:
+        wep = WindowsEventParser(interested_eventcodes=["5156", "24"])
+        assert actual_error == expected_error

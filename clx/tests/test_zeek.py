@@ -1,8 +1,23 @@
+# Copyright (c) 2019, NVIDIA CORPORATION.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import pytest
 import numpy as np
 
 import cudf
 import clx.parsers.zeek as zeek
+
 
 def test_parse_log_file(tmpdir):
 
@@ -48,20 +63,18 @@ def test_parse_log_file(tmpdir):
     actual["resp_ip_bytes"] = actual["resp_ip_bytes"].astype("int64")
     actual["tunnel_parents"] = ["(empty)", "(empty)"]
 
-
-
     footer = "#close^I2015-01-24-16-50-35"
 
     fname = tmpdir.mkdir("tmp_clx_zeek_test").join("tst_zeek_conn_log.csv")
     actual.to_csv(fname, sep="\t", index=False, header=False)
 
-    with open(fname, 'r+') as f:
+    with open(fname, "r+") as f:
         content = f.read()
         f.seek(0, 0)
         f.write(header + content + footer)
 
     parsed = zeek.parse_log_file(fname)
-    assert np.allclose(parsed["ts"], actual["ts"])
+    assert np.allclose(parsed["ts"].to_array(), actual["ts"].to_array())
     assert parsed["uid"].equals(actual["uid"])
     assert parsed["id.orig_h"].equals(actual["id.orig_h"])
     assert parsed["id.orig_p"].equals(actual["id.orig_p"])
@@ -69,7 +82,7 @@ def test_parse_log_file(tmpdir):
     assert parsed["id.resp_p"].equals(actual["id.resp_p"])
     assert parsed["proto"].equals(actual["proto"])
     assert parsed["service"].equals(actual["service"])
-    assert np.allclose(parsed["duration"], actual["duration"])
+    assert np.allclose(parsed["duration"].to_array(), actual["duration"].to_array())
     assert parsed["orig_bytes"].equals(actual["orig_bytes"])
     assert parsed["resp_bytes"].equals(actual["resp_bytes"])
     assert parsed["conn_state"].equals(actual["conn_state"])
