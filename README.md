@@ -1,12 +1,19 @@
 # CLX
 
-CLX provides a simple API for analysts, data scientists and engineers to quickly get started with applying [RAPIDS](https://rapids.ai/) to real-world cyber use cases.
+CLX (Cyber Log Accelerators) provides a simple API for security analysts, data scientists, and engineers to quickly get started applying [RAPIDS](https://rapids.ai/) to real-world cyber use cases. The goal of CLX is to:
+
+1. Provide SIEM integration with GPU compute environments via RAPIDS and effectively extend the SIEM environment,
+1. Make available pre-built use cases that demonstrate CLX and RAPIDS functionality that are ready to use in a Security Operations Center (SOC), 
+1. Allow cyber data scientists and SecOps teams to generate workflows, using cyber-specific GPU-accelerated primitives and methods, that let them interact with code using security language, and
+1. Accelerate log parsing in a flexible, non-regex method.
+
 
 ## Getting Started
 
-CLX is built around the structure of a Workflow. A Workflow is simply a series of data transformations performed on a gpu [dataframe](https://github.com/rapidsai/cudf) that contains raw cyber data, with the goal of surfacing meaningful cyber analytical output. Data can be read or written to Kafka or a file as part of the Workflow. 
+CLX is targeted towards cybersecurity data scientists, senior security analysts, threat hunters, and forensic investigators. Data scientists can use CLX in traditional Python files and Jupyter notebooks. CLX also includes structure in the form of a workflow. A workflow is a series of data transformations performed on a [GPU dataframe](https://github.com/rapidsai/cudf) that contains raw cyber data, with the goal of surfacing meaningful cyber analytical output. Multiple I/O methods are available, including Kafka and on-disk file stores.
 
-Example Netflow Workflow reading and writing to file:
+Example flow workflow reading and writing to file:
+
 ```python
 from clx.workflow import netflow_workflow
 
@@ -29,12 +36,16 @@ wf = netflow_workflow.NetflowWorkflow(source=source, destination=dest, name="my-
 wf.run_workflow()
 ```
 
+## Example Notebooks
+The notebooks folder contains example use cases and workflow instantiations.
 
 ## Installation
+CLX is avaialble in a Docker container, by building from source, and through Conda installation.
 
-### Docker 
+### CLX Docker Container
 
-CLX 
+Pull the RAPIDS container and build for CLX.
+
 ```aidl
 docker pull rapidsai/rapidsai:cuda10.0-runtime-ubuntu18.04
 docker build -t clx .
@@ -46,7 +57,8 @@ docker run --runtime=nvidia \
   clx:latest
 ```
 
-CLX and Kafka
+Start a new CLX container. The container also includes Kafka.
+
 ```aidl
 docker-compose up
 ```
@@ -67,6 +79,6 @@ python setup.py install
 conda install -c rapidsai-nightly -c rapidsai -c nvidia -c anaconda -c numba -c conda-forge clx
 ```
 
-### Contributing
+## Contributing
 
 For contributing guildelines please reference our [guide for contributing](https://github.com/rapidsai/clx/blob/master/CONTRIBUTING.md).
