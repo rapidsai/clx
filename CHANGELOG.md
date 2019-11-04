@@ -1,7 +1,9 @@
 # clx 0.11.0 (Date TBD)
 
 ## New Features
-
+ - PR #53 Added Network Mapping notebook
+ - PR #48 Added port heuristic to detect major ports
+ 
 ## Improvements
  - PR #49 Parameter pass-through to underlying cudf/dask_cudf
  - PR #47 Update splunk workflow output
@@ -21,7 +23,6 @@
 # clx 0.10.0 (Date TBD)
 
 ## New Features
- - PR #48 Added port heuristic to detect major ports
  - PR #35 Added readthedocs
  - PR #37 Add pytorch dependency.
  - PR #37 Add DGA detection feature.
