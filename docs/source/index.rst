@@ -10,6 +10,7 @@ Welcome to clx's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   api.rst
    10min-clx.ipynb
 
 

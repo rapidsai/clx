@@ -7,6 +7,7 @@
  - PR #47 Update splunk workflow output
  - PR #43 Functionality to parse selected windows events
  - PR #46 Adding copyright
+ - PR #53 Autogenerate api docs
 
 ## Bug Fixes
  - PR #50 Workflow IO fix
