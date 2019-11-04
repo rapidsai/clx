@@ -157,5 +157,7 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
+autodoc_mock_imports = ['cudf', 'nvstrings', 'rmm', 'yaml', 'dask', 'dask_cudf']
+
 
 # -- Extension configuration -------------------------------------------------
