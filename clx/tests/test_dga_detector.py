@@ -76,7 +76,7 @@ test_df2 = cudf.DataFrame(
 
 test_partitioned_dfs = [test_df1, test_df2]
 
-model_filepath = "%s/input/rnn_classifier_2019-11-04_20_25_27.pth" % os.path.dirname(
+model_filepath = "%s/input/rnn_classifier_2019-11-04_21_54_02.pth" % os.path.dirname(
     os.path.realpath(__file__)
 )
 
