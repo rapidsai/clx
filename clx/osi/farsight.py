@@ -17,7 +17,7 @@ import requests
 import urllib
 import logging
 
-log = logging.getLogger("FarsightLookupClient")
+log = logging.getLogger(__name__)
 
 """
 This class provides functionality to query DNSDB record in various ways
