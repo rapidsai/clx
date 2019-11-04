@@ -1,7 +1,7 @@
 # clx 0.11.0 (Date TBD)
 
 ## New Features
- - PR #53 Added Network Mapping notebook
+ - PR #54 Added Network Mapping notebook
  - PR #48 Added port heuristic to detect major ports
  
 ## Improvements
