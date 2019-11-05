@@ -5,6 +5,7 @@
  - PR #48 Added port heuristic to detect major ports
  
 ## Improvements
+ - PR #55 Updates to folder structure
  - PR #49 Parameter pass-through to underlying cudf/dask_cudf
  - PR #47 Update splunk workflow output
  - PR #43 Functionality to parse selected windows events
