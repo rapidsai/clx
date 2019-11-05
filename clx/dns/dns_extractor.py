@@ -68,11 +68,24 @@ class DnsVarsProvider:
 def extract_hostnames(url_df_col):
     """
     Extract hostname from the url.
-    Example:-
-        input: 
-            ["http://www.worldbank.org.kg/", "waiterrant.blogspot.com","ftp://b.cnn.com/","a.news.uk"]
-        output: 
-            ["www.worldbank.org.kg", "waiterrant.blogspot.com","b.cnn.com", "a.news.uk"]
+
+    Parameters
+    ----------
+    URLs : cudf.Series
+        Column of URL strings
+
+    Returns
+    -------
+    hostnames :  cudf.Series
+
+    Examples
+    --------
+    >>> extract_hostnames(cudf.Series(["http://www.worldbank.org.kg/", "waiterrant.blogspot.com","ftp://b.cnn.com/","a.news.uk"])
+    0       "www.worldbank.org.kg"
+    1    "waiterrant.blogspot.com"
+    2                  "b.cnn.com"
+    3                  "a.news.uk"
+    dtype: object
     """
     hostnames = url_df_col.str.extract("([\\w]+[\\.].+*[^/]|[\\-\\w]+[\\.].+*[^/])")[
         0
@@ -81,7 +94,18 @@ def extract_hostnames(url_df_col):
 
 
 def get_hostname_split_df(hostnames):
-    # Find all words and digits between periods.
+    """
+    Find all words and digits between periods.
+
+    Parameters
+    ----------
+    hostname : cudf.Series
+        Column of hostnames
+
+    Returns
+    -------
+    words :  cudf.DataFrame
+    """
     hostname_split = hostnames.str.findall("([^.]+)")
     hostname_split_df = DataFrame()
     # Assign hostname split to cudf dataframe.
@@ -94,7 +118,8 @@ def generate_tld_cols(hostname_split_df, hostnames, col_len):
     """
     This function generates tld columns.
     
-    Example:- 
+    Examples
+    --------
         input:
                 4    3                2          1           0
             0  ac  com              cnn       news      forums
@@ -106,12 +131,11 @@ def generate_tld_cols(hostname_split_df, hostnames, col_len):
            1      ac              cnn       news      forums            ac           cnn.ac          news.cnn.ac          forums.news.cnn.ac
            2                      com        cnn           b                            com              cnn.com                   b.cnn.com
     
-    Adding last element for max tld column.
-    Example:-
-        input: 
-            forums.news.cnn.com.ac
-        output: 
-            tld4 = ac
+        Adding last element for max tld column.
+            input: 
+                forums.news.cnn.com.ac
+            output: 
+                tld4 = ac
     """
     hostname_split_df = hostname_split_df.fillna("")
     hostname_split_df["tld" + str(col_len)] = hostname_split_df[col_len]
@@ -230,7 +254,9 @@ def parse_url(url_df_col, req_cols=None):
     """
     This function extracts subdomain, domain and suffix for a given url.
     returns: cuDF dataframe with requested columns. If req_cols values are passed as input parameter.
-    Example:- 
+
+    Examples
+    --------
         requested cols:          
             {"hostname", "domain", "suffix", "subdomain"}
         input:
