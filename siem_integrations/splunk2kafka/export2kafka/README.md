@@ -2,12 +2,11 @@
 
 ## Overview
 
-Splunk App that installs `export2kafka` for use with alerts and searches to
-export data from Splunk to Kafka
+This is a Splunk App that installs `export2kafka` that enables data export from Splunk to a running Kafka instance.
 
-## Pre-reqs
+## Prerequesites
 
-1. Install Kakfa libraries
+1. Install Kakfa libraries:
 ```
     sudo -i -u splunk bash
     source activate root
@@ -22,7 +21,7 @@ export data from Splunk to Kafka
 
 1. Git clone this repo into `$SPLUNKHOME/etc/apps`
 2. Go to `http://$SPLUNKURL/en-us/debug/refresh`
-3. Click **Refresh** button to load the app into the Web UI
+3. Click the "Refresh" button to load the app into the Web UI
 
 ## Usage
 ### Config Options
