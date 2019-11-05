@@ -78,7 +78,7 @@ python setup.py install
 ### Conda install
 
 ```
-conda install -c rapidsai-nightly -c rapidsai -c nvidia -c anaconda -c numba -c conda-forge clx
+conda install -c rapidsai-nightly -c rapidsai -c nvidia -c pytorch -c conda-forge -c defaults clx
 ```
 
 ## Contributing
