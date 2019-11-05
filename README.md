@@ -49,7 +49,7 @@ CLX is avaialble in a Docker container, by building from source, and through Con
 Pull the RAPIDS container and build for CLX.
 
 ```aidl
-docker pull rapidsai/rapidsai:cuda10.0-runtime-ubuntu18.04
+docker pull rapidsai/rapidsai-dev-nightly:0.11-cuda10.0-devel-ubuntu18.04-py3.7
 docker build -t clx .
 docker run --runtime=nvidia \
   --rm -it \
@@ -78,7 +78,7 @@ python setup.py install
 ### Conda install
 
 ```
-conda install -c rapidsai-nightly -c rapidsai -c nvidia -c anaconda -c numba -c conda-forge clx
+conda install -c rapidsai-nightly -c rapidsai -c nvidia -c pytorch -c conda-forge -c defaults clx
 ```
 
 ## Contributing
