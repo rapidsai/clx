@@ -39,6 +39,9 @@ Parsers
 .. autoclass:: clx.parsers.windows_event_parser.WindowsEventParser
     :members:
 
+.. automodule:: clx.parsers.zeek
+    :members:
+
 Workflow
 --------
 
