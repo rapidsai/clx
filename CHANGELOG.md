@@ -26,6 +26,8 @@
 # clx 0.10.0 (Date TBD)
 
 ## New Features
+ - PR #59 Added clx workflow implementation notebooks
+ - PR #48 Added port heuristic to detect major ports
  - PR #35 Added readthedocs
  - PR #37 Add pytorch dependency.
  - PR #37 Add DGA detection feature.
