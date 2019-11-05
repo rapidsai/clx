@@ -7,9 +7,15 @@ IP
 .. automodule:: clx.ip
     :members:
 
-ML Stats
---------
-.. automodule:: clx.mlstats
+Analytics
+---------
+.. autoclass:: clx.analytics.dga_detector.DGADetector
+    :members:
+
+.. autoclass:: clx.analytics.model.rnn_classifier.RNNClassifier
+    :members:
+
+.. automodule:: clx.analytics.stats
     :members:
 
 DNS Extractor
