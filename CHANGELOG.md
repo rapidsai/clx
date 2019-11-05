@@ -3,6 +3,7 @@
 ## New Features
  - PR #54 Added Network Mapping notebook
  - PR #48 Added port heuristic to detect major ports
+ - PR #60 Added DGA detection notebook and DNS log parsing notebook
  
 ## Improvements
  - PR #58 Update docker image
