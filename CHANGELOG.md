@@ -4,6 +4,7 @@
 
 ## Improvements
  - PR #55 Updates to folder structure
+ - PR #52 Include DNS and OSI usage to notebook.
  - PR #49 Parameter pass-through to underlying cudf/dask_cudf
  - PR #47 Update splunk workflow output
  - PR #43 Functionality to parse selected windows events
