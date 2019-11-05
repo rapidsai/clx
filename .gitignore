@@ -3,10 +3,12 @@ __pycache__/
 .pytest_cache/
 build/
 dist/
-rapidscyber.egg-info/
+clx.egg-info/
 
 # IDE
 .idea/
+*.iml
+
 # Test output
-rapidscyber/tests/output
-rapidscyber/tests/.config
+clx/tests/output
+clx/tests/.config
