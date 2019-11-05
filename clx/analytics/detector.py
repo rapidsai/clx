@@ -2,7 +2,7 @@ import logging
 import torch
 import torch.nn as nn
 from abc import ABC, abstractmethod
-from clx.ml.model.rnn_classifier import RNNClassifier
+from clx.analytics.model.rnn_classifier import RNNClassifier
 
 log = logging.getLogger(__name__)
 
