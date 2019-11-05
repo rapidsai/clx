@@ -5,6 +5,7 @@
  - PR #48 Added port heuristic to detect major ports
  
 ## Improvements
+ - PR #58 Update docker image
  - PR #55 Updates to folder structure
  - PR #52 Include DNS and OSI usage to notebook.
  - PR #49 Parameter pass-through to underlying cudf/dask_cudf
