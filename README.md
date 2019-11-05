@@ -1,6 +1,8 @@
-# CLX
+# <div align="left"><img src="https://rapids.ai/assets/images/rapids_logo.png" width="90px"/>&nbsp;Cyber Log Accelerators (CLX)</div>
 
-CLX (Cyber Log Accelerators) provides a simple API for security analysts, data scientists, and engineers to quickly get started applying [RAPIDS](https://rapids.ai/) to real-world cyber use cases. The goal of CLX is to:
+**NOTE:** For the latest stable [README.md](https://github.com/rapidsai/clx/blob/master/README.md) ensure you are on the `master` branch.
+
+CLX ("clicks") provides a simple API for security analysts, data scientists, and engineers to quickly get started applying [RAPIDS](https://rapids.ai/) to real-world cyber use cases. The goal of CLX is to:
 
 1. Provide SIEM integration with GPU compute environments via RAPIDS and effectively extend the SIEM environment,
 1. Make available pre-built use cases that demonstrate CLX and RAPIDS functionality that are ready to use in a Security Operations Center (SOC), 
@@ -76,7 +78,7 @@ python setup.py install
 ### Conda install
 
 ```
-conda install -c rapidsai-nightly -c rapidsai -c nvidia -c anaconda -c numba -c conda-forge clx
+conda install -c rapidsai-nightly -c rapidsai -c nvidia -c pytorch -c conda-forge -c defaults clx
 ```
 
 ## Contributing
