@@ -4,7 +4,7 @@ import cudf
 import argparse
 import logging
 from datetime import datetime
-from clx.ml.dga_detector import DGADetector
+from clx.analytics.dga_detector import DGADetector
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)

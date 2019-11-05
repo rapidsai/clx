@@ -35,7 +35,7 @@ class WindowsEventParser(EventParser):
         EventParser.__init__(self, self.get_columns(), self.EVENT_NAME)
 
     def parse(self, dataframe, raw_column):
-        """Parses the windows raw evenst"""
+        """Parses the windows raw events"""
         # Clean raw data to be consistent.
         dataframe = self.clean_raw_data(dataframe, raw_column)
         output_chunks = []
