@@ -17,7 +17,7 @@ import whois
 import logging
 from datetime import datetime
 
-log = logging.getLogger("WhoIsLookupClient")
+log = logging.getLogger(__name__)
 
 
 class WhoIsLookupClient(object):

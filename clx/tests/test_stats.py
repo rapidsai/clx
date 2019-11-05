@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import clx.mlstats
+import clx.analytics.stats
 import cudf
 import cupy as cp
 
@@ -45,7 +45,7 @@ def test_rzscore():
     ]
     series = cudf.Series(sequence)
     zscores_df = cudf.DataFrame()
-    zscores_df["zscore"] = clx.mlstats.rzscore(series, 7)
+    zscores_df["zscore"] = clx.analytics.stats.rzscore(series, 7)
     expected_zscores_arr = [
         float("NaN"),
         float("NaN"),
