@@ -30,7 +30,13 @@ Heuristics
 
 OSI (Open Source Integration)
 -----------------------------
-.. automodule:: clx.osi
+.. autoclass:: clx.osi.farsight.FarsightLookupClient
+    :members:
+
+.. autoclass:: clx.osi.virus_total.VirusTotalClient
+    :members:
+
+.. autoclass:: clx.osi.whois.WhoIsLookupClient
     :members:
 
 Parsers
