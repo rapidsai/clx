@@ -159,6 +159,7 @@ def is_unspecified(ips):
     """
     Indicates whether each address is unspecified.
     **Addresses must be IPv4. IPv6 not yet supported.**
+    
     Parameters
     ----------
     values : cudf.Series
