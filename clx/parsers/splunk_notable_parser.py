@@ -21,11 +21,14 @@ log = logging.getLogger(__name__)
 
 
 class SplunkNotableParser(EventParser):
-
+    """This is class parses splunk notable logs.
+    """
     REGEX_FILE = "resources/splunk_notable_regex.yaml"
     EVENT_NAME = "notable"
-
+    
     def __init__(self):
+        """Constructor method
+        """
         event_regex = {}
         regex_filepath = (
             os.path.dirname(os.path.abspath(__file__)) + "/" + self.REGEX_FILE
@@ -34,7 +37,15 @@ class SplunkNotableParser(EventParser):
         EventParser.__init__(self, event_regex.keys(), self.EVENT_NAME)
 
     def parse(self, dataframe, raw_column):
-        """Parses the Splunk notable raw event"""
+        """Parses the Splunk notable raw event.
+        
+        :param dataframe: Raw events to be parsed.
+        :type dataframe: cudf.DataFrame
+        :param raw_column: Raw data contained column name.
+        :type raw_column: string    
+        :return: parsed dataframe
+        :rtype: cudf.DataFrame
+        """
         # Cleaning raw data to be consistent.
         dataframe[raw_column] = dataframe[raw_column].str.replace("\\\\", "")
         parsed_dataframe = self.parse_raw_event(dataframe, raw_column, self.event_regex)
@@ -46,7 +57,7 @@ class SplunkNotableParser(EventParser):
 
     def _process_ip_fields(self, parsed_dataframe):
         """
-            This function replaces src_ip column with src_ip2, if scr_ip is empty and does the same way for dest_ip column.
+        This function replaces src_ip column with src_ip2, if scr_ip is empty and does the same way for dest_ip column.
         """
         for ip in ["src_ip", "dest_ip"]:
             log.debug("******* Processing %s *******" % (ip))

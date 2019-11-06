@@ -24,31 +24,54 @@ log = logging.getLogger(__name__)
 
 class EventParser(ABC):
     """This is an abstract class for all event log parsers.
+    
+    :param columns: Collection of windows event columns.
+    :type columns: set(string)
+    :param event_name: Event name
+    :type event_name: string
     """
 
     def __init__(self, columns, event_name):
+        """Constructor method
+        """
         self._columns = columns
         self._event_name = event_name
 
     @property
     def columns(self):
-        """List of columns required to parse from the yaml file"""
+        """List of columns required to parse from the yaml file.
+        
+        :return: Collection of windows events columns.
+        :rtype: set(string)
+        """
         return self._columns
 
     @property
     def event_name(self):
-        """Event name define type of logs that are being processed."""
+        """Event name define type of logs that are being processed.
+        
+        :return: Event name 
+        :rtype: string
+        """
         return self._event_name
 
     @abstractmethod
     def parse(self, dataframe, raw_column):
-        """Abstract method 'parse' triggers the parsing functionality.
-           Subclasses are required to implement and execute any parsing pre-processing steps. """
+        """Abstract method 'parse' triggers the parsing functionality. Subclasses are required to implement and execute any parsing pre-processing steps."""
         log.info("Begin parsing of dataframe")
         pass
 
     def parse_raw_event(self, dataframe, raw_column, event_regex):
-        """Processes parsing of a specific type of raw event records received as a dataframe
+        """Processes parsing of a specific type of raw event records received as a dataframe.
+        
+        :param dataframe: Raw events to be parsed.
+        :type dataframe: cudf.DataFrame
+        :param raw_column: Raw data contained column name.
+        :type raw_column: string
+        :param event_regex: Regex dictionary contains required regular expressions for a given record type.
+        :type event_regex: dict      
+        :return: parsed dataframe
+        :rtype: cudf.DataFrame
         """
         log.debug(
             "Parsing raw events. Event type: "
@@ -74,7 +97,16 @@ class EventParser(ABC):
         return parsed_gdf
 
     def filter_by_pattern(self, df, column, pattern):
-        """Filter based on whether a string contains a regex pattern
+        """Filter based on whether a string contains a regex pattern.
+        
+        :param df: Raw events to be filtered.
+        :type df: cudf.DataFrame 
+        :param column: Raw data contained column name.
+        :type column: string
+        :param pattern: Regex pattern to filter events.
+        :type pattern: string  
+        :return: filtered dataframe
+        :rtype: cudf.DataFrame
         """
         df["present"] = df[column].str.contains(pattern)
         return df[df.present == True]
