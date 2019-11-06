@@ -42,7 +42,7 @@ wf.run_workflow()
 The notebooks folder contains example use cases and workflow instantiations.
 
 ## Installation
-CLX is avaialble in a Docker container, by building from source, and through Conda installation.
+CLX is available in a Docker container, by building from source, and through Conda installation.
 
 ### CLX Docker Container
 
