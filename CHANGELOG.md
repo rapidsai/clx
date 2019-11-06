@@ -14,6 +14,7 @@
  - PR #53 Autogenerate api docs
 
 ## Bug Fixes
+ - PR #61 ReadTheDocs edits/fixes and DNS Extractor fix
  - PR #50 Workflow IO fix
  - PR #45 More Kafka IO fixes
  - PR #44 Fix Kafka IO
