@@ -9,29 +9,28 @@ from clx.analytics.model.rnn_classifier import RNNClassifier
 
 log = logging.getLogger(__name__)
 
-"""
-This class provides multiple functionalities such as build, train and evaluate the RNNClassifier model 
-to distinguish legitimate and DGA domain names.
-"""
-
 
 class DGADetector(Detector):
     """
-    This function instantiates RNNClassifier model to train. And also optimizes to scale it 
-    and keep running on parallelism. 
+    This class provides multiple functionalities such as build, train and evaluate the RNNClassifier model 
+    to distinguish legitimate and DGA domain names.
     """
 
     def init_model(self, char_vocab=128, hidden_size=100, n_domain_type=2, n_layers=3):
+        """
+        This function instantiates RNNClassifier model to train. And also optimizes to scale it 
+        and keep running on parallelism. 
+        """
         if self.model is None:
             model = RNNClassifier(char_vocab, hidden_size, n_domain_type, n_layers)
             self.leverage_model(model)
 
-    """
-    This function is used for training RNNClassifier model with a given training dataset. 
-    It returns total loss to determine model prediction accuracy.
-    """
-
+    
     def train_model(self, partitioned_dfs, dataset_len):
+        """
+        This function is used for training RNNClassifier model with a given training dataset. 
+        It returns total loss to determine model prediction accuracy.
+        """
         total_loss = 0
         i = 0
         for df in partitioned_dfs:
@@ -55,14 +54,17 @@ class DGADetector(Detector):
                     )
         return total_loss
 
-    """
-    This function accepts cudf series of domains as an argument to classify domain names as benign/malicious and 
-    returns the learned label for each object in the form of cudf series.
-    Example: 
-        detector.predict(['nvidia.com', 'asfnfdjds']) = [1,0]
-    """
+    
 
     def predict(self, domains):
+        """
+        This function accepts cudf series of domains as an argument to classify domain names as benign/malicious and 
+        returns the learned label for each object in the form of cudf series.
+        
+        Examples
+        --------
+            detector.predict(['nvidia.com', 'asfnfdjds']) = [1,0]
+        """
         df = cudf.DataFrame()
         df["domain"] = domains
         domains_len = df["domain"].count()

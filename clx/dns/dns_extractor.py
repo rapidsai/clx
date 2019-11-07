@@ -66,14 +66,35 @@ class DnsVarsProvider:
 
 
 def extract_hostnames(url_df_col):
+    """This function extracts hostnames from the given urls.
+    
+    :param url_df_col: full urls.
+    :type url_df_col: cudf.Series
+    :return: extracted hostnames.
+    :rtype: cudf.Series
+    
+    Examples
+    --------
+    >>> from cudf import DataFrame
+    >>> from clx.dns import dns_extractor as dns
+    >>> input_df = DataFrame(
+    ...     {
+    ...         "url": [
+    ...             "http://www.google.com",
+    ...             "gmail.com",
+    ...             "github.com",
+    ...             "https://pandas.pydata.org",
+    ...         ]
+    ...     }
+    ... )
+    >>> dns.extract_hostnames(input_df["url"])
+    0       www.google.com
+    1            gmail.com
+    2           github.com
+    3    pandas.pydata.org
+    Name: 0, dtype: object
     """
-    Extract hostname from the url.
-    Example:-
-        input: 
-            ["http://www.worldbank.org.kg/", "waiterrant.blogspot.com","ftp://b.cnn.com/","a.news.uk"]
-        output: 
-            ["www.worldbank.org.kg", "waiterrant.blogspot.com","b.cnn.com", "a.news.uk"]
-    """
+
     hostnames = url_df_col.str.extract("([\\w]+[\\.].+*[^/]|[\\-\\w]+[\\.].+*[^/])")[
         0
     ].str.extract("([\\w\\.\\-]+)")[0]
@@ -81,7 +102,21 @@ def extract_hostnames(url_df_col):
 
 
 def get_hostname_split_df(hostnames):
-    # Find all words and digits between periods.
+    """Find all words and digits between periods.
+    
+    :param hostnames: hostnames
+    :type hostnames: cudf.Series
+    
+    Examples
+    --------
+    >>> import cudf
+    >>> from clx.dns import dns_extractor as dns
+    >>> hostnames = cudf.Series(["www.google.com", "pandas.pydata.org"])
+    >>> dns.get_hostname_split_df(hostnames)
+         2       1       0
+    0  com  google     www
+    1  org  pydata  pandas
+    """
     hostname_split = hostnames.str.findall("([^.]+)")
     hostname_split_df = DataFrame()
     # Assign hostname split to cudf dataframe.
@@ -93,25 +128,6 @@ def get_hostname_split_df(hostnames):
 def generate_tld_cols(hostname_split_df, hostnames, col_len):
     """
     This function generates tld columns.
-    
-    Example:- 
-        input:
-                4    3                2          1           0
-            0  ac  com              cnn       news      forums
-            1       ac              cnn       news      forums
-            2                       com        cnn           b
-        output:
-              4    3                2          1           0  tld4    tld3             tld2                 tld1                        tld0
-           0 ac  com              cnn       news      forums    ac  com.ac       cnn.com.ac      news.cnn.com.ac      forums.news.cnn.com.ac
-           1      ac              cnn       news      forums            ac           cnn.ac          news.cnn.ac          forums.news.cnn.ac
-           2                      com        cnn           b                            com              cnn.com                   b.cnn.com
-    
-    Adding last element for max tld column.
-    Example:-
-        input: 
-            forums.news.cnn.com.ac
-        output: 
-            tld4 = ac
     """
     hostname_split_df = hostname_split_df.fillna("")
     hostname_split_df["tld" + str(col_len)] = hostname_split_df[col_len]
@@ -129,7 +145,8 @@ def generate_tld_cols(hostname_split_df, hostnames, col_len):
 
 def _extract_tld(input_df, suffix_df, col_len, col_dict, output_df):
     """
-    Example:- 
+    Examples
+    -------- 
         input:
                4    3                2          1           0  tld4    tld3             tld2                 tld1                        tld0    idx
             0 ac  com              cnn       news      forums    ac  com.ac       cnn.com.ac      news.cnn.com.ac      forums.news.cnn.com.ac      0
@@ -190,8 +207,7 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict, output_df):
 
 
 def _create_output_df(req_cols):
-    """
-    Create cuDF dataframe with set of predefined columns.
+    """Create cuDF dataframe with set of predefined columns.
     """
     output_df = DataFrame([(col, "") for col in req_cols])
     # Add temp index column to preserve input index.
@@ -202,8 +218,7 @@ def _create_output_df(req_cols):
 
 
 def _create_col_dict(allowed_output_cols, req_cols):
-    """
-    Creates dictionary to apply check condition while extracting tld.
+    """Creates dictionary to apply check condition while extracting tld.
     """
     col_dict = {col: True for col in allowed_output_cols}
     if req_cols != allowed_output_cols:
@@ -213,8 +228,7 @@ def _create_col_dict(allowed_output_cols, req_cols):
 
 
 def _verify_req_cols(req_cols, allowed_output_cols):
-    """
-    Verify user requested columns against allowed output columns.
+    """Verify user requested columns against allowed output columns.
     """
     if req_cols is not None:
         if not req_cols.issubset(allowed_output_cols):
@@ -227,23 +241,42 @@ def _verify_req_cols(req_cols, allowed_output_cols):
 
 
 def parse_url(url_df_col, req_cols=None):
-    """
-    This function extracts subdomain, domain and suffix for a given url.
-    returns: cuDF dataframe with requested columns. If req_cols values are passed as input parameter.
-    Example:- 
-        requested cols:          
-            {"hostname", "domain", "suffix", "subdomain"}
-        input:
-                                        url
-            0 http://forums.news.cnn.com.ac/
-            1             forums.news.cnn.ac
-            2               ftp://b.cnn.com/
+    """This function extracts subdomain, domain and suffix for a given url.
     
-        output:    
-                              hostname      domain        suffix    subdomain
-            0   forums.news.cnn.com.ac         cnn        com.ac  forums.news
-            1       forums.news.cnn.ac         cnn            ac  forums.news
-            2                b.cnn.com         cnn           com            b
+    :param url_df_col: Collection of urls.
+    :type url_df_col: cudf.Series
+    :param req_cols: Extracts requested columns.
+    :type req_cols: set(strings)
+    :return: Cudf dataframe with requested columns.
+    :rtype: cudf.DataFrame
+    
+    Examples
+    --------
+    >>> from cudf import DataFrame
+    >>> from clx.dns import dns_extractor as dns
+    >>> 
+    >>> input_df = DataFrame(
+    ...     {
+    ...         "url": [
+    ...             "http://www.google.com",
+    ...             "gmail.com",
+    ...             "github.com",
+    ...             "https://pandas.pydata.org",
+    ...         ]
+    ...     }
+    ... )
+    >>> dns.parse_url(input_df["url"])
+                hostname  domain suffix subdomain
+    0     www.google.com  google    com       www
+    1          gmail.com   gmail    com          
+    2         github.com  github    com          
+    3  pandas.pydata.org  pydata    org    pandas
+    >>> dns.parse_url(input_df["url"], req_cols={'domain', 'suffix'})
+       domain suffix
+    0  google    com
+    1   gmail    com
+    2  github    com
+    3  pydata    org
     """
     # Singleton object.
     sv = DnsVarsProvider.get_instance()
@@ -265,8 +298,8 @@ def parse_url(url_df_col, req_cols=None):
     )
     # Sort index based on given input index order.
     output_df = output_df.sort_values("idx", ascending=True)
-    # Drop temp index column.
-    output_df.drop_column("idx")
+    # Drop temp columns.
+    output_df = output_df.drop(["idx",0,1])
     # Reset the index.
     output_df = output_df.reset_index(drop=True)
     log.info("Extracting tld is successfully completed.")

@@ -38,14 +38,14 @@ class VirusTotalClient(object):
     def vt_endpoint_dict(self):
         return self.__vt_endpoint_dict
 
-    """
-    This function allows you to send a file for scanning with VirusTotal. 
-    Before performing submissions it would be nice to retrieve the latest report on the file.
-    File size limit is 32MB, in order to submit files up to 200MB in size it is mandatory to request a special upload URL 
-    using the /file/scan/upload_url endpoint.
-    """
-
+    
     def file_scan(self, file):
+        """
+        This function allows you to send a file for scanning with VirusTotal. 
+        Before performing submissions it would be nice to retrieve the latest report on the file.
+        File size limit is 32MB, in order to submit files up to 200MB in size it is mandatory to request a special upload URL 
+        using the /file/scan/upload_url endpoint.
+        """
         file_size_mb = self.get_file_size(file)
         params = {"apikey": self.api_key}
         files = {"file": (basename(file), open(abspath(file), "rb"))}
@@ -60,90 +60,83 @@ class VirusTotalClient(object):
         statinfo = os.stat(file)
         return statinfo.st_size / (1024 * 1024)
 
-    """
-    This function rescan given files.
-    The resource argument can be the MD5, SHA-1 or SHA-256 of the file you want to re-scan.
-    """
-
+    
     def file_rescan(self, *resource):
+        """
+        This function rescan given files.
+        The resource argument can be the MD5, SHA-1 or SHA-256 of the file you want to re-scan.
+        """
         params = {"apikey": self.api_key, "resource": ",".join(*resource)}
         resp = self.post(
             self.vt_endpoint_dict["file_rescan"], params=params, proxies=self.proxies
         )
         return resp
 
-    """
-    The resource argument can be the MD5, SHA-1 or SHA-256 of a file for which you want to retrieve 
-    the most recent antivirus report. You may also specify a scan_id returned by the /file/scan endpoint.
-    """
-
     def file_report(self, *resource):
+        """
+        The resource argument can be the MD5, SHA-1 or SHA-256 of a file for which you want to retrieve 
+        the most recent antivirus report. You may also specify a scan_id returned by the /file/scan endpoint.
+        """
         params = {"apikey": self.api_key, "resource": ",".join(*resource)}
         resp = self.get(
             self.vt_endpoint_dict["file_report"], params=params, proxies=self.proxies
         )
         return resp
 
-    """
-    This function scan on provided url with VirusTotal.
-    """
-
     def url_scan(self, *url):
+        """
+        This function scan on provided url with VirusTotal.
+        """
         params = {"apikey": self.api_key, "url": "\n".join(*url)}
         resp = self.post(
             self.vt_endpoint_dict["url_scan"], params=params, proxies=self.proxies
         )
         return resp
 
-    """
-    The resource argument must be the URL to retrieve the most recent report.
-    """
-
     def url_report(self, *resource):
+        """
+        The resource argument must be the URL to retrieve the most recent report.
+        """
         params = {"apikey": self.api_key, "resource": "\n".join(*resource)}
         resp = self.post(
             self.vt_endpoint_dict["url_report"], params=params, proxies=self.proxies
         )
         return resp
 
-    """
-    Retrieve report using ip address.
-    """
-
     def ipaddress_report(self, ip):
+        """
+        Retrieve report using ip address.
+        """
         params = {"apikey": self.api_key, "ip": ip}
         resp = self.get(
             self.vt_endpoint_dict["ip_report"], params=params, proxies=self.proxies
         )
         return resp
 
-    """
-    Retrieve report using domain.
-    """
-
     def domain_report(self, domain):
+        """
+        Retrieve report using domain.
+        """
         params = {"apikey": self.api_key, "domain": domain}
         resp = self.get(
             self.vt_endpoint_dict["domain_report"], params=params, proxies=self.proxies
         )
         return resp
 
-    """
-    Post comment for a file or URL
-    """
-
     def put_comment(self, resource, comment):
+        """
+        Post comment for a file or URL
+        """
         params = {"apikey": self.api_key, "resource": resource, "comment": comment}
         resp = self.post(
             self.vt_endpoint_dict["put_comment"], params=params, proxies=self.proxies
         )
         return resp
 
-    """
-    Scanning files larger than 32MB
-    """
-
     def scan_big_file(self, files):
+        """
+        Scanning files larger than 32MB
+        """
         params = {"apikey": self.api_key}
         upload_url_json = self.get(self.vt_endpoint_dict["upload_url"], params=params)
         upload_url = upload_url_json["upload_url"]

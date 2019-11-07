@@ -22,9 +22,14 @@ log = logging.getLogger(__name__)
 """
 This class provides functionality to query DNSDB record in various ways
 Example: by IP, DomainName
+
+:param server: Farsight server
+:param header: HTTP headers
+:param apikey: API key
+:param limit: limit
+:param http_proxy: HTTP proxy
+:param https_proxy: HTTPS proxy
 """
-
-
 class FarsightLookupClient(object):
     def __init__(self, server, apikey, limit=None, http_proxy=None, https_proxy=None):
         self.server = server
@@ -32,8 +37,10 @@ class FarsightLookupClient(object):
         self.limit = limit
         self.proxy_args = self.__get_proxy_args(http_proxy, https_proxy)
 
-    # batch version of querying DNSDB by given domain name and time ranges.
     def query_rrset(self, oname, rrtype=None, bailiwick=None, before=None, after=None):
+        """
+        batch version of querying DNSDB by given domain name and time ranges.
+        """
         quoted_name = self.__quote(oname)
         if bailiwick:
             if not rrtype:
@@ -49,8 +56,10 @@ class FarsightLookupClient(object):
             path = "rrset/name/%s" % quoted_name
         return self.__query(path, before, after)
 
-    # query matches only a single DNSDB record of given oname and time ranges.
     def query_rdata_name(self, rdata_name, rrtype=None, before=None, after=None):
+        """
+        query matches only a single DNSDB record of given oname and time ranges.
+        """
         quoted_name = self.__quote(rdata_name)
         if rrtype:
             path = "rdata/name/%s/%s" % (quoted_name, rrtype)
@@ -58,12 +67,18 @@ class FarsightLookupClient(object):
             path = "rdata/name/%s" % quoted_name
         return self.__query(path, before, after)
 
-    # query to find DNSDB records matching a specific IP address with given time range.
+    
     def query_rdata_ip(self, rdata_ip, before=None, after=None):
+        """
+        query to find DNSDB records matching a specific IP address with given time range.
+        """
         path = "rdata/ip/%s" % rdata_ip.replace("/", ",")
         return self.__query(path, before, after)
 
     def get(self, url):
+        """
+        submit http get request
+        """
         response = requests.get(url, headers=self.headers, proxies=self.proxy_args)
         return response
 

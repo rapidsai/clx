@@ -19,7 +19,6 @@ from datetime import datetime
 
 log = logging.getLogger(__name__)
 
-
 class WhoIsLookupClient(object):
 
     str_arr_keys = ["domain_name", "name_servers", "status", "emails", "dnssec"]
@@ -29,8 +28,11 @@ class WhoIsLookupClient(object):
         self.sep = sep
         self.datetime_format = datetime_format
 
-    # Function to access parsed WHOIS data for a given domain
+    
     def whois(self, domains, arr2str=True):
+        """
+        Function to access parsed WHOIS data for a given domain
+        """
         result = []
         for domain in domains:
             resp = whois.whois(domain)

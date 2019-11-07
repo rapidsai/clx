@@ -22,11 +22,19 @@ log = logging.getLogger(__name__)
 
 
 class FileSystemWriter(FileWriter):
+    """
+    Uses cudf to write to file system based on config object.
+
+    :param config: dictionary object of config values for **type**, **output_format**, **output_path** (or **output_path**), and cudf writer optional keyword args
+    """
  
     def __init__(self, config):
         self._config = config
 
     def write_data(self, df):
+        """
+        Write data to file system using cudf based on provided config object
+        """
         output_format = self.config["output_format"]
         filepath = self.config["output_path"]
         kwargs = self.config.copy()
@@ -52,4 +60,7 @@ class FileSystemWriter(FileWriter):
             df.to_csv(filepath, **kwargs)
 
     def close(self):
+        """
+        Close cudf writer
+        """
         log.info("Closed writer")
