@@ -39,8 +39,16 @@ release = '0.10.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'nbsphinx'
+    'nbsphinx',
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "numpydoc",
+    "sphinx_markdown_tables",
+    "IPython.sphinxext.ipython_console_highlighting",
+    "IPython.sphinxext.ipython_directive",
+    "nbsphinx",
+    "recommonmark"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
