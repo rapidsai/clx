@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 class WindowsEventParser(EventParser):
     """This is class parses windows event logs.
     
-    :param interested_eventcodes: This parameter provides flexibility to parse only selected windows eventcodes..
+    :param interested_eventcodes: This parameter provides flexibility to parse only interested eventcodes.
     :type interested_eventcodes: set(int)
     """
     REGEX_FILE = "resources/windows_event_regex.yaml"
@@ -45,7 +45,7 @@ class WindowsEventParser(EventParser):
         :type dataframe: cudf.DataFrame
         :param raw_column: Raw data contained column name.
         :type raw_column: string    
-        :return: parsed dataframe
+        :return: Parsed information.
         :rtype: cudf.DataFrame
         """
         # Clean raw data to be consistent.
@@ -64,13 +64,13 @@ class WindowsEventParser(EventParser):
         return parsed_dataframe
 
     def clean_raw_data(self, dataframe, raw_column):
-        """Lower casing and replacing unnecessary characters.
+        """Lower casing and replacing escape characters.
         
         :param dataframe: Raw events to be parsed.
         :type dataframe: cudf.DataFrame
         :param raw_column: Raw data contained column name.
         :type raw_column: string    
-        :return: clean dataframe
+        :return: Clean raw information.
         :rtype: cudf.DataFrame
         """
         dataframe[raw_column] = (
@@ -97,9 +97,9 @@ class WindowsEventParser(EventParser):
         return event_regex
 
     def get_columns(self):
-        """ Get columns of windows eventcodes i.e, requested while initiation else returns all eventcode columns.
+        """ Get columns of windows event codes.
          
-        :return: columns
+        :return: Columns of all configured eventcodes, if no interested eventcodes specified.  
         :rtype: set(string)
         """
         columns = set()

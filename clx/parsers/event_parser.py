@@ -25,7 +25,7 @@ log = logging.getLogger(__name__)
 class EventParser(ABC):
     """This is an abstract class for all event log parsers.
     
-    :param columns: Collection of windows event columns.
+    :param columns: Event column names.
     :type columns: set(string)
     :param event_name: Event name
     :type event_name: string
@@ -39,9 +39,9 @@ class EventParser(ABC):
 
     @property
     def columns(self):
-        """List of columns required to parse from the yaml file.
+        """List of columns that are being processed.
         
-        :return: Collection of windows events columns.
+        :return: Event column names.
         :rtype: set(string)
         """
         return self._columns
@@ -68,9 +68,9 @@ class EventParser(ABC):
         :type dataframe: cudf.DataFrame
         :param raw_column: Raw data contained column name.
         :type raw_column: string
-        :param event_regex: Regex dictionary contains required regular expressions for a given record type.
+        :param event_regex: Required regular expressions for a given event type.
         :type event_regex: dict      
-        :return: parsed dataframe
+        :return: parsed information.
         :rtype: cudf.DataFrame
         """
         log.debug(
@@ -97,15 +97,15 @@ class EventParser(ABC):
         return parsed_gdf
 
     def filter_by_pattern(self, df, column, pattern):
-        """Filter based on whether a string contains a regex pattern.
+        """Retrieve events only which satisfies given regex pattern.
         
         :param df: Raw events to be filtered.
         :type df: cudf.DataFrame 
         :param column: Raw data contained column name.
         :type column: string
-        :param pattern: Regex pattern to filter events.
+        :param pattern: Regex pattern to retrieve events that are required.
         :type pattern: string  
-        :return: filtered dataframe
+        :return: filtered dataframe.
         :rtype: cudf.DataFrame
         """
         df["present"] = df[column].str.contains(pattern)
@@ -116,3 +116,4 @@ class EventParser(ABC):
         with open(yaml_file) as yaml_file:
             regex_dict = yaml.safe_load(yaml_file)
         return regex_dict
+    

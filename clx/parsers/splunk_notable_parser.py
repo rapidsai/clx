@@ -37,13 +37,13 @@ class SplunkNotableParser(EventParser):
         EventParser.__init__(self, event_regex.keys(), self.EVENT_NAME)
 
     def parse(self, dataframe, raw_column):
-        """Parses the Splunk notable raw event.
+        """Parses the Splunk notable raw events.
         
         :param dataframe: Raw events to be parsed.
         :type dataframe: cudf.DataFrame
         :param raw_column: Raw data contained column name.
         :type raw_column: string    
-        :return: parsed dataframe
+        :return: parsed information.
         :rtype: cudf.DataFrame
         """
         # Cleaning raw data to be consistent.
