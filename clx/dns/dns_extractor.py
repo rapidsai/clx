@@ -193,7 +193,7 @@ def _create_output_df(req_cols):
     """
     Create cuDF dataframe with set of predefined columns.
     """
-    output_df = DataFrame([(col, "") for col in req_cols])
+    output_df = DataFrame({(col, "") for col in req_cols})
     # Add temp index column to preserve input index.
     output_df["idx"] = 0
     # Remove empty record i.e, added while creating dataframe.
