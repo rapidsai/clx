@@ -31,25 +31,25 @@ class WhoIsLookupClient(object):
     
     def whois(self, domains, arr2str=True):
         """
-        Function to access parsed WHOIS data for a given domain
+        Function to access parsed WHOIS data for a given domain.
         """
         result = []
         for domain in domains:
             resp = whois.whois(domain)
             if arr2str:
                 resp_keys = resp.keys()
-                resp = self.flatten_str_array(resp, resp_keys)
-                resp = self.flatten_datetime_array(resp, resp_keys)
+                resp = self.__flatten_str_array(resp, resp_keys)
+                resp = self.__flatten_datetime_array(resp, resp_keys)
             result.append(resp)
         return result
 
-    def flatten_str_array(self, resp, resp_keys):
+    def __flatten_str_array(self, resp, resp_keys):
         for key in self.str_arr_keys:
             if key in resp_keys and isinstance(resp[key], list):
                 resp[key] = self.sep.join(resp[key])
         return resp
 
-    def flatten_datetime_array(self, resp, resp_keys):
+    def __flatten_datetime_array(self, resp, resp_keys):
         for key in self.datetime_arr_keys:
             values = []
             if key in resp_keys:

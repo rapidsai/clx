@@ -75,7 +75,7 @@ class FarsightLookupClient(object):
         path = "rdata/ip/%s" % rdata_ip.replace("/", ",")
         return self.__query(path, before, after)
 
-    def get(self, url):
+    def __get(self, url):
         """
         submit http get request
         """
@@ -89,7 +89,7 @@ class FarsightLookupClient(object):
         params = self.__get_params(before, after)
         if params:
             url += "?{0}".format(urllib.parse.urlencode(params))
-        response = self.get(url)
+        response = self.__get(url)
         try:
             response.raise_for_status()
             self.__extract_response(response, res)
