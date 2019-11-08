@@ -1,6 +1,7 @@
 # clx 0.11.0 (Date TBD)
 
 ## New Features
+ - PR #68 CLX Read The Docs
  - PR #64 Added cybert notebook and data
  - PR #54 Added Network Mapping notebook
  - PR #48 Added port heuristic to detect major ports
