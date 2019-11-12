@@ -1,6 +1,8 @@
 # clx 0.11.0 (Date TBD)
 
 ## New Features
+ - PR #66 CLX Read The Docs
+ - PR #64 Added cybert notebook and data
  - PR #54 Added Network Mapping notebook
  - PR #48 Added port heuristic to detect major ports
  - PR #60 Added DGA detection notebook and DNS log parsing notebook
@@ -16,6 +18,7 @@
  - PR #53 Autogenerate api docs
 
 ## Bug Fixes
+ - PR #67 Fix DNS extra columns
  - PR #50 Workflow IO fix
  - PR #45 More Kafka IO fixes
  - PR #44 Fix Kafka IO

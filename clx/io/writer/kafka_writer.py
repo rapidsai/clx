@@ -18,6 +18,14 @@ log = logging.getLogger(__name__)
 
 
 class KafkaWriter:
+    """
+    Publish to Kafka topic based on config object.
+
+    :param kafka_topic: Kafka topic
+    :param batch_size: batch size
+    :param delimiter: delimiter
+    :param producer: producer
+    """
 
     # Column name of formatted output messages sent to kafka
     output_colname = "delimited_output"
@@ -36,8 +44,12 @@ class KafkaWriter:
     def delimiter(self):
         return self._delimiter
 
-    # publish messages to kafka topic
     def write_data(self, df):
+        """
+        publish messages to kafka topic
+
+        :param df: dataframe to publish
+        """
         out_df = self._generate_delimited_ouput_col(df)
         for rec in out_df.to_records():
             self.producer.produce(self._kafka_topic, rec[self.output_colname])
@@ -61,6 +73,9 @@ class KafkaWriter:
         return gdf
 
     def close(self):
+        """
+        Close Kafka writer
+        """
         log.info("Closing kafka writer...")
         if self._producer is not None:
             self._producer.flush()

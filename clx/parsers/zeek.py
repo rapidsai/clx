@@ -38,6 +38,15 @@ type_dict = {
 
 def parse_log_file(filepath):
     """Parse Zeek log file and return cuDF dataframe. Uses header comments to get column names/types and configure parser.
+
+    Parameters
+    ----------
+    filepath : string
+        filepath for Zeek log file
+
+    Returns
+    -------
+    Zeek log dataframe : cudf.Dataframe
     """
 
     header_gdf = cudf.read_csv(filepath, names=["line"], nrows=8)

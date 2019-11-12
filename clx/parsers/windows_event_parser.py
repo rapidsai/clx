@@ -21,7 +21,11 @@ log = logging.getLogger(__name__)
 
 
 class WindowsEventParser(EventParser):
-
+    """This is class parses windows event logs.
+    
+    :param interested_eventcodes: This parameter provides flexibility to parse only interested eventcodes.
+    :type interested_eventcodes: set(int)
+    """
     REGEX_FILE = "resources/windows_event_regex.yaml"
     EVENT_NAME = "windows event"
 
@@ -35,7 +39,15 @@ class WindowsEventParser(EventParser):
         EventParser.__init__(self, self.get_columns(), self.EVENT_NAME)
 
     def parse(self, dataframe, raw_column):
-        """Parses the windows raw events"""
+        """Parses the Windows raw event.
+        
+        :param dataframe: Raw events to be parsed.
+        :type dataframe: cudf.DataFrame
+        :param raw_column: Raw data contained column name.
+        :type raw_column: string    
+        :return: Parsed information.
+        :rtype: cudf.DataFrame
+        """
         # Clean raw data to be consistent.
         dataframe = self.clean_raw_data(dataframe, raw_column)
         output_chunks = []
@@ -52,7 +64,15 @@ class WindowsEventParser(EventParser):
         return parsed_dataframe
 
     def clean_raw_data(self, dataframe, raw_column):
-        """Lower casing and replacing characters"""
+        """Lower casing and replacing escape characters.
+        
+        :param dataframe: Raw events to be parsed.
+        :type dataframe: cudf.DataFrame
+        :param raw_column: Raw data contained column name.
+        :type raw_column: string    
+        :return: Clean raw information.
+        :rtype: cudf.DataFrame
+        """
         dataframe[raw_column] = (
             dataframe[raw_column]
             .str.lower()
@@ -77,6 +97,11 @@ class WindowsEventParser(EventParser):
         return event_regex
 
     def get_columns(self):
+        """ Get columns of windows event codes.
+         
+        :return: Columns of all configured eventcodes, if no interested eventcodes specified.  
+        :rtype: set(string)
+        """
         columns = set()
         for key in self.event_regex.keys():
             for column in self.event_regex[key].keys():
