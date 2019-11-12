@@ -18,13 +18,20 @@ from clx.io.reader.file_reader import FileReader
 
 log = logging.getLogger(__name__)
 
-
 class DaskFileSystemReader(FileReader):
+    """
+    Uses Dask to read from file system based on config object.
+
+    :param config: dictionary object of config values for **type**, **input_format**, **input_path**, and dask reader optional keyword args
+    """
     def __init__(self, config):
         self._config = config
         self._has_data = True
 
     def fetch_data(self):
+        """
+        Fetch data using dask based on provided config object
+        """
         df = None
         input_format = self.config["input_format"].lower()
         filepath = self.config["input_path"].lower()
@@ -44,4 +51,7 @@ class DaskFileSystemReader(FileReader):
         return df
 
     def close(self):
-       log.info("Closed dask_fs reader")
+        """
+        Close dask reader
+        """
+        log.info("Closed dask_fs reader")

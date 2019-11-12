@@ -26,9 +26,17 @@ log = logging.getLogger(__name__)
 
 class KafkaFactory(AbstractFactory):
     def __init__(self, config):
+        """
+        Constructor method
+
+        :param config: dictionary object of config values for **batch_size**, **time_window**, **publisher_kafka_topic**, **output_delimiter**, **kafka_brokers**, and **group_id**.
+        """
         self._config = config
 
     def get_reader(self):
+        """
+        Get instance of KafkaReader
+        """
         consumer = self._create_consumer()
         if "time_window" in self.config:
             reader = KafkaReader(
@@ -41,6 +49,9 @@ class KafkaFactory(AbstractFactory):
         return reader
 
     def get_writer(self):
+        """
+        Get instance of KafkaWriter
+        """
         producer = self._create_producer()
         writer = KafkaWriter(
             self.config["publisher_kafka_topic"],

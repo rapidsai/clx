@@ -19,9 +19,17 @@ from clx.io.writer.fs_writer import FileSystemWriter
 
 class FileSystemFactory(AbstractFactory):
     def __init__(self, config):
+        """
+        Constructor method
+
+        :param config: dictionary object of config values for **type**, **input_format**, **input_path** (or **output_path**), and dask reader/writer optional keyword args
+        """
         self._config = config
 
     def get_reader(self):
+        """
+        Get instance of FileSystemReader
+        """
         return FileSystemReader(self.config)
 
     def get_writer(self):
