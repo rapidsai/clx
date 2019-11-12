@@ -18,6 +18,7 @@
  - PR #53 Autogenerate api docs
 
 ## Bug Fixes
+ - PR #69 Simple fix to DNS
  - PR #67 Fix DNS extra columns
  - PR #50 Workflow IO fix
  - PR #45 More Kafka IO fixes
