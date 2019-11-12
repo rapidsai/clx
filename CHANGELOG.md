@@ -17,6 +17,7 @@
  - PR #53 Autogenerate api docs
 
 ## Bug Fixes
+ - PR #68 Update to Alert Analysis Workflow notebooks
  - PR #50 Workflow IO fix
  - PR #45 More Kafka IO fixes
  - PR #44 Fix Kafka IO
