@@ -326,7 +326,7 @@ def parse_url(url_df_col, req_cols=None):
     # Sort index based on given input index order.
     output_df = output_df.sort_values("idx", ascending=True)
     # Drop temp columns.
-    output_df = output_df.drop(["idx",0,1])
+    output_df.drop("idx")
     # Reset the index.
     output_df = output_df.reset_index(drop=True)
     log.info("Extracting tld is successfully completed.")
