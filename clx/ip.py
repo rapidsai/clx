@@ -23,14 +23,10 @@ def ip_to_int(values):
     Convert string column of IP addresses to integer values.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    Parameters
-    ----------
-    values : cudf.Series
-        IP addresses to be converted.
-
-    Returns
-    -------
-    ints :  Series
+    :param values: IP addresses to be converted
+    :type values: cudf.Series
+    :return: Integer representations of IP addresses
+    :rtype: cudf.Series
 
     Examples
     --------
@@ -47,15 +43,10 @@ def int_to_ip(values):
     Convert integer column to IP addresses.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    Parameters
-    ----------
-
-    values : cudf.Series
-        Integers to be converted.
-
-    Returns
-    -------
-    IP addresses : cudf.Series
+    :param values: Integers to be converted
+    :type values: cudf.Series
+    :return: IP addresses
+    :rtype: cudf.Series
 
     Examples
     --------
@@ -76,14 +67,10 @@ def is_ip(ips):
     Indicates whether each address is an ip string.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    Parameters
-    ----------
-    values : cudf.Series
-        IP addresses
-
-    Returns
-    -------
-    IP addresses : cudf.Series
+    :param ips: IP addresses
+    :type values: cudf.Series
+    :return: booleans
+    :rtype: cudf.Series
     """    
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
     ptr = res.data.mem.device_ctypes_pointer.value
@@ -97,14 +84,10 @@ def is_reserved(ips):
     Indicates whether each address is reserved.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    Parameters
-    ----------
-    values : cudf.Series
-        IP addresses
-
-    Returns
-    -------
-    IP addresses : cudf.Series
+    :param ips: IP addresses
+    :type values: cudf.Series
+    :return: booleans
+    :rtype: cudf.Series
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
     ptr = res.data.mem.device_ctypes_pointer.value
@@ -118,14 +101,10 @@ def is_loopback(ips):
     Indicates whether each address is loopback.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    Parameters
-    ----------
-    values : cudf.Series
-        IP addresses
-
-    Returns
-    -------
-    IP addresses : cudf.Series
+    :param ips: IP addresses
+    :type values: cudf.Series
+    :return: booleans
+    :rtype: cudf.Series
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
     ptr = res.data.mem.device_ctypes_pointer.value
@@ -139,14 +118,10 @@ def is_link_local(ips):
     Indicates whether each address is link local.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    Parameters
-    ----------
-    values : cudf.Series
-        IP addresses
-
-    Returns
-    -------
-    IP addresses : cudf.Series
+    :param ips: IP addresses
+    :type values: cudf.Series
+    :return: booleans
+    :rtype: cudf.Series
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
     ptr = res.data.mem.device_ctypes_pointer.value
@@ -160,14 +135,10 @@ def is_unspecified(ips):
     Indicates whether each address is unspecified.
     **Addresses must be IPv4. IPv6 not yet supported.**
     
-    Parameters
-    ----------
-    values : cudf.Series
-        IP addresses
-
-    Returns
-    -------
-    IP addresses : cudf.Series
+    :param ips: IP addresses
+    :type values: cudf.Series
+    :return: booleans
+    :rtype: cudf.Series
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
     ptr = res.data.mem.device_ctypes_pointer.value
@@ -181,14 +152,10 @@ def is_multicast(ips):
     Indicates whether each address is multicast.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    Parameters
-    ----------
-    values : cudf.Series
-        IP addresses
-
-    Returns
-    -------
-    IP addresses : cudf.Series
+    :param ips: IP addresses
+    :type values: cudf.Series
+    :return: booleans
+    :rtype: cudf.Series
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
     ptr = res.data.mem.device_ctypes_pointer.value
@@ -202,14 +169,10 @@ def is_private(ips):
     Indicates whether each address is private.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    Parameters
-    ----------
-    values : cudf.Series
-        IP addresses
-
-    Returns
-    -------
-    IP addresses : cudf.Series
+    :param ips: IP addresses
+    :type values: cudf.Series
+    :return: booleans
+    :rtype: cudf.Series
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
     ptr = res.data.mem.device_ctypes_pointer.value
@@ -223,14 +186,10 @@ def is_global(ips):
     Indicates whether each address is global.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    Parameters
-    ----------
-    values : cudf.Series
-        IP addresses
-
-    Returns
-    -------
-    IP addresses : cudf.Series
+    :param ips: IP addresses
+    :type values: cudf.Series
+    :return: booleans
+    :rtype: cudf.Series
     """
     part1 = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
     ptr = part1.data.mem.device_ctypes_pointer.value
@@ -254,17 +213,15 @@ def netmask(ips, prefixlen):
     Compute a column of netmasks for a column of IP addresses.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    Parameters
-    ----------
-    prefixlen : int
-        Length of the network prefix, in bits, for IPv4 addresses
+    :param ips: IP addresses
+    :type values: cudf.Series
+    :param prefixlen: Length of the network prefix, in bits, for IPv4 addresses
+    :type prefixlen: int
+    :return: netmasks
+    :rtype: cudf.Series
 
-    Returns
-    -------
-    netmasks : cudf.Series
-
-    Example
-    -------
+    Examples
+    --------
     >>> netmask(cudf.Series(["192.168.0.1","10.0.0.1"], prefixlen=16)
     0    255.255.0.0
     1    255.255.0.0
@@ -302,18 +259,16 @@ def hostmask(ips, prefixlen):
     Compute a column of hostmasks for a column of IP addresses.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    Parameters
-    ----------
-    prefixlen : int
-        Length of the network prefix, in bits, for IPv4 addresses
-
-    Returns
-    -------
-    hostmasks : cudf.Series
+    :param ips: IP addresses
+    :type values: cudf.Series
+    :param prefixlen: Length of the network prefix, in bits, for IPv4 addresses
+    :type prefixlen: int
+    :return: hostmasks
+    :rtype: cudf.Series
 
     Examples
     --------
-    >>> netmask(cudf.Series(["192.168.0.1","10.0.0.1"], prefixlen=16)
+    >>> hostmask(cudf.Series(["192.168.0.1","10.0.0.1"], prefixlen=16)
     0    0.0.255.255
     1    0.0.255.255
     Name: hostmask, dtype: object
@@ -350,14 +305,12 @@ def mask(ips, masks):
     Apply a mask to a column of IP addresses.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    Parameters
-    ----------
-    masks : cudf.Series
-        The host or subnet masks to be applied
-
-    Returns
-    -------
-    masked  : cudf.Series
+    :param ips: IP addresses
+    :type values: cudf.Series
+    :param masks: The host or subnet masks to be applied
+    :type masks: cudf.Series
+    :return: masked IP addresses
+    :rtype: cudf.Series
 
     Examples
     --------

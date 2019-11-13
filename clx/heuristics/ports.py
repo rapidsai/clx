@@ -57,24 +57,16 @@ def major_ports(addr_col, port_col, min_conns=1, eph_min=10000):
     ports for each address and then filters out all ports that don't cross this threshold. Also adds column 
     for IANA service name correspondingto each port.
 
-    Parameters
-    ----------
-    addr_col : cudf.Series
-        Column of addresses as strings
-    port_col : cudf.Series
-        Column of corresponding port numbers as ints
-    min_conns : int
-        Filter out ip:port rows that don't have at least this number of connections (default: 1)
-    eph_min : int
-        Ports greater than or equal to this will be labeled as an ephemeral service (default: 10000)
-
-    Returns
-    -------
-    cudf.Dataframe
-    * addr
-    * port
-    * service: IANA service name for port
-    * conns: number of connections for addr-port pair
+    :param addr_col: Column of addresses as strings
+    :type addr_col: cudf.Series
+    :param port_col: Column of corresponding port numbers as ints
+    :type port_col: cudf.Series
+    :param min_conns: Filter out ip:port rows that don't have at least this number of connections (default: 1)
+    :type min_conns: int
+    :param eph_min: Ports greater than or equal to this will be labeled as an ephemeral service (default: 10000)
+    :type eph_min: int
+    :return: DataFrame with columns for address, port, IANA service corresponding to port, and number of connections
+    :rtype: cudf.DataFrame
 
     Examples
     --------
