@@ -8,6 +8,7 @@
  - PR #60 Added DGA detection notebook and DNS log parsing notebook
  
 ## Improvements
+ - PR #70 Sphinx doc formatting improvements
  - PR #58 Update docker image
  - PR #55 Updates to folder structure
  - PR #52 Include DNS and OSI usage to notebook.
