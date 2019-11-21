@@ -167,3 +167,15 @@ autodoc_mock_imports = ['cudf', 'nvstrings', 'rmm', 'yaml', 'dask', 'dask_cudf']
 
 
 # -- Extension configuration -------------------------------------------------
+
+# Example configuration for intersphinx: refer to the Python standard library.
+intersphinx_mapping = {'https://docs.python.org/': None}
+
+
+# Config numpydoc
+numpydoc_show_inherited_class_members = False
+numpydoc_class_members_toctree = False
+
+
+def setup(app):
+    app.add_stylesheet('params.css')
