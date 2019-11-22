@@ -1,4 +1,0 @@
-confluent_kafka
-python-whois
-requests
-torch
