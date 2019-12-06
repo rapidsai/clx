@@ -45,11 +45,12 @@ function sed_runner() {
     sed -i.bak ''"$1"'' $2 && rm -f ${2}.bak
 }
 
-# Dockerfile update
-sed_runner 's/version=0.*/version='"'${NEXT_FULL_TAG}'"'/g' Dockerfile
-
 # setup update
-sed_runner 's/version=0.*-cuda10.0-devel-ubuntu18.04-py3.7/version='"'${NEXT_SHORT_TAG}'"'/g' setup.py
+sed_runner 's/version="0.*"/version='"'${NEXT_FULL_TAG}'"'/g' setup.py
+
+# Dockerfile update
+sed_runner 's/version=0.*/version=${NEXT_SHORT_TAG}/g' Dockerfil
 
 # Sphinx Update
-#sed_runner 's/release = .*/version = '"'${NEXT_SHORT_TAG}'"'/g' docs/source/conf.py
+sed_runner 's/release = .*/release = '"'${NEXT_FULL_TAG}'"'/g' docs/source/conf.py
+sed_runner 's/version = */version = '"'${NEXT_SHORT_TAG}'"'/g' docs/source/conf.py
