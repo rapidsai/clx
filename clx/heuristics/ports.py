@@ -57,33 +57,25 @@ def major_ports(addr_col, port_col, min_conns=1, eph_min=10000):
     ports for each address and then filters out all ports that don't cross this threshold. Also adds column 
     for IANA service name correspondingto each port.
 
-        Parameters
-        ----------
-        addr_col : cudf.Series
-            Column of addresses as strings
-        port_col : cudf.Series
-            Column of corresponding port numbers as ints
-        min_conns:
-            Filter out ip:port rows that don't have at least this number of connections (default: 1)
-        eph_min:
-            Ports greater than or equal to this will be labeled as an ephemeral service (default: 10000)
+    :param addr_col: Column of addresses as strings
+    :type addr_col: cudf.Series
+    :param port_col: Column of corresponding port numbers as ints
+    :type port_col: cudf.Series
+    :param min_conns: Filter out ip:port rows that don't have at least this number of connections (default: 1)
+    :type min_conns: int
+    :param eph_min: Ports greater than or equal to this will be labeled as an ephemeral service (default: 10000)
+    :type eph_min: int
+    :return: DataFrame with columns for address, port, IANA service corresponding to port, and number of connections
+    :rtype: cudf.DataFrame
 
-        Returns
-        -------
-        cudf.Dataframe
-            addr
-            port
-            service: IANA service name for port
-            conns: number of connections for addr-port pair
-
-        Example
-        -------
-        >>> input_addr_col = cudf.Series(["10.0.75.1","10.0.75.1","10.0.75.1","10.0.75.255","10.110.104.107", "10.110.104.107"])
-        >>> input_port_col = cudf.Series([137,137,7680,137,7680, 7680])
-        >>> ports.major_ports(input_addr_col, input_port_col, min_conns=2, eph_min=7000)
-                    addr  port     service  conns
-        0      10.0.75.1   137  netbios-ns      2
-        1 10.110.104.107  7680   ephemeral      2
+    Examples
+    --------
+    >>> input_addr_col = cudf.Series(["10.0.75.1","10.0.75.1","10.0.75.1","10.0.75.255","10.110.104.107", "10.110.104.107"])
+    >>> input_port_col = cudf.Series([137,137,7680,137,7680, 7680])
+    >>> ports.major_ports(input_addr_col, input_port_col, min_conns=2, eph_min=7000)
+                addr  port     service  conns
+    0      10.0.75.1   137  netbios-ns      2
+    1 10.110.104.107  7680   ephemeral      2
     """
 
     # Count the number of connections across each src ip-port pair

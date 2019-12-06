@@ -2,11 +2,14 @@
 
 ## New Features
  - PR #74 Updated cyBERT notebook
+ - PR #66 CLX Read The Docs
+ - PR #64 Added cybert notebook and data
  - PR #54 Added Network Mapping notebook
  - PR #48 Added port heuristic to detect major ports
  - PR #60 Added DGA detection notebook and DNS log parsing notebook
  
 ## Improvements
+ - PR #70 Sphinx doc formatting improvements
  - PR #58 Update docker image
  - PR #55 Updates to folder structure
  - PR #52 Include DNS and OSI usage to notebook.
@@ -17,6 +20,8 @@
  - PR #53 Autogenerate api docs
 
 ## Bug Fixes
+ - PR #69 Simple fix to DNS
+ - PR #67 Fix DNS extra columns
  - PR #50 Workflow IO fix
  - PR #45 More Kafka IO fixes
  - PR #44 Fix Kafka IO
