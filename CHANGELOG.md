@@ -8,12 +8,6 @@
  - PR #48 Added port heuristic to detect major ports
  - PR #60 Added DGA detection notebook and DNS log parsing notebook
  - PR #76 Added update-version script
-76 Added update-version script
-76 Added update-version script
-76 Added update-version script
-76 Added update-version script
-76 Added update-version script
-76 Added update-version script
  
 ## Improvements
  - PR #70 Sphinx doc formatting improvements
