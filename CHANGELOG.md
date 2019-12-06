@@ -1,6 +1,7 @@
 # clx 0.11.0 (Date TBD)
 
 ## New Features
+ - PR #74 Updated cyBERT notebook
  - PR #54 Added Network Mapping notebook
  - PR #48 Added port heuristic to detect major ports
  - PR #60 Added DGA detection notebook and DNS log parsing notebook
