@@ -41,7 +41,7 @@ class DaskFileSystemReader(FileReader):
         del kwargs["input_path"]
 
         if "parquet" == input_format:
-            df = dask_cudf.read_parquet(filepath, gather_statistics=False, split_row_groups=False, **kwargs)
+            df = dask_cudf.read_parquet(filepath, **kwargs)
         elif "orc" == input_format:
             df = dask_cudf.read_orc(filepath, engine="cudf")
         else:
