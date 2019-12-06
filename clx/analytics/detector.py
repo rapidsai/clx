@@ -39,6 +39,11 @@ class Detector(ABC):
         pass
 
     def load_model(self, file_path):
+        """ This function load already saved model and sets cuda parameters.
+        
+        :param file_path: File path of a model to loaded.
+        :type file_path: string
+        """
         model = torch.load(file_path)
         model.eval()
         self.__model = model
@@ -46,6 +51,11 @@ class Detector(ABC):
         self.__set_optimizer()
 
     def save_model(self, file_path):
+        """ This function saves model to given location.
+        
+        :param file_path: File path to save model.
+        :type file_path: string
+        """
         torch.save(self.model, file_path)
 
     def __set_parallelism(self):
@@ -68,6 +78,11 @@ class Detector(ABC):
             self.model.cuda()
 
     def leverage_model(self, model):
+        """This function leverages model by setting parallelism parameters.
+        
+        :param model: Model instance.
+        :type model: RNNClassifier
+        """
         self.__model = model
         self.__set_parallelism()
         self.__set_optimizer()

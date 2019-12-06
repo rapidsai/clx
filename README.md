@@ -2,7 +2,9 @@
 
 **NOTE:** For the latest stable [README.md](https://github.com/rapidsai/clx/blob/master/README.md) ensure you are on the `master` branch.
 
-CLX ("clicks") provides a simple API for security analysts, data scientists, and engineers to quickly get started applying [RAPIDS](https://rapids.ai/) to real-world cyber use cases. The goal of CLX is to:
+CLX ("clicks") provides a collection of [RAPIDS](https://rapids.ai/) examples for security analysts, data scientists, and engineers to quickly get started applying RAPIDS and GPU acceleration to real-world cybersecurity use cases.
+
+The goal of CLX is to:
 
 1. Provide SIEM integration with GPU compute environments via RAPIDS and effectively extend the SIEM environment,
 1. Make available pre-built use cases that demonstrate CLX and RAPIDS functionality that are ready to use in a Security Operations Center (SOC), 
@@ -42,7 +44,7 @@ wf.run_workflow()
 The notebooks folder contains example use cases and workflow instantiations.
 
 ## Installation
-CLX is avaialble in a Docker container, by building from source, and through Conda installation.
+CLX is available in a Docker container, by building from source, and through Conda installation.
 
 ### CLX Docker Container
 

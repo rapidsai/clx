@@ -124,24 +124,38 @@ class Workflow(ABC):
 
     @property
     def name(self):
-        """str: The name of the workflow for logging purposes."""
+        """Name of the workflow for logging purposes."""
         return self._name
 
     @property
     def source(self):
-        """dict: Configuration parameters for the data source"""
+        """
+        Dictionary of configuration parameters for the data source (reader)
+        """
         return self._source
 
     def set_source(self, source):
+        """
+        Set source.
+
+        :param source: dict of configuration parameters for data source (reader)
+        """
         self._source = source
         self._io_reader = Factory.get_reader(self.source["type"], self.source)
 
     @property
     def destination(self):
-        """dict: Configuration parameters for the data destination"""
+        """
+        Dictionary of configuration parameters for the data destination (writer)
+        """
         return self._destination
 
     def set_destination(self, destination):
+        """
+        Set destination.
+
+        :param destination: dict of configuration parameters for the destination (writer)
+        """
         self._destination = destination
         self._io_writer = Factory.get_writer(
             self.source["destination"], self.destination
@@ -152,6 +166,10 @@ class Workflow(ABC):
         pass
 
     def run_workflow(self):
+        """
+        Run workflow. Reader (source) fetches data. Workflow implementation is executed. Workflow output is
+        written to destination.
+        """
         log.info("Running workflow {0}.".format(self.name))
         try:
             while (
@@ -171,6 +189,9 @@ class Workflow(ABC):
             self.stop_workflow()
 
     def stop_workflow(self):
+        """
+        Close workflow. This includes calling close() method on reader (source) and writer (destination)
+        """
         log.info("Closing workflow...")
         self._io_reader.close()
         self._io_writer.close()
