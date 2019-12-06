@@ -58,6 +58,8 @@ def test_fetch_data_parquet(test_input_base_path, expected_df):
         "input_path": test_input_path,
         "columns": ["firstname", "lastname", "gender"],
         "input_format": "parquet",
+        "gather_statistics":False, 
+        "split_row_groups":False
     }
 
     reader = DaskFileSystemReader(config)
