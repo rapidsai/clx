@@ -1,6 +1,7 @@
 # clx 0.11.0 (Date TBD)
 
 ## New Features
+ - PR #74 Updated cyBERT notebook
  - PR #66 CLX Read The Docs
  - PR #64 Added cybert notebook and data
  - PR #54 Added Network Mapping notebook
