@@ -36,7 +36,7 @@ class FileSystemReader(FileReader):
         """
         df = None
         input_format = self.config["input_format"].lower()
-        filepath = self.config["input_path"].lower()
+        filepath = self.config["input_path"]
         kwargs = self.config.copy()
         del kwargs["type"]
         del kwargs["input_format"]
