@@ -31,6 +31,7 @@
  - PR #71 Remove unused CUDA conda labels
 
 ## Bug Fixes
+ - PR #81 Reader filepath fix
  - PR #77 Fix to unit test
  - PR #69 Simple fix to DNS
  - PR #67 Fix DNS extra columns
