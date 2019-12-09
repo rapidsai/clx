@@ -49,7 +49,7 @@ function sed_runner() {
 sed_runner 's/version="0.*"/version='"'${NEXT_FULL_TAG}'"'/g' setup.py
 
 # Dockerfile update
-sed_runner 's/version=0.*/version=${NEXT_SHORT_TAG}/g' Dockerfil
+sed_runner 's/version=0.*/version=${NEXT_SHORT_TAG}/g' Dockerfile
 
 # Sphinx Update
 sed_runner 's/release = .*/release = '"'${NEXT_FULL_TAG}'"'/g' docs/source/conf.py
