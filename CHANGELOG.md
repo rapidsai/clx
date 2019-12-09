@@ -19,6 +19,7 @@
  - PR #43 Functionality to parse selected windows events
  - PR #46 Adding copyright
  - PR #53 Autogenerate api docs
+ - PR #71 Remove unused CUDA conda labels
 
 ## Bug Fixes
  - PR #77 Fix to unit test
