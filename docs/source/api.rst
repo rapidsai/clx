@@ -7,9 +7,15 @@ IP
 .. automodule:: clx.ip
     :members:
 
-ML Stats
---------
-.. automodule:: clx.mlstats
+Analytics
+---------
+.. autoclass:: clx.analytics.dga_detector.DGADetector
+    :members:
+
+.. autoclass:: clx.analytics.model.rnn_classifier.RNNClassifier
+    :members:
+
+.. automodule:: clx.analytics.stats
     :members:
 
 DNS Extractor
@@ -24,7 +30,13 @@ Heuristics
 
 OSI (Open Source Integration)
 -----------------------------
-.. automodule:: clx.osi
+.. autoclass:: clx.osi.farsight.FarsightLookupClient
+    :members:
+
+.. autoclass:: clx.osi.virus_total.VirusTotalClient
+    :members:
+
+.. autoclass:: clx.osi.whois.WhoIsLookupClient
     :members:
 
 Parsers
@@ -37,6 +49,9 @@ Parsers
     :members:
 
 .. autoclass:: clx.parsers.windows_event_parser.WindowsEventParser
+    :members:
+
+.. automodule:: clx.parsers.zeek
     :members:
 
 Workflow

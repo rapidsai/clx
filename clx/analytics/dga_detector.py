@@ -9,29 +9,39 @@ from clx.analytics.model.rnn_classifier import RNNClassifier
 
 log = logging.getLogger(__name__)
 
-"""
-This class provides multiple functionalities such as build, train and evaluate the RNNClassifier model 
-to distinguish legitimate and DGA domain names.
-"""
-
 
 class DGADetector(Detector):
     """
-    This function instantiates RNNClassifier model to train. And also optimizes to scale it 
-    and keep running on parallelism. 
+    This class provides multiple functionalities such as build, train and evaluate the RNNClassifier model 
+    to distinguish legitimate and DGA domain names.
     """
 
     def init_model(self, char_vocab=128, hidden_size=100, n_domain_type=2, n_layers=3):
+        """This function instantiates RNNClassifier model to train. And also optimizes to scale it and keep running on parallelism. 
+        
+        :param char_vocab: Vocabulary size is set to 128 ASCII characters.
+        :type char_vocab: int
+        :param hidden_size: Hidden size of the network.
+        :type hidden_size: int
+        :param n_domain_type: Number of domain types.
+        :type n_domain_type: int
+        :param n_layers: Number of network layers.
+        :type n_layers: int
+        """
         if self.model is None:
             model = RNNClassifier(char_vocab, hidden_size, n_domain_type, n_layers)
             self.leverage_model(model)
 
-    """
-    This function is used for training RNNClassifier model with a given training dataset. 
-    It returns total loss to determine model prediction accuracy.
-    """
-
+    
     def train_model(self, partitioned_dfs, dataset_len):
+        """This function is used for training RNNClassifier model with a given training dataset. It returns total loss to determine model prediction accuracy.
+        :param partitioned_dfs: List of partitioned domain dataframes.
+        :type partitioned_dfs: List(cudf.DataFrame)
+        :param dataset_len: Sum of entries in all partitioned dataframes.
+        :type dataset_len: int
+        :return: Total loss
+        :rtype: int
+        """
         total_loss = 0
         i = 0
         for df in partitioned_dfs:
@@ -55,14 +65,20 @@ class DGADetector(Detector):
                     )
         return total_loss
 
-    """
-    This function accepts cudf series of domains as an argument to classify domain names as benign/malicious and 
-    returns the learned label for each object in the form of cudf series.
-    Example: 
-        detector.predict(['nvidia.com', 'asfnfdjds']) = [1,0]
-    """
+    
 
     def predict(self, domains):
+        """This function accepts cudf series of domains as an argument to classify domain names as benign/malicious and returns the learned label for each object in the form of cudf series.
+        
+        :param domains: List of domains.
+        :type domains: cudf.Series
+        :return: Predicted results with respect to given domains.
+        :rtype: cudf.Series
+        
+        Examples
+        --------
+            detector.predict(['nvidia.com', 'asfnfdjds']) = [1,0]
+        """
         df = cudf.DataFrame()
         df["domain"] = domains
         domains_len = df["domain"].count()
@@ -111,8 +127,14 @@ class DGADetector(Detector):
         return seq_tensor
 
     def str2ascii(self, df, domains_len):
-        """
-        This function sorts domain name entries in desc order based on the length of domain and converts domain name to ascii characters.
+        """This function sorts domain name entries in desc order based on the length of domain and converts domain name to ascii characters.
+        
+        :param df: Domains which requires conversion.
+        :type df: cudf.DataFrame
+        :param domains_len: Number of entries in df.
+        :type domains_len: int
+        :return: Ascii character converted information.
+        :rtype: cudf.DataFrame
         """
         df["len"] = df["domain"].str.len()
         df = df.sort_values("len", ascending=False)
@@ -143,8 +165,14 @@ class DGADetector(Detector):
         return temp_df
 
     def evaluate_model(self, test_partitioned_dfs, dataset_len):
-        """
-        This function evaluates the trained model to verify it's accuracy.
+        """This function evaluates the trained model to verify it's accuracy.
+        
+        :param test_partitioned_dfs: List of partitioned test domain dataframes.
+        :type test_partitioned_dfs: List(cudf.DataFrame)
+        :param dataset_len: Sum of entries in all partitioned test domain dataframes.
+        :type dataset_len: int
+        :return: Model accuracy
+        :rtype: decimal
         """
         print("Evaluating trained model ...")
         correct = 0

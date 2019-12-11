@@ -1,15 +1,17 @@
 # Building Documentation
 
-A basic python environment with packages listed below is enough to build the docs.
+A basic python environment with packages listed in `./requirement.txt` is
+enough to build the docs.
 
-```aidl
-pip install nbsphinx
-pip install sphinx_rtd_theme
+## Get additional dependency
+
+```bash
+pip install -r requirement.txt
 ```
 
-##Run makefile
+## Run makefile:
 
-```aidl
+```bash
 make html
 ```
 
