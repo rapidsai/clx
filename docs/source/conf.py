@@ -24,7 +24,7 @@ copyright = '2019, NVIDIA'
 author = 'NVIDIA'
 
 # The short X.Y version
-version = ''
+version = '0.11'
 # The full version, including alpha/beta/rc tags
 release = '0.11.0'
 
