@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>10 minutes to CLX &mdash; clx 0.10.0 documentation</title>
+  <title>10 minutes to CLX &mdash; clx 0.11.0 documentation</title>
   
 
   
@@ -34,6 +34,7 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/params.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="API Reference" href="api.html" /> 
@@ -58,6 +59,10 @@
 
           
             
+            
+              <div class="version">
+                0.11
+              </div>
             
           
 
@@ -87,19 +92,18 @@
 <li class="toctree-l2"><a class="reference internal" href="#What-are-these-libraries?">What are these libraries?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#When-to-use-CLX">When to use CLX</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Log-Parsing">Log Parsing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Cyber-Data-Types-(IPv4)">Cyber Data Types (IPv4)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Convert-IPv4-strings-to-ints">Convert IPv4 strings to ints</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Check-if-IPv4-Strings-are-multicast">Check if IPv4 Strings are multicast</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Cyber-Data-Types">Cyber Data Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#IPv4">IPv4</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Convert-IPv4-values-to-integers">Convert IPv4 values to integers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Check-if-IPv4-values-are-multicast">Check if IPv4 values are multicast</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#Machine-Learning">Machine Learning</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Calculate-Rolling-Z-Score">Calculate Rolling Z-Score</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#Workflows">Workflows</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Workflow-I/O">Workflow I/O</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#TLD-Extraction">TLD Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Machine-Learning">Machine Learning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Workflows">Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Open-Source-Threat-Intelligence-Integration">Open Source Threat Intelligence Integration</a></li>
 </ul>
 </li>
 </ul>
@@ -390,24 +394,27 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="10-minutes-to-CLX">
 <h1>10 minutes to CLX<a class="headerlink" href="#10-minutes-to-CLX" title="Permalink to this headline">¶</a></h1>
-<p>This is a short introduction to CLX geared mainly towards new users.</p>
+<p>This is a short introduction to CLX geared mainly towards new users of the code.</p>
 <div class="section" id="What-are-these-libraries?">
 <h2>What are these libraries?<a class="headerlink" href="#What-are-these-libraries?" title="Permalink to this headline">¶</a></h2>
-<p>CLX provides a simple API for analysts, data scientists and engineers to quickly get started with applying RAPIDS to real-world cyber use cases. CLX uses the cuDF GPU-DataFrame to execute cyber analytics functionality at fast speeds. The following packages are available:</p>
-<ul><li><p>ml - Machine learning functionality</p>
-</li><li><p>ip - IPv4 data translation and parsing</p>
-</li><li><p>parsers - Log Event parsing</p>
-</li><li><p>io - Input and output features for a workflow</p>
-</li><li><p>workflow - Workflow which receives input data and produces analytical output data</p>
-</li><li><p>osi - Open source integration (VirusTotal, Farsight)</p>
-</li></ul></div>
+<p>CLX (Cyber Log Accelerators) provides a simple API for security analysts, data scientists, and engineers to quickly get started applying RAPIDS to real-world cyber use cases. CLX uses the GPU dataframe (<a class="reference external" href="https://github.com/rapidsai/cudf">cuDF</a>) and other RAPIDS packages to execute cybersecurity and information security workflows. The following packages are available:</p>
+<ul class="simple">
+<li><p>mlstats - Machine learning and statistics functionality</p></li>
+<li><p>ip - IPv4 data translation and parsing</p></li>
+<li><p>parsers - Cyber log Event parsing</p></li>
+<li><p>io - Input and output features for a workflow</p></li>
+<li><p>workflow - Workflow which receives input data and produces analytical output data</p></li>
+<li><p>osi - Open source integration (VirusTotal, FarsightDB and Whois)</p></li>
+<li><p>dns - TLD extraction</p></li>
+</ul>
+</div>
 <div class="section" id="When-to-use-CLX">
 <h2>When to use CLX<a class="headerlink" href="#When-to-use-CLX" title="Permalink to this headline">¶</a></h2>
-<p>Use CLX to build your cyber data analytics workflows in a gpu-accelerated environment. CLX contains common cyber and cyber-ML functionality such as log parsing for specific data sources, cyber data type parsing (such as for IPv4) and dga detection. CLX also provides the ability to integrate this functionality into a CLX workflow which simply executes the series of parsing and ML functions needed to produce cyber analytic output.</p>
+<p>Use CLX to build your cyber data analytics workflows for a GPU-accelerated environmetn using RAPIDS. CLX contains common cyber and cyber ML functionality, such as log parsing for specific data sources, cyber data type parsing (e.g., IPv4), and DGA detection. CLX also provides the ability to integrate this functionality into a CLX workflow, which simplifies execution of the series of parsing and ML functions needed for end-to-end use cases.</p>
 </div>
 <div class="section" id="Log-Parsing">
 <h2>Log Parsing<a class="headerlink" href="#Log-Parsing" title="Permalink to this headline">¶</a></h2>
-<p>CLX provides parsers to parse common log types. Here’s an example parsing a common <a class="reference external" href="https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/default.aspx">Windows Event Log</a> of event code type <a class="reference external" href="https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4770">4770</a>.</p>
+<p>CLX provides traditional parsers for some common log types. Here’s an example parsing a common <a class="reference external" href="https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/default.aspx">Windows Event Log</a> of event code type <a class="reference external" href="https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=4770">4770</a>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -447,27 +454,27 @@ div.rendered_html tbody tr:hover {
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>attributes_sam_account_name</th>
-      <th>account_information_account_domain</th>
-      <th>attributes_profile_path</th>
-      <th>member_account_name</th>
-      <th>changed_attributes_display_name</th>
-      <th>attributes_allowed_to_delegate_to</th>
-      <th>application_information_application_name</th>
-      <th>filter_information_filter_run_time_id</th>
-      <th>additional_information_pre_authentication_type</th>
-      <th>attributes_script_path</th>
-      <th>...</th>
-      <th>changed_attributes_password_last_set</th>
-      <th>network_information_destination_address</th>
-      <th>target_account_account_name</th>
-      <th>changed_attributes_home_directory</th>
-      <th>network_information_port</th>
-      <th>failure_information_sub_status</th>
-      <th>filter_information_layer_name</th>
+      <th>service_information_service_id</th>
+      <th>target_account_old_account_name</th>
+      <th>service_service_name</th>
+      <th>group_group_name</th>
       <th>changed_attributes_account_expires</th>
-      <th>attributes_user_principal_name</th>
-      <th>network_information_source_port</th>
+      <th>detailed_authentication_information_key_length</th>
+      <th>additional_information_result_code</th>
+      <th>account_information_security_id</th>
+      <th>changed_attributes_user_account_control</th>
+      <th>process_information_caller_process_id</th>
+      <th>...</th>
+      <th>changed_attributes_old_uac_value</th>
+      <th>attributes_profile_path</th>
+      <th>attributes_user_account_control</th>
+      <th>account_for_which_logon_failed_account_domain</th>
+      <th>account_whose_credentials_were_used_account_domain</th>
+      <th>new_logon_logon_guid</th>
+      <th>service_server</th>
+      <th>attributes_home_directory</th>
+      <th>failure_information_status</th>
+      <th>failure_information_sub_status</th>
     </tr>
   </thead>
   <tbody>
@@ -479,21 +486,21 @@ div.rendered_html tbody tr:hover {
       <td></td>
       <td></td>
       <td></td>
-      <td>system</td>
-      <td>0</td>
+      <td></td>
+      <td></td>
       <td></td>
       <td></td>
       <td>...</td>
       <td></td>
-      <td>100.20.100.30</td>
       <td></td>
       <td></td>
       <td></td>
       <td></td>
-      <td>receive/accept</td>
       <td></td>
       <td></td>
-      <td>138</td>
+      <td></td>
+      <td></td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -501,13 +508,16 @@ div.rendered_html tbody tr:hover {
 </div></div>
 </div>
 </div>
-<div class="section" id="Cyber-Data-Types-(IPv4)">
-<h2>Cyber Data Types (IPv4)<a class="headerlink" href="#Cyber-Data-Types-(IPv4)" title="Permalink to this headline">¶</a></h2>
-<p>CLX provides the ability to parse different data types related to cyber, such as IPv4. Here’s an example of how to get started.</p>
-<div class="section" id="Convert-IPv4-strings-to-ints">
-<h3>Convert IPv4 strings to ints<a class="headerlink" href="#Convert-IPv4-strings-to-ints" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="Cyber-Data-Types">
+<h2>Cyber Data Types<a class="headerlink" href="#Cyber-Data-Types" title="Permalink to this headline">¶</a></h2>
+<p>CLX provides the ability to work with different data types that are specific to cybersecurity, such as IPv4 and DNS. Here’s an example of how to get started.</p>
+<div class="section" id="IPv4">
+<h3>IPv4<a class="headerlink" href="#IPv4" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference external" href="https://en.wikipedia.org/wiki/IPv4">IPv4</a> data type is still commonly used and present in log files. Below we demonstrate functionality. Additional operations are available in the <code class="docutils literal notranslate"><span class="pre">clx.ip</span></code> module.</p>
+<div class="section" id="Convert-IPv4-values-to-integers">
+<h4>Convert IPv4 values to integers<a class="headerlink" href="#Convert-IPv4-values-to-integers" title="Permalink to this headline">¶</a></h4>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[50]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -530,10 +540,10 @@ dtype: int64
 </pre></div></div>
 </div>
 </div>
-<div class="section" id="Check-if-IPv4-Strings-are-multicast">
-<h3>Check if IPv4 Strings are multicast<a class="headerlink" href="#Check-if-IPv4-Strings-are-multicast" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="Check-if-IPv4-values-are-multicast">
+<h4>Check if IPv4 values are multicast<a class="headerlink" href="#Check-if-IPv4-values-are-multicast" title="Permalink to this headline">¶</a></h4>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[51]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -558,14 +568,182 @@ dtype: bool
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="TLD-Extraction">
+<h2>TLD Extraction<a class="headerlink" href="#TLD-Extraction" title="Permalink to this headline">¶</a></h2>
+<p>CLX provides the ability to extract the TLD from the registered domain and subdomains of a URL, using the public suffix list.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">cudf</span>
+<span class="kn">from</span> <span class="nn">clx.dns</span> <span class="kn">import</span> <span class="n">dns_extractor</span> <span class="k">as</span> <span class="n">dns</span>
+
+<span class="n">input_df</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;http://www.google.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;gmail.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;github.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://pandas.pydata.org&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;http://www.worldbank.org.kg/&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;waiterrant.blogspot.com&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;http://forums.news.cnn.com.ac/&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;http://forums.news.cnn.ac/&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ftp://b.cnn.com/&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;a.news.uk&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;a.news.co.uk&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://a.news.co.uk&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;107-193-100-2.lightspeed.cicril.sbcglobal.net&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;a23-44-13-2.deploy.static.akamaitechnologies.com&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+<span class="n">output_df</span> <span class="o">=</span> <span class="n">dns</span><span class="o">.</span><span class="n">parse_url</span><span class="p">(</span><span class="n">input_df</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">])</span>
+<span class="n">output_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>hostname</th>
+      <th>domain</th>
+      <th>suffix</th>
+      <th>subdomain</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>www.google.com</td>
+      <td>google</td>
+      <td>com</td>
+      <td>www</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>gmail.com</td>
+      <td>gmail</td>
+      <td>com</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>github.com</td>
+      <td>github</td>
+      <td>com</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>pandas.pydata.org</td>
+      <td>pydata</td>
+      <td>org</td>
+      <td>pandas</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>www.worldbank.org.kg</td>
+      <td>worldbank</td>
+      <td>org.kg</td>
+      <td>www</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>waiterrant.blogspot.com</td>
+      <td>waiterrant</td>
+      <td>blogspot.com</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>forums.news.cnn.com.ac</td>
+      <td>cnn</td>
+      <td>com.ac</td>
+      <td>forums.news</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>forums.news.cnn.ac</td>
+      <td>cnn</td>
+      <td>ac</td>
+      <td>forums.news</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>b.cnn.com</td>
+      <td>cnn</td>
+      <td>com</td>
+      <td>b</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>a.news.uk</td>
+      <td>news</td>
+      <td>uk</td>
+      <td>a</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>a.news.co.uk</td>
+      <td>news</td>
+      <td>co.uk</td>
+      <td>a</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>a.news.co.uk</td>
+      <td>news</td>
+      <td>co.uk</td>
+      <td>a</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>107-193-100-2.lightspeed.cicril.sbcglobal.net</td>
+      <td>sbcglobal</td>
+      <td>net</td>
+      <td>107-193-100-2.lightspeed.cicril</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>a23-44-13-2.deploy.static.akamaitechnologies.com</td>
+      <td>akamaitechnologies</td>
+      <td>com</td>
+      <td>a23-44-13-2.deploy.static</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
 <div class="section" id="Machine-Learning">
 <h2>Machine Learning<a class="headerlink" href="#Machine-Learning" title="Permalink to this headline">¶</a></h2>
-<p>CLX offers machine learning functions ready to integrate into your cudf analytics workflow.</p>
-<div class="section" id="Calculate-Rolling-Z-Score">
-<h3>Calculate Rolling Z-Score<a class="headerlink" href="#Calculate-Rolling-Z-Score" title="Permalink to this headline">¶</a></h3>
-<p>Follow this example to calculate the rolling z-score for a given cudf Series.</p>
+<p>CLX offers machine learning and statistcs functions that are ready to integrate into your CLX workflow.</p>
+<p>Calculate a rolling z-score on a given cuDF series.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -611,11 +789,9 @@ dtype: bool
 </pre></div></div>
 </div>
 </div>
-</div>
 <div class="section" id="Workflows">
 <h2>Workflows<a class="headerlink" href="#Workflows" title="Permalink to this headline">¶</a></h2>
-<p>Now that we’ve gotten a handle on CLX functionality, let’s try to tie some of this functionality into a CLX workflow where the output produced can be valuable analytical information.</p>
-<p>A workflow is genericly defined as a function that receives a cudf dataframe, performs some gpu operations on it and then returns an output cudf dataframe. In our use case, we decide to show how to parse raw data within a workflow.</p>
+<p>Now that we’ve demonstrated the basics of CLX , let’s try to tie some of this functionality into a CLX workflow. A workflow is defined as a function that receives a cuDF dataframe, performs some operations on it, and then returns an output cuDF dataframe. In our use case, we decide to show how to parse raw WinEVT data within a workflow.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[61]:
 </pre></div>
@@ -715,16 +891,16 @@ dtype: bool
 <p>1 rows × 131 columns</p>
 </div></div>
 </div>
-<div class="section" id="Workflow-I/O">
-<h3>Workflow I/O<a class="headerlink" href="#Workflow-I/O" title="Permalink to this headline">¶</a></h3>
-<p>A workflow can receive and output data from different locations including CSV files and Kafka. To integrate I/O into your workflow simply indicate your workflow configurations within a <code class="docutils literal notranslate"><span class="pre">workflow.yaml</span></code> file, or define your configurations at instantiation within a python dictionary.
-The workflow class will first look for any configuration file here:</p>
-<ul><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;/</span><span class="n">etc</span><span class="o">/</span><span class="n">clx</span><span class="o">/</span><span class="p">[</span><span class="n">workflow</span><span class="o">-</span><span class="n">name</span><span class="p">]</span><span class="o">/</span><span class="n">workflow</span><span class="o">.</span><span class="n">yaml</span> <span class="n">then</span> <span class="o">&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;~/.</span><span class="n">config</span><span class="o">/</span><span class="n">clx</span><span class="o">/</span><span class="p">[</span><span class="n">workflow</span><span class="o">-</span><span class="n">name</span><span class="p">]</span><span class="o">/</span><span class="n">workflow</span><span class="o">.</span><span class="n">yaml</span> <span class="o">&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
-</pre></div>
+<div class="line-block">
+<div class="line">A workflow can receive and output data from different locations, including CSV files and Kafka. To integrate I/O into your workflow, simply indicate your workflow configurations within a <code class="docutils literal notranslate"><span class="pre">workflow.yaml</span></code> file or define your configurations at instantiation within a python dictionary.</div>
+<div class="line">The workflow class will first look for any configuration file here:</div>
 </div>
-</ul><p>To learn more about workflow configurations click here. (TODO: Add workflow config documentation)</p>
-<p>First, let’s create our input data file</p>
+<ul class="simple">
+<li><p>/etc/clx/[workflow-name]/workflow.yaml then</p></li>
+<li><p>~/.config/clx/[workflow-name]/workflow.yaml</p></li>
+</ul>
+<p>To learn more about workflow configurations click here. <strong>(TODO: Add workflow config documentation)</strong></p>
+<p>To demonstrate the input functionality, we’ll create a small CSV input file.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[62]:
 </pre></div>
@@ -737,7 +913,7 @@ The workflow class will first look for any configuration file here:</p>
 </pre></div>
 </div>
 </div>
-<p>Next, create and run the new workflow</p>
+<p>Next, create and run the workflow.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[60]:
 </pre></div>
@@ -775,7 +951,7 @@ The workflow class will first look for any configuration file here:</p>
 </pre></div>
 </div>
 </div>
-<p>Lastly, read output data</p>
+<p>Output data can be read directly from the resulting CSV file.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[66]:
 </pre></div>
@@ -796,6 +972,58 @@ The workflow class will first look for any configuration file here:</p>
  &#39;,,,,,,,inbound,,,44,,,5156,,,,,,,,,,,,,,,,,,,17,,,,,,138,,,4,,,,138,,,,,,,,,,,,,,100.20.100.30,,receive/accept,,100.20.100.20,,,,,,0,,,,,,,,,,,,,,,,,,,,,,,,,,,,system,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n&#39;]
 </pre></div></div>
 </div>
+</div>
+<div class="section" id="Open-Source-Threat-Intelligence-Integration">
+<h2>Open Source Threat Intelligence Integration<a class="headerlink" href="#Open-Source-Threat-Intelligence-Integration" title="Permalink to this headline">¶</a></h2>
+<p>Often it’s beneficial to integrate open source threat intelligence with collected data. CLX includes the ability to query <a class="reference external" href="https://www.virustotal.com">VirusTotal</a> and <a class="reference external" href="https://www.farsightsecurity.com">FarsightDB</a> directly. An API key is necessary for both of these integrations.</p>
+<ul class="simple">
+<li><p>Create an account with <a class="reference external" href="https://www.virustotal.com">https://www.virustotal.com</a></p></li>
+<li><p>Create an account with <a class="reference external" href="https://www.farsightsecurity.com">https://www.farsightsecurity.com</a></p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">clx.osi.virus_total</span> <span class="kn">import</span> <span class="n">VirusTotalClient</span>
+<span class="n">vt_api_key</span><span class="o">=</span><span class="s1">&#39;&lt;virus total apikey goes here&gt;&#39;</span>
+<span class="n">vt_client</span> <span class="o">=</span> <span class="n">VirusTotalClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">vt_api_key</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">vt_client</span><span class="o">.</span><span class="n">url_scan</span><span class="p">([</span><span class="s2">&quot;virustotal.com&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">clx.osi.farsight</span> <span class="kn">import</span> <span class="n">FarsightLookupClient</span>
+<span class="n">server</span><span class="o">=</span><span class="s1">&#39;https://api.dnsdb.info&#39;</span>
+<span class="n">fs_api_key</span><span class="o">=</span><span class="s1">&#39;&lt;farsight apikey goes here&gt;&#39;</span>
+<span class="n">fs_client</span> <span class="o">=</span> <span class="n">FarsightLookupClient</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">fs_api_key</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">fs_client</span><span class="o">.</span><span class="n">query_rrset</span><span class="p">(</span><span class="s2">&quot;www.dnsdb.info&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">clx.osi.whois</span> <span class="kn">import</span> <span class="n">WhoIsLookupClient</span>
+<span class="n">whois_client</span> <span class="o">=</span> <span class="n">WhoIsLookupClient</span><span class="p">()</span>
+<span class="n">whois_result</span> <span class="o">=</span> <span class="n">whois_client</span><span class="o">.</span><span class="n">whois</span><span class="p">([</span><span class="s2">&quot;nvidia.com&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">whois_result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[{&#39;domain_name&#39;: &#39;NVIDIA.COM&#39;, &#39;registrar&#39;: &#39;Safenames Ltd&#39;, &#39;whois_server&#39;: &#39;whois.safenames.net&#39;, &#39;referral_url&#39;: None, &#39;updated_date&#39;: &#39;04-23-2019 17:17:03,10-04-2013 20:01:01&#39;, &#39;creation_date&#39;: &#39;04-20-1993 04:00:00&#39;, &#39;expiration_date&#39;: &#39;04-21-2020 04:00:00&#39;, &#39;name_servers&#39;: &#39;DNS1.P09.NSONE.NET,DNS2.P09.NSONE.NET,NS5.DNSMADEEASY.COM,NS6.DNSMADEEASY.COM,NS7.DNSMADEEASY.COM&#39;, &#39;status&#39;: &#39;clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited,clientTransferProhibited https://icann.org/epp#clientTransferProhibited,serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited,serverTransferProhibited https://icann.org/epp#serverTransferProhibited,serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited&#39;, &#39;emails&#39;: &#39;abuse@safenames.net,wadmpfvzi5ei@idp.email,hostmaster@safenames.net&#39;, &#39;dnssec&#39;: &#39;unsigned&#39;, &#39;name&#39;: &#39;Data protected, not disclosed&#39;, &#39;org&#39;: None, &#39;address&#39;: &#39;2701 San Tomas Expressway&#39;, &#39;city&#39;: &#39;Santa Clara&#39;, &#39;state&#39;: &#39;CA&#39;, &#39;zipcode&#39;: &#39;95050&#39;, &#39;country&#39;: &#39;US&#39;}]
+</pre></div></div>
 </div>
 </div>
 </div>

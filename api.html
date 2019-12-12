@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; clx 0.10.0 documentation</title>
+  <title>API Reference &mdash; clx 0.11.0 documentation</title>
   
 
   
@@ -34,6 +34,7 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/params.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="10 minutes to CLX" href="10min-clx.html" />
@@ -60,6 +61,10 @@
           
             
             
+              <div class="version">
+                0.11
+              </div>
+            
           
 
           
@@ -85,10 +90,10 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-clx.ip">IP</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ml-stats">ML Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#analytics">Analytics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-clx.dns.dns_extractor">DNS Extractor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-clx.heuristics.ports">Heuristics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-clx.osi">OSI (Open Source Integration)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#osi-open-source-integration">OSI (Open Source Integration)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#parsers">Parsers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#workflow">Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#i-o">I/O</a></li>
@@ -191,110 +196,245 @@
 <dt id="clx.ip.hostmask">
 <code class="sig-prename descclassname">clx.ip.</code><code class="sig-name descname">hostmask</code><span class="sig-paren">(</span><em class="sig-param">ips</em>, <em class="sig-param">prefixlen</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.ip.hostmask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute a column of hostmasks for a column of IP addresses.
-<strong>* Addresses must be IPv4. IPv6 not yet supported. *</strong></p>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">netmask</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">],</span> <span class="n">prefixlen</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<strong>Addresses must be IPv4. IPv6 not yet supported.</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ips</strong> – IP addresses</p></li>
+<li><p><strong>prefixlen</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Length of the network prefix, in bits, for IPv4 addresses</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>hostmasks</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.Series</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hostmask</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">],</span> <span class="n">prefixlen</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 <span class="go">0    0.0.255.255</span>
 <span class="go">1    0.0.255.255</span>
 <span class="go">Name: hostmask, dtype: object</span>
 </pre></div>
 </div>
-</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="clx.ip.int_to_ip">
 <code class="sig-prename descclassname">clx.ip.</code><code class="sig-name descname">int_to_ip</code><span class="sig-paren">(</span><em class="sig-param">values</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.ip.int_to_ip" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert integer column to IP addresses.
-<strong>* Addresses must be IPv4. IPv6 not yet supported. *</strong></p>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">int_to_ip</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">3232235521</span><span class="p">,</span> <span class="mi">167772161</span><span class="p">])</span>
+<strong>Addresses must be IPv4. IPv6 not yet supported.</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>values</strong> (<em>cudf.Series</em>) – Integers to be converted</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>IP addresses</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.Series</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">int_to_ip</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">3232235521</span><span class="p">,</span> <span class="mi">167772161</span><span class="p">])</span>
 <span class="go">0     5.79.97.178</span>
 <span class="go">1    94.130.74.45</span>
 <span class="go">dtype: object</span>
 </pre></div>
 </div>
-</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="clx.ip.ip_to_int">
 <code class="sig-prename descclassname">clx.ip.</code><code class="sig-name descname">ip_to_int</code><span class="sig-paren">(</span><em class="sig-param">values</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.ip.ip_to_int" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert string column of IP addresses to integer values.
-<strong>* Addresses must be IPv4. IPv6 not yet supported. *</strong></p>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ip_to_int</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">])</span>
+<strong>Addresses must be IPv4. IPv6 not yet supported.</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>values</strong> (<em>cudf.Series</em>) – IP addresses to be converted</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Integer representations of IP addresses</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.Series</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ip_to_int</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">])</span>
 <span class="go">0      89088434</span>
 <span class="go">1    1585596973</span>
 <span class="go">dtype: int64</span>
 </pre></div>
 </div>
-</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="clx.ip.is_global">
 <code class="sig-prename descclassname">clx.ip.</code><code class="sig-name descname">is_global</code><span class="sig-paren">(</span><em class="sig-param">ips</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.ip.is_global" title="Permalink to this definition">¶</a></dt>
 <dd><p>Indicates whether each address is global.
-<strong>* Addresses must be IPv4. IPv6 not yet supported. *</strong></p>
+<strong>Addresses must be IPv4. IPv6 not yet supported.</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ips</strong> – IP addresses</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>booleans</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.Series</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="clx.ip.is_ip">
 <code class="sig-prename descclassname">clx.ip.</code><code class="sig-name descname">is_ip</code><span class="sig-paren">(</span><em class="sig-param">ips</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.ip.is_ip" title="Permalink to this definition">¶</a></dt>
 <dd><p>Indicates whether each address is an ip string.
-<strong>* Addresses must be IPv4. IPv6 not yet supported. *</strong></p>
+<strong>Addresses must be IPv4. IPv6 not yet supported.</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ips</strong> – IP addresses</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>booleans</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.Series</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="clx.ip.is_link_local">
 <code class="sig-prename descclassname">clx.ip.</code><code class="sig-name descname">is_link_local</code><span class="sig-paren">(</span><em class="sig-param">ips</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.ip.is_link_local" title="Permalink to this definition">¶</a></dt>
 <dd><p>Indicates whether each address is link local.
-<strong>* Addresses must be IPv4. IPv6 not yet supported. *</strong></p>
+<strong>Addresses must be IPv4. IPv6 not yet supported.</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ips</strong> – IP addresses</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>booleans</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.Series</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="clx.ip.is_loopback">
 <code class="sig-prename descclassname">clx.ip.</code><code class="sig-name descname">is_loopback</code><span class="sig-paren">(</span><em class="sig-param">ips</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.ip.is_loopback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Indicates whether each address is loopback.
-<strong>* Addresses must be IPv4. IPv6 not yet supported. *</strong></p>
+<strong>Addresses must be IPv4. IPv6 not yet supported.</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ips</strong> – IP addresses</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>booleans</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.Series</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="clx.ip.is_multicast">
 <code class="sig-prename descclassname">clx.ip.</code><code class="sig-name descname">is_multicast</code><span class="sig-paren">(</span><em class="sig-param">ips</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.ip.is_multicast" title="Permalink to this definition">¶</a></dt>
 <dd><p>Indicates whether each address is multicast.
-<strong>* Addresses must be IPv4. IPv6 not yet supported. *</strong></p>
+<strong>Addresses must be IPv4. IPv6 not yet supported.</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ips</strong> – IP addresses</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>booleans</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.Series</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="clx.ip.is_private">
 <code class="sig-prename descclassname">clx.ip.</code><code class="sig-name descname">is_private</code><span class="sig-paren">(</span><em class="sig-param">ips</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.ip.is_private" title="Permalink to this definition">¶</a></dt>
 <dd><p>Indicates whether each address is private.
-<strong>* Addresses must be IPv4. IPv6 not yet supported. *</strong></p>
+<strong>Addresses must be IPv4. IPv6 not yet supported.</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ips</strong> – IP addresses</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>booleans</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.Series</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="clx.ip.is_reserved">
 <code class="sig-prename descclassname">clx.ip.</code><code class="sig-name descname">is_reserved</code><span class="sig-paren">(</span><em class="sig-param">ips</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.ip.is_reserved" title="Permalink to this definition">¶</a></dt>
 <dd><p>Indicates whether each address is reserved.
-<strong>* Addresses must be IPv4. IPv6 not yet supported. *</strong></p>
+<strong>Addresses must be IPv4. IPv6 not yet supported.</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ips</strong> – IP addresses</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>booleans</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.Series</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="clx.ip.is_unspecified">
 <code class="sig-prename descclassname">clx.ip.</code><code class="sig-name descname">is_unspecified</code><span class="sig-paren">(</span><em class="sig-param">ips</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.ip.is_unspecified" title="Permalink to this definition">¶</a></dt>
 <dd><p>Indicates whether each address is unspecified.
-<strong>* Addresses must be IPv4. IPv6 not yet supported. *</strong></p>
+<strong>Addresses must be IPv4. IPv6 not yet supported.</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ips</strong> – IP addresses</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>booleans</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.Series</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="clx.ip.mask">
 <code class="sig-prename descclassname">clx.ip.</code><code class="sig-name descname">mask</code><span class="sig-paren">(</span><em class="sig-param">ips</em>, <em class="sig-param">masks</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.ip.mask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply a mask to a column of IP addresses.
-<strong>* Addresses must be IPv4. IPv6 not yet supported. *</strong></p>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">input_ips</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">])</span>
+<strong>Addresses must be IPv4. IPv6 not yet supported.</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ips</strong> – IP addresses</p></li>
+<li><p><strong>masks</strong> (<em>cudf.Series</em>) – The host or subnet masks to be applied</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>masked IP addresses</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.Series</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">input_ips</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">input_masks</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;255.255.0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;255.255.0.0&quot;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span><span class="p">(</span><span class="n">input_ips</span><span class="p">,</span> <span class="n">input_masks</span><span class="p">)</span>
 <span class="go">0    192.168.0.0</span>
@@ -302,106 +442,362 @@
 <span class="go">Name: mask, dtype: object</span>
 </pre></div>
 </div>
-</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="clx.ip.netmask">
 <code class="sig-prename descclassname">clx.ip.</code><code class="sig-name descname">netmask</code><span class="sig-paren">(</span><em class="sig-param">ips</em>, <em class="sig-param">prefixlen</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.ip.netmask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute a column of netmasks for a column of IP addresses.
-<strong>* Addresses must be IPv4. IPv6 not yet supported. *</strong></p>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">netmask</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">],</span> <span class="n">prefixlen</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<strong>Addresses must be IPv4. IPv6 not yet supported.</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ips</strong> – IP addresses</p></li>
+<li><p><strong>prefixlen</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Length of the network prefix, in bits, for IPv4 addresses</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>netmasks</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.Series</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">netmask</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">],</span> <span class="n">prefixlen</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 <span class="go">0    255.255.0.0</span>
 <span class="go">1    255.255.0.0</span>
 <span class="go">Name: net_mask, dtype: object</span>
 </pre></div>
 </div>
-</div></blockquote>
 </dd></dl>
 
 </div>
-<div class="section" id="ml-stats">
-<h2>ML Stats<a class="headerlink" href="#ml-stats" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="analytics">
+<h2>Analytics<a class="headerlink" href="#analytics" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="clx.analytics.dga_detector.DGADetector">
+<em class="property">class </em><code class="sig-prename descclassname">clx.analytics.dga_detector.</code><code class="sig-name descname">DGADetector</code><span class="sig-paren">(</span><em class="sig-param">lr=0.001</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.analytics.dga_detector.DGADetector" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class provides multiple functionalities such as build, train and evaluate the RNNClassifier model 
+to distinguish legitimate and DGA domain names.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.analytics.dga_detector.DGADetector.evaluate_model" title="clx.analytics.dga_detector.DGADetector.evaluate_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_model</span></code></a>(self, test_partitioned_dfs, …)</p></td>
+<td><p>This function evaluates the trained model to verify it’s accuracy.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clx.analytics.dga_detector.DGADetector.init_model" title="clx.analytics.dga_detector.DGADetector.init_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_model</span></code></a>(self[, char_vocab, hidden_size, …])</p></td>
+<td><p>This function instantiates RNNClassifier model to train.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.analytics.dga_detector.DGADetector.predict" title="clx.analytics.dga_detector.DGADetector.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(self, domains)</p></td>
+<td><p>This function accepts cudf series of domains as an argument to classify domain names as benign/malicious and returns the learned label for each object in the form of cudf series.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clx.analytics.dga_detector.DGADetector.str2ascii" title="clx.analytics.dga_detector.DGADetector.str2ascii"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str2ascii</span></code></a>(self, df, domains_len)</p></td>
+<td><p>This function sorts domain name entries in desc order based on the length of domain and converts domain name to ascii characters.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.analytics.dga_detector.DGADetector.train_model" title="clx.analytics.dga_detector.DGADetector.train_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train_model</span></code></a>(self, partitioned_dfs, dataset_len)</p></td>
+<td><p>This function is used for training RNNClassifier model with a given training dataset.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="clx.analytics.dga_detector.DGADetector.evaluate_model">
+<code class="sig-name descname">evaluate_model</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">test_partitioned_dfs</em>, <em class="sig-param">dataset_len</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.analytics.dga_detector.DGADetector.evaluate_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function evaluates the trained model to verify it’s accuracy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>test_partitioned_dfs</strong> (<em>List</em><em>(</em><em>cudf.DataFrame</em><em>)</em>) – List of partitioned test domain dataframes.</p></li>
+<li><p><strong>dataset_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Sum of entries in all partitioned test domain dataframes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Model accuracy</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>decimal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.analytics.dga_detector.DGADetector.init_model">
+<code class="sig-name descname">init_model</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">char_vocab=128</em>, <em class="sig-param">hidden_size=100</em>, <em class="sig-param">n_domain_type=2</em>, <em class="sig-param">n_layers=3</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.analytics.dga_detector.DGADetector.init_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function instantiates RNNClassifier model to train. And also optimizes to scale it and keep running on parallelism.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>char_vocab</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Vocabulary size is set to 128 ASCII characters.</p></li>
+<li><p><strong>hidden_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Hidden size of the network.</p></li>
+<li><p><strong>n_domain_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Number of domain types.</p></li>
+<li><p><strong>n_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Number of network layers.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.analytics.dga_detector.DGADetector.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">domains</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.analytics.dga_detector.DGADetector.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function accepts cudf series of domains as an argument to classify domain names as benign/malicious and returns the learned label for each object in the form of cudf series.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>domains</strong> (<em>cudf.Series</em>) – List of domains.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Predicted results with respect to given domains.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.Series</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>detector.predict([‘nvidia.com’, ‘asfnfdjds’]) = [1,0]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.analytics.dga_detector.DGADetector.str2ascii">
+<code class="sig-name descname">str2ascii</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">df</em>, <em class="sig-param">domains_len</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.analytics.dga_detector.DGADetector.str2ascii" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sorts domain name entries in desc order based on the length of domain and converts domain name to ascii characters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>cudf.DataFrame</em>) – Domains which requires conversion.</p></li>
+<li><p><strong>domains_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Number of entries in df.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Ascii character converted information.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.analytics.dga_detector.DGADetector.train_model">
+<code class="sig-name descname">train_model</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">partitioned_dfs</em>, <em class="sig-param">dataset_len</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.analytics.dga_detector.DGADetector.train_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used for training RNNClassifier model with a given training dataset. It returns total loss to determine model prediction accuracy.
+:param partitioned_dfs: List of partitioned domain dataframes.
+:type partitioned_dfs: List(cudf.DataFrame)
+:param dataset_len: Sum of entries in all partitioned dataframes.
+:type dataset_len: int
+:return: Total loss
+:rtype: int</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="clx.analytics.model.rnn_classifier.RNNClassifier">
+<em class="property">class </em><code class="sig-prename descclassname">clx.analytics.model.rnn_classifier.</code><code class="sig-name descname">RNNClassifier</code><span class="sig-paren">(</span><em class="sig-param">input_size</em>, <em class="sig-param">hidden_size</em>, <em class="sig-param">output_size</em>, <em class="sig-param">n_layers=1</em>, <em class="sig-param">bidirectional=True</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.analytics.model.rnn_classifier.RNNClassifier" title="Permalink to this definition">¶</a></dt>
+<dd><p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.analytics.model.rnn_classifier.RNNClassifier.forward" title="clx.analytics.model.rnn_classifier.RNNClassifier.forward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">forward</span></code></a>(self, input, seq_lengths)</p></td>
+<td><p>Defines the computation performed at every call.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="clx.analytics.model.rnn_classifier.RNNClassifier.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">input</em>, <em class="sig-param">seq_lengths</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.analytics.model.rnn_classifier.RNNClassifier.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-clx.analytics.stats"></span><dl class="function">
+<dt id="clx.analytics.stats.rzscore">
+<code class="sig-prename descclassname">clx.analytics.stats.</code><code class="sig-name descname">rzscore</code><span class="sig-paren">(</span><em class="sig-param">series</em>, <em class="sig-param">window</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.analytics.stats.rzscore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates rolling z-score</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>series</strong><span class="classifier">cudf.Series</span></dt><dd><p>Series for which to calculate rolling z-score</p>
+</dd>
+<dt><strong>window</strong><span class="classifier">int</span></dt><dd><p>Window size</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>cudf.Series</dt><dd><p>Series with rolling z-score values</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="section" id="module-clx.dns.dns_extractor">
 <span id="dns-extractor"></span><h2>DNS Extractor<a class="headerlink" href="#module-clx.dns.dns_extractor" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="clx.dns.dns_extractor.extract_hostnames">
 <code class="sig-prename descclassname">clx.dns.dns_extractor.</code><code class="sig-name descname">extract_hostnames</code><span class="sig-paren">(</span><em class="sig-param">url_df_col</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.dns.dns_extractor.extract_hostnames" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extract hostname from the url.
-Example:-</p>
-<blockquote>
-<div><dl class="simple">
-<dt>input: </dt><dd><p>[“<a class="reference external" href="http://www.worldbank.org.kg/">http://www.worldbank.org.kg/</a>”, “waiterrant.blogspot.com”,”<a class="reference external" href="ftp://b.cnn.com/">ftp://b.cnn.com/</a>”,”a.news.uk”]</p>
+<dd><p>This function extracts hostnames from the given urls.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>url_df_col</strong> (<em>cudf.Series</em>) – Urls that are to be handled.</p>
 </dd>
-<dt>output: </dt><dd><p>[“www.worldbank.org.kg”, “waiterrant.blogspot.com”,”b.cnn.com”, “a.news.uk”]</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Hostnames extracted from the urls.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.Series</p>
 </dd>
 </dl>
-</div></blockquote>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cudf</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clx.dns</span> <span class="kn">import</span> <span class="n">dns_extractor</span> <span class="k">as</span> <span class="n">dns</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">input_df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="p">[</span>
+<span class="gp">... </span>            <span class="s2">&quot;http://www.google.com&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="s2">&quot;gmail.com&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="s2">&quot;github.com&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="s2">&quot;https://pandas.pydata.org&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">]</span>
+<span class="gp">... </span>    <span class="p">}</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dns</span><span class="o">.</span><span class="n">extract_hostnames</span><span class="p">(</span><span class="n">input_df</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">])</span>
+<span class="go">0       www.google.com</span>
+<span class="go">1            gmail.com</span>
+<span class="go">2           github.com</span>
+<span class="go">3    pandas.pydata.org</span>
+<span class="go">Name: 0, dtype: object</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
 <dt id="clx.dns.dns_extractor.generate_tld_cols">
 <code class="sig-prename descclassname">clx.dns.dns_extractor.</code><code class="sig-name descname">generate_tld_cols</code><span class="sig-paren">(</span><em class="sig-param">hostname_split_df</em>, <em class="sig-param">hostnames</em>, <em class="sig-param">col_len</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.dns.dns_extractor.generate_tld_cols" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function generates tld columns.</p>
-<dl>
-<dt>Example:- </dt><dd><dl>
-<dt>input:</dt><dd><blockquote>
-<div><p>4    3                2          1           0</p>
-</div></blockquote>
-<p>0  ac  com              cnn       news      forums
-1       ac              cnn       news      forums
-2                       com        cnn           b</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hostname_split_df</strong> (<em>cudf.DataFrame</em>) – Hostname splits.</p></li>
+<li><p><strong>hostnames</strong> (<em>cudf.DataFrame</em>) – Hostnames.</p></li>
+<li><p><strong>col_len</strong> – Hostname splits dataframe columns length.</p></li>
+</ul>
 </dd>
-<dt>output:</dt><dd><blockquote>
-<div><p>4    3                2          1           0  tld4    tld3             tld2                 tld1                        tld0</p>
-</div></blockquote>
-<p>0 ac  com              cnn       news      forums    ac  com.ac       cnn.com.ac      news.cnn.com.ac      forums.news.cnn.com.ac
-1      ac              cnn       news      forums            ac           cnn.ac          news.cnn.ac          forums.news.cnn.ac
-2                      com        cnn           b                            com              cnn.com                   b.cnn.com</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tld columns with all combination.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.DataFrame</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clx.dns</span> <span class="kn">import</span> <span class="n">dns_extractor</span> <span class="k">as</span> <span class="n">dns</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hostnames</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;www.google.com&quot;</span><span class="p">,</span> <span class="s2">&quot;pandas.pydata.org&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hostname_splits</span> <span class="o">=</span> <span class="n">dns</span><span class="o">.</span><span class="n">get_hostname_split_df</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">hostname_splits</span><span class="p">)</span>
+<span class="go">     2       1       0</span>
+<span class="go">0  com  google     www</span>
+<span class="go">1  org  pydata  pandas</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">col_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">hostname_split_df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">col_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">hostname_splits</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dns</span><span class="o">.</span><span class="n">generate_tld_cols</span><span class="p">(</span><span class="n">hostname_splits</span><span class="p">,</span> <span class="n">hostnames</span><span class="p">,</span> <span class="n">col_len</span><span class="p">)</span>
+<span class="go">     2       1       0 tld2        tld1               tld0</span>
+<span class="go">0  com  google     www  com  google.com     www.google.com</span>
+<span class="go">1  org  pydata  pandas  org  pydata.org  pandas.pydata.org</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="clx.dns.dns_extractor.get_hostname_split_df">
+<code class="sig-prename descclassname">clx.dns.dns_extractor.</code><code class="sig-name descname">get_hostname_split_df</code><span class="sig-paren">(</span><em class="sig-param">hostnames</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.dns.dns_extractor.get_hostname_split_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find all words and digits between periods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hostnames</strong> (<em>cudf.Series</em>) – Hostnames that are being split.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Hostname splits.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.DataFrame</p>
 </dd>
 </dl>
-<p>Adding last element for max tld column.
-Example:-</p>
-<blockquote>
-<div><dl class="simple">
-<dt>input: </dt><dd><p>forums.news.cnn.com.ac</p>
-</dd>
-<dt>output: </dt><dd><p>tld4 = ac</p>
-</dd>
-</dl>
-</div></blockquote>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clx.dns</span> <span class="kn">import</span> <span class="n">dns_extractor</span> <span class="k">as</span> <span class="n">dns</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hostnames</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;www.google.com&quot;</span><span class="p">,</span> <span class="s2">&quot;pandas.pydata.org&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dns</span><span class="o">.</span><span class="n">get_hostname_split_df</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
+<span class="go">     2       1       0</span>
+<span class="go">0  com  google     www</span>
+<span class="go">1  org  pydata  pandas</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
 <dt id="clx.dns.dns_extractor.parse_url">
 <code class="sig-prename descclassname">clx.dns.dns_extractor.</code><code class="sig-name descname">parse_url</code><span class="sig-paren">(</span><em class="sig-param">url_df_col</em>, <em class="sig-param">req_cols=None</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.dns.dns_extractor.parse_url" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function extracts subdomain, domain and suffix for a given url.
-returns: cuDF dataframe with requested columns. If req_cols values are passed as input parameter.
-Example:-</p>
-<blockquote>
-<div><dl>
-<dt>requested cols:          </dt><dd><p>{“hostname”, “domain”, “suffix”, “subdomain”}</p>
+<dd><p>This function extracts subdomain, domain and suffix for a given url.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url_df_col</strong> (<em>cudf.Series</em>) – Urls that are to be handled.</p></li>
+<li><p><strong>req_cols</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.8)"><em>set</em></a><em>(</em><em>strings</em><em>)</em>) – Columns requested to extract such as (domain, subdomain, suffix and hostname).</p></li>
+</ul>
 </dd>
-<dt>input:</dt><dd><blockquote>
-<div><p>url</p>
-</div></blockquote>
-<p>0 <a class="reference external" href="http://forums.news.cnn.com.ac/">http://forums.news.cnn.com.ac/</a>
-1             forums.news.cnn.ac
-2               <a class="reference external" href="ftp://b.cnn.com/">ftp://b.cnn.com/</a></p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Extracted information of requested columns.</p>
 </dd>
-<dt>output:    </dt><dd><blockquote>
-<div><p>hostname      domain        suffix    subdomain</p>
-</div></blockquote>
-<p>0   forums.news.cnn.com.ac         cnn        com.ac  forums.news
-1       forums.news.cnn.ac         cnn            ac  forums.news
-2                b.cnn.com         cnn           com            b</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.DataFrame</p>
 </dd>
 </dl>
-</div></blockquote>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cudf</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clx.dns</span> <span class="kn">import</span> <span class="n">dns_extractor</span> <span class="k">as</span> <span class="n">dns</span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">input_df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="p">[</span>
+<span class="gp">... </span>            <span class="s2">&quot;http://www.google.com&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="s2">&quot;gmail.com&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="s2">&quot;github.com&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="s2">&quot;https://pandas.pydata.org&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">]</span>
+<span class="gp">... </span>    <span class="p">}</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dns</span><span class="o">.</span><span class="n">parse_url</span><span class="p">(</span><span class="n">input_df</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">])</span>
+<span class="go">            hostname  domain suffix subdomain</span>
+<span class="go">0     www.google.com  google    com       www</span>
+<span class="go">1          gmail.com   gmail    com          </span>
+<span class="go">2         github.com  github    com          </span>
+<span class="go">3  pandas.pydata.org  pydata    org    pandas</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dns</span><span class="o">.</span><span class="n">parse_url</span><span class="p">(</span><span class="n">input_df</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">],</span> <span class="n">req_cols</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;domain&#39;</span><span class="p">,</span> <span class="s1">&#39;suffix&#39;</span><span class="p">})</span>
+<span class="go">   domain suffix</span>
+<span class="go">0  google    com</span>
+<span class="go">1   gmail    com</span>
+<span class="go">2  github    com</span>
+<span class="go">3  pydata    org</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -413,24 +809,23 @@ Example:-</p>
 <dd><p>Find major ports for each address. This is done by computing the mean number of connections across all 
 ports for each address and then filters out all ports that don’t cross this threshold. Also adds column 
 for IANA service name correspondingto each port.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>addr_col<span class="classifier">cudf.Series</span></dt><dd><p>Column of addresses as strings</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>addr_col</strong> (<em>cudf.Series</em>) – Column of addresses as strings</p></li>
+<li><p><strong>port_col</strong> (<em>cudf.Series</em>) – Column of corresponding port numbers as ints</p></li>
+<li><p><strong>min_conns</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Filter out ip:port rows that don’t have at least this number of connections (default: 1)</p></li>
+<li><p><strong>eph_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Ports greater than or equal to this will be labeled as an ephemeral service (default: 10000)</p></li>
+</ul>
 </dd>
-<dt>port_col<span class="classifier">cudf.Series</span></dt><dd><p>Column of corresponding port numbers as ints</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>DataFrame with columns for address, port, IANA service corresponding to port, and number of connections</p>
 </dd>
-<dt>min_conns:</dt><dd><p>Filter out ip:port rows that don’t have at least this number of connections (default: 1)</p>
-</dd>
-<dt>eph_min:</dt><dd><p>Ports greater than or equal to this will be labeled as an ephemeral service (default: 10000)</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>cudf.Dataframe</dt><dd><p>addr
-port
-service: IANA service name for port
-conns: number of connections for addr-port pair</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.DataFrame</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">input_addr_col</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;10.0.75.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.75.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.75.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.75.255&quot;</span><span class="p">,</span><span class="s2">&quot;10.110.104.107&quot;</span><span class="p">,</span> <span class="s2">&quot;10.110.104.107&quot;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">input_port_col</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">137</span><span class="p">,</span><span class="mi">137</span><span class="p">,</span><span class="mi">7680</span><span class="p">,</span><span class="mi">137</span><span class="p">,</span><span class="mi">7680</span><span class="p">,</span> <span class="mi">7680</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ports</span><span class="o">.</span><span class="n">major_ports</span><span class="p">(</span><span class="n">input_addr_col</span><span class="p">,</span> <span class="n">input_port_col</span><span class="p">,</span> <span class="n">min_conns</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">eph_min</span><span class="o">=</span><span class="mi">7000</span><span class="p">)</span>
@@ -439,12 +834,184 @@ conns: number of connections for addr-port pair</p>
 <span class="go">1 10.110.104.107  7680   ephemeral      2</span>
 </pre></div>
 </div>
-</div></blockquote>
 </dd></dl>
 
 </div>
-<div class="section" id="module-clx.osi">
-<span id="osi-open-source-integration"></span><h2>OSI (Open Source Integration)<a class="headerlink" href="#module-clx.osi" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="osi-open-source-integration">
+<h2>OSI (Open Source Integration)<a class="headerlink" href="#osi-open-source-integration" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="clx.osi.farsight.FarsightLookupClient">
+<em class="property">class </em><code class="sig-prename descclassname">clx.osi.farsight.</code><code class="sig-name descname">FarsightLookupClient</code><span class="sig-paren">(</span><em class="sig-param">server</em>, <em class="sig-param">apikey</em>, <em class="sig-param">limit=None</em>, <em class="sig-param">http_proxy=None</em>, <em class="sig-param">https_proxy=None</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.osi.farsight.FarsightLookupClient" title="Permalink to this definition">¶</a></dt>
+<dd><p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.osi.farsight.FarsightLookupClient.query_rdata_ip" title="clx.osi.farsight.FarsightLookupClient.query_rdata_ip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">query_rdata_ip</span></code></a>(self, rdata_ip[, before, after])</p></td>
+<td><p>query to find DNSDB records matching a specific IP address with given time range.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clx.osi.farsight.FarsightLookupClient.query_rdata_name" title="clx.osi.farsight.FarsightLookupClient.query_rdata_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">query_rdata_name</span></code></a>(self, rdata_name[, rrtype, …])</p></td>
+<td><p>query matches only a single DNSDB record of given oname and time ranges.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.osi.farsight.FarsightLookupClient.query_rrset" title="clx.osi.farsight.FarsightLookupClient.query_rrset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">query_rrset</span></code></a>(self, oname[, rrtype, …])</p></td>
+<td><p>batch version of querying DNSDB by given domain name and time ranges.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="clx.osi.farsight.FarsightLookupClient.query_rdata_ip">
+<code class="sig-name descname">query_rdata_ip</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">rdata_ip</em>, <em class="sig-param">before=None</em>, <em class="sig-param">after=None</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.osi.farsight.FarsightLookupClient.query_rdata_ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>query to find DNSDB records matching a specific IP address with given time range.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.osi.farsight.FarsightLookupClient.query_rdata_name">
+<code class="sig-name descname">query_rdata_name</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">rdata_name</em>, <em class="sig-param">rrtype=None</em>, <em class="sig-param">before=None</em>, <em class="sig-param">after=None</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.osi.farsight.FarsightLookupClient.query_rdata_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>query matches only a single DNSDB record of given oname and time ranges.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.osi.farsight.FarsightLookupClient.query_rrset">
+<code class="sig-name descname">query_rrset</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">oname</em>, <em class="sig-param">rrtype=None</em>, <em class="sig-param">bailiwick=None</em>, <em class="sig-param">before=None</em>, <em class="sig-param">after=None</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.osi.farsight.FarsightLookupClient.query_rrset" title="Permalink to this definition">¶</a></dt>
+<dd><p>batch version of querying DNSDB by given domain name and time ranges.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="clx.osi.virus_total.VirusTotalClient">
+<em class="property">class </em><code class="sig-prename descclassname">clx.osi.virus_total.</code><code class="sig-name descname">VirusTotalClient</code><span class="sig-paren">(</span><em class="sig-param">api_key=None</em>, <em class="sig-param">proxies=None</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.osi.virus_total.VirusTotalClient" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>api_key</strong></dt><dd></dd>
+<dt><strong>proxies</strong></dt><dd></dd>
+<dt><strong>vt_endpoint_dict</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.osi.virus_total.VirusTotalClient.domain_report" title="clx.osi.virus_total.VirusTotalClient.domain_report"><code class="xref py py-obj docutils literal notranslate"><span class="pre">domain_report</span></code></a>(self, domain)</p></td>
+<td><p>Retrieve report using domain.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clx.osi.virus_total.VirusTotalClient.file_report" title="clx.osi.virus_total.VirusTotalClient.file_report"><code class="xref py py-obj docutils literal notranslate"><span class="pre">file_report</span></code></a>(self, \*resource)</p></td>
+<td><p>The resource argument can be the MD5, SHA-1 or SHA-256 of a file for which you want to retrieve  the most recent antivirus report.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.osi.virus_total.VirusTotalClient.file_rescan" title="clx.osi.virus_total.VirusTotalClient.file_rescan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">file_rescan</span></code></a>(self, \*resource)</p></td>
+<td><p>This function rescan given files.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clx.osi.virus_total.VirusTotalClient.file_scan" title="clx.osi.virus_total.VirusTotalClient.file_scan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">file_scan</span></code></a>(self, file)</p></td>
+<td><p>This function allows you to send a file for scanning with VirusTotal.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.osi.virus_total.VirusTotalClient.ipaddress_report" title="clx.osi.virus_total.VirusTotalClient.ipaddress_report"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ipaddress_report</span></code></a>(self, ip)</p></td>
+<td><p>Retrieve report using ip address.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clx.osi.virus_total.VirusTotalClient.put_comment" title="clx.osi.virus_total.VirusTotalClient.put_comment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">put_comment</span></code></a>(self, resource, comment)</p></td>
+<td><p>Post comment for a file or URL</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.osi.virus_total.VirusTotalClient.scan_big_file" title="clx.osi.virus_total.VirusTotalClient.scan_big_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scan_big_file</span></code></a>(self, files)</p></td>
+<td><p>Scanning files larger than 32MB</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clx.osi.virus_total.VirusTotalClient.url_report" title="clx.osi.virus_total.VirusTotalClient.url_report"><code class="xref py py-obj docutils literal notranslate"><span class="pre">url_report</span></code></a>(self, \*resource)</p></td>
+<td><p>The resource argument must be the URL to retrieve the most recent report.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.osi.virus_total.VirusTotalClient.url_scan" title="clx.osi.virus_total.VirusTotalClient.url_scan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">url_scan</span></code></a>(self, \*url)</p></td>
+<td><p>This function scan on provided url with VirusTotal.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="clx.osi.virus_total.VirusTotalClient.domain_report">
+<code class="sig-name descname">domain_report</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">domain</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.osi.virus_total.VirusTotalClient.domain_report" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve report using domain.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.osi.virus_total.VirusTotalClient.file_report">
+<code class="sig-name descname">file_report</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">*resource</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.osi.virus_total.VirusTotalClient.file_report" title="Permalink to this definition">¶</a></dt>
+<dd><p>The resource argument can be the MD5, SHA-1 or SHA-256 of a file for which you want to retrieve 
+the most recent antivirus report. You may also specify a scan_id returned by the /file/scan endpoint.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.osi.virus_total.VirusTotalClient.file_rescan">
+<code class="sig-name descname">file_rescan</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">*resource</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.osi.virus_total.VirusTotalClient.file_rescan" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function rescan given files.
+The resource argument can be the MD5, SHA-1 or SHA-256 of the file you want to re-scan.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.osi.virus_total.VirusTotalClient.file_scan">
+<code class="sig-name descname">file_scan</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">file</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.osi.virus_total.VirusTotalClient.file_scan" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function allows you to send a file for scanning with VirusTotal. 
+Before performing submissions it would be nice to retrieve the latest report on the file.
+File size limit is 32MB, in order to submit files up to 200MB in size it is mandatory to request a special upload URL 
+using the /file/scan/upload_url endpoint.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.osi.virus_total.VirusTotalClient.ipaddress_report">
+<code class="sig-name descname">ipaddress_report</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">ip</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.osi.virus_total.VirusTotalClient.ipaddress_report" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve report using ip address.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.osi.virus_total.VirusTotalClient.put_comment">
+<code class="sig-name descname">put_comment</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">resource</em>, <em class="sig-param">comment</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.osi.virus_total.VirusTotalClient.put_comment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Post comment for a file or URL</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.osi.virus_total.VirusTotalClient.scan_big_file">
+<code class="sig-name descname">scan_big_file</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">files</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.osi.virus_total.VirusTotalClient.scan_big_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scanning files larger than 32MB</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.osi.virus_total.VirusTotalClient.url_report">
+<code class="sig-name descname">url_report</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">*resource</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.osi.virus_total.VirusTotalClient.url_report" title="Permalink to this definition">¶</a></dt>
+<dd><p>The resource argument must be the URL to retrieve the most recent report.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.osi.virus_total.VirusTotalClient.url_scan">
+<code class="sig-name descname">url_scan</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">*url</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.osi.virus_total.VirusTotalClient.url_scan" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function scan on provided url with VirusTotal.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="clx.osi.whois.WhoIsLookupClient">
+<em class="property">class </em><code class="sig-prename descclassname">clx.osi.whois.</code><code class="sig-name descname">WhoIsLookupClient</code><span class="sig-paren">(</span><em class="sig-param">sep='</em>, <em class="sig-param">'</em>, <em class="sig-param">datetime_format='%m-%d-%Y %H:%M:%S'</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.osi.whois.WhoIsLookupClient" title="Permalink to this definition">¶</a></dt>
+<dd><p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.osi.whois.WhoIsLookupClient.whois" title="clx.osi.whois.WhoIsLookupClient.whois"><code class="xref py py-obj docutils literal notranslate"><span class="pre">whois</span></code></a>(self, domains[, arr2str])</p></td>
+<td><p>Function to access parsed WHOIS data for a given domain.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="clx.osi.whois.WhoIsLookupClient.whois">
+<code class="sig-name descname">whois</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">domains</em>, <em class="sig-param">arr2str=True</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.osi.whois.WhoIsLookupClient.whois" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to access parsed WHOIS data for a given domain.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="parsers">
 <h2>Parsers<a class="headerlink" href="#parsers" title="Permalink to this headline">¶</a></h2>
@@ -452,35 +1019,114 @@ conns: number of connections for addr-port pair</p>
 <dt id="clx.parsers.event_parser.EventParser">
 <em class="property">class </em><code class="sig-prename descclassname">clx.parsers.event_parser.</code><code class="sig-name descname">EventParser</code><span class="sig-paren">(</span><em class="sig-param">columns</em>, <em class="sig-param">event_name</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.parsers.event_parser.EventParser" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is an abstract class for all event log parsers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>columns</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.8)"><em>set</em></a><em>(</em><em>string</em><em>)</em>) – Event column names.</p></li>
+<li><p><strong>event_name</strong> (<em>string</em>) – Event name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference internal" href="#clx.parsers.event_parser.EventParser.columns" title="clx.parsers.event_parser.EventParser.columns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">columns</span></code></a></dt><dd><p>List of columns that are being processed.</p>
+</dd>
+<dt><a class="reference internal" href="#clx.parsers.event_parser.EventParser.event_name" title="clx.parsers.event_parser.EventParser.event_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">event_name</span></code></a></dt><dd><p>Event name define type of logs that are being processed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.parsers.event_parser.EventParser.filter_by_pattern" title="clx.parsers.event_parser.EventParser.filter_by_pattern"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_by_pattern</span></code></a>(self, df, column, pattern)</p></td>
+<td><p>Retrieve events only which satisfies given regex pattern.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clx.parsers.event_parser.EventParser.parse" title="clx.parsers.event_parser.EventParser.parse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse</span></code></a>(self, dataframe, raw_column)</p></td>
+<td><p>Abstract method ‘parse’ triggers the parsing functionality.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.parsers.event_parser.EventParser.parse_raw_event" title="clx.parsers.event_parser.EventParser.parse_raw_event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_raw_event</span></code></a>(self, dataframe, raw_column, …)</p></td>
+<td><p>Processes parsing of a specific type of raw event records received as a dataframe.</p></td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="clx.parsers.event_parser.EventParser.columns">
 <em class="property">property </em><code class="sig-name descname">columns</code><a class="headerlink" href="#clx.parsers.event_parser.EventParser.columns" title="Permalink to this definition">¶</a></dt>
-<dd><p>List of columns required to parse from the yaml file</p>
+<dd><p>List of columns that are being processed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Event column names.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.8)">set</a>(string)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="clx.parsers.event_parser.EventParser.event_name">
 <em class="property">property </em><code class="sig-name descname">event_name</code><a class="headerlink" href="#clx.parsers.event_parser.EventParser.event_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Event name define type of logs that are being processed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Event name</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="clx.parsers.event_parser.EventParser.filter_by_pattern">
-<code class="sig-name descname">filter_by_pattern</code><span class="sig-paren">(</span><em class="sig-param">df</em>, <em class="sig-param">column</em>, <em class="sig-param">pattern</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.parsers.event_parser.EventParser.filter_by_pattern" title="Permalink to this definition">¶</a></dt>
-<dd><p>Filter based on whether a string contains a regex pattern</p>
+<code class="sig-name descname">filter_by_pattern</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">df</em>, <em class="sig-param">column</em>, <em class="sig-param">pattern</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.parsers.event_parser.EventParser.filter_by_pattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve events only which satisfies given regex pattern.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>cudf.DataFrame</em>) – Raw events to be filtered.</p></li>
+<li><p><strong>column</strong> (<em>string</em>) – Raw data contained column name.</p></li>
+<li><p><strong>pattern</strong> (<em>string</em>) – Regex pattern to retrieve events that are required.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>filtered dataframe.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="clx.parsers.event_parser.EventParser.parse">
-<em class="property">abstract </em><code class="sig-name descname">parse</code><span class="sig-paren">(</span><em class="sig-param">dataframe</em>, <em class="sig-param">raw_column</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.parsers.event_parser.EventParser.parse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Abstract method ‘parse’ triggers the parsing functionality.
-Subclasses are required to implement and execute any parsing pre-processing steps.</p>
+<em class="property">abstract </em><code class="sig-name descname">parse</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">dataframe</em>, <em class="sig-param">raw_column</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.parsers.event_parser.EventParser.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method ‘parse’ triggers the parsing functionality. Subclasses are required to implement and execute any parsing pre-processing steps.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="clx.parsers.event_parser.EventParser.parse_raw_event">
-<code class="sig-name descname">parse_raw_event</code><span class="sig-paren">(</span><em class="sig-param">dataframe</em>, <em class="sig-param">raw_column</em>, <em class="sig-param">event_regex</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.parsers.event_parser.EventParser.parse_raw_event" title="Permalink to this definition">¶</a></dt>
-<dd><p>Processes parsing of a specific type of raw event records received as a dataframe</p>
+<code class="sig-name descname">parse_raw_event</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">dataframe</em>, <em class="sig-param">raw_column</em>, <em class="sig-param">event_regex</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.parsers.event_parser.EventParser.parse_raw_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processes parsing of a specific type of raw event records received as a dataframe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataframe</strong> (<em>cudf.DataFrame</em>) – Raw events to be parsed.</p></li>
+<li><p><strong>raw_column</strong> (<em>string</em>) – Raw data contained column name.</p></li>
+<li><p><strong>event_regex</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – Required regular expressions for a given event type.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>parsed information.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -488,10 +1134,37 @@ Subclasses are required to implement and execute any parsing pre-processing step
 <dl class="class">
 <dt id="clx.parsers.splunk_notable_parser.SplunkNotableParser">
 <em class="property">class </em><code class="sig-prename descclassname">clx.parsers.splunk_notable_parser.</code><code class="sig-name descname">SplunkNotableParser</code><a class="headerlink" href="#clx.parsers.splunk_notable_parser.SplunkNotableParser" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>This is class parses splunk notable logs.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.parsers.splunk_notable_parser.SplunkNotableParser.parse" title="clx.parsers.splunk_notable_parser.SplunkNotableParser.parse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse</span></code></a>(self, dataframe, raw_column)</p></td>
+<td><p>Parses the Splunk notable raw events.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
 <dt id="clx.parsers.splunk_notable_parser.SplunkNotableParser.parse">
-<code class="sig-name descname">parse</code><span class="sig-paren">(</span><em class="sig-param">dataframe</em>, <em class="sig-param">raw_column</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.parsers.splunk_notable_parser.SplunkNotableParser.parse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parses the Splunk notable raw event</p>
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">dataframe</em>, <em class="sig-param">raw_column</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.parsers.splunk_notable_parser.SplunkNotableParser.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses the Splunk notable raw events.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataframe</strong> (<em>cudf.DataFrame</em>) – Raw events to be parsed.</p></li>
+<li><p><strong>raw_column</strong> (<em>string</em>) – Raw data contained column name.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>parsed information.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -499,18 +1172,101 @@ Subclasses are required to implement and execute any parsing pre-processing step
 <dl class="class">
 <dt id="clx.parsers.windows_event_parser.WindowsEventParser">
 <em class="property">class </em><code class="sig-prename descclassname">clx.parsers.windows_event_parser.</code><code class="sig-name descname">WindowsEventParser</code><span class="sig-paren">(</span><em class="sig-param">interested_eventcodes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.parsers.windows_event_parser.WindowsEventParser" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>This is class parses windows event logs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>interested_eventcodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.8)"><em>set</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>)</em>) – This parameter provides flexibility to parse only interested eventcodes.</p>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.parsers.windows_event_parser.WindowsEventParser.clean_raw_data" title="clx.parsers.windows_event_parser.WindowsEventParser.clean_raw_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clean_raw_data</span></code></a>(self, dataframe, raw_column)</p></td>
+<td><p>Lower casing and replacing escape characters.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clx.parsers.windows_event_parser.WindowsEventParser.get_columns" title="clx.parsers.windows_event_parser.WindowsEventParser.get_columns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_columns</span></code></a>(self)</p></td>
+<td><p>Get columns of windows event codes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.parsers.windows_event_parser.WindowsEventParser.parse" title="clx.parsers.windows_event_parser.WindowsEventParser.parse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse</span></code></a>(self, dataframe, raw_column)</p></td>
+<td><p>Parses the Windows raw event.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
 <dt id="clx.parsers.windows_event_parser.WindowsEventParser.clean_raw_data">
-<code class="sig-name descname">clean_raw_data</code><span class="sig-paren">(</span><em class="sig-param">dataframe</em>, <em class="sig-param">raw_column</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.parsers.windows_event_parser.WindowsEventParser.clean_raw_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Lower casing and replacing characters</p>
+<code class="sig-name descname">clean_raw_data</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">dataframe</em>, <em class="sig-param">raw_column</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.parsers.windows_event_parser.WindowsEventParser.clean_raw_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lower casing and replacing escape characters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataframe</strong> (<em>cudf.DataFrame</em>) – Raw events to be parsed.</p></li>
+<li><p><strong>raw_column</strong> (<em>string</em>) – Raw data contained column name.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Clean raw information.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.parsers.windows_event_parser.WindowsEventParser.get_columns">
+<code class="sig-name descname">get_columns</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.parsers.windows_event_parser.WindowsEventParser.get_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get columns of windows event codes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Columns of all configured eventcodes, if no interested eventcodes specified.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.8)">set</a>(string)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="clx.parsers.windows_event_parser.WindowsEventParser.parse">
-<code class="sig-name descname">parse</code><span class="sig-paren">(</span><em class="sig-param">dataframe</em>, <em class="sig-param">raw_column</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.parsers.windows_event_parser.WindowsEventParser.parse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parses the windows raw events</p>
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">dataframe</em>, <em class="sig-param">raw_column</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.parsers.windows_event_parser.WindowsEventParser.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses the Windows raw event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataframe</strong> (<em>cudf.DataFrame</em>) – Raw events to be parsed.</p></li>
+<li><p><strong>raw_column</strong> (<em>string</em>) – Raw data contained column name.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Parsed information.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
+</dd></dl>
+
+<span class="target" id="module-clx.parsers.zeek"></span><dl class="function">
+<dt id="clx.parsers.zeek.parse_log_file">
+<code class="sig-prename descclassname">clx.parsers.zeek.</code><code class="sig-name descname">parse_log_file</code><span class="sig-paren">(</span><em class="sig-param">filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.parsers.zeek.parse_log_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse Zeek log file and return cuDF dataframe. Uses header comments to get column names/types and configure parser.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>string</em>) – filepath for Zeek log file</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Zeek log dataframe</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cudf.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -519,33 +1275,107 @@ Subclasses are required to implement and execute any parsing pre-processing step
 <dl class="class">
 <dt id="clx.workflow.workflow.Workflow">
 <em class="property">class </em><code class="sig-prename descclassname">clx.workflow.workflow.</code><code class="sig-name descname">Workflow</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">source=None</em>, <em class="sig-param">destination=None</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.workflow.workflow.Workflow" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="#clx.workflow.workflow.Workflow.destination" title="clx.workflow.workflow.Workflow.destination"><code class="xref py py-obj docutils literal notranslate"><span class="pre">destination</span></code></a></dt><dd><p>Dictionary of configuration parameters for the data destination (writer)</p>
+</dd>
+<dt><a class="reference internal" href="#clx.workflow.workflow.Workflow.name" title="clx.workflow.workflow.Workflow.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></dt><dd><p>Name of the workflow for logging purposes.</p>
+</dd>
+<dt><a class="reference internal" href="#clx.workflow.workflow.Workflow.source" title="clx.workflow.workflow.Workflow.source"><code class="xref py py-obj docutils literal notranslate"><span class="pre">source</span></code></a></dt><dd><p>Dictionary of configuration parameters for the data source (reader)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.workflow.workflow.Workflow.benchmark" title="clx.workflow.workflow.Workflow.benchmark"><code class="xref py py-obj docutils literal notranslate"><span class="pre">benchmark</span></code></a>(function)</p></td>
+<td><p>Decorator used to capture a benchmark for a given function</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clx.workflow.workflow.Workflow.run_workflow" title="clx.workflow.workflow.Workflow.run_workflow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_workflow</span></code></a>(self)</p></td>
+<td><p>Run workflow.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.workflow.workflow.Workflow.set_destination" title="clx.workflow.workflow.Workflow.set_destination"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_destination</span></code></a>(self, destination)</p></td>
+<td><p>Set destination.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clx.workflow.workflow.Workflow.set_source" title="clx.workflow.workflow.Workflow.set_source"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_source</span></code></a>(self, source)</p></td>
+<td><p>Set source.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.workflow.workflow.Workflow.stop_workflow" title="clx.workflow.workflow.Workflow.stop_workflow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop_workflow</span></code></a>(self)</p></td>
+<td><p>Close workflow.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clx.workflow.workflow.Workflow.workflow" title="clx.workflow.workflow.Workflow.workflow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflow</span></code></a>(self, dataframe)</p></td>
+<td><p>The pipeline function performs the data enrichment on the data.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
 <dt id="clx.workflow.workflow.Workflow.benchmark">
-<code class="sig-name descname">benchmark</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#clx.workflow.workflow.Workflow.benchmark" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">benchmark</code><span class="sig-paren">(</span><em class="sig-param">function</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.workflow.workflow.Workflow.benchmark" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator used to capture a benchmark for a given function</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="clx.workflow.workflow.Workflow.destination">
 <em class="property">property </em><code class="sig-name descname">destination</code><a class="headerlink" href="#clx.workflow.workflow.Workflow.destination" title="Permalink to this definition">¶</a></dt>
-<dd><p>dict: Configuration parameters for the data destination</p>
+<dd><p>Dictionary of configuration parameters for the data destination (writer)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="clx.workflow.workflow.Workflow.name">
 <em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#clx.workflow.workflow.Workflow.name" title="Permalink to this definition">¶</a></dt>
-<dd><p>str: The name of the workflow for logging purposes.</p>
+<dd><p>Name of the workflow for logging purposes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.workflow.workflow.Workflow.run_workflow">
+<code class="sig-name descname">run_workflow</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.workflow.workflow.Workflow.run_workflow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run workflow. Reader (source) fetches data. Workflow implementation is executed. Workflow output is
+written to destination.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.workflow.workflow.Workflow.set_destination">
+<code class="sig-name descname">set_destination</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">destination</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.workflow.workflow.Workflow.set_destination" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set destination.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>destination</strong> – dict of configuration parameters for the destination (writer)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.workflow.workflow.Workflow.set_source">
+<code class="sig-name descname">set_source</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">source</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.workflow.workflow.Workflow.set_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set source.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>source</strong> – dict of configuration parameters for data source (reader)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="clx.workflow.workflow.Workflow.source">
 <em class="property">property </em><code class="sig-name descname">source</code><a class="headerlink" href="#clx.workflow.workflow.Workflow.source" title="Permalink to this definition">¶</a></dt>
-<dd><p>dict: Configuration parameters for the data source</p>
+<dd><p>Dictionary of configuration parameters for the data source (reader)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.workflow.workflow.Workflow.stop_workflow">
+<code class="sig-name descname">stop_workflow</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.workflow.workflow.Workflow.stop_workflow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close workflow. This includes calling close() method on reader (source) and writer (destination)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="clx.workflow.workflow.Workflow.workflow">
-<em class="property">abstract </em><code class="sig-name descname">workflow</code><span class="sig-paren">(</span><em class="sig-param">dataframe</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.workflow.workflow.Workflow.workflow" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">workflow</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">dataframe</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.workflow.workflow.Workflow.workflow" title="Permalink to this definition">¶</a></dt>
 <dd><p>The pipeline function performs the data enrichment on the data.
 Subclasses must define this function. This function will return a gpu dataframe with enriched data.</p>
 </dd></dl>
@@ -555,7 +1385,33 @@ Subclasses must define this function. This function will return a gpu dataframe 
 <dl class="class">
 <dt id="clx.workflow.splunk_alert_workflow.SplunkAlertWorkflow">
 <em class="property">class </em><code class="sig-prename descclassname">clx.workflow.splunk_alert_workflow.</code><code class="sig-name descname">SplunkAlertWorkflow</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">source=None</em>, <em class="sig-param">destination=None</em>, <em class="sig-param">interval='day'</em>, <em class="sig-param">threshold=2.5</em>, <em class="sig-param">window=7</em>, <em class="sig-param">raw_data_col_name='_raw'</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.workflow.splunk_alert_workflow.SplunkAlertWorkflow" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="#clx.workflow.splunk_alert_workflow.SplunkAlertWorkflow.interval" title="clx.workflow.splunk_alert_workflow.SplunkAlertWorkflow.interval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interval</span></code></a></dt><dd><p>Interval can be set to day or hour by which z score will be calculated</p>
+</dd>
+<dt><a class="reference internal" href="#clx.workflow.splunk_alert_workflow.SplunkAlertWorkflow.raw_data_col_name" title="clx.workflow.splunk_alert_workflow.SplunkAlertWorkflow.raw_data_col_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">raw_data_col_name</span></code></a></dt><dd><p>Dataframe column name containing raw splunk alert data</p>
+</dd>
+<dt><a class="reference internal" href="#clx.workflow.splunk_alert_workflow.SplunkAlertWorkflow.threshold" title="clx.workflow.splunk_alert_workflow.SplunkAlertWorkflow.threshold"><code class="xref py py-obj docutils literal notranslate"><span class="pre">threshold</span></code></a></dt><dd><p>Threshold by which to flag z score.</p>
+</dd>
+<dt><a class="reference internal" href="#clx.workflow.splunk_alert_workflow.SplunkAlertWorkflow.window" title="clx.workflow.splunk_alert_workflow.SplunkAlertWorkflow.window"><code class="xref py py-obj docutils literal notranslate"><span class="pre">window</span></code></a></dt><dd><p>Window by which to calculate rolling z score</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.workflow.splunk_alert_workflow.SplunkAlertWorkflow.workflow" title="clx.workflow.splunk_alert_workflow.SplunkAlertWorkflow.workflow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflow</span></code></a>(self, dataframe)</p></td>
+<td><p>The pipeline function performs the data enrichment on the data.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
 <dt id="clx.workflow.splunk_alert_workflow.SplunkAlertWorkflow.interval">
 <em class="property">property </em><code class="sig-name descname">interval</code><a class="headerlink" href="#clx.workflow.splunk_alert_workflow.SplunkAlertWorkflow.interval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interval can be set to day or hour by which z score will be calculated</p>
@@ -581,7 +1437,7 @@ Subclasses must define this function. This function will return a gpu dataframe 
 
 <dl class="method">
 <dt id="clx.workflow.splunk_alert_workflow.SplunkAlertWorkflow.workflow">
-<code class="sig-name descname">workflow</code><span class="sig-paren">(</span><em class="sig-param">dataframe</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.workflow.splunk_alert_workflow.SplunkAlertWorkflow.workflow" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">workflow</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">dataframe</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.workflow.splunk_alert_workflow.SplunkAlertWorkflow.workflow" title="Permalink to this definition">¶</a></dt>
 <dd><p>The pipeline function performs the data enrichment on the data.
 Subclasses must define this function. This function will return a gpu dataframe with enriched data.</p>
 </dd></dl>
@@ -594,27 +1450,219 @@ Subclasses must define this function. This function will return a gpu dataframe 
 <dl class="class">
 <dt id="clx.io.reader.kafka_reader.KafkaReader">
 <em class="property">class </em><code class="sig-prename descclassname">clx.io.reader.kafka_reader.</code><code class="sig-name descname">KafkaReader</code><span class="sig-paren">(</span><em class="sig-param">batch_size</em>, <em class="sig-param">consumer</em>, <em class="sig-param">time_window=30</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.io.reader.kafka_reader.KafkaReader" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Reads from Kafka based on config object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch_size</strong> – batch size</p></li>
+<li><p><strong>consumer</strong> – Kafka consumer</p></li>
+<li><p><strong>time_window</strong> – Max window of time that queued events will wait to be pushed to workflow</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>consumer</strong></dt><dd></dd>
+<dt><strong>has_data</strong></dt><dd></dd>
+<dt><strong>time_window</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.io.reader.kafka_reader.KafkaReader.close" title="clx.io.reader.kafka_reader.KafkaReader.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>(self)</p></td>
+<td><p>Close Kafka reader</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clx.io.reader.kafka_reader.KafkaReader.fetch_data" title="clx.io.reader.kafka_reader.KafkaReader.fetch_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_data</span></code></a>(self)</p></td>
+<td><p>Fetch data from Kafka based on provided config object</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="clx.io.reader.kafka_reader.KafkaReader.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.io.reader.kafka_reader.KafkaReader.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close Kafka reader</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.io.reader.kafka_reader.KafkaReader.fetch_data">
+<code class="sig-name descname">fetch_data</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.io.reader.kafka_reader.KafkaReader.fetch_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch data from Kafka based on provided config object</p>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="class">
 <dt id="clx.io.reader.dask_fs_reader.DaskFileSystemReader">
 <em class="property">class </em><code class="sig-prename descclassname">clx.io.reader.dask_fs_reader.</code><code class="sig-name descname">DaskFileSystemReader</code><span class="sig-paren">(</span><em class="sig-param">config</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.io.reader.dask_fs_reader.DaskFileSystemReader" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Uses Dask to read from file system based on config object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> – dictionary object of config values for <strong>type</strong>, <strong>input_format</strong>, <strong>input_path</strong>, and dask reader optional keyword args</p>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.io.reader.dask_fs_reader.DaskFileSystemReader.close" title="clx.io.reader.dask_fs_reader.DaskFileSystemReader.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>(self)</p></td>
+<td><p>Close dask reader</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clx.io.reader.dask_fs_reader.DaskFileSystemReader.fetch_data" title="clx.io.reader.dask_fs_reader.DaskFileSystemReader.fetch_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_data</span></code></a>(self)</p></td>
+<td><p>Fetch data using dask based on provided config object</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="clx.io.reader.dask_fs_reader.DaskFileSystemReader.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.io.reader.dask_fs_reader.DaskFileSystemReader.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close dask reader</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.io.reader.dask_fs_reader.DaskFileSystemReader.fetch_data">
+<code class="sig-name descname">fetch_data</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.io.reader.dask_fs_reader.DaskFileSystemReader.fetch_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch data using dask based on provided config object</p>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="class">
 <dt id="clx.io.reader.fs_reader.FileSystemReader">
 <em class="property">class </em><code class="sig-prename descclassname">clx.io.reader.fs_reader.</code><code class="sig-name descname">FileSystemReader</code><span class="sig-paren">(</span><em class="sig-param">config</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.io.reader.fs_reader.FileSystemReader" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Uses cudf to read from file system based on config object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> – dictionary object of config values for <strong>type</strong>, <strong>input_format</strong>, <strong>input_path</strong> (or <strong>output_path</strong>), and cudf reader optional keyword args</p>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.io.reader.fs_reader.FileSystemReader.close" title="clx.io.reader.fs_reader.FileSystemReader.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>(self)</p></td>
+<td><p>Close cudf reader</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clx.io.reader.fs_reader.FileSystemReader.fetch_data" title="clx.io.reader.fs_reader.FileSystemReader.fetch_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_data</span></code></a>(self)</p></td>
+<td><p>Fetch data using cudf based on provided config object</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="clx.io.reader.fs_reader.FileSystemReader.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.io.reader.fs_reader.FileSystemReader.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close cudf reader</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.io.reader.fs_reader.FileSystemReader.fetch_data">
+<code class="sig-name descname">fetch_data</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.io.reader.fs_reader.FileSystemReader.fetch_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch data using cudf based on provided config object</p>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="class">
 <dt id="clx.io.writer.kafka_writer.KafkaWriter">
 <em class="property">class </em><code class="sig-prename descclassname">clx.io.writer.kafka_writer.</code><code class="sig-name descname">KafkaWriter</code><span class="sig-paren">(</span><em class="sig-param">kafka_topic</em>, <em class="sig-param">batch_size</em>, <em class="sig-param">delimiter</em>, <em class="sig-param">producer</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.io.writer.kafka_writer.KafkaWriter" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Publish to Kafka topic based on config object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kafka_topic</strong> – Kafka topic</p></li>
+<li><p><strong>batch_size</strong> – batch size</p></li>
+<li><p><strong>delimiter</strong> – delimiter</p></li>
+<li><p><strong>producer</strong> – producer</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>delimiter</strong></dt><dd></dd>
+<dt><strong>producer</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.io.writer.kafka_writer.KafkaWriter.close" title="clx.io.writer.kafka_writer.KafkaWriter.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>(self)</p></td>
+<td><p>Close Kafka writer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clx.io.writer.kafka_writer.KafkaWriter.write_data" title="clx.io.writer.kafka_writer.KafkaWriter.write_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_data</span></code></a>(self, df)</p></td>
+<td><p>publish messages to kafka topic</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="clx.io.writer.kafka_writer.KafkaWriter.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.io.writer.kafka_writer.KafkaWriter.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close Kafka writer</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.io.writer.kafka_writer.KafkaWriter.write_data">
+<code class="sig-name descname">write_data</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">df</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.io.writer.kafka_writer.KafkaWriter.write_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>publish messages to kafka topic</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df</strong> – dataframe to publish</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="class">
 <dt id="clx.io.writer.fs_writer.FileSystemWriter">
 <em class="property">class </em><code class="sig-prename descclassname">clx.io.writer.fs_writer.</code><code class="sig-name descname">FileSystemWriter</code><span class="sig-paren">(</span><em class="sig-param">config</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.io.writer.fs_writer.FileSystemWriter" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Uses cudf to write to file system based on config object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> – dictionary object of config values for <strong>type</strong>, <strong>output_format</strong>, <strong>output_path</strong> (or <strong>output_path</strong>), and cudf writer optional keyword args</p>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.io.writer.fs_writer.FileSystemWriter.close" title="clx.io.writer.fs_writer.FileSystemWriter.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>(self)</p></td>
+<td><p>Close cudf writer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#clx.io.writer.fs_writer.FileSystemWriter.write_data" title="clx.io.writer.fs_writer.FileSystemWriter.write_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_data</span></code></a>(self, df)</p></td>
+<td><p>Write data to file system using cudf based on provided config object</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="clx.io.writer.fs_writer.FileSystemWriter.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.io.writer.fs_writer.FileSystemWriter.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close cudf writer</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clx.io.writer.fs_writer.FileSystemWriter.write_data">
+<code class="sig-name descname">write_data</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">df</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.io.writer.fs_writer.FileSystemWriter.write_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write data to file system using cudf based on provided config object</p>
+</dd></dl>
+
+</dd></dl>
 
 </div>
 </div>
