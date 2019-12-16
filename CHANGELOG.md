@@ -3,6 +3,8 @@
 ## New Features
  
 ## Improvements
+
+- PR #85 Add codeowners
  
 ## Bug Fixes
 
