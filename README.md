@@ -48,26 +48,52 @@ CLX is available in a Docker container, by building from source, and through Con
 
 ### CLX Docker Container
 
-Pull the RAPIDS container and build for CLX.
+Prerequisites
+* NVIDIA Pascal™ GPU architecture or better
+* CUDA 9.2 or 10.0 compatible NVIDIA driver
+* Ubuntu 16.04/18.04 or CentOS 7
+* Docker CE v18+
+* nvidia-docker v2+
+
+Pull the RAPIDS container and build CLX image.
 
 ```aidl
 docker pull rapidsai/rapidsai-dev-nightly:0.11-cuda10.0-devel-ubuntu18.04-py3.7
-docker build -t clx .
-docker run --runtime=nvidia \
-  --rm -it \
+docker build -t clx:latest .
+```
+
+Start Container and Notebook Server
+
+#### Preferred - Docker CE v19+ and nvidia-container-toolkit
+```aidl
+docker run  --gpus '"device=0"' \
+  --rm -dit \
   -p 8888:8888 \
   -p 8787:8787 \
   -p 8686:8686 \
   clx:latest
 ```
 
-Start a new CLX container. The container also includes Kafka.
+#### Legacy - Docker CE v18 and nvidia-docker2
+```aidl
+docker run --runtime=nvidia \
+  --rm -dit \
+  -p 8888:8888 \
+  -p 8787:8787 \
+  -p 8686:8686 \
+  clx:latest
+```
+
+### CLX Multi-Container for Data Ingest and SIEM Integration
+
+Start containers for CLX, Kafka, and Zookeeper.
 
 ```aidl
 docker-compose up
 ```
 
 ### Install from Source
+You can install CLX from source on an existing RAPIDS container. A RAPIDS image suitable for your environment can be pulled from https://hub.docker.com/r/rapidsai/rapidsai/. 
 
 ```aidl
 # Run tests
@@ -78,7 +104,7 @@ pytest
 python setup.py install
 ```
 ### Conda install
-
+You can conda install CLX on an existing RAPIDS container. A RAPIDS image suitable for your environment can be pulled from https://hub.docker.com/r/rapidsai/rapidsai/. 
 ```
 conda install -c rapidsai-nightly -c rapidsai -c nvidia -c pytorch -c conda-forge -c defaults clx
 ```
