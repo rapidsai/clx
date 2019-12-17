@@ -212,7 +212,7 @@
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hostmask</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">],</span> <span class="n">prefixlen</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hostmask</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">],</span> <span class="n">prefixlen</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 <span class="go">0    0.0.255.255</span>
 <span class="go">1    0.0.255.255</span>
 <span class="go">Name: hostmask, dtype: object</span>
@@ -237,7 +237,7 @@
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">int_to_ip</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">3232235521</span><span class="p">,</span> <span class="mi">167772161</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">int_to_ip</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">3232235521</span><span class="p">,</span> <span class="mi">167772161</span><span class="p">])</span>
 <span class="go">0     5.79.97.178</span>
 <span class="go">1    94.130.74.45</span>
 <span class="go">dtype: object</span>
@@ -262,7 +262,7 @@
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ip_to_int</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ip_to_int</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">])</span>
 <span class="go">0      89088434</span>
 <span class="go">1    1585596973</span>
 <span class="go">dtype: int64</span>
@@ -434,7 +434,7 @@
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">input_ips</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">input_ips</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">input_masks</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;255.255.0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;255.255.0.0&quot;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span><span class="p">(</span><span class="n">input_ips</span><span class="p">,</span> <span class="n">input_masks</span><span class="p">)</span>
 <span class="go">0    192.168.0.0</span>
@@ -464,7 +464,7 @@
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">netmask</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">],</span> <span class="n">prefixlen</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">netmask</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">],</span> <span class="n">prefixlen</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 <span class="go">0    255.255.0.0</span>
 <span class="go">1    255.255.0.0</span>
 <span class="go">Name: net_mask, dtype: object</span>
@@ -665,7 +665,7 @@ registered hooks while the latter silently ignores them.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cudf</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cudf</span> <span class="kn">import</span> <span class="n">DataFrame</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clx.dns</span> <span class="kn">import</span> <span class="n">dns_extractor</span> <span class="k">as</span> <span class="n">dns</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">input_df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="p">{</span>
@@ -707,7 +707,7 @@ registered hooks while the latter silently ignores them.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clx.dns</span> <span class="kn">import</span> <span class="n">dns_extractor</span> <span class="k">as</span> <span class="n">dns</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hostnames</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;www.google.com&quot;</span><span class="p">,</span> <span class="s2">&quot;pandas.pydata.org&quot;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hostname_splits</span> <span class="o">=</span> <span class="n">dns</span><span class="o">.</span><span class="n">get_hostname_split_df</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
@@ -741,7 +741,7 @@ registered hooks while the latter silently ignores them.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clx.dns</span> <span class="kn">import</span> <span class="n">dns_extractor</span> <span class="k">as</span> <span class="n">dns</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hostnames</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;www.google.com&quot;</span><span class="p">,</span> <span class="s2">&quot;pandas.pydata.org&quot;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dns</span><span class="o">.</span><span class="n">get_hostname_split_df</span><span class="p">(</span><span class="n">hostnames</span><span class="p">)</span>
@@ -771,7 +771,7 @@ registered hooks while the latter silently ignores them.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cudf</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cudf</span> <span class="kn">import</span> <span class="n">DataFrame</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clx.dns</span> <span class="kn">import</span> <span class="n">dns_extractor</span> <span class="k">as</span> <span class="n">dns</span>
 <span class="gp">&gt;&gt;&gt; </span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">input_df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span>
@@ -826,7 +826,7 @@ for IANA service name correspondingto each port.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">input_addr_col</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;10.0.75.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.75.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.75.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.75.255&quot;</span><span class="p">,</span><span class="s2">&quot;10.110.104.107&quot;</span><span class="p">,</span> <span class="s2">&quot;10.110.104.107&quot;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">input_addr_col</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;10.0.75.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.75.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.75.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.75.255&quot;</span><span class="p">,</span><span class="s2">&quot;10.110.104.107&quot;</span><span class="p">,</span> <span class="s2">&quot;10.110.104.107&quot;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">input_port_col</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">137</span><span class="p">,</span><span class="mi">137</span><span class="p">,</span><span class="mi">7680</span><span class="p">,</span><span class="mi">137</span><span class="p">,</span><span class="mi">7680</span><span class="p">,</span> <span class="mi">7680</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ports</span><span class="o">.</span><span class="n">major_ports</span><span class="p">(</span><span class="n">input_addr_col</span><span class="p">,</span> <span class="n">input_port_col</span><span class="p">,</span> <span class="n">min_conns</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">eph_min</span><span class="o">=</span><span class="mi">7000</span><span class="p">)</span>
 <span class="go">            addr  port     service  conns</span>
