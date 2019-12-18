@@ -70,6 +70,8 @@ def major_ports(addr_col, port_col, min_conns=1, eph_min=10000):
 
     Examples
     --------
+    >>> import clx.heuristics.ports as ports
+    >>> import cudf
     >>> input_addr_col = cudf.Series(["10.0.75.1","10.0.75.1","10.0.75.1","10.0.75.255","10.110.104.107", "10.110.104.107"])
     >>> input_port_col = cudf.Series([137,137,7680,137,7680, 7680])
     >>> ports.major_ports(input_addr_col, input_port_col, min_conns=2, eph_min=7000)

@@ -12,6 +12,7 @@ Welcome to clx's documentation!
 
    api.rst
    10min-clx.ipynb
+   intro-clx-workflow.ipynb
 
 
 
