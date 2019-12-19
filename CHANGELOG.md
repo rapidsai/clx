@@ -3,6 +3,7 @@
 ## New Features
  
 ## Improvements
+ - PR #88 Documentation updates
  
 ## Bug Fixes
 
