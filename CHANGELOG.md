@@ -3,6 +3,9 @@
 ## New Features
  
 ## Improvements
+
+- PR #85 Add codeowners
+- PR #86 Add issue templates
  
 ## Bug Fixes
 
