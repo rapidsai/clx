@@ -158,9 +158,9 @@ def is_link_local(ips):
     --------
     >>> import clx.ip
     >>> import cudf
-    >>> clx.ip.is_link_local(cudf.Series(["127.0.0.1","10.0.0.1"]))
+    >>> clx.ip.is_link_local(cudf.Series(["127.0.0.1","169.254.123.123"]))
     0    False
-    1    False
+    1    True
     dtype: bool
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
@@ -210,9 +210,9 @@ def is_multicast(ips):
     --------
     >>> import clx.ip
     >>> import cudf
-    >>> clx.ip.is_multicast(cudf.Series(["127.0.0.1","10.0.0.1"]))
+    >>> clx.ip.is_multicast(cudf.Series(["127.0.0.1","224.0.0.0"]))
     0    False
-    1    False
+    1    True
     dtype: bool
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
@@ -236,9 +236,9 @@ def is_private(ips):
     --------
     >>> import clx.ip
     >>> import cudf
-    >>> clx.ip.is_private(cudf.Series(["127.0.0.1","10.0.0.1"]))
+    >>> clx.ip.is_private(cudf.Series(["127.0.0.1","207.46.13.151"]))
     0    True
-    1    True
+    1    False
     dtype: bool
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
@@ -262,9 +262,9 @@ def is_global(ips):
     --------
     >>> import clx.ip
     >>> import cudf
-    >>> clx.ip.is_private(cudf.Series(["127.0.0.1","10.0.0.1"]))
+    >>> clx.ip.is_global(cudf.Series(["127.0.0.1","207.46.13.151"]))
     0    False
-    1    False
+    1    True
     dtype: bool
     """
     part1 = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
