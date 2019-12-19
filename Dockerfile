@@ -1,5 +1,5 @@
 ARG repository=rapidsai-dev-nightly
-ARG version=0.11-cuda10.0-devel-ubuntu18.04-py3.7
+ARG version=0.12-cuda10.0-devel-ubuntu18.04-py3.7
 
 FROM rapidsai/${repository}:${version}
 
