@@ -35,6 +35,7 @@ class DGADetector(Detector):
     
     def train_model(self, partitioned_dfs, dataset_len):
         """This function is used for training RNNClassifier model with a given training dataset. It returns total loss to determine model prediction accuracy.
+
         :param partitioned_dfs: List of partitioned domain dataframes.
         :type partitioned_dfs: List(cudf.DataFrame)
         :param dataset_len: Sum of entries in all partitioned dataframes.
