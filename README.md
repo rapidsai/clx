@@ -67,7 +67,7 @@ Start Container and Notebook Server
 #### Preferred - Docker CE v19+ and nvidia-container-toolkit
 ```aidl
 docker run  --gpus '"device=0"' \
-  --rm -dit \
+  --rm -d \
   -p 8888:8888 \
   -p 8787:8787 \
   -p 8686:8686 \
@@ -77,7 +77,7 @@ docker run  --gpus '"device=0"' \
 #### Legacy - Docker CE v18 and nvidia-docker2
 ```aidl
 docker run --runtime=nvidia \
-  --rm -dit \
+  --rm -d \
   -p 8888:8888 \
   -p 8787:8787 \
   -p 8686:8686 \
