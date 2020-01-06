@@ -20,15 +20,23 @@ log = logging.getLogger(__name__)
 
 
 class FileSystemReader(FileReader):
+    """
+    Uses cudf to read from file system based on config object.
+
+    :param config: dictionary object of config values for **type**, **input_format**, **input_path** (or **output_path**), and cudf reader optional keyword args
+    """
     def __init__(self, config):
         self._config = config
         self._has_data = True
 
     
     def fetch_data(self):
+        """
+        Fetch data using cudf based on provided config object
+        """
         df = None
         input_format = self.config["input_format"].lower()
-        filepath = self.config["input_path"].lower()
+        filepath = self.config["input_path"]
         kwargs = self.config.copy()
         del kwargs["type"]
         del kwargs["input_format"]
@@ -45,4 +53,7 @@ class FileSystemReader(FileReader):
         return df
 
     def close(self):
+        """
+        Close cudf reader
+        """
         log.info("Closed fs reader")

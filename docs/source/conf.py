@@ -24,9 +24,9 @@ copyright = '2019, NVIDIA'
 author = 'NVIDIA'
 
 # The short X.Y version
-version = ''
+version = '0.12'
 # The full version, including alpha/beta/rc tags
-release = '0.10.0'
+release = '0.12.0a'
 
 
 # -- General configuration ---------------------------------------------------
@@ -39,8 +39,14 @@ release = '0.10.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'nbsphinx'
+    'nbsphinx',
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "numpydoc",
+    "IPython.sphinxext.ipython_console_highlighting",
+    "IPython.sphinxext.ipython_directive",
+    "nbsphinx"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -161,3 +167,15 @@ autodoc_mock_imports = ['cudf', 'nvstrings', 'rmm', 'yaml', 'dask', 'dask_cudf']
 
 
 # -- Extension configuration -------------------------------------------------
+
+# Example configuration for intersphinx: refer to the Python standard library.
+intersphinx_mapping = {'https://docs.python.org/': None}
+
+
+# Config numpydoc
+numpydoc_show_inherited_class_members = False
+numpydoc_class_members_toctree = False
+
+
+def setup(app):
+    app.add_stylesheet('params.css')

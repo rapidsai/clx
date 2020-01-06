@@ -22,11 +22,17 @@ log = logging.getLogger(__name__)
 
 
 class KafkaReader(Reader):
+    """
+    Reads from Kafka based on config object.
+
+    :param batch_size: batch size
+    :param consumer: Kafka consumer
+    :param time_window: Max window of time that queued events will wait to be pushed to workflow
+    """
     def __init__(self, batch_size, consumer, time_window=30):
         self._batch_size = batch_size
         self._consumer = consumer
         self._has_data = True
-        # Max window of time that queued events will wait to be pushed to workflow
         self._time_window = time_window
 
     @property
@@ -42,6 +48,9 @@ class KafkaReader(Reader):
         return self._time_window
 
     def fetch_data(self):
+        """
+        Fetch data from Kafka based on provided config object
+        """
         events = []
         rec_cnt = 0
         running = True
@@ -87,6 +96,9 @@ class KafkaReader(Reader):
             raise
 
     def close(self):
+        """
+        Close Kafka reader
+        """
         log.info("Closing kafka reader...")
         if self.consumer is not None:
             self.consumer.close()

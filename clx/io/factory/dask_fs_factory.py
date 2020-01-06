@@ -18,9 +18,18 @@ from clx.io.reader.dask_fs_reader import DaskFileSystemReader
 
 class DaskFileSystemFactory(AbstractFactory):
     def __init__(self, config):
+        """
+        Constructor method
+
+        :param config: dictionary object of config values for **type**, **input_format**, **input_path**, and dask reader optional keyword args
+        """
         self._config = config
 
     def get_reader(self):
+        """
+        Get instance of DaskFileSystemReader
+        """
+
         return DaskFileSystemReader(self.config)
 
     def get_writer(self):
