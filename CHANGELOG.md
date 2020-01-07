@@ -38,6 +38,7 @@
  - PR #81 Reader filepath fix
  - PR #77 Fix to unit test
  - PR #69 Simple fix to DNS
+ - PR #68 Update to Alert Analysis Workflow notebooks
  - PR #67 Fix DNS extra columns
  - PR #50 Workflow IO fix
  - PR #45 More Kafka IO fixes
