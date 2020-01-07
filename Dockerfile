@@ -1,14 +1,19 @@
-ARG repository=rapidsai-dev-nightly
-ARG version=0.11-cuda10.0-devel-ubuntu18.04-py3.7
+ARG image=rapidsai/rapidsai-dev-nightly:0.12-cuda9.2-devel-ubuntu18.04-py3.7
 
-FROM rapidsai/${repository}:${version}
+FROM ${image}
 
-ADD . /clx/
+ADD . /rapids/clx/
 
 SHELL ["/bin/bash", "-c"]
+
 RUN source activate rapids \
-    && cd /clx \
+    && conda install --freeze-installed panel=0.6.* datashader geopandas pyppeteer cuxfilter \
+    && cd /rapids \
+    && git clone https://github.com/rapidsai/cudatashader.git  /rapids/cudatashader \
+    && cd /rapids/cudatashader \
+    && pip install -e . \
+    && cd /rapids/clx \
     && python setup.py install
 
-WORKDIR /clx
-CMD source activate rapids && sh /rapids/notebooks/utils/start-jupyter.sh
+WORKDIR /rapids
+
