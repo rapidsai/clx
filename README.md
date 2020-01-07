@@ -55,12 +55,13 @@ Prerequisites
 * Docker CE v18+
 * nvidia-docker v2+
 
-Pull the RAPIDS container and build CLX image.
+Pull RAPIDS image suitable to your environment and build CLX image.
 
 ```aidl
-docker pull rapidsai/rapidsai-dev-nightly:0.11-cuda10.0-devel-ubuntu18.04-py3.7
-docker build -t clx:latest .
+docker pull rapidsai/rapidsai-dev-nightly:0.12-cuda9.2-devel-ubuntu18.04-py3.7
+docker build --build-arg image=rapidsai/rapidsai-dev-nightly:0.12-cuda9.2-devel-ubuntu18.04-py3.7 -t clx:latest .
 ```
+
 
 Start Container and Notebook Server
 
