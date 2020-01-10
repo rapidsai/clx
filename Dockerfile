@@ -7,7 +7,7 @@ ADD . /rapids/clx/
 SHELL ["/bin/bash", "-c"]
 
 RUN source activate rapids \
-    && conda install --freeze-installed panel=0.6.* datashader geopandas pyppeteer cuxfilter \
+    && conda install --freeze-installed panel=0.6.* datashader geopandas pyppeteer cuxfilter s3fs \
     && cd /rapids \
     && git clone https://github.com/rapidsai/cudatashader.git  /rapids/cudatashader \
     && cd /rapids/cudatashader \
