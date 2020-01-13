@@ -86,8 +86,9 @@ class EventParser(ABC):
         for col in event_specific_columns:
             regex_pattern = event_regex.get(col)
             extracted_nvstrings = dataframe[raw_column].str.extract(regex_pattern)
+            print("col", col, "strings", extracted_nvstrings[0], extracted_nvstrings[0].dtype)
             if not extracted_nvstrings.empty:
-                parsed_gdf[col] = extracted_nvstrings[0]
+                parsed_gdf[col] = extracted_nvstrings[0].str.fillna("")
 
         remaining_columns = list(self.columns - event_specific_columns)
         # Fill remaining columns with empty.

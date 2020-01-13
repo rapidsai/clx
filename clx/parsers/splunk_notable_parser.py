@@ -49,8 +49,6 @@ class SplunkNotableParser(EventParser):
         # Cleaning raw data to be consistent.
         dataframe[raw_column] = dataframe[raw_column].str.replace("\\\\", "")
         parsed_dataframe = self.parse_raw_event(dataframe, raw_column, self.event_regex)
-        # Replace null values of all columns with empty.
-        parsed_dataframe = parsed_dataframe.fillna("")
         # Post-processing: for src_ip and dest_ip.
         parsed_dataframe = self._process_ip_fields(parsed_dataframe)
         return parsed_dataframe
