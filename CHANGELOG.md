@@ -11,7 +11,7 @@
 - PR #95 Download Alert Analysis data from S3
  
 ## Bug Fixes
-
+- PR #97 Notebook cleanup and gitignore update
 
 # clx 0.11.0 (Date TBD)
 
