@@ -80,13 +80,11 @@ class EventParser(ABC):
             + str(dataframe.shape)
         )
         parsed_gdf = cudf.DataFrame({col: [""] for col in self.columns})
-        parsed_gdf = parsed_gdf[:0]
         event_specific_columns = event_regex.keys()
         # Applies regex pattern for each expected output column to raw data
         for col in event_specific_columns:
             regex_pattern = event_regex.get(col)
             extracted_nvstrings = dataframe[raw_column].str.extract(regex_pattern)
-            print("col", col, "strings", extracted_nvstrings[0], extracted_nvstrings[0].dtype)
             if not extracted_nvstrings.empty:
                 parsed_gdf[col] = extracted_nvstrings[0].str.fillna("")
 
