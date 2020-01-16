@@ -65,10 +65,10 @@ class DnsVarsProvider:
         return suffix_df
 
 
-def extract_hostnames(url_df_col):
+def extract_hostnames(url_series):
     """This function extracts hostnames from the given urls.
     
-    :param url_df_col: Urls that are to be handled.
+    :param url_series: Urls that are to be handled.
     :type url_df_col: cudf.Series
     :return: Hostnames extracted from the urls.
     :rtype: cudf.Series
@@ -95,7 +95,7 @@ def extract_hostnames(url_df_col):
     Name: 0, dtype: object
     """
 
-    hostnames = url_df_col.str.extract("([\\w]+[\\.].+*[^/]|[\\-\\w]+[\\.].+*[^/])")[
+    hostnames = url_series.str.extract("([\\w]+[\\.].+*[^/]|[\\-\\w]+[\\.].+*[^/])")[
         0
     ].str.extract("([\\w\\.\\-]+)")[0]
     return hostnames
@@ -170,7 +170,7 @@ def generate_tld_cols(hostname_split_df, hostnames, col_len):
     return hostname_split_df
 
 
-def _extract_tld(input_df, suffix_df, col_len, col_dict, output_df):
+def _extract_tld(input_df, suffix_df, col_len, col_dict):
     """
     Examples
     -------- 
@@ -187,30 +187,29 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict, output_df):
             1                b.cnn.com         cnn           com               b     2      
     """
 
-    tmp_suffix_df = DataFrame()
+    tmp_dfs = []
+    # Left join on single column dataframe does not provide expected results hence adding dummy column. 
+    suffix_df['dummy'] = ""
     # Iterating over each tld column starting from tld0 until it finds a match.
     for i in range(col_len + 1):
         tld_col = "tld" + str(i)
-        tmp_suffix_df[tld_col] = suffix_df["suffix"]
-        # Left outer join input_df with tmp_suffix_df on tld column for each iteration.
-        merged_df = input_df.merge(
-            tmp_suffix_df, on=tld_col, how="left", suffixes=("", "_y")
-        )
-        col_pos = i - 1
-        tld_r_col = "tld%s_y" % (str(col_pos))
-        # Check for a right side column i.e, added to merged_df when join clause satisfies.
-        if tld_r_col in merged_df.columns:
+        suffix_df = suffix_df.rename({suffix_df.columns[0] : tld_col})
+        # Left join input_df with suffix_df on tld column for each iteration.
+        merged_df = input_df.merge(suffix_df, on=tld_col, how="left")
+        if i > 0:
+            col_pos = i - 1
             # Retrieve records which satisfies join clause.
-            joined_recs_df = merged_df[merged_df[tld_r_col].isna() == False]
+            joined_recs_df = merged_df[~merged_df['dummy'].isna()]
             if not joined_recs_df.empty:
                 temp_df = DataFrame()
+                # Add index to sort the parsed information with respect to input records order.
                 temp_df["idx"] = joined_recs_df["idx"]
                 if col_dict["hostname"]:
                     temp_df["hostname"] = joined_recs_df["tld0"]
                 if col_dict["domain"]:
                     temp_df["domain"] = joined_recs_df[col_pos]
                 if col_dict["suffix"]:
-                    temp_df["suffix"] = joined_recs_df[tld_r_col]
+                    temp_df["suffix"] = joined_recs_df[tld_col]
                 if col_dict["subdomain"]:
                     temp_df["subdomain"] = ""
                     if col_pos > 0:
@@ -222,25 +221,15 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict, output_df):
                             temp_df["subdomain"].str.replace(".^", "").str.lstrip(".")
                         )
                 # Concat current iteration result to previous iteration result.
-                output_df = cudf.concat([temp_df, output_df])
+                tmp_dfs.append(temp_df)
                 # Assigning unprocessed records to input_df for next stage of processing.
                 if i < col_len:
                     # Skip for last iteration. Since there won't be any entries to process further.
-                    input_df = merged_df[merged_df[tld_r_col].isna()]
-    # Release memory. Once tld_col column is no longer needed.
-    tmp_suffix_df.drop(tld_col)
-    input_df.drop(tld_col)
-    return output_df
-
-
-def _create_output_df(req_cols):
-    """Create cuDF dataframe with set of predefined columns.
-    """
-    output_df = DataFrame({(col, "") for col in req_cols})
-    # Add temp index column to preserve input index.
-    output_df["idx"] = 0
-    # Remove empty record i.e, added while creating dataframe.
-    output_df = output_df[:0]
+                    input_df = merged_df[merged_df['dummy'].isna()]
+                    # Drop unwanted columns.
+                    input_df = input_df.drop(["dummy", tld_col])
+    # Concat all temporary output dataframes
+    output_df = cudf.concat(tmp_dfs)
     return output_df
 
 
@@ -267,7 +256,7 @@ def _verify_req_cols(req_cols, allowed_output_cols):
     return req_cols
 
 
-def parse_url(url_df_col, req_cols=None):
+def parse_url(url_series, req_cols=None):
     """This function extracts subdomain, domain and suffix for a given url.
     
     :param url_df_col: Urls that are to be handled.
@@ -309,19 +298,22 @@ def parse_url(url_df_col, req_cols=None):
     sv = DnsVarsProvider.get_instance()
     req_cols = _verify_req_cols(req_cols, sv.allowed_output_cols)
     col_dict = _create_col_dict(req_cols, sv.allowed_output_cols)
-    hostnames = extract_hostnames(url_df_col)
+    hostnames = extract_hostnames(url_series)
+    url_index = url_series.index
+    del url_series
     log.info("Extracting hostnames is successfully completed.")
     hostname_split_df = get_hostname_split_df(hostnames)
     col_len = len(hostname_split_df.columns) - 1
     log.info("Generating tld columns...")
     hostname_split_df = generate_tld_cols(hostname_split_df, hostnames, col_len)
     log.info("Successfully generated tld columns.")
-    output_df = _create_output_df(req_cols)
+    # remove hostnames since they are available in hostname_split_df
+    del hostnames
     # Assign input index to idx column.
-    hostname_split_df["idx"] = url_df_col.index
+    hostname_split_df["idx"] = url_index
     log.info("Extracting tld...")
     output_df = _extract_tld(
-        hostname_split_df, sv.suffix_df, col_len, col_dict, output_df
+        hostname_split_df, sv.suffix_df, col_len, col_dict
     )
     # Sort index based on given input index order.
     output_df = output_df.sort_values("idx", ascending=True)
@@ -329,5 +321,6 @@ def parse_url(url_df_col, req_cols=None):
     output_df.drop("idx")
     # Reset the index.
     output_df = output_df.reset_index(drop=True)
-    log.info("Extracting tld is successfully completed.")
+    if not output_df.empty:
+        log.info("Extracting tld is successfully completed.")
     return output_df
