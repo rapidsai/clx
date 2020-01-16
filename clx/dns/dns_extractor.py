@@ -188,18 +188,18 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict):
     """
 
     tmp_dfs = []
-    # Left join on single column dataframe does not provide expected results hence adding dummy column. 
-    suffix_df['dummy'] = ""
+    # Left join on single column dataframe does not provide expected results hence adding dummy column.
+    suffix_df["dummy"] = ""
     # Iterating over each tld column starting from tld0 until it finds a match.
     for i in range(col_len + 1):
         tld_col = "tld" + str(i)
-        suffix_df = suffix_df.rename({suffix_df.columns[0] : tld_col})
+        suffix_df = suffix_df.rename({suffix_df.columns[0]: tld_col})
         # Left join input_df with suffix_df on tld column for each iteration.
         merged_df = input_df.merge(suffix_df, on=tld_col, how="left")
         if i > 0:
             col_pos = i - 1
             # Retrieve records which satisfies join clause.
-            joined_recs_df = merged_df[~merged_df['dummy'].isna()]
+            joined_recs_df = merged_df[~merged_df["dummy"].isna()]
             if not joined_recs_df.empty:
                 temp_df = DataFrame()
                 # Add index to sort the parsed information with respect to input records order.
@@ -225,7 +225,7 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict):
                 # Assigning unprocessed records to input_df for next stage of processing.
                 if i < col_len:
                     # Skip for last iteration. Since there won't be any entries to process further.
-                    input_df = merged_df[merged_df['dummy'].isna()]
+                    input_df = merged_df[merged_df["dummy"].isna()]
                     # Drop unwanted columns.
                     input_df = input_df.drop(["dummy", tld_col])
     # Concat all temporary output dataframes
@@ -312,9 +312,7 @@ def parse_url(url_series, req_cols=None):
     # Assign input index to idx column.
     hostname_split_df["idx"] = url_index
     log.info("Extracting tld...")
-    output_df = _extract_tld(
-        hostname_split_df, sv.suffix_df, col_len, col_dict
-    )
+    output_df = _extract_tld(hostname_split_df, sv.suffix_df, col_len, col_dict)
     # Sort index based on given input index order.
     output_df = output_df.sort_values("idx", ascending=True)
     # Drop temp columns.
