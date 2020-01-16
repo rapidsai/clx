@@ -69,7 +69,7 @@ def extract_hostnames(url_series):
     """This function extracts hostnames from the given urls.
     
     :param url_series: Urls that are to be handled.
-    :type url_df_col: cudf.Series
+    :type url_series: cudf.Series
     :return: Hostnames extracted from the urls.
     :rtype: cudf.Series
     
