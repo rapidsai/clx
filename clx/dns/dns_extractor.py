@@ -186,12 +186,13 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict):
             2       forums.news.cnn.ac         cnn            ac     forums.news     1
             1                b.cnn.com         cnn           com               b     2      
     """
-
     tmp_dfs = []
     # Left join on single column dataframe does not provide expected results hence adding dummy column.
     suffix_df["dummy"] = ""
     # Iterating over each tld column starting from tld0 until it finds a match.
     for i in range(col_len + 1):
+        # Add index to sort the parsed information with respect to input records order.
+        cols_keep = ["idx"]
         tld_col = "tld" + str(i)
         suffix_df = suffix_df.rename({suffix_df.columns[0]: tld_col})
         # Left join input_df with suffix_df on tld column for each iteration.
@@ -201,27 +202,33 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict):
             # Retrieve records which satisfies join clause.
             joined_recs_df = merged_df[~merged_df["dummy"].isna()]
             if not joined_recs_df.empty:
-                temp_df = DataFrame()
-                # Add index to sort the parsed information with respect to input records order.
-                temp_df["idx"] = joined_recs_df["idx"]
                 if col_dict["hostname"]:
-                    temp_df["hostname"] = joined_recs_df["tld0"]
+                    joined_recs_df = joined_recs_df.rename({"tld0": "hostname"})
+                    cols_keep.append("hostname")
                 if col_dict["domain"]:
-                    temp_df["domain"] = joined_recs_df[col_pos]
+                    joined_recs_df = joined_recs_df.rename({col_pos: "domain"})
+                    cols_keep.append("domain")
                 if col_dict["suffix"]:
-                    temp_df["suffix"] = joined_recs_df[tld_col]
+                    joined_recs_df = joined_recs_df.rename({tld_col: "suffix"})
+                    cols_keep.append("suffix")
                 if col_dict["subdomain"]:
-                    temp_df["subdomain"] = ""
+                    cols_keep.append("subdomain")
+                    joined_recs_df["subdomain"] = ""
                     if col_pos > 0:
                         for idx in range(0, col_pos):
-                            temp_df["subdomain"] = temp_df["subdomain"].str.cat(
-                                joined_recs_df[idx], sep="."
-                            )
-                        temp_df["subdomain"] = (
-                            temp_df["subdomain"].str.replace(".^", "").str.lstrip(".")
+                            joined_recs_df["subdomain"] = joined_recs_df[
+                                "subdomain"
+                            ].str.cat(joined_recs_df[idx], sep=".")
+                        joined_recs_df["subdomain"] = (
+                            joined_recs_df["subdomain"]
+                            .str.replace(".^", "")
+                            .str.lstrip(".")
                         )
+                joined_recs_df = joined_recs_df[cols_keep]
                 # Concat current iteration result to previous iteration result.
-                tmp_dfs.append(temp_df)
+                tmp_dfs.append(joined_recs_df)
+                # delete not required variable.
+                del joined_recs_df
                 # Assigning unprocessed records to input_df for next stage of processing.
                 if i < col_len:
                     # Skip for last iteration. Since there won't be any entries to process further.
