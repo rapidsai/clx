@@ -19,6 +19,7 @@ import torch
 import torch.nn as nn
 from cudf import DataFrame
 from mockito import when, mock, verify
+from clx.analytics.detector_utils import DetectorDataset
 from clx.analytics.dga_detector import DGADetector
 from clx.analytics.model.rnn_classifier import RNNClassifier
 
@@ -75,8 +76,8 @@ test_df2 = cudf.DataFrame(
 )
 
 test_partitioned_dfs = [test_df1, test_df2]
-
-model_filepath = "%s/input/rnn_classifier_2019-11-04_21_54_02.pth" % os.path.dirname(
+dataset = DetectorDataset(test_partitioned_dfs, test_dataset_len)
+model_filepath = "%s/input/rnn_classifier_2020-01-20_22_50_26.pth" % os.path.dirname(
     os.path.realpath(__file__)
 )
 
@@ -85,10 +86,11 @@ def test_load_model():
     dd = DGADetector()
     dd.load_model(model_filepath)
     gpu_count = torch.cuda.device_count()
-    if gpu_count > 1: 
+    if gpu_count > 1:
         assert isinstance(dd.model, nn.DataParallel)
     else:
         assert isinstance(dd.model, RNNClassifier)
+
 
 def test_predict():
     dd = DGADetector()
@@ -102,12 +104,12 @@ def test_predict():
 def test_train_model():
     dd = DGADetector()
     dd.init_model()
-    total_loss = dd.train_model(test_partitioned_dfs, test_dataset_len)
+    total_loss = dd.train_model(dataset)
     assert isinstance(total_loss, (int, float))
 
 
 def test_evaluate_model():
     dd = DGADetector()
     dd.init_model()
-    accuracy = dd.evaluate_model(test_partitioned_dfs, test_dataset_len)
+    accuracy = dd.evaluate_model(dataset)
     assert isinstance(accuracy, (int, float))

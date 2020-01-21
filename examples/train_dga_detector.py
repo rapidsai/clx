@@ -3,6 +3,7 @@ import time
 import cudf
 import argparse
 import logging
+from clx.analytics import detector_utils
 from datetime import datetime
 from clx.analytics.dga_detector import DGADetector
 
@@ -10,29 +11,23 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
 
-def train(
-    dd,
-    partitioned_dfs,
-    dataset_len,
-    test_partitioned_dfs,
-    test_dataset_len,
-    epoch,
-    output_dir,
-):
+def train(dd, dataset, test_dataset, epoch, output_dir):
     """Initiate model training"""
     log.info("Verify if output directory `%s` is already exists." % (output_dir))
     if not os.path.exists(output_dir):
         log.info("Output directory `%s` does not exists." % (output_dir))
         log.info("Creating directory `%s` to store trained models." % (output_dir))
         os.makedirs(output_dir)
+    start_time = time.time()
     max_accuracy = 0
     prev_model_file_path = ""
     for i in range(1, epoch + 1):
         log.info("**********")
         log.info("Epoch: %s" % (i))
         log.info("**********")
-        dd.train_model(partitioned_dfs, dataset_len)
-        accuracy = dd.evaluate_model(test_partitioned_dfs, test_dataset_len)
+
+        dd.train_model(dataset)
+        accuracy = dd.evaluate_model(test_dataset)
         now = datetime.now()
         output_filepath = (
             output_dir
@@ -50,6 +45,8 @@ def train(
         "Model with highest accuracy (%s) is stored to location %s"
         % (max_accuracy, prev_model_file_path)
     )
+    end_time = time.time()
+    log.info("Time taken for training a model : %s" % (end_time - start_time))
 
 
 def main():
@@ -62,42 +59,19 @@ def main():
     log.info("train_file_path : %s" % (train_file_path))
     log.info("test_file_path : %s" % (test_file_path))
 
-    df = cudf.read_csv(train_file_path, names=["domain", "type"])
-    dataset_len = df["domain"].count()
-
-    test_df = cudf.read_csv(test_file_path, names=["domain", "type"])
-    test_dataset_len = test_df["domain"].count()
+    col_names = ["domain", "type"]
+    dtypes = ["str", "int32"]
+    df = cudf.read_csv(train_file_path, names=col_names, dtype=dtypes)
+    test_df = cudf.read_csv(test_file_path, names=col_names, dtype=dtypes)
 
     dd = DGADetector()
     dd.init_model()
 
-    # https://github.com/rapidsai/cudf/issues/2861
-    # Workaround for partition dataframe to small batches
-    partitioned_dfs = pre_process(dd, df, dataset_len, batch_size)
-    test_partitioned_dfs = pre_process(dd, test_df, test_dataset_len, batch_size)
-
-    train(
-        dd,
-        partitioned_dfs,
-        dataset_len,
-        test_partitioned_dfs,
-        test_dataset_len,
-        epoch,
-        output_dir,
-    )
-
-
-def pre_process(dd, df, dataset_len, batch_size):
-    """Partition one dataframe to multiple small dataframes based on a given batch size."""
-    df = dd.str2ascii(df, dataset_len)
-    prev_chunk_offset = 0
-    partitioned_dfs = []
-    while prev_chunk_offset < dataset_len:
-        curr_chunk_offset = prev_chunk_offset + batch_size
-        chunk = df.iloc[prev_chunk_offset:curr_chunk_offset:1]
-        partitioned_dfs.append(chunk)
-        prev_chunk_offset = curr_chunk_offset
-    return partitioned_dfs
+    dataset = detector_utils.prepare_detector_dataset(df, batch_size)
+    test_dataset = detector_utils.prepare_detector_dataset(test_df, batch_size)
+    del df
+    del test_df
+    train(dd, dataset, test_dataset, epoch, output_dir)
 
 
 def parse_cmd_args():
