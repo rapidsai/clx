@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; clx 0.11.0 documentation</title>
+  <title>API Reference &mdash; clx 0.12.0a documentation</title>
   
 
   
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.11
+                0.12
               </div>
             
           
@@ -100,6 +100,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="10min-clx.html">10 minutes to CLX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-clx-workflow.html">CLX Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-clx-dga.html">CLX DGA Detection</a></li>
 </ul>
 
             
@@ -194,7 +196,7 @@
 <span id="ip"></span><h2>IP<a class="headerlink" href="#module-clx.ip" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="clx.ip.hostmask">
-<code class="sig-prename descclassname">clx.ip.</code><code class="sig-name descname">hostmask</code><span class="sig-paren">(</span><em class="sig-param">ips</em>, <em class="sig-param">prefixlen</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.ip.hostmask" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">clx.ip.</code><code class="sig-name descname">hostmask</code><span class="sig-paren">(</span><em class="sig-param">ips</em>, <em class="sig-param">prefixlen=16</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.ip.hostmask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute a column of hostmasks for a column of IP addresses.
 <strong>Addresses must be IPv4. IPv6 not yet supported.</strong></p>
 <dl class="field-list simple">
@@ -212,7 +214,9 @@
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hostmask</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">],</span> <span class="n">prefixlen</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clx.ip</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clx</span><span class="o">.</span><span class="n">ip</span><span class="o">.</span><span class="n">hostmask</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">],</span> <span class="n">prefixlen</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 <span class="go">0    0.0.255.255</span>
 <span class="go">1    0.0.255.255</span>
 <span class="go">Name: hostmask, dtype: object</span>
@@ -237,7 +241,9 @@
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">int_to_ip</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">3232235521</span><span class="p">,</span> <span class="mi">167772161</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clx.ip</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clx</span><span class="o">.</span><span class="n">ip</span><span class="o">.</span><span class="n">int_to_ip</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">3232235521</span><span class="p">,</span> <span class="mi">167772161</span><span class="p">]))</span>
 <span class="go">0     5.79.97.178</span>
 <span class="go">1    94.130.74.45</span>
 <span class="go">dtype: object</span>
@@ -262,7 +268,9 @@
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ip_to_int</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clx.ip</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clx</span><span class="o">.</span><span class="n">ip</span><span class="o">.</span><span class="n">ip_to_int</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">]))</span>
 <span class="go">0      89088434</span>
 <span class="go">1    1585596973</span>
 <span class="go">dtype: int64</span>
@@ -286,6 +294,15 @@
 <dd class="field-odd"><p>cudf.Series</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clx.ip</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clx</span><span class="o">.</span><span class="n">ip</span><span class="o">.</span><span class="n">is_global</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;207.46.13.151&quot;</span><span class="p">]))</span>
+<span class="go">0    False</span>
+<span class="go">1    True</span>
+<span class="go">dtype: bool</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -304,6 +321,15 @@
 <dd class="field-odd"><p>cudf.Series</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clx.ip</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clx</span><span class="o">.</span><span class="n">ip</span><span class="o">.</span><span class="n">is_ip</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.123.0&quot;</span><span class="p">]))</span>
+<span class="go">0     True</span>
+<span class="go">1    False</span>
+<span class="go">dtype: bool</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -322,6 +348,15 @@
 <dd class="field-odd"><p>cudf.Series</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clx.ip</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clx</span><span class="o">.</span><span class="n">ip</span><span class="o">.</span><span class="n">is_link_local</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;169.254.123.123&quot;</span><span class="p">]))</span>
+<span class="go">0    False</span>
+<span class="go">1    True</span>
+<span class="go">dtype: bool</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -340,6 +375,15 @@
 <dd class="field-odd"><p>cudf.Series</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clx.ip</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clx</span><span class="o">.</span><span class="n">ip</span><span class="o">.</span><span class="n">is_loopback</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">]))</span>
+<span class="go">0     True</span>
+<span class="go">1    False</span>
+<span class="go">dtype: bool</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -358,6 +402,15 @@
 <dd class="field-odd"><p>cudf.Series</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clx.ip</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clx</span><span class="o">.</span><span class="n">ip</span><span class="o">.</span><span class="n">is_multicast</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;224.0.0.0&quot;</span><span class="p">]))</span>
+<span class="go">0    False</span>
+<span class="go">1    True</span>
+<span class="go">dtype: bool</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -376,6 +429,15 @@
 <dd class="field-odd"><p>cudf.Series</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clx.ip</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clx</span><span class="o">.</span><span class="n">ip</span><span class="o">.</span><span class="n">is_private</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;207.46.13.151&quot;</span><span class="p">]))</span>
+<span class="go">0    True</span>
+<span class="go">1    False</span>
+<span class="go">dtype: bool</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -394,6 +456,15 @@
 <dd class="field-odd"><p>cudf.Series</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clx.ip</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clx</span><span class="o">.</span><span class="n">ip</span><span class="o">.</span><span class="n">is_reserved</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">]))</span>
+<span class="go">0    False</span>
+<span class="go">1    False</span>
+<span class="go">dtype: bool</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -412,6 +483,15 @@
 <dd class="field-odd"><p>cudf.Series</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clx.ip</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clx</span><span class="o">.</span><span class="n">ip</span><span class="o">.</span><span class="n">is_unspecified</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">]))</span>
+<span class="go">0    False</span>
+<span class="go">1    False</span>
+<span class="go">dtype: bool</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -434,9 +514,11 @@
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">input_ips</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clx.ip</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">input_ips</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">input_masks</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;255.255.0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;255.255.0.0&quot;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span><span class="p">(</span><span class="n">input_ips</span><span class="p">,</span> <span class="n">input_masks</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clx</span><span class="o">.</span><span class="n">ip</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">input_ips</span><span class="p">,</span> <span class="n">input_masks</span><span class="p">)</span>
 <span class="go">0    192.168.0.0</span>
 <span class="go">1       10.0.0.0</span>
 <span class="go">Name: mask, dtype: object</span>
@@ -446,7 +528,7 @@
 
 <dl class="function">
 <dt id="clx.ip.netmask">
-<code class="sig-prename descclassname">clx.ip.</code><code class="sig-name descname">netmask</code><span class="sig-paren">(</span><em class="sig-param">ips</em>, <em class="sig-param">prefixlen</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.ip.netmask" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">clx.ip.</code><code class="sig-name descname">netmask</code><span class="sig-paren">(</span><em class="sig-param">ips</em>, <em class="sig-param">prefixlen=16</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.ip.netmask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute a column of netmasks for a column of IP addresses.
 <strong>Addresses must be IPv4. IPv6 not yet supported.</strong></p>
 <dl class="field-list simple">
@@ -464,7 +546,9 @@
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">netmask</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">],</span> <span class="n">prefixlen</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clx.ip</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clx</span><span class="o">.</span><span class="n">ip</span><span class="o">.</span><span class="n">netmask</span><span class="p">(</span><span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;192.168.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">]),</span> <span class="n">prefixlen</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 <span class="go">0    255.255.0.0</span>
 <span class="go">1    255.255.0.0</span>
 <span class="go">Name: net_mask, dtype: object</span>
@@ -522,6 +606,14 @@ to distinguish legitimate and DGA domain names.</p>
 <dd class="field-odd"><p>decimal</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dd</span> <span class="o">=</span> <span class="n">DGADetector</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dd</span><span class="o">.</span><span class="n">init_model</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dd</span><span class="o">.</span><span class="n">evaluate_model</span><span class="p">(</span><span class="n">test_partitioned_dfs</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="go">Evaluating trained model ...</span>
+<span class="go">Test set: Accuracy: 3/4 (0.75)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -556,7 +648,12 @@ to distinguish legitimate and DGA domain names.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<p>detector.predict([‘nvidia.com’, ‘asfnfdjds’]) = [1,0]</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dd</span><span class="o">.</span><span class="n">predict</span><span class="p">([</span><span class="s1">&#39;nvidia.com&#39;</span><span class="p">,</span> <span class="s1">&#39;dgadomain&#39;</span><span class="p">])</span>
+<span class="go">0    0</span>
+<span class="go">1    1</span>
+<span class="go">Name: is_dga, dtype: int64</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -582,13 +679,30 @@ to distinguish legitimate and DGA domain names.</p>
 <dl class="method">
 <dt id="clx.analytics.dga_detector.DGADetector.train_model">
 <code class="sig-name descname">train_model</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">partitioned_dfs</em>, <em class="sig-param">dataset_len</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.analytics.dga_detector.DGADetector.train_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function is used for training RNNClassifier model with a given training dataset. It returns total loss to determine model prediction accuracy.
-:param partitioned_dfs: List of partitioned domain dataframes.
-:type partitioned_dfs: List(cudf.DataFrame)
-:param dataset_len: Sum of entries in all partitioned dataframes.
-:type dataset_len: int
-:return: Total loss
-:rtype: int</p>
+<dd><p>This function is used for training RNNClassifier model with a given training dataset. It returns total loss to determine model prediction accuracy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>partitioned_dfs</strong> (<em>List</em><em>(</em><em>cudf.DataFrame</em><em>)</em>) – List of partitioned domain dataframes.</p></li>
+<li><p><strong>dataset_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Sum of entries in all partitioned dataframes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Total loss</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clx.analytics.dga_detector</span> <span class="kn">import</span> <span class="n">DGADetector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">partitioned_dfs</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># partitioned_dfs = [df1, df2, ...] represents training dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dd</span> <span class="o">=</span> <span class="n">DGADetector</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dd</span><span class="o">.</span><span class="n">init_model</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dd</span><span class="o">.</span><span class="n">train_model</span><span class="p">(</span><span class="n">partitioned_dfs</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="go">1.5728906989097595</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -644,6 +758,40 @@ registered hooks while the latter silently ignores them.</p>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clx.analytics.stats</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">34</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">45</span><span class="p">,</span><span class="mi">34</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">43</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">23</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">98</span><span class="p">,</span><span class="mi">84</span><span class="p">,</span><span class="mi">10</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">series</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">zscores_df</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">zscores_df</span><span class="p">[</span><span class="s1">&#39;zscore&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">clx</span><span class="o">.</span><span class="n">analytics</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">rzscore</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">zscores_df</span>
+<span class="go">            zscore</span>
+<span class="go">0           null</span>
+<span class="go">1           null</span>
+<span class="go">2           null</span>
+<span class="go">3           null</span>
+<span class="go">4           null</span>
+<span class="go">5           null</span>
+<span class="go">6    2.374423424</span>
+<span class="go">7   -0.645941275</span>
+<span class="go">8   -0.683973734</span>
+<span class="go">9    0.158832461</span>
+<span class="go">10   1.847751909</span>
+<span class="go">11   0.880026019</span>
+<span class="go">12  -0.950835449</span>
+<span class="go">13  -0.360593742</span>
+<span class="go">14   0.111407599</span>
+<span class="go">15   1.228914145</span>
+<span class="go">16  -0.074966331</span>
+<span class="go">17  -0.570321249</span>
+<span class="go">18   0.327849973</span>
+<span class="go">19  -0.934372308</span>
+<span class="go">20   2.296828498</span>
+<span class="go">21   1.282966989</span>
+<span class="go">22  -0.795223674</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -826,7 +974,9 @@ for IANA service name correspondingto each port.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">input_addr_col</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;10.0.75.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.75.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.75.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.75.255&quot;</span><span class="p">,</span><span class="s2">&quot;10.110.104.107&quot;</span><span class="p">,</span> <span class="s2">&quot;10.110.104.107&quot;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clx.heuristics.ports</span> <span class="k">as</span> <span class="nn">ports</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cudf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">input_addr_col</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;10.0.75.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.75.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.75.1&quot;</span><span class="p">,</span><span class="s2">&quot;10.0.75.255&quot;</span><span class="p">,</span><span class="s2">&quot;10.110.104.107&quot;</span><span class="p">,</span> <span class="s2">&quot;10.110.104.107&quot;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">input_port_col</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">137</span><span class="p">,</span><span class="mi">137</span><span class="p">,</span><span class="mi">7680</span><span class="p">,</span><span class="mi">137</span><span class="p">,</span><span class="mi">7680</span><span class="p">,</span> <span class="mi">7680</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ports</span><span class="o">.</span><span class="n">major_ports</span><span class="p">(</span><span class="n">input_addr_col</span><span class="p">,</span> <span class="n">input_port_col</span><span class="p">,</span> <span class="n">min_conns</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">eph_min</span><span class="o">=</span><span class="mi">7000</span><span class="p">)</span>
 <span class="go">            addr  port     service  conns</span>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>10 minutes to CLX &mdash; clx 0.11.0 documentation</title>
+  <title>10 minutes to CLX &mdash; clx 0.12.0a documentation</title>
   
 
   
@@ -37,6 +37,7 @@
   <link rel="stylesheet" href="_static/params.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CLX Workflow" href="intro-clx-workflow.html" />
     <link rel="prev" title="API Reference" href="api.html" /> 
 </head>
 
@@ -61,7 +62,7 @@
             
             
               <div class="version">
-                0.11
+                0.12
               </div>
             
           
@@ -106,6 +107,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#Open-Source-Threat-Intelligence-Integration">Open Source Threat Intelligence Integration</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="intro-clx-workflow.html">CLX Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-clx-dga.html">CLX DGA Detection</a></li>
 </ul>
 
             
@@ -399,7 +402,7 @@ div.rendered_html tbody tr:hover {
 <h2>What are these libraries?<a class="headerlink" href="#What-are-these-libraries?" title="Permalink to this headline">¶</a></h2>
 <p>CLX (Cyber Log Accelerators) provides a simple API for security analysts, data scientists, and engineers to quickly get started applying RAPIDS to real-world cyber use cases. CLX uses the GPU dataframe (<a class="reference external" href="https://github.com/rapidsai/cudf">cuDF</a>) and other RAPIDS packages to execute cybersecurity and information security workflows. The following packages are available:</p>
 <ul class="simple">
-<li><p>mlstats - Machine learning and statistics functionality</p></li>
+<li><p>analytics - Machine learning and statistics functionality</p></li>
 <li><p>ip - IPv4 data translation and parsing</p></li>
 <li><p>parsers - Cyber log Event parsing</p></li>
 <li><p>io - Input and output features for a workflow</p></li>
@@ -899,7 +902,7 @@ dtype: bool
 <li><p>/etc/clx/[workflow-name]/workflow.yaml then</p></li>
 <li><p>~/.config/clx/[workflow-name]/workflow.yaml</p></li>
 </ul>
-<p>To learn more about workflow configurations click here. <strong>(TODO: Add workflow config documentation)</strong></p>
+<p>To learn more about workflow configurations visit the <a class="reference external" href="./intro-clx-workflow.html">CLX Workflow</a> page</p>
 <p>To demonstrate the input functionality, we’ll create a small CSV input file.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[62]:
@@ -1035,6 +1038,8 @@ dtype: bool
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="intro-clx-workflow.html" class="btn btn-neutral float-right" title="CLX Workflow" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="api.html" class="btn btn-neutral float-left" title="API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
