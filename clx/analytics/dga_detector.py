@@ -37,6 +37,15 @@ class DGADetector(Detector):
         :type detector_dataset: DetectorDataset
         :return: Total loss
         :rtype: int
+
+        Examples
+        --------
+        >>> from clx.analytics.dga_detector import DGADetector
+        >>> partitioned_dfs = ... # partitioned_dfs = [df1, df2, ...] represents training dataset
+        >>> dd = DGADetector()
+        >>> dd.init_model()
+        >>> dd.train_model(detector_dataset)
+        1.5728906989097595
         """
         total_loss = 0
         i = 0
@@ -71,7 +80,10 @@ class DGADetector(Detector):
         
         Examples
         --------
-            detector.predict(['nvidia.com', 'asfnfdjds']) = [1,0]
+        >>> dd.predict(['nvidia.com', 'dgadomain'])
+        0    0
+        1    1
+        Name: is_dga, dtype: int64
         """
         df = cudf.DataFrame({"domain": domains})
         domains_len = df["domain"].count()
@@ -127,6 +139,14 @@ class DGADetector(Detector):
         :type detector_dataset: DetectorDataset
         :return: Model accuracy
         :rtype: decimal
+
+        Examples
+        --------
+        >>> dd = DGADetector()
+        >>> dd.init_model()
+        >>> dd.evaluate_model(detector_dataset)
+        Evaluating trained model ...
+        Test set: Accuracy: 3/4 (0.75)
         """
         log.info("Evaluating trained model ...")
         correct = 0

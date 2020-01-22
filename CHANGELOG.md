@@ -4,7 +4,7 @@
 - PR #93 Add Bokeh visualization back to Alert Analysis notebook
  
 ## Improvements
-
+- PR #88 Documentation updates
 - PR #85 Add codeowners
 - PR #86 Add issue templates
 - PR #87 CLX docker updates
