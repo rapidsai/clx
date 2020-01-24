@@ -14,7 +14,7 @@ The goal of CLX is to:
 ## Getting Started with Python and Notebooks
 CLX is targeted towards cybersecurity data scientists, senior security analysts, threat hunters, and forensic investigators. Data scientists can use CLX in traditional Python files and Jupyter notebooks. The notebooks folder contains example use cases and workflow instantiations. It's also easy to get started using CLX with RAPIDS with Python. The code below reads cyber alerts, aggregates them by day, and calculates the rolling z-score value across multiple days to look for outliers in volumes of alerts. Expanded code is available in the alert analysis notebook.
 
-```
+```python
 import cudf
 import s3fs
 from os import path
