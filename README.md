@@ -11,6 +11,66 @@ The goal of CLX is to:
 1. Accelerate log parsing in a flexible, non-regex method. and
 1. Provide SIEM integration with GPU compute environments via RAPIDS and effectively extend the SIEM environment.
 
+## Getting Started with Python and Notebooks
+CLX is targeted towards cybersecurity data scientists, senior security analysts, threat hunters, and forensic investigators. Data scientists can use CLX in traditional Python files and Jupyter notebooks. The notebooks folder contains example use cases and workflow instantiations. It's also easy to get started using CLX with RAPIDS with Python. The code below reads cyber alerts, aggregates them by day, and calculates the rolling z-score value across multiple days to look for outliers in volumes of alerts. Expanded code is available in the alert analysis notebook.
+
+```
+import cudf
+import s3fs
+from os import path
+
+# download data
+if not path.exists("./splunk_faker_raw4"):
+    fs = s3fs.S3FileSystem(anon=True)
+    fs.get("rapidsai-data/cyber/clx/splunk_faker_raw4", "./splunk_faker_raw4")
+
+# read in alert data
+gdf = cudf.read_csv('./splunk_faker_raw4')
+gdf.columns = ['raw']
+
+# parse the alert data using CLX built-in parsers
+from clx.parsers.splunk_notable_parser import SplunkNotableParser
+
+snp = SplunkNotableParser()
+parsed_gdf = cudf.DataFrame()
+parsed_gdf = snp.parse(gdf, 'raw')
+
+# define function to round time to the day
+def round2day(epoch_time):
+    return int(epoch_time/86400)*86400
+
+# aggregate alerts by day
+parsed_gdf['time'] = parsed_gdf['time'].astype(int)
+parsed_gdf['day'] = parsed_gdf.time.applymap(round2day)
+day_rule_gdf= parsed_gdf[['search_name','day','time']].groupby(['search_name', 'day']).count().reset_index()
+day_rule_gdf.columns = ['rule', 'day', 'count']
+
+# import the rolling z-score function from CLX statistics
+from clx.analytics.stats import rzscore
+
+# pivot the alert data so each rule is a column
+def pivot_table(gdf, index_col, piv_col, v_col):
+    index_list = gdf[index_col].unique()
+    piv_gdf = cudf.DataFrame()
+    piv_gdf[index_col] = index_list
+    for group in gdf[piv_col].unique():
+        temp_df = gdf[gdf[piv_col] == group]
+        temp_df = temp_df[[index_col, v_col]]
+        temp_df.columns = [index_col, group]
+        piv_gdf = piv_gdf.merge(temp_df, on=[index_col], how='left')
+    piv_gdf = piv_gdf.set_index(index_col)
+    return piv_gdf.sort_index()
+
+alerts_per_day_piv = pivot_table(day_rule_gdf, 'day', 'rule', 'count').fillna(0)
+
+# create a new cuDF with the rolling z-score values calculated
+r_zscores = cudf.DataFrame()
+for rule in alerts_per_day_piv.columns:
+    x = alerts_per_day_piv[rule]
+    r_zscores[rule] = rzscore(x, 7) #7 day window
+
+```
+
 ## Installation
 CLX is available in a Docker container, by building from source, and through Conda installation. There are multiple ways to start the CLX container, depending on if you want a container with only RAPIDS and CLX or you want multiple contianers to run that enable SIEM integration and data ingest.
 
@@ -80,12 +140,10 @@ You can conda install CLX on an existing RAPIDS container. A RAPIDS image suitab
 ```
 conda install -c rapidsai-nightly -c rapidsai -c nvidia -c pytorch -c conda-forge -c defaults clx
 ```
-## Example Notebooks
-The notebooks folder contains example use cases and workflow instantiations.
 
-## Getting Started
+## Getting Started With Workflows
 
-CLX is targeted towards cybersecurity data scientists, senior security analysts, threat hunters, and forensic investigators. Data scientists can use CLX in traditional Python files and Jupyter notebooks. CLX also includes structure in the form of a workflow. A workflow is a series of data transformations performed on a [GPU dataframe](https://github.com/rapidsai/cudf) that contains raw cyber data, with the goal of surfacing meaningful cyber analytical output. Multiple I/O methods are available, including Kafka and on-disk file stores.
+In addition to traditional Python files and Jupyter notebooks, CLX also includes structure in the form of a workflow. A workflow is a series of data transformations performed on a [GPU dataframe](https://github.com/rapidsai/cudf) that contains raw cyber data, with the goal of surfacing meaningful cyber analytical output. Multiple I/O methods are available, including Kafka and on-disk file stores.
 
 Example flow workflow reading and writing to file:
 
