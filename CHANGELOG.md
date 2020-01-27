@@ -9,6 +9,7 @@
 - PR #86 Add issue templates
 - PR #87 CLX docker updates
 - PR #95 Download Alert Analysis data from S3
+- PR #108 JSON read/write support
  
 ## Bug Fixes
 
