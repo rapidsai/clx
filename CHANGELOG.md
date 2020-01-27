@@ -4,12 +4,13 @@
 - PR #93 Add Bokeh visualization back to Alert Analysis notebook
  
 ## Improvements
-
+- PR #88 Documentation updates
 - PR #85 Add codeowners
 - PR #86 Add issue templates
 - PR #87 CLX docker updates
 - PR #95 Download Alert Analysis data from S3
- 
+- PR #101 Refactor DNS & IP code
+
 ## Bug Fixes
 
 - PR #102 - Fix error from renamed cuxfilter module

@@ -40,6 +40,8 @@ wf = netflow_workflow.NetflowWorkflow(source=source, destination=dest, name="my-
 wf.run_workflow()
 ```
 
+For additional examples, browse our complete [API documentation](https://rapidsai.github.io/clx/), or check out our more detailed [notebooks](https://github.com/rapidsai/clx/tree/master/notebooks).
+
 ## Example Notebooks
 The notebooks folder contains example use cases and workflow instantiations.
 

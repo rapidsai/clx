@@ -30,7 +30,9 @@ def ip_to_int(values):
 
     Examples
     --------
-    >>> ip_to_int(cudf.Series(["192.168.0.1","10.0.0.1"])
+    >>> import clx.ip
+    >>> import cudf
+    >>> clx.ip.ip_to_int(cudf.Series(["192.168.0.1","10.0.0.1"]))
     0      89088434
     1    1585596973
     dtype: int64
@@ -50,14 +52,18 @@ def int_to_ip(values):
 
     Examples
     --------
-    >>> int_to_ip(cudf.Series([3232235521, 167772161])
+    >>> import clx.ip
+    >>> import cudf
+    >>> clx.ip.int_to_ip(cudf.Series([3232235521, 167772161]))
     0     5.79.97.178
     1    94.130.74.45
     dtype: object
     """
     return cudf.Series(
         nvstrings.int2ip(
-            values.astype("int32").data.mem, count=len(values), bdevmem=True
+            values.astype("int32")._column.data_array_view,
+            count=len(values),
+            bdevmem=True,
         )
     )
 
@@ -71,9 +77,18 @@ def is_ip(ips):
     :type values: cudf.Series
     :return: booleans
     :rtype: cudf.Series
+
+    Examples
+    --------
+    >>> import clx.ip
+    >>> import cudf
+    >>> clx.ip.is_ip(cudf.Series(["192.168.0.1","10.123.0"]))
+    0     True
+    1    False
+    dtype: bool
     """    
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
-    ptr = res.data.mem.device_ctypes_pointer.value
+    ptr = res._column.data.ptr
     is_ip_REGEX = r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
     ips.str.match(is_ip_REGEX, devptr=ptr)
     return res
@@ -88,9 +103,18 @@ def is_reserved(ips):
     :type values: cudf.Series
     :return: booleans
     :rtype: cudf.Series
+
+    Examples
+    --------
+    >>> import clx.ip
+    >>> import cudf
+    >>> clx.ip.is_reserved(cudf.Series(["127.0.0.1","10.0.0.1"]))
+    0    False
+    1    False
+    dtype: bool
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
-    ptr = res.data.mem.device_ctypes_pointer.value
+    ptr = res._column.data.ptr
     reserved_ipv4_REGEX = r"^(2(4[0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$"
     ips.str.match(reserved_ipv4_REGEX, devptr=ptr)
     return res
@@ -105,9 +129,18 @@ def is_loopback(ips):
     :type values: cudf.Series
     :return: booleans
     :rtype: cudf.Series
+
+    Examples
+    --------
+    >>> import clx.ip
+    >>> import cudf
+    >>> clx.ip.is_loopback(cudf.Series(["127.0.0.1","10.0.0.1"]))
+    0     True
+    1    False
+    dtype: bool
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
-    ptr = res.data.mem.device_ctypes_pointer.value
+    ptr = res._column.data.ptr
     loopback_ipv4_REGEX = r"^127\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$"
     ips.str.match(loopback_ipv4_REGEX, devptr=ptr)
     return res
@@ -122,9 +155,18 @@ def is_link_local(ips):
     :type values: cudf.Series
     :return: booleans
     :rtype: cudf.Series
+
+    Examples
+    --------
+    >>> import clx.ip
+    >>> import cudf
+    >>> clx.ip.is_link_local(cudf.Series(["127.0.0.1","169.254.123.123"]))
+    0    False
+    1    True
+    dtype: bool
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
-    ptr = res.data.mem.device_ctypes_pointer.value
+    ptr = res._column.data.ptr
     link_local_ipv4_REGEX = r"^169\.254\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$"
     ips.str.match(link_local_ipv4_REGEX, devptr=ptr)
     return res
@@ -139,9 +181,18 @@ def is_unspecified(ips):
     :type values: cudf.Series
     :return: booleans
     :rtype: cudf.Series
+
+    Examples
+    --------
+    >>> import clx.ip
+    >>> import cudf
+    >>> clx.ip.is_unspecified(cudf.Series(["127.0.0.1","10.0.0.1"]))
+    0    False
+    1    False
+    dtype: bool
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
-    ptr = res.data.mem.device_ctypes_pointer.value
+    ptr = res._column.data.ptr
     unspecified_REGEX = r"^0\.0\.0\.0$"
     ips.str.match(unspecified_REGEX, devptr=ptr)
     return res
@@ -156,9 +207,18 @@ def is_multicast(ips):
     :type values: cudf.Series
     :return: booleans
     :rtype: cudf.Series
+
+    Examples
+    --------
+    >>> import clx.ip
+    >>> import cudf
+    >>> clx.ip.is_multicast(cudf.Series(["127.0.0.1","224.0.0.0"]))
+    0    False
+    1    True
+    dtype: bool
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
-    ptr = res.data.mem.device_ctypes_pointer.value
+    ptr = res._column.data.ptr
     is_multicast_ipv4_REGEX = r"^(2(2[4-9]|3[0-9]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$"
     ips.str.match(is_multicast_ipv4_REGEX, devptr=ptr)
     return res
@@ -173,9 +233,18 @@ def is_private(ips):
     :type values: cudf.Series
     :return: booleans
     :rtype: cudf.Series
+
+    Examples
+    --------
+    >>> import clx.ip
+    >>> import cudf
+    >>> clx.ip.is_private(cudf.Series(["127.0.0.1","207.46.13.151"]))
+    0    True
+    1    False
+    dtype: bool
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
-    ptr = res.data.mem.device_ctypes_pointer.value
+    ptr = res._column.data.ptr
     private_REGEX = r"(^0\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^10\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^127\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^169\.254\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^172\.(1[6-9]|2[0-9]|3[0-1])\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^192\.0\.0\.([0-7])$)|(^192\.0\.0\.(1(7[0-1]))$)|(^192\.0\.2\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^192\.168\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^198\.(1[8-9])\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^198\.51\.100\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^203\.0\.113\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^(2(4[0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^255\.255\.255\.255$)"
     ips.str.match(private_REGEX, devptr=ptr)
     return res
@@ -190,9 +259,18 @@ def is_global(ips):
     :type values: cudf.Series
     :return: booleans
     :rtype: cudf.Series
+
+    Examples
+    --------
+    >>> import clx.ip
+    >>> import cudf
+    >>> clx.ip.is_global(cudf.Series(["127.0.0.1","207.46.13.151"]))
+    0    False
+    1    True
+    dtype: bool
     """
     part1 = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
-    ptr = part1.data.mem.device_ctypes_pointer.value
+    ptr = part1._column.data.ptr
     is_global_REGEX = r"^(100\.(6[4-9]|[7-9][0-9]|1([0-1][0-9]|2[0-7]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)"
     ips.str.match(is_global_REGEX, devptr=ptr)
     part2 = is_private(ips)
@@ -208,7 +286,7 @@ def _netmask_kernel(idx, out1, out2, out3, out4, kwarg1):
         out4[i] = int(kwarg1) % 256
 
 
-def netmask(ips, prefixlen):
+def netmask(ips, prefixlen=16):
     """
     Compute a column of netmasks for a column of IP addresses.
     **Addresses must be IPv4. IPv6 not yet supported.**
@@ -222,7 +300,9 @@ def netmask(ips, prefixlen):
 
     Examples
     --------
-    >>> netmask(cudf.Series(["192.168.0.1","10.0.0.1"], prefixlen=16)
+    >>> import clx.ip
+    >>> import cudf
+    >>> clx.ip.netmask(cudf.Series(["192.168.0.1","10.0.0.1"]), prefixlen=16)
     0    255.255.0.0
     1    255.255.0.0
     Name: net_mask, dtype: object
@@ -238,10 +318,10 @@ def netmask(ips, prefixlen):
         kwargs=dict(kwarg1=mask_int),
     )
 
-    out1 = x["out1"].astype(str).data
-    out2 = x["out2"].astype(str).data
-    out3 = x["out3"].astype(str).data
-    out4 = x["out4"].astype(str).data
+    out1 = x["out1"].astype(str)._column.nvstrings
+    out2 = x["out2"].astype(str)._column.nvstrings
+    out3 = x["out3"].astype(str)._column.nvstrings
+    out4 = x["out4"].astype(str)._column.nvstrings
     df["net_mask"] = out1.cat(out2, sep=".").cat(out3, sep=".").cat(out4, sep=".")
     return df["net_mask"]
 
@@ -254,7 +334,7 @@ def _hostmask_kernel(idx, out1, out2, out3, out4, kwarg1):
         out4[i] = int(kwarg1) % 256
 
 
-def hostmask(ips, prefixlen):
+def hostmask(ips, prefixlen=16):
     """
     Compute a column of hostmasks for a column of IP addresses.
     **Addresses must be IPv4. IPv6 not yet supported.**
@@ -268,7 +348,9 @@ def hostmask(ips, prefixlen):
 
     Examples
     --------
-    >>> hostmask(cudf.Series(["192.168.0.1","10.0.0.1"], prefixlen=16)
+    >>> import clx.ip
+    >>> import cudf
+    >>> clx.ip.hostmask(cudf.Series(["192.168.0.1","10.0.0.1"], prefixlen=16)
     0    0.0.255.255
     1    0.0.255.255
     Name: hostmask, dtype: object
@@ -284,10 +366,10 @@ def hostmask(ips, prefixlen):
         kwargs=dict(kwarg1=host_mask_int),
     )
 
-    out1 = x["out1"].astype(str).data
-    out2 = x["out2"].astype(str).data
-    out3 = x["out3"].astype(str).data
-    out4 = x["out4"].astype(str).data
+    out1 = x["out1"].astype(str)._column.nvstrings
+    out2 = x["out2"].astype(str)._column.nvstrings
+    out3 = x["out3"].astype(str)._column.nvstrings
+    out4 = x["out4"].astype(str)._column.nvstrings
     df["hostmask"] = out1.cat(out2, sep=".").cat(out3, sep=".").cat(out4, sep=".")
     return df["hostmask"]
 
@@ -314,9 +396,11 @@ def mask(ips, masks):
 
     Examples
     --------
+    >>> import clx.ip
+    >>> import cudf
     >>> input_ips = cudf.Series(["192.168.0.1","10.0.0.1"])
     >>> input_masks = cudf.Series(["255.255.0.0", "255.255.0.0"])
-    >>> mask(input_ips, input_masks)
+    >>> clx.ip.mask(input_ips, input_masks)
     0    192.168.0.0
     1       10.0.0.0
     Name: mask, dtype: object
@@ -333,13 +417,9 @@ def mask(ips, masks):
         kwargs=dict(kwarg1=0),
     )
 
-    x["out1"] = x["out1"].astype(str)
-    x["out2"] = x["out2"].astype(str)
-    x["out3"] = x["out3"].astype(str)
-    x["out4"] = x["out4"].astype(str)
-    out1 = x["out1"].data
-    out2 = x["out2"].data
-    out3 = x["out3"].data
-    out4 = x["out4"].data
+    out1 = x["out1"].astype(str)._column.nvstrings
+    out2 = x["out2"].astype(str)._column.nvstrings
+    out3 = x["out3"].astype(str)._column.nvstrings
+    out4 = x["out4"].astype(str)._column.nvstrings
     df["mask"] = out1.cat(out2, sep=".").cat(out3, sep=".").cat(out4, sep=".")
     return df["mask"]
