@@ -13,6 +13,8 @@
 
 ## Bug Fixes
 
+- PR #102 - Fix error from renamed cuxfilter module
+
 
 # clx 0.11.0 (Date TBD)
 
