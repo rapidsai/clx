@@ -12,7 +12,7 @@
 - PR #101 Refactor DNS & IP code
 
 ## Bug Fixes
-
+- PR #107 Fixes to workflow notebook
 
 # clx 0.11.0 (Date TBD)
 
