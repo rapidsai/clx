@@ -12,3 +12,6 @@ clx.egg-info/
 # Test output
 clx/tests/output
 clx/tests/.config
+
+# Jupyter
+.ipynb_checkpoints/

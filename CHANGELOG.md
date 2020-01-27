@@ -12,6 +12,7 @@
 - PR #101 Refactor DNS & IP code
 
 ## Bug Fixes
+- PR #97 Notebook cleanup and gitignore update
 - PR #102 - Fix error from renamed cuxfilter module
 - PR #107 Fixes to workflow notebook
 
