@@ -61,7 +61,9 @@ def int_to_ip(values):
     """
     return cudf.Series(
         nvstrings.int2ip(
-            values.astype("int32").data.mem, count=len(values), bdevmem=True
+            values.astype("int32")._column.data_array_view,
+            count=len(values),
+            bdevmem=True,
         )
     )
 
@@ -86,7 +88,7 @@ def is_ip(ips):
     dtype: bool
     """    
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
-    ptr = res.data.mem.device_ctypes_pointer.value
+    ptr = res._column.data.ptr
     is_ip_REGEX = r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
     ips.str.match(is_ip_REGEX, devptr=ptr)
     return res
@@ -112,7 +114,7 @@ def is_reserved(ips):
     dtype: bool
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
-    ptr = res.data.mem.device_ctypes_pointer.value
+    ptr = res._column.data.ptr
     reserved_ipv4_REGEX = r"^(2(4[0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$"
     ips.str.match(reserved_ipv4_REGEX, devptr=ptr)
     return res
@@ -138,7 +140,7 @@ def is_loopback(ips):
     dtype: bool
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
-    ptr = res.data.mem.device_ctypes_pointer.value
+    ptr = res._column.data.ptr
     loopback_ipv4_REGEX = r"^127\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$"
     ips.str.match(loopback_ipv4_REGEX, devptr=ptr)
     return res
@@ -164,7 +166,7 @@ def is_link_local(ips):
     dtype: bool
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
-    ptr = res.data.mem.device_ctypes_pointer.value
+    ptr = res._column.data.ptr
     link_local_ipv4_REGEX = r"^169\.254\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$"
     ips.str.match(link_local_ipv4_REGEX, devptr=ptr)
     return res
@@ -190,7 +192,7 @@ def is_unspecified(ips):
     dtype: bool
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
-    ptr = res.data.mem.device_ctypes_pointer.value
+    ptr = res._column.data.ptr
     unspecified_REGEX = r"^0\.0\.0\.0$"
     ips.str.match(unspecified_REGEX, devptr=ptr)
     return res
@@ -216,7 +218,7 @@ def is_multicast(ips):
     dtype: bool
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
-    ptr = res.data.mem.device_ctypes_pointer.value
+    ptr = res._column.data.ptr
     is_multicast_ipv4_REGEX = r"^(2(2[4-9]|3[0-9]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$"
     ips.str.match(is_multicast_ipv4_REGEX, devptr=ptr)
     return res
@@ -242,7 +244,7 @@ def is_private(ips):
     dtype: bool
     """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
-    ptr = res.data.mem.device_ctypes_pointer.value
+    ptr = res._column.data.ptr
     private_REGEX = r"(^0\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^10\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^127\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^169\.254\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^172\.(1[6-9]|2[0-9]|3[0-1])\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^192\.0\.0\.([0-7])$)|(^192\.0\.0\.(1(7[0-1]))$)|(^192\.0\.2\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^192\.168\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^198\.(1[8-9])\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^198\.51\.100\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^203\.0\.113\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^(2(4[0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)|(^255\.255\.255\.255$)"
     ips.str.match(private_REGEX, devptr=ptr)
     return res
@@ -268,7 +270,7 @@ def is_global(ips):
     dtype: bool
     """
     part1 = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
-    ptr = part1.data.mem.device_ctypes_pointer.value
+    ptr = part1._column.data.ptr
     is_global_REGEX = r"^(100\.(6[4-9]|[7-9][0-9]|1([0-1][0-9]|2[0-7]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))\.([0-9]|[1-9][0-9]|1([0-9][0-9])|2([0-4][0-9]|5[0-5]))$)"
     ips.str.match(is_global_REGEX, devptr=ptr)
     part2 = is_private(ips)
@@ -316,10 +318,10 @@ def netmask(ips, prefixlen=16):
         kwargs=dict(kwarg1=mask_int),
     )
 
-    out1 = x["out1"].astype(str).data
-    out2 = x["out2"].astype(str).data
-    out3 = x["out3"].astype(str).data
-    out4 = x["out4"].astype(str).data
+    out1 = x["out1"].astype(str)._column.nvstrings
+    out2 = x["out2"].astype(str)._column.nvstrings
+    out3 = x["out3"].astype(str)._column.nvstrings
+    out4 = x["out4"].astype(str)._column.nvstrings
     df["net_mask"] = out1.cat(out2, sep=".").cat(out3, sep=".").cat(out4, sep=".")
     return df["net_mask"]
 
@@ -364,10 +366,10 @@ def hostmask(ips, prefixlen=16):
         kwargs=dict(kwarg1=host_mask_int),
     )
 
-    out1 = x["out1"].astype(str).data
-    out2 = x["out2"].astype(str).data
-    out3 = x["out3"].astype(str).data
-    out4 = x["out4"].astype(str).data
+    out1 = x["out1"].astype(str)._column.nvstrings
+    out2 = x["out2"].astype(str)._column.nvstrings
+    out3 = x["out3"].astype(str)._column.nvstrings
+    out4 = x["out4"].astype(str)._column.nvstrings
     df["hostmask"] = out1.cat(out2, sep=".").cat(out3, sep=".").cat(out4, sep=".")
     return df["hostmask"]
 
@@ -415,13 +417,9 @@ def mask(ips, masks):
         kwargs=dict(kwarg1=0),
     )
 
-    x["out1"] = x["out1"].astype(str)
-    x["out2"] = x["out2"].astype(str)
-    x["out3"] = x["out3"].astype(str)
-    x["out4"] = x["out4"].astype(str)
-    out1 = x["out1"].data
-    out2 = x["out2"].data
-    out3 = x["out3"].data
-    out4 = x["out4"].data
+    out1 = x["out1"].astype(str)._column.nvstrings
+    out2 = x["out2"].astype(str)._column.nvstrings
+    out3 = x["out3"].astype(str)._column.nvstrings
+    out4 = x["out4"].astype(str)._column.nvstrings
     df["mask"] = out1.cat(out2, sep=".").cat(out3, sep=".").cat(out4, sep=".")
     return df["mask"]
