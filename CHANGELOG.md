@@ -13,6 +13,7 @@
 
 ## Bug Fixes
 - PR #97 Notebook cleanup and gitignore update
+- PR #102 - Fix error from renamed cuxfilter module
 
 # clx 0.11.0 (Date TBD)
 
