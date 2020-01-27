@@ -164,7 +164,7 @@ class DGADetector(Detector):
         temp_df = cudf.DataFrame()
         for col in range(0, columns_cnt):
             ascii_darr = rmm.device_array(domains_len, dtype=np.int32)
-            split_df[col].data.code_points(ascii_darr.device_ctypes_pointer.value)
+            split_df[col].str.code_points(ascii_darr.device_ctypes_pointer.value)
             temp_df[col] = ascii_darr
 
         # https://github.com/rapidsai/cudf/issues/3123
