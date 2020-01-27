@@ -33,7 +33,6 @@ expected_df = cudf.DataFrame(
         "gender": ["F", "F", "F"],
     }
 )
-#expected_df = df.to_pandas()
 
 
 @pytest.mark.parametrize("test_output_base_path", [test_output_base_path])
