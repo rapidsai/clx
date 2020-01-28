@@ -40,7 +40,6 @@ model_filepath = "%s/input/rnn_classifier_2019-11-04_21_54_02.pth" % os.path.dir
 def test_load_model():
     dd = DGADetector()
     dd.load_model(model_filepath)
-    gpu_count = torch.cuda.device_count()
     assert isinstance(dd.model, RNNClassifier)
 
 
