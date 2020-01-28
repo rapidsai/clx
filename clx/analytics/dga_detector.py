@@ -150,7 +150,7 @@ class DGADetector(Detector):
         :rtype: cudf.DataFrame
         """
         df["len"] = df["domain"].str.len()
-        df = df.sort_values("len", ascending=False)
+        df = df.sort_values("len", ascending=False).reset_index()
         splits = df["domain"].str.findall("[\w\.\-\@]")
         split_df = cudf.DataFrame()
         columns_cnt = len(splits)
