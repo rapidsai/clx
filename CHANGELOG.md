@@ -14,6 +14,7 @@
 ## Bug Fixes
 - PR #97 Notebook cleanup and gitignore update
 - PR #102 - Fix error from renamed cuxfilter module
+- PR #107 Fixes to workflow notebook
 
 # clx 0.11.0 (Date TBD)
 
