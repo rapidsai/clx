@@ -178,10 +178,9 @@ class Workflow(ABC):
                 dataframe = (
                     self._io_reader.fetch_data()
                 )
-                if dataframe and not dataframe.empty:
-                    enriched_dataframe = self.workflow(dataframe)
-                    if enriched_dataframe and not enriched_dataframe.empty:
-                        self._io_writer.write_data(enriched_dataframe)
+                enriched_dataframe = self.workflow(dataframe)
+                if enriched_dataframe and not enriched_dataframe.empty:
+                    self._io_writer.write_data(enriched_dataframe)
                 else:
                     log.info("Dataframe is empty. Workflow processing skipped.")
         except KeyboardInterrupt:
