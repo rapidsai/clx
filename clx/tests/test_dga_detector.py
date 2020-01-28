@@ -27,7 +27,12 @@ test_dataset_len = 4
 test_batchsize = 2
 test_df = cudf.DataFrame(
     {
-        "domain": ["studytour.com.tw", "cnn.com", "bakercityherald.com", "bankmobile.com"],
+        "domain": [
+            "studytour.com.tw",
+            "cnn.com",
+            "bakercityherald.com",
+            "bankmobile.com",
+        ],
         "type": [1, 1, 0, 1],
     }
 )

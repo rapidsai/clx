@@ -18,7 +18,9 @@ class DetectorDataset(object):
         :param batch_size: Number of records in the dataframe.
         :type batch_size: int
         """
-        self.__partitioned_dfs, self.__dataset_len = self.__get_partitioned_dfs(df, batch_size)
+        self.__partitioned_dfs, self.__dataset_len = self.__get_partitioned_dfs(
+            df, batch_size
+        )
 
     @property
     def partitioned_dfs(self):
@@ -27,7 +29,6 @@ class DetectorDataset(object):
     @property
     def dataset_len(self):
         return self.__dataset_len
-
 
     # https://github.com/rapidsai/cudf/issues/2861
     # https://github.com/rapidsai/cudf/issues/1473

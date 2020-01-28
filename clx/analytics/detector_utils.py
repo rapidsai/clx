@@ -5,6 +5,7 @@ import numpy as np
 
 log = logging.getLogger(__name__)
 
+
 def str2ascii(df, domains_len):
     """This function sorts domain name entries in desc order based on the length of domain and converts domain name to ascii characters.
     

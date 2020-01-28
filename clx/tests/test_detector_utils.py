@@ -45,7 +45,6 @@ expected_output_df = cudf.DataFrame(
 )
 
 
-
 def test_str2ascii():
     actual_output_df = du.str2ascii(test_input_df, test_domains_len)
     assert actual_output_df.equals(expected_output_df)
