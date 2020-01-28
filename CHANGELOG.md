@@ -27,6 +27,7 @@
 - PR #102 - Fix error from renamed cuxfilter module
 - PR #107 Fixes to workflow notebook
 - PR #109 Fix to cybert notebook
+- PR #117 Fix to dga detector str2ascii
 
 # clx 0.11.0 (Date TBD)
 
