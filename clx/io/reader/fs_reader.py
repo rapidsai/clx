@@ -42,12 +42,16 @@ class FileSystemReader(FileReader):
         del kwargs["input_format"]
         del kwargs["input_path"]
 
-        if "parquet" == input_format:
+        if "csv" == input_format:
+            df = cudf.read_csv(filepath, **kwargs)
+        elif "parquet" == input_format:
             df = cudf.read_parquet(filepath, **kwargs)
         elif "orc" == input_format:
             df = cudf.read_orc(filepath, engine="cudf")
+        elif "json" == input_format:
+            df = cudf.read_json(filepath, **kwargs)
         else:
-            df = cudf.read_csv(filepath, **kwargs)
+            raise NotImplementedError("%s is not a supported input_format" % (input_format))
         
         self.has_data = False
         return df

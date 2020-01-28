@@ -98,7 +98,7 @@ def test_get_reader_text(test_input_base_path, expected_df):
         "usecols": ["firstname", "lastname", "gender"],
         "dtype": ["str", "str", "str"],
         "header": 0,
-        "input_format": "text",
+        "input_format": "csv",
     }
     reader_from_factory = Factory.get_reader("fs", config)
     fetched_df = reader_from_factory.fetch_data()
