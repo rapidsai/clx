@@ -9,10 +9,16 @@
 - PR #86 Add issue templates
 - PR #87 CLX docker updates
 - PR #95 Download Alert Analysis data from S3
+- PR #101 Refactor DNS & IP code
+- PR #108 JSON read/write support
 - PR #103 DGA detector refactor
- 
-## Bug Fixes
 
+
+## Bug Fixes
+- PR #97 Notebook cleanup and gitignore update
+- PR #102 - Fix error from renamed cuxfilter module
+- PR #107 Fixes to workflow notebook
+- PR #109 Fix to cybert notebook
 
 # clx 0.11.0 (Date TBD)
 

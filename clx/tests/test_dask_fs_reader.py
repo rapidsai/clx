@@ -42,7 +42,7 @@ def test_fetch_data_text(test_input_base_path, expected_df):
         "usecols": ["firstname", "lastname", "gender"],
         "dtype": ["str", "str", "str"],
         "header": 0,
-        "input_format": "text",
+        "input_format": "csv",
     }
     reader = DaskFileSystemReader(config)
     fetched_df = reader.fetch_data().compute()
