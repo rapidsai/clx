@@ -35,7 +35,7 @@ class FileSystemWriter(FileWriter):
         """
         Write data to file system using cudf based on provided config object
         """
-        output_format = self.config["output_format"]
+        output_format = self.config["output_format"].lower()
         filepath = self.config["output_path"]
         kwargs = self.config.copy()
         del kwargs["type"]
@@ -54,10 +54,14 @@ class FileSystemWriter(FileWriter):
 
         log.info("writing data to location {%s}" % (filepath))
 
-        if "parquet" == output_format.lower():
-            cudf.io.parquet.to_parquet(df, filepath, **kwargs)
-        else:
+        if "csv" == output_format:
             df.to_csv(filepath, **kwargs)
+        elif "parquet" == output_format:
+            cudf.io.parquet.to_parquet(df, filepath, **kwargs)
+        elif "json" == output_format:
+            cudf.io.json.to_json(df, filepath, **kwargs)
+        else:
+            raise NotImplementedError("%s is not a supported output_format" % (output_format))
 
     def close(self):
         """
