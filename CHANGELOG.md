@@ -10,6 +10,7 @@
 - PR #87 CLX docker updates
 - PR #95 Download Alert Analysis data from S3
 - PR #101 Refactor DNS & IP code
+- PR #108 JSON read/write support
 
 ## Bug Fixes
 - PR #97 Notebook cleanup and gitignore update
