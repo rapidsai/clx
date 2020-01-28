@@ -16,6 +16,7 @@
 - PR #97 Notebook cleanup and gitignore update
 - PR #102 - Fix error from renamed cuxfilter module
 - PR #107 Fixes to workflow notebook
+- PR #109 Fix to cybert notebook
 
 # clx 0.11.0 (Date TBD)
 
