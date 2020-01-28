@@ -799,11 +799,11 @@ registered hooks while the latter silently ignores them.</p>
 <span id="dns-extractor"></span><h2>DNS Extractor<a class="headerlink" href="#module-clx.dns.dns_extractor" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="clx.dns.dns_extractor.extract_hostnames">
-<code class="sig-prename descclassname">clx.dns.dns_extractor.</code><code class="sig-name descname">extract_hostnames</code><span class="sig-paren">(</span><em class="sig-param">url_df_col</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.dns.dns_extractor.extract_hostnames" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">clx.dns.dns_extractor.</code><code class="sig-name descname">extract_hostnames</code><span class="sig-paren">(</span><em class="sig-param">url_series</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.dns.dns_extractor.extract_hostnames" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function extracts hostnames from the given urls.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>url_df_col</strong> (<em>cudf.Series</em>) – Urls that are to be handled.</p>
+<dd class="field-odd"><p><strong>url_series</strong> (<em>cudf.Series</em>) – Urls that are to be handled.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Hostnames extracted from the urls.</p>
@@ -902,7 +902,7 @@ registered hooks while the latter silently ignores them.</p>
 
 <dl class="function">
 <dt id="clx.dns.dns_extractor.parse_url">
-<code class="sig-prename descclassname">clx.dns.dns_extractor.</code><code class="sig-name descname">parse_url</code><span class="sig-paren">(</span><em class="sig-param">url_df_col</em>, <em class="sig-param">req_cols=None</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.dns.dns_extractor.parse_url" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">clx.dns.dns_extractor.</code><code class="sig-name descname">parse_url</code><span class="sig-paren">(</span><em class="sig-param">url_series</em>, <em class="sig-param">req_cols=None</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.dns.dns_extractor.parse_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function extracts subdomain, domain and suffix for a given url.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
