@@ -3,9 +3,9 @@ import time
 import cudf
 import argparse
 import logging
-from clx.analytics import detector_utils
 from datetime import datetime
 from clx.analytics.dga_detector import DGADetector
+from clx.analytics.detector_dataset import DetectorDataset
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
@@ -67,8 +67,8 @@ def main():
     dd = DGADetector()
     dd.init_model()
 
-    dataset = detector_utils.prepare_detector_dataset(df, batch_size)
-    test_dataset = detector_utils.prepare_detector_dataset(test_df, batch_size)
+    dataset = DetectorDataset(df, batch_size)
+    test_dataset = DetectorDataset(test_df, batch_size)
     del df
     del test_df
     train(dd, dataset, test_dataset, epoch, output_dir)
