@@ -32,7 +32,7 @@ expected_df = cudf.DataFrame(
 
 @pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
 @pytest.mark.parametrize("expected_df", [expected_df])
-def test_fetch_data_text(test_input_base_path, expected_df):
+def test_fetch_data_csv(test_input_base_path, expected_df):
     test_input_path = "%s/person.csv" % (test_input_base_path)
     config = {
         "type": "fs",
@@ -42,7 +42,7 @@ def test_fetch_data_text(test_input_base_path, expected_df):
         "usecols": ["firstname", "lastname", "gender"],
         "dtype": ["str", "str", "str"],
         "header": 0,
-        "input_format": "text"
+        "input_format": "csv"
     }
     reader = FileSystemReader(config)
     fetched_df = reader.fetch_data()
@@ -75,6 +75,22 @@ def test_fetch_data_orc(test_input_base_path, expected_df):
         "type": "fs",
         "input_path": test_input_path,
         "input_format": "orc"
+    }
+
+    reader = FileSystemReader(config)
+    fetched_df = reader.fetch_data()
+
+    assert fetched_df.equals(expected_df)
+
+@pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
+@pytest.mark.parametrize("expected_df", [expected_df])
+def test_fetch_data_json(test_input_base_path, expected_df):
+    test_input_path = "%s/person.json" % (test_input_base_path)
+    config = {
+        "type": "fs",
+        "input_path": test_input_path,
+        "orient": "records",
+        "input_format": "json"
     }
 
     reader = FileSystemReader(config)
