@@ -22,8 +22,6 @@ from clx.io.writer.kafka_writer import KafkaWriter
 from clx.io.reader.fs_reader import FileSystemReader
 from clx.io.writer.fs_writer import FileSystemWriter
 
-test_input_base_path = "%s/input" % os.path.dirname(os.path.realpath(__file__))
-
 kafka_config = {
     "kafka_brokers": "localhost:9092",
     "group_id": "cyber-dp",
@@ -86,13 +84,13 @@ def test_get_io_writer_fs(fs_writer_config):
     assert isinstance(writer, expected_cls)
 
 
-@pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
 @pytest.mark.parametrize("expected_df", [expected_df])
-def test_get_reader_text(test_input_base_path, expected_df):
-    test_input_path = "%s/person.csv" % (test_input_base_path)
+def test_get_reader_text(tmpdir, expected_df):
+    fname = tmpdir.mkdir("tmp_test_factory").join("person.csv")
+    expected_df.to_csv(fname, index=False)
     config = {
         "type": "fs",
-        "input_path": test_input_path,
+        "input_path": fname,
         "names": ["firstname", "lastname", "gender"],
         "delimiter": ",",
         "usecols": ["firstname", "lastname", "gender"],
@@ -106,13 +104,14 @@ def test_get_reader_text(test_input_base_path, expected_df):
     assert fetched_df.equals(expected_df)
 
 
-@pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
 @pytest.mark.parametrize("expected_df", [expected_df])
-def test_get_reader_parquet(test_input_base_path, expected_df):
-    test_input_path = "%s/person.parquet" % (test_input_base_path)
+def test_get_reader_parquet(tmpdir, expected_df):
+    fname = str(tmpdir.mkdir("tmp_test_fs_reader"))
+    cudf.io.parquet.to_parquet(expected_df, fname)
+    clx_input_path = fname + "/*.parquet"
     config = {
         "type": "fs",
-        "input_path": test_input_path,
+        "input_path": clx_input_path,
         "usecols": ["firstname", "lastname", "gender"],
         "input_format": "parquet",
     }
@@ -122,15 +121,31 @@ def test_get_reader_parquet(test_input_base_path, expected_df):
     assert fetched_df.equals(expected_df)
 
 
-@pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
 @pytest.mark.parametrize("expected_df", [expected_df])
-def test_get_reader_orc(test_input_base_path, expected_df):
-    test_input_path = "%s/person.orc" % (test_input_base_path)
+def test_get_reader_orc(tmpdir, expected_df):
+    fname = str(tmpdir.mkdir("tmp_test_fs_reader").join("person.orc"))
+    cudf.io.orc.to_orc(expected_df, fname)
     config = {
         "type": "fs",
-        "input_path": test_input_path,
+        "input_path": fname,
         "usecols": ["firstname", "lastname", "gender"],
         "input_format": "orc",
+    }
+    reader_from_factory = Factory.get_reader("fs", config)
+    fetched_df = reader_from_factory.fetch_data()
+
+    assert fetched_df.equals(expected_df)
+
+
+@pytest.mark.parametrize("expected_df", [expected_df])
+def test_get_reader_json(tmpdir, expected_df):
+    fname = str(tmpdir.mkdir("tmp_test_fs_reader").join("person.json"))
+    cudf.io.json.to_json(expected_df, fname, orient="records")
+    config = {
+        "type": "fs",
+        "input_path": fname,
+        "orient": "records",
+        "input_format": "json",
     }
     reader_from_factory = Factory.get_reader("fs", config)
     fetched_df = reader_from_factory.fetch_data()

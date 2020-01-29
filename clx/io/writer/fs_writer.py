@@ -58,6 +58,8 @@ class FileSystemWriter(FileWriter):
             df.to_csv(filepath, **kwargs)
         elif "parquet" == output_format:
             cudf.io.parquet.to_parquet(df, filepath, **kwargs)
+        elif "orc" == output_format:
+            cudf.io.orc.to_orc(df, filepath, **kwargs)
         elif "json" == output_format:
             cudf.io.json.to_json(df, filepath, **kwargs)
         else:
