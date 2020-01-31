@@ -20,12 +20,14 @@
 - PR #95 Download Alert Analysis data from S3
 - PR #101 Refactor DNS & IP code
 - PR #108 JSON read/write support
+- PR #105 Documentation updates to README
 
 ## Bug Fixes
 - PR #97 Notebook cleanup and gitignore update
 - PR #102 - Fix error from renamed cuxfilter module
 - PR #107 Fixes to workflow notebook
 - PR #109 Fix to cybert notebook
+- PR #117 Fix to dga detector str2ascii
 
 # clx 0.11.0 (Date TBD)
 
