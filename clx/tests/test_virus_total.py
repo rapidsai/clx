@@ -15,12 +15,21 @@
 import os
 import pytest
 import requests
+import cudf
 from mockito import when, mock
 from clx.osi.virus_total import VirusTotalClient
 
 api_key = "dummy-api-key"
 client = VirusTotalClient(api_key=api_key)
-test_input_base_path = "%s/input" % os.path.dirname(os.path.realpath(__file__))
+
+test_input_df = cudf.DataFrame(
+    {
+        "firstname": ["Emma", "Ava", "Sophia"],
+        "lastname": ["Olivia", "Isabella", "Charlotte"],
+        "gender": ["F", "F", "F"],
+    }
+)
+
 
 ipaddress_report_resp = mock(
     {
@@ -168,11 +177,13 @@ def test_file_report(client, file_report_resp):
 
 @pytest.mark.parametrize("client", [client])
 @pytest.mark.parametrize("file_scan_resp", [file_scan_resp])
-@pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
-def test_file_scan(client, file_scan_resp, test_input_base_path):
-    input_file = "%s/person.csv" % (test_input_base_path)
+@pytest.mark.parametrize("test_input_df", [test_input_df])
+def test_file_scan(tmpdir, client, file_scan_resp, test_input_df):
+    fname = str(tmpdir.mkdir("tmp_test_virus_total").join("person.csv"))
+    test_input_df.to_csv(fname, index=False)
+
     when(requests).post(...).thenReturn(file_scan_resp)
-    result = client.file_scan(input_file)
+    result = client.file_scan(fname)
     json_resp = result["json_resp"]
     assert result["status_code"] == 200
     assert json_resp["response_code"] == 1
@@ -180,11 +191,12 @@ def test_file_scan(client, file_scan_resp, test_input_base_path):
 
 @pytest.mark.parametrize("client", [client])
 @pytest.mark.parametrize("file_rescan_resp", [file_scan_resp])
-@pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
-def test_file_rescan(client, file_rescan_resp, test_input_base_path):
-    input_file = "%s/person.csv" % (test_input_base_path)
+@pytest.mark.parametrize("test_input_df", [test_input_df])
+def test_file_rescan(tmpdir, client, file_rescan_resp, test_input_df):
+    fname = str(tmpdir.mkdir("tmp_test_virus_total").join("person.csv"))
+    test_input_df.to_csv(fname, index=False)
     when(requests).post(...).thenReturn(file_rescan_resp)
-    result = client.file_rescan(input_file)
+    result = client.file_rescan(fname)
     json_resp = result["json_resp"]
     assert result["status_code"] == 200
     assert json_resp["response_code"] == 1
