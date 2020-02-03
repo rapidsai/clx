@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import cudf
 import csv
 import os
 import pytest
@@ -19,6 +20,16 @@ import yaml
 from clx.workflow.workflow import Workflow
 from mockito import spy, verify, when
 from cudf import DataFrame
+
+input_df = cudf.DataFrame(
+    {
+        "firstname": ["Emma", "Ava", "Sophia"],
+        "lastname": ["Olivia", "Isabella", "Charlotte"],
+        "gender": ["F", "F", "F"],
+    }
+)
+
+empty_df = DataFrame()
 
 
 class TestWorkflowImpl(Workflow):
@@ -32,12 +43,6 @@ class TestWorkflowImpl(Workflow):
 
 
 dirname = os.path.split(os.path.abspath(__file__))[0]
-input_path = dirname + "/input/person.csv"
-input_path_empty = dirname + "/input/empty.csv"
-output_path_param_test = dirname + "/output/output_parameters.csv"
-output_path_benchmark_test = dirname + "/output/output_benchmark.csv"
-output_path_config_test = dirname + "/output/output_config.csv"
-output_path_empty = dirname + "/output/empty.csv"
 
 
 @pytest.fixture
@@ -73,17 +78,21 @@ def mock_env_home(monkeypatch):
     monkeypatch.setenv("HOME", dirname)
 
 
-@pytest.mark.parametrize("input_path", [input_path])
-@pytest.mark.parametrize("output_path", [output_path_param_test])
+@pytest.mark.parametrize("input_df", [input_df])
 def test_workflow_parameters(
-    mock_env_home, set_workflow_config, input_path, output_path
+    tmpdir, mock_env_home, set_workflow_config, input_df
 ):
     """Tests the initialization and running of a workflow with passed in parameters"""
-    # Create source and destination configurations
     source = set_workflow_config[1]
     destination = set_workflow_config[2]
+
+    test_dir = tmpdir.mkdir("tmp_test_workflow")
+    input_path = str(test_dir.join("person.csv"))
+    input_df.to_csv(input_path, index=False)
+    output_path = str(test_dir.join("output_parameters.csv"))
     source["input_path"] = input_path
     destination["output_path"] = output_path
+
     # Create new workflow with source and destination configurations
     test_workflow = TestWorkflowImpl(
         source=source,
@@ -92,27 +101,22 @@ def test_workflow_parameters(
         custom_workflow_param="test_param",
     )
 
-    # Run workflow and check output data
-    if os.path.exists(output_path):
-        os.remove(output_path)
     test_workflow.run_workflow()
-    with open(output_path) as f:
-        reader = csv.reader(f)
-        data = []
-        for row in reader:
-            data.append(row)
-    assert data[0] == ["firstname", "lastname", "gender", "enriched"]
-    assert data[1] == ["Emma", "Olivia", "F", "enriched"]
-    assert data[2] == ["Ava", "Isabella", "F", "enriched"]
-    assert data[3] == ["Sophia", "Charlotte", "F", "enriched"]
+    expected_df = input_df
+    expected_df["enriched"] = "enriched"
+    result_df = cudf.read_csv(output_path)
 
+    assert result_df.equals(expected_df)
     assert test_workflow.custom_workflow_param == "test_param"
 
 
-@pytest.mark.parametrize("input_path", [input_path])
-@pytest.mark.parametrize("output_path", [output_path_config_test])
-def test_workflow_config(mock_env_home, set_workflow_config, input_path, output_path):
+def test_workflow_config(tmpdir, mock_env_home, set_workflow_config):
     """Tests the initialization and running of a workflow with a configuration yaml file"""
+    test_dir = tmpdir.mkdir("tmp_test_workflow")
+    input_path = str(test_dir.join("person.csv"))
+    input_df.to_csv(input_path, index=False)
+    output_path = str(test_dir.join("output_config.csv"))
+
     # Write workflow.yaml file
     workflow_name = "test-workflow-config"
     workflow_config = set_workflow_config[0]
@@ -122,21 +126,14 @@ def test_workflow_config(mock_env_home, set_workflow_config, input_path, output_
     workflow_config["custom_workflow_param"] = "param_value"
     write_config_file(workflow_config, workflow_name)
 
-    if os.path.exists(output_path):
-        os.remove(output_path)
-
     # Run workflow
     test_workflow = TestWorkflowImpl(workflow_name)
     test_workflow.run_workflow()
-    with open(output_path) as f:
-        reader = csv.reader(f)
-        data = []
-        for row in reader:
-            data.append(row)
-    assert data[0] == ["firstname", "lastname", "gender", "enriched"]
-    assert data[1] == ["Emma", "Olivia", "F", "enriched"]
-    assert data[2] == ["Ava", "Isabella", "F", "enriched"]
-    assert data[3] == ["Sophia", "Charlotte", "F", "enriched"]
+
+    expected_df = input_df
+    expected_df["enriched"] = "enriched"
+    result_df = cudf.read_csv(output_path)
+    assert result_df.equals(expected_df)
 
     # Check that custom workflow parameter was set from config file
     assert test_workflow.custom_workflow_param == "param_value"
@@ -157,14 +154,18 @@ def test_workflow_config_error(mock_env_home, set_workflow_config):
     with pytest.raises(Exception):
         test_workflow = TestWorkflowImpl(workflow_name)
 
-@pytest.mark.parametrize("input_path", [input_path_empty])
-@pytest.mark.parametrize("output_path", [output_path_empty])
-def test_workflow_no_data(mock_env_home, set_workflow_config, input_path, output_path):
+
+def test_workflow_no_data(tmpdir, mock_env_home, set_workflow_config):
     """ Test confirms that workflow is not run and output not written if no data is returned from the workflow io_reader
     """
    # Create source and destination configurations
     source = set_workflow_config[1]
     destination = set_workflow_config[2]
+
+    test_dir = tmpdir.mkdir("tmp_test_workflow")
+    input_path = str(test_dir.join("input_empty.csv"))
+    empty_df.to_csv(input_path, index=False)
+    output_path = str(test_dir.join("output_empty.csv"))
     source["input_path"] = input_path
     destination["output_path"] = output_path
 
@@ -180,14 +181,18 @@ def test_workflow_no_data(mock_env_home, set_workflow_config, input_path, output
     # Verify that no output file created.
     assert os.path.exists(output_path) == False
 
-@pytest.mark.parametrize("input_path", [input_path])
-@pytest.mark.parametrize("output_path", [output_path_empty])
-def test_workflow_no_enriched_data(mock_env_home, set_workflow_config, input_path, output_path):
+
+def test_workflow_no_enriched_data(tmpdir, mock_env_home, set_workflow_config):
     """ Test confirms that if workflow produces no enriched data that no output file is created
     """
-   # Create source and destination configurations
+    # Create source and destination configurations
     source = set_workflow_config[1]
     destination = set_workflow_config[2]
+
+    test_dir = tmpdir.mkdir("tmp_test_workflow")
+    input_path = str(test_dir.join("person.csv"))
+    input_df.to_csv(input_path, index=False)
+    output_path = str(test_dir.join("output_empty.csv"))
     source["input_path"] = input_path
     destination["output_path"] = output_path
 
@@ -206,10 +211,9 @@ def test_workflow_no_enriched_data(mock_env_home, set_workflow_config, input_pat
     # Verify that no output file created.
     assert os.path.exists(output_path) == False
 
-@pytest.mark.parametrize("input_path", [input_path])
-@pytest.mark.parametrize("output_path", [output_path_benchmark_test])
+
 def test_benchmark_decorator(
-    mock_env_home, set_workflow_config, input_path, output_path
+    tmpdir, mock_env_home, set_workflow_config
 ):
     # Dummy function
     def func(self):
@@ -219,6 +223,11 @@ def test_benchmark_decorator(
 
     source = set_workflow_config[1]
     destination = set_workflow_config[2]
+
+    test_dir = tmpdir.mkdir("tmp_test_workflow")
+    input_path = str(test_dir.join("person.csv"))
+    input_df.to_csv(input_path, index=False)
+    output_path = str(test_dir.join("output_benchmark.csv"))
     source["input_path"] = input_path
     destination["output_path"] = output_path
     # Create new workflow with source and destination configurations

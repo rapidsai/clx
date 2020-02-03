@@ -19,8 +19,6 @@ from pathlib import Path
 from clx.io.factory.factory import Factory
 from clx.io.reader.dask_fs_reader import DaskFileSystemReader
 
-test_input_base_path = "%s/input" % os.path.dirname(os.path.realpath(__file__))
-
 expected_df = cudf.DataFrame(
     {
         "firstname": ["Emma", "Ava", "Sophia"],
@@ -30,13 +28,13 @@ expected_df = cudf.DataFrame(
 )
 
 
-@pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
 @pytest.mark.parametrize("expected_df", [expected_df])
-def test_fetch_data_text(test_input_base_path, expected_df):
-    test_input_path = "%s/person.csv" % (test_input_base_path)
+def test_fetch_data_csv(tmpdir, expected_df):
+    fname = tmpdir.mkdir("tmp_test_fs_reader").join("person.csv")
+    expected_df.to_csv(fname, index=False)
     config = {
         "type": "dask_fs",
-        "input_path": test_input_path,
+        "input_path": fname,
         "names": ["firstname", "lastname", "gender"],
         "delimiter": ",",
         "usecols": ["firstname", "lastname", "gender"],
@@ -49,13 +47,14 @@ def test_fetch_data_text(test_input_base_path, expected_df):
 
     assert fetched_df.equals(expected_df)
 
-@pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
 @pytest.mark.parametrize("expected_df", [expected_df])
-def test_fetch_data_parquet(test_input_base_path, expected_df):
-    test_input_path = "%s/person.parquet" % (test_input_base_path)
+def test_fetch_data_parquet(tmpdir, expected_df):
+    fname = str(tmpdir.mkdir("tmp_test_fs_reader"))
+    cudf.io.parquet.to_parquet(expected_df, fname)
+    clx_input_path = fname + "/*.parquet"
     config = {
         "type": "dask_fs",
-        "input_path": test_input_path,
+        "input_path": clx_input_path,
         "columns": ["firstname", "lastname", "gender"],
         "input_format": "parquet",
         "gather_statistics":False, 
@@ -67,13 +66,13 @@ def test_fetch_data_parquet(test_input_base_path, expected_df):
 
     assert fetched_df.equals(expected_df)
 
-@pytest.mark.parametrize("test_input_base_path", [test_input_base_path])
 @pytest.mark.parametrize("expected_df", [expected_df])
-def test_fetch_data_orc(test_input_base_path, expected_df):
-    test_input_path = "%s/person.orc" % (test_input_base_path)
+def test_fetch_data_orc(tmpdir, expected_df):
+    fname = str(tmpdir.mkdir("tmp_test_fs_reader").join("person.orc"))
+    cudf.io.orc.to_orc(expected_df, fname)
     config = {
         "type": "dask_fs",
-        "input_path": test_input_path,
+        "input_path": fname,
         "input_format": "orc"
     }
 
