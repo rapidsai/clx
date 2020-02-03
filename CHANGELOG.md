@@ -3,6 +3,7 @@
 ## New Features
 
 ## Improvements
+- PR #120 Use pytest tmpdir fixtures in unit tests
 
 ## Bug Fixes
 

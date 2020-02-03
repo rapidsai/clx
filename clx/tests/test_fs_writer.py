@@ -25,7 +25,6 @@ from clx.io.factory.factory import Factory
 from clx.io.writer.fs_writer import FileSystemWriter
 
 
-test_output_base_path = "%s/output" % os.path.dirname(os.path.realpath(__file__))
 expected_df = cudf.DataFrame(
     {
         "firstname": ["Emma", "Ava", "Sophia"],
@@ -35,65 +34,62 @@ expected_df = cudf.DataFrame(
 )
 
 
-@pytest.mark.parametrize("test_output_base_path", [test_output_base_path])
 @pytest.mark.parametrize("expected_df", [expected_df])
-def test_write_data_csv(test_output_base_path, expected_df):
-    test_output_path = "%s/person.csv" % (test_output_base_path)
-    if os.path.exists(test_output_path):
-        os.remove(test_output_path)
+def test_write_data_csv(tmpdir, expected_df):
+    fname = str(tmpdir.mkdir("tmp_test_fs_writer").join("person.csv"))
     config = {
         "type": "fs",
-        "output_path": test_output_path,
+        "output_path": fname,
         "output_format": "csv",
         "index": False
     }
     writer = FileSystemWriter(config)
     writer.write_data(expected_df)
 
-    with open(test_output_path) as f:
-        reader = csv.reader(f)
-        data = []
-        for row in reader:
-            data.append(row)
-    assert data[0] == ["firstname", "lastname", "gender"]
-    assert data[1] == ["Emma", "Olivia", "F"]
-    assert data[2] == ["Ava", "Isabella", "F"]
-    assert data[3] == ["Sophia", "Charlotte", "F"]
+    result_df = cudf.read_csv(fname)
+    assert result_df.equals(expected_df)
 
 
-@pytest.mark.parametrize("test_output_base_path", [test_output_base_path])
 @pytest.mark.parametrize("expected_df", [expected_df])
-def test_write_data_parquet(test_output_base_path, expected_df):
-    test_output_path = "%s/person_parquet" % (test_output_base_path)
-    if os.path.exists(test_output_path) and os.path.isdir(test_output_path):
-        shutil.rmtree(test_output_path)
+def test_write_data_parquet(tmpdir, expected_df):
+    fname = str(tmpdir.mkdir("tmp_test_fs_writer").join("parquet"))
     config = {
         "type": "fs",
-        "output_path": test_output_path,
-        "output_format": "parquet"}
+        "output_path": fname,
+        "output_format": "parquet"
+    }
     writer = FileSystemWriter(config)
     writer.write_data(expected_df)
-    output_files = glob.glob("%s/*" % (test_output_path))
-    result = pd.read_parquet(output_files[0], engine="pyarrow")
-    assert result.equals(expected_df.to_pandas())
 
+    result_df = cudf.read_parquet(fname + "/*.parquet")
+    assert result_df.equals(expected_df)
 
-@pytest.mark.parametrize("test_output_base_path", [test_output_base_path])
 @pytest.mark.parametrize("expected_df", [expected_df])
-def test_write_data_json(test_output_base_path, expected_df):
-    test_output_path = "%s/person.json" % (test_output_base_path)
-    if os.path.exists(test_output_path):
-        os.remove(test_output_path)
+def test_write_data_orc(tmpdir, expected_df):
+    fname = str(tmpdir.mkdir("tmp_test_fs_writer").join("person.orc"))
     config = {
         "type": "fs",
-        "output_path": test_output_path,
+        "output_path": fname,
+        "output_format": "orc",
+    }
+    writer = FileSystemWriter(config)
+    writer.write_data(expected_df)
+
+    result_df = cudf.read_orc(fname)
+    assert result_df.equals(expected_df)
+
+
+@pytest.mark.parametrize("expected_df", [expected_df])
+def test_write_data_json(tmpdir, expected_df):
+    fname = str(tmpdir.mkdir("tmp_test_fs_writer").join("person.json"))
+    config = {
+        "type": "fs",
+        "output_path": fname,
         "output_format": "json",
         "orient": "records"
     }
-
     writer = FileSystemWriter(config)
     writer.write_data(expected_df)
 
-    result_gdf = cudf.io.json.read_json(test_output_path, orient="records")
-
-    assert result_gdf.equals(expected_df)
+    result_df = cudf.read_json(fname, orient="records")
+    assert result_df.equals(expected_df)
