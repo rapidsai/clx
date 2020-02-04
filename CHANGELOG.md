@@ -20,7 +20,8 @@
 - PR #109 Fix to cybert notebook
 - PR #117 Fix to dga detector str2ascii
 
-# clx 0.11.0 (Date TBD)
+
+# clx 0.11.0 (11 Dec 2019)
 
 ## New Features
  - PR #74 Updated cyBERT notebook
