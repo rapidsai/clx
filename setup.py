@@ -4,7 +4,7 @@ install_requires = ["confluent_kafka", "python-whois", "requests", "torch==1.3.1
 
 setup(
       name="clx",
-      version="0.12.0",
+      version='0.12.0',
       description="CLX",
       author="NVIDIA Corporation",
       packages=find_packages(include=["clx", "clx.*"]),
