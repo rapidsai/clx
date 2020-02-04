@@ -1,4 +1,4 @@
-# clx 0.12.0 (Date TBD)
+# clx 0.12.0 (04 Feb 2020)
 
 ## New Features
 - PR #93 Add Bokeh visualization back to Alert Analysis notebook
