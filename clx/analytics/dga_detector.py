@@ -35,12 +35,22 @@ class DGADetector(Detector):
     
     def train_model(self, partitioned_dfs, dataset_len):
         """This function is used for training RNNClassifier model with a given training dataset. It returns total loss to determine model prediction accuracy.
+
         :param partitioned_dfs: List of partitioned domain dataframes.
         :type partitioned_dfs: List(cudf.DataFrame)
         :param dataset_len: Sum of entries in all partitioned dataframes.
         :type dataset_len: int
         :return: Total loss
         :rtype: int
+
+        Examples
+        --------
+        >>> from clx.analytics.dga_detector import DGADetector
+        >>> partitioned_dfs = ... # partitioned_dfs = [df1, df2, ...] represents training dataset
+        >>> dd = DGADetector()
+        >>> dd.init_model()
+        >>> dd.train_model(partitioned_dfs, 4)
+        1.5728906989097595
         """
         total_loss = 0
         i = 0
@@ -77,7 +87,10 @@ class DGADetector(Detector):
         
         Examples
         --------
-            detector.predict(['nvidia.com', 'asfnfdjds']) = [1,0]
+        >>> dd.predict(['nvidia.com', 'dgadomain'])
+        0    0
+        1    1
+        Name: is_dga, dtype: int64
         """
         df = cudf.DataFrame()
         df["domain"] = domains
@@ -137,7 +150,7 @@ class DGADetector(Detector):
         :rtype: cudf.DataFrame
         """
         df["len"] = df["domain"].str.len()
-        df = df.sort_values("len", ascending=False)
+        df = df.sort_values("len", ascending=False).reset_index()
         splits = df["domain"].str.findall("[\w\.\-\@]")
         split_df = cudf.DataFrame()
         columns_cnt = len(splits)
@@ -151,7 +164,7 @@ class DGADetector(Detector):
         temp_df = cudf.DataFrame()
         for col in range(0, columns_cnt):
             ascii_darr = rmm.device_array(domains_len, dtype=np.int32)
-            split_df[col].data.code_points(ascii_darr.device_ctypes_pointer.value)
+            split_df[col].str.code_points(ascii_darr.device_ctypes_pointer.value)
             temp_df[col] = ascii_darr
 
         # https://github.com/rapidsai/cudf/issues/3123
@@ -173,6 +186,14 @@ class DGADetector(Detector):
         :type dataset_len: int
         :return: Model accuracy
         :rtype: decimal
+
+        Examples
+        --------
+        >>> dd = DGADetector()
+        >>> dd.init_model()
+        >>> dd.evaluate_model(test_partitioned_dfs, 4)
+        Evaluating trained model ...
+        Test set: Accuracy: 3/4 (0.75)
         """
         print("Evaluating trained model ...")
         correct = 0

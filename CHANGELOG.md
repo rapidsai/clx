@@ -1,3 +1,26 @@
+# clx 0.12.0 (04 Feb 2020)
+
+## New Features
+- PR #93 Add Bokeh visualization back to Alert Analysis notebook
+ 
+## Improvements
+- PR #88 Documentation updates
+- PR #85 Add codeowners
+- PR #86 Add issue templates
+- PR #87 CLX docker updates
+- PR #95 Download Alert Analysis data from S3
+- PR #101 Refactor DNS & IP code
+- PR #108 JSON read/write support
+- PR #105 Documentation updates to README
+
+## Bug Fixes
+- PR #97 Notebook cleanup and gitignore update
+- PR #102 - Fix error from renamed cuxfilter module
+- PR #107 Fixes to workflow notebook
+- PR #109 Fix to cybert notebook
+- PR #117 Fix to dga detector str2ascii
+
+
 # clx 0.11.0 (11 Dec 2019)
 
 ## New Features
@@ -25,6 +48,7 @@
  - PR #81 Reader filepath fix
  - PR #77 Fix to unit test
  - PR #69 Simple fix to DNS
+ - PR #68 Update to Alert Analysis Workflow notebooks
  - PR #67 Fix DNS extra columns
  - PR #50 Workflow IO fix
  - PR #45 More Kafka IO fixes
