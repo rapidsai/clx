@@ -424,7 +424,7 @@ workflow</a>, this capability could also be used in production environments.</p>
 <p>To train a CLX DGA Detection model you simply need a training data set which contains a column of domains and their associated <code class="docutils literal notranslate"><span class="pre">type</span></code> which can be either <code class="docutils literal notranslate"><span class="pre">1</span></code> (benign) or <code class="docutils literal notranslate"><span class="pre">0</span></code> (malicious).</p>
 <p>First initialize your new model</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -432,11 +432,18 @@ workflow</a>, this capability could also be used in production environments.</p>
 <span class="n">N_LAYERS</span> <span class="o">=</span> <span class="mi">3</span>
 <span class="n">CHAR_VOCAB</span> <span class="o">=</span> <span class="mi">128</span>
 <span class="n">HIDDEN_SIZE</span> <span class="o">=</span> <span class="mi">100</span>
-<span class="n">N_DOMAIN_TYPE</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1"># Will be 2 since there are a total of 2 different types</span>
+<span class="n">N_DOMAIN_TYPE</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># Will be 2 since there are a total of 2 different types</span>
 
 <span class="kn">from</span> <span class="nn">clx.analytics.dga_detector</span> <span class="kn">import</span> <span class="n">DGADetector</span>
+<span class="kn">from</span> <span class="nn">clx.analytics.detector_dataset</span> <span class="kn">import</span> <span class="n">DetectorDataset</span>
+
 <span class="n">dd</span> <span class="o">=</span> <span class="n">DGADetector</span><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="n">LR</span><span class="p">)</span>
-<span class="n">dd</span><span class="o">.</span><span class="n">init_model</span><span class="p">(</span><span class="n">n_layers</span><span class="o">=</span><span class="n">N_LAYERS</span><span class="p">,</span> <span class="n">char_vocab</span><span class="o">=</span><span class="n">CHAR_VOCAB</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="n">HIDDEN_SIZE</span><span class="p">,</span> <span class="n">n_domain_type</span><span class="o">=</span><span class="n">N_DOMAIN_TYPE</span><span class="p">)</span>
+<span class="n">dd</span><span class="o">.</span><span class="n">init_model</span><span class="p">(</span>
+    <span class="n">n_layers</span><span class="o">=</span><span class="n">N_LAYERS</span><span class="p">,</span>
+    <span class="n">char_vocab</span><span class="o">=</span><span class="n">CHAR_VOCAB</span><span class="p">,</span>
+    <span class="n">hidden_size</span><span class="o">=</span><span class="n">HIDDEN_SIZE</span><span class="p">,</span>
+    <span class="n">n_domain_type</span><span class="o">=</span><span class="n">N_DOMAIN_TYPE</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -446,242 +453,61 @@ workflow</a>, this capability could also be used in production environments.</p>
 <li><p>DGA : <a class="reference external" href="http://osint.bambenekconsulting.com/feeds/dga-feed.txt">http://osint.bambenekconsulting.com/feeds/dga-feed.txt</a></p></li>
 <li><p>Benign : <a class="reference external" href="http://s3.amazonaws.com/alexa-static/top-1m.csv.zip">http://s3.amazonaws.com/alexa-static/top-1m.csv.zip</a></p></li>
 </ul>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">cudf</span>
 
-<span class="n">train_df1</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-<span class="n">train_df1</span><span class="p">[</span><span class="s1">&#39;domain&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;google.com&#39;</span><span class="p">,</span> <span class="s1">&#39;youtube.com&#39;</span><span class="p">,</span> <span class="s1">&#39;tmall.com&#39;</span><span class="p">,</span> <span class="s1">&#39;duiwlqeejymdb.com&#39;</span><span class="p">,</span> <span class="s1">&#39;kofsmyaiufarb.net&#39;</span><span class="p">,</span> <span class="s1">&#39;xskphhmrlcihr.biz&#39;</span><span class="p">]</span>
-<span class="n">train_df1</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">train_df</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+<span class="n">train_df</span><span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;google.com&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;youtube.com&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tmall.com&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;duiwlqeejymdb.com&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;kofsmyaiufarb.net&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xskphhmrlcihr.biz&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;yahoo.com&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;linkedin.com&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;twitter.com&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;wejaecjhycwss.co.uk&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xtorhktvpblmr.info&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xvljisbfalkts.com&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="n">train_df</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
 
-<span class="n">train_df2</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-<span class="n">train_df2</span><span class="p">[</span><span class="s1">&#39;domain&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;yahoo.com&#39;</span><span class="p">,</span> <span class="s1">&#39;linkedin.com&#39;</span><span class="p">,</span> <span class="s1">&#39;twitter.com&#39;</span><span class="p">,</span> <span class="s1">&#39;wejaecjhycwss.co.uk&#39;</span><span class="p">,</span> <span class="s1">&#39;xtorhktvpblmr.info&#39;</span><span class="p">,</span> <span class="s1">&#39;xvljisbfalkts.com&#39;</span><span class="p">]</span>
-<span class="n">train_df2</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
-
-<span class="c1"># Convert domains from string to ascii</span>
-<span class="n">train_df1_ascii</span> <span class="o">=</span> <span class="n">dd</span><span class="o">.</span><span class="n">str2ascii</span><span class="p">(</span><span class="n">train_df2</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
-<span class="n">train_df2_ascii</span> <span class="o">=</span> <span class="n">dd</span><span class="o">.</span><span class="n">str2ascii</span><span class="p">(</span><span class="n">train_df2</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
-<span class="n">train_df2_ascii</span>
+<span class="c1"># DetectorDataset converts domains from string to ascii and creates partitioned dataframes based on given batch size</span>
+<span class="n">train_df</span> <span class="o">=</span> <span class="n">DetectorDataset</span><span class="p">(</span><span class="n">train_df</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<p>When we train a model, the total loss is returned</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">dd</span><span class="o">.</span><span class="n">train_model</span><span class="p">(</span><span class="n">train_df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/opt/conda/envs/rapids/lib/python3.7/site-packages/cudf/io/dlpack.py:82: UserWarning: WARNING: cuDF to_dlpack() produces column-major (Fortran order) output. If the output tensor needs to be row major, transpose the output of this function.
+  return cpp_dlpack.to_dlpack(gdf_cols)
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="output_area rendered_html docutils container">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>0</th>
-      <th>1</th>
-      <th>2</th>
-      <th>3</th>
-      <th>4</th>
-      <th>5</th>
-      <th>6</th>
-      <th>7</th>
-      <th>8</th>
-      <th>9</th>
-      <th>...</th>
-      <th>12</th>
-      <th>13</th>
-      <th>14</th>
-      <th>15</th>
-      <th>16</th>
-      <th>17</th>
-      <th>18</th>
-      <th>len</th>
-      <th>type</th>
-      <th>domain</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>3</th>
-      <td>119</td>
-      <td>101</td>
-      <td>106</td>
-      <td>97</td>
-      <td>101</td>
-      <td>99</td>
-      <td>106</td>
-      <td>104</td>
-      <td>121</td>
-      <td>99</td>
-      <td>...</td>
-      <td>115</td>
-      <td>46</td>
-      <td>99</td>
-      <td>111</td>
-      <td>46</td>
-      <td>117</td>
-      <td>107</td>
-      <td>19</td>
-      <td>0</td>
-      <td>wejaecjhycwss.co.uk</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>120</td>
-      <td>116</td>
-      <td>111</td>
-      <td>114</td>
-      <td>104</td>
-      <td>107</td>
-      <td>116</td>
-      <td>118</td>
-      <td>112</td>
-      <td>98</td>
-      <td>...</td>
-      <td>114</td>
-      <td>46</td>
-      <td>105</td>
-      <td>110</td>
-      <td>102</td>
-      <td>111</td>
-      <td>0</td>
-      <td>18</td>
-      <td>0</td>
-      <td>xtorhktvpblmr.info</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>120</td>
-      <td>118</td>
-      <td>108</td>
-      <td>106</td>
-      <td>105</td>
-      <td>115</td>
-      <td>98</td>
-      <td>102</td>
-      <td>97</td>
-      <td>108</td>
-      <td>...</td>
-      <td>115</td>
-      <td>46</td>
-      <td>99</td>
-      <td>111</td>
-      <td>109</td>
-      <td>0</td>
-      <td>0</td>
-      <td>17</td>
-      <td>0</td>
-      <td>xvljisbfalkts.com</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>108</td>
-      <td>105</td>
-      <td>110</td>
-      <td>107</td>
-      <td>101</td>
-      <td>100</td>
-      <td>105</td>
-      <td>110</td>
-      <td>46</td>
-      <td>99</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>12</td>
-      <td>1</td>
-      <td>linkedin.com</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>116</td>
-      <td>119</td>
-      <td>105</td>
-      <td>116</td>
-      <td>116</td>
-      <td>101</td>
-      <td>114</td>
-      <td>46</td>
-      <td>99</td>
-      <td>111</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>11</td>
-      <td>1</td>
-      <td>twitter.com</td>
-    </tr>
-    <tr>
-      <th>0</th>
-      <td>121</td>
-      <td>97</td>
-      <td>104</td>
-      <td>111</td>
-      <td>111</td>
-      <td>46</td>
-      <td>99</td>
-      <td>111</td>
-      <td>109</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>9</td>
-      <td>1</td>
-      <td>yahoo.com</td>
-    </tr>
-  </tbody>
-</table>
-<p>6 rows × 22 columns</p>
-</div></div>
-</div>
-<p>When we train a model, the total loss is returned</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">total_num_of_domains</span> <span class="o">=</span> <span class="n">train_df1</span><span class="p">[</span><span class="s1">&#39;domain&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">+</span> <span class="n">train_df2</span><span class="p">[</span><span class="s1">&#39;domain&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
-<span class="n">dd</span><span class="o">.</span><span class="n">train_model</span><span class="p">([</span><span class="n">train_df1_ascii</span><span class="p">,</span> <span class="n">train_df2_ascii</span><span class="p">],</span> <span class="n">total_num_of_domains</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.005933642387390137
+2.973564386367798
 </pre></div></div>
 </div>
 <p>Ideally, you will want to train your model over a number of <code class="docutils literal notranslate"><span class="pre">epochs</span></code> as detailed in our example DGA Detection <a class="reference external" href="https://github.com/rapidsai/clx/blob/master/notebooks/dga_detection/DGA_Detection.ipynb">notebook</a>.</p>
@@ -689,7 +515,7 @@ workflow</a>, this capability could also be used in production environments.</p>
 <div class="section" id="Save-a-trained-model">
 <h2>Save a trained model<a class="headerlink" href="#Save-a-trained-model" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -702,7 +528,7 @@ workflow</a>, this capability could also be used in production environments.</p>
 <h2>Load a model<a class="headerlink" href="#Load-a-model" title="Permalink to this headline">¶</a></h2>
 <p>Let’s create a new dga detector and load the saved model from above.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -716,7 +542,7 @@ workflow</a>, this capability could also be used in production environments.</p>
 <h2>DGA Inferencing<a class="headerlink" href="#DGA-Inferencing" title="Permalink to this headline">¶</a></h2>
 <p>Use your new model to predict malicious domains</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -728,13 +554,13 @@ workflow</a>, this capability could also be used in production environments.</p>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 0    1
-1    0
+1    1
 Name: is_dga, dtype: int64
 </pre></div></div>
 </div>
@@ -742,6 +568,15 @@ Name: is_dga, dtype: int64
 <div class="section" id="Conclusion">
 <h2>Conclusion<a class="headerlink" href="#Conclusion" title="Permalink to this headline">¶</a></h2>
 <p>DGA detector in CLX enables users to train their models for detection and also use existing models. This capability could also be used in conjunction with log parsing efforts if the logs contain domain names. DGA detection done with CLX and RAPIDS keeps data in GPU memory, removing unnecessary copy/converts and providing a 4X speed advantage over CPU only implementations. This is esepcially true with large batch sizes.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 

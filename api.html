@@ -571,7 +571,7 @@ to distinguish legitimate and DGA domain names.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#clx.analytics.dga_detector.DGADetector.evaluate_model" title="clx.analytics.dga_detector.DGADetector.evaluate_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_model</span></code></a>(self, test_partitioned_dfs, …)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#clx.analytics.dga_detector.DGADetector.evaluate_model" title="clx.analytics.dga_detector.DGADetector.evaluate_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_model</span></code></a>(self, detector_dataset)</p></td>
 <td><p>This function evaluates the trained model to verify it’s accuracy.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#clx.analytics.dga_detector.DGADetector.init_model" title="clx.analytics.dga_detector.DGADetector.init_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_model</span></code></a>(self[, char_vocab, hidden_size, …])</p></td>
@@ -580,24 +580,18 @@ to distinguish legitimate and DGA domain names.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#clx.analytics.dga_detector.DGADetector.predict" title="clx.analytics.dga_detector.DGADetector.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(self, domains)</p></td>
 <td><p>This function accepts cudf series of domains as an argument to classify domain names as benign/malicious and returns the learned label for each object in the form of cudf series.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#clx.analytics.dga_detector.DGADetector.str2ascii" title="clx.analytics.dga_detector.DGADetector.str2ascii"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str2ascii</span></code></a>(self, df, domains_len)</p></td>
-<td><p>This function sorts domain name entries in desc order based on the length of domain and converts domain name to ascii characters.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#clx.analytics.dga_detector.DGADetector.train_model" title="clx.analytics.dga_detector.DGADetector.train_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train_model</span></code></a>(self, partitioned_dfs, dataset_len)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#clx.analytics.dga_detector.DGADetector.train_model" title="clx.analytics.dga_detector.DGADetector.train_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train_model</span></code></a>(self, detector_dataset)</p></td>
 <td><p>This function is used for training RNNClassifier model with a given training dataset.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="clx.analytics.dga_detector.DGADetector.evaluate_model">
-<code class="sig-name descname">evaluate_model</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">test_partitioned_dfs</em>, <em class="sig-param">dataset_len</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.analytics.dga_detector.DGADetector.evaluate_model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">evaluate_model</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">detector_dataset</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.analytics.dga_detector.DGADetector.evaluate_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function evaluates the trained model to verify it’s accuracy.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>test_partitioned_dfs</strong> (<em>List</em><em>(</em><em>cudf.DataFrame</em><em>)</em>) – List of partitioned test domain dataframes.</p></li>
-<li><p><strong>dataset_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Sum of entries in all partitioned test domain dataframes.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>detector_dataset</strong> (<em>DetectorDataset</em>) – Instance holds preprocessed data.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Model accuracy</p>
@@ -609,7 +603,7 @@ to distinguish legitimate and DGA domain names.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dd</span> <span class="o">=</span> <span class="n">DGADetector</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dd</span><span class="o">.</span><span class="n">init_model</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dd</span><span class="o">.</span><span class="n">evaluate_model</span><span class="p">(</span><span class="n">test_partitioned_dfs</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dd</span><span class="o">.</span><span class="n">evaluate_model</span><span class="p">(</span><span class="n">detector_dataset</span><span class="p">)</span>
 <span class="go">Evaluating trained model ...</span>
 <span class="go">Test set: Accuracy: 3/4 (0.75)</span>
 </pre></div>
@@ -657,49 +651,19 @@ to distinguish legitimate and DGA domain names.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="clx.analytics.dga_detector.DGADetector.str2ascii">
-<code class="sig-name descname">str2ascii</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">df</em>, <em class="sig-param">domains_len</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.analytics.dga_detector.DGADetector.str2ascii" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function sorts domain name entries in desc order based on the length of domain and converts domain name to ascii characters.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>df</strong> (<em>cudf.DataFrame</em>) – Domains which requires conversion.</p></li>
-<li><p><strong>domains_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Number of entries in df.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Ascii character converted information.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>cudf.DataFrame</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
 <dt id="clx.analytics.dga_detector.DGADetector.train_model">
-<code class="sig-name descname">train_model</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">partitioned_dfs</em>, <em class="sig-param">dataset_len</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.analytics.dga_detector.DGADetector.train_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function is used for training RNNClassifier model with a given training dataset. It returns total loss to determine model prediction accuracy.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>partitioned_dfs</strong> (<em>List</em><em>(</em><em>cudf.DataFrame</em><em>)</em>) – List of partitioned domain dataframes.</p></li>
-<li><p><strong>dataset_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Sum of entries in all partitioned dataframes.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Total loss</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
-</dd>
-</dl>
+<code class="sig-name descname">train_model</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">detector_dataset</em><span class="sig-paren">)</span><a class="headerlink" href="#clx.analytics.dga_detector.DGADetector.train_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used for training RNNClassifier model with a given training dataset. It returns total loss to determine model prediction accuracy.
+:param detector_dataset: Instance holds preprocessed data
+:type detector_dataset: DetectorDataset
+:return: Total loss
+:rtype: int</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clx.analytics.dga_detector</span> <span class="kn">import</span> <span class="n">DGADetector</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">partitioned_dfs</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># partitioned_dfs = [df1, df2, ...] represents training dataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dd</span> <span class="o">=</span> <span class="n">DGADetector</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dd</span><span class="o">.</span><span class="n">init_model</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dd</span><span class="o">.</span><span class="n">train_model</span><span class="p">(</span><span class="n">partitioned_dfs</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dd</span><span class="o">.</span><span class="n">train_model</span><span class="p">(</span><span class="n">detector_dataset</span><span class="p">)</span>
 <span class="go">1.5728906989097595</span>
 </pre></div>
 </div>
