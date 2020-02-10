@@ -7,6 +7,7 @@
 - PR #120 Use pytest tmpdir fixtures in unit tests
 
 ## Bug Fixes
+- PR #123 Fix update-version.sh
 
 
 # clx 0.12.0 (Date TBD)
