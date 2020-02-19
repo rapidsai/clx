@@ -3,6 +3,7 @@
 ## New Features
 
 ## Improvements
+- PR #103 DGA detector refactor
 - PR #120 Use pytest tmpdir fixtures in unit tests
 
 ## Bug Fixes
