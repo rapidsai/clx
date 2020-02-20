@@ -50,7 +50,6 @@ conda install nvstrings=${MINOR_VERSION} cugraph=${MINOR_VERSION} dask-cudf=${MI
 conda install -y pytorch==1.3.1 torchvision -c pytorch -c raydouglass
 
 pip install mockito
-pip install cupy-cuda${CUDA_SHORT}
 
 conda list
 
