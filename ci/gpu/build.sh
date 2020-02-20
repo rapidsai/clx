@@ -38,19 +38,28 @@ source activate gdf
 
 logger "Check versions..."
 python --version
-gcc --version
-g++ --version
 
 # FIX Added to deal with Anancoda SSL verification issues during conda builds
 conda config --set ssl_verify False
 
-conda install nvstrings=${MINOR_VERSION} cugraph=${MINOR_VERSION} dask-cudf=${MINOR_VERSION} \
-   requests yaml python-confluent-kafka python-whois dask
+logger "conda install required packages"
+conda install -y -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge -c defaults -c pytorch \
+    "cugraph=${MINOR_VERSION}" \
+    "cuxfilter=${MINOR_VERSION}" \
+    "cupy>=6.6.0,<8.0.0a0,!=7.1.0" \
+    "dask>=2.1.0" \
+    "distributed>=2.1.0" \
+    "dask-cudf=${MINOR_VERSION}" \
+    "dask-cuda=${MINOR_VERSION}" \
+    "pytorch==1.3.1" \
+    "torchvision=0.4.2" \
+    "yaml"
 
-conda install -y pytorch==1.3.1 torchvision -c pytorch
 
-pip install mockito
-pip install cupy-cuda${CUDA_SHORT}
+# conda install -y pytorch==1.3.1 torchvision -c pytorch
+
+#pip install mockito
+# pip install cupy-cuda${CUDA_SHORT}
 
 conda list
 
@@ -59,7 +68,7 @@ conda list
 ################################################################################
 
 cd $WORKSPACE
-python setup.py build_ext --inplace
+python setup.py install
 
 ################################################################################
 # TEST - Test python package
