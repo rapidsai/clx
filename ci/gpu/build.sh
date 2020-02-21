@@ -43,7 +43,7 @@ python --version
 conda config --set ssl_verify False
 
 logger "conda install required packages"
-conda install -y -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge -c defaults -c pytorch \
+conda install -y -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge -c defaults -c pytorch -c gwerbin \
     "cugraph=${MINOR_VERSION}" \
     "cuxfilter=${MINOR_VERSION}" \
     "cupy>=6.6.0,<8.0.0a0,!=7.1.0" \
@@ -53,13 +53,19 @@ conda install -y -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge -c def
     "dask-cuda=${MINOR_VERSION}" \
     "pytorch==1.3.1" \
     "torchvision=0.4.2" \
-    "yaml"
+    "yaml" \
+    "datashader>=0.10.*" \
+    "panel=0.6.*" \
+    "bokeh>=1.2.*" \
+    "geopandas>=0.6.*" \
+    "pyppeteer" \
+    "seaborn" \
+    "seqeval" \
+    "s3fs" \
+    "nodejs"
 
-
-# conda install -y pytorch==1.3.1 torchvision -c pytorch
-
-#pip install mockito
-# pip install cupy-cuda${CUDA_SHORT}
+# Install master version of cudatashader
+pip install "git+https://github.com/rapidsai/cudatashader.git"
 
 conda list
 
@@ -68,7 +74,7 @@ conda list
 ################################################################################
 
 cd $WORKSPACE
-python setup.py install
+pip install -e .
 
 ################################################################################
 # TEST - Test python package
@@ -78,4 +84,6 @@ if hasArg --skip-tests; then
     logger "Skipping Tests..."
 else
     py.test --ignore=ci --cache-clear --junitxml=${WORKSPACE}/junit-clx.xml -v
+    ${WORKSPACE}/ci/gpu/test-notebooks.sh 2>&1 | tee nbtest.log
+    python ${WORKSPACE}/ci/utils/nbtestlog2junitxml.py nbtest.log
 fi
