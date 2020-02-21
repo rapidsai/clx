@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-install_requires = ["confluent_kafka", "pytorch-transformers", "python-whois", "requests", "mockito"]
+install_requires = ["confluent_kafka", "pytorch-transformers", "seqeval[gpu]", "python-whois", "requests", "mockito", "torch==1.3.1"]
 
 setup(
     name="clx",

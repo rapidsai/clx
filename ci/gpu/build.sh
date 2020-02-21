@@ -43,24 +43,16 @@ python --version
 conda config --set ssl_verify False
 
 logger "conda install required packages"
-conda install -y -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge -c defaults -c pytorch -c gwerbin \
+conda install -y -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge -c defaults -c pytorch \
     "cugraph=${MINOR_VERSION}" \
     "cuxfilter=${MINOR_VERSION}" \
     "cupy>=6.6.0,<8.0.0a0,!=7.1.0" \
-    "dask>=2.1.0" \
-    "distributed>=2.1.0" \
+    "dask>=2.8.0" \
+    "distributed>=2.8.0" \
     "dask-cudf=${MINOR_VERSION}" \
-    "dask-cuda=${MINOR_VERSION}" \
     "pytorch==1.3.1" \
     "torchvision=0.4.2" \
-    "yaml" \
-    "datashader>=0.10.*" \
-    "panel=0.6.*" \
-    "bokeh>=1.2.*" \
-    "geopandas>=0.6.*" \
-    "pyppeteer" \
     "seaborn" \
-    "seqeval" \
     "s3fs" \
     "nodejs"
 
