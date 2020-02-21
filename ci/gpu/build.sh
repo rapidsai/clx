@@ -43,7 +43,7 @@ python --version
 conda config --set ssl_verify False
 
 logger "conda install required packages"
-conda install -y -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge -c defaults -c pytorch \
+conda install -y -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge -c defaults -c pytorch -c raydouglass \
     "cugraph=${MINOR_VERSION}" \
     "cuxfilter=${MINOR_VERSION}" \
     "cupy>=6.6.0,<8.0.0a0,!=7.1.0" \
