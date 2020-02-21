@@ -7,6 +7,7 @@
 - PR #120 Use pytest tmpdir fixtures in unit tests
 
 ## Bug Fixes
+- PR #224 Updates conda installs for CUDA 10.2
 
 
 # clx 0.12.0 (Date TBD)
