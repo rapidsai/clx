@@ -47,7 +47,7 @@ conda config --set ssl_verify False
 conda install nvstrings=${MINOR_VERSION} cugraph=${MINOR_VERSION} dask-cudf=${MINOR_VERSION} \
    requests yaml python-confluent-kafka python-whois dask "cupy>=6.6.0,<8.0.0a0,!=7.1.0"
 
-conda install -y pytorch==1.3.1 torchvision -c pytorch -c raydouglass
+conda install -y pytorch==1.3.1 torchvision -c pytorch -c rapidsai/label/pytorch
 
 pip install mockito
 
