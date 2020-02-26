@@ -85,7 +85,7 @@ def test_get_io_writer_fs(fs_writer_config):
 
 
 @pytest.mark.parametrize("expected_df", [expected_df])
-def test_get_reader_text(tmpdir, expected_df):
+def test_get_reader_csv(tmpdir, expected_df):
     fname = tmpdir.mkdir("tmp_test_factory").join("person.csv")
     expected_df.to_csv(fname, index=False)
     config = {
@@ -106,12 +106,12 @@ def test_get_reader_text(tmpdir, expected_df):
 
 @pytest.mark.parametrize("expected_df", [expected_df])
 def test_get_reader_parquet(tmpdir, expected_df):
-    fname = str(tmpdir.mkdir("tmp_test_fs_reader"))
+    fname = tmpdir.mkdir("tmp_test_factory").join("person.parquet")
     cudf.io.parquet.to_parquet(expected_df, fname)
     clx_input_path = fname + "/*.parquet"
     config = {
         "type": "fs",
-        "input_path": clx_input_path,
+        "input_path": fname,
         "usecols": ["firstname", "lastname", "gender"],
         "input_format": "parquet",
     }
