@@ -8,7 +8,7 @@
 - PR #125 Added notebook testing to gpuCI gpu build
 
 ## Bug Fixes
-
+- PR #129 Fix alert analysis notebook viz using cuxfilter
 
 # clx 0.12.0 (Date TBD)
 
