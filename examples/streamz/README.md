@@ -23,7 +23,7 @@ docker build -f examples/streamz/Dockerfile -t cybert-streamz .
 Create a new container using the image above. When running this container, it will automatically trigger processing of sample data by cyBERT using streamz. See output below
 
 ```
-docker run -it --gpus '"device=0"' -p 8888:8888 --name cybert-streamz -d cybert-streamz:latest
+docker run -it --gpus '"device=0"' --name cybert-streamz -d cybert-streamz:latest
 ```
 
 View the output in the logs
