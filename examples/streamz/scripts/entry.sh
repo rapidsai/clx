@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BROKER="localhost:9092"
-TOPICS=("input" "output")
+TOPIC="input"
 SAMPLE_DATA="/data/sample.csv"
 ENV_TEST_SCRIPT="/python/test_env.py"
 
@@ -15,13 +15,11 @@ sed -i '/#advertised.listeners=PLAINTEXT:\/\/your.host.name:9092/c\advertised.li
 # Run Kafka
 $KAFKA_HOME/bin/kafka-server-start.sh -daemon $KAFKA_HOME/config/server.properties
 
-# Create kafka topics
-for t in ${TOPICS[@]}; do
-  $KAFKA_HOME/bin/kafka-topics.sh --create --bootstrap-server $BROKER --replication-factor 1 --partitions 1 --topic $t
-done
+# Create kafka topic
+$KAFKA_HOME/bin/kafka-topics.sh --create --bootstrap-server $BROKER --replication-factor 1 --partitions 1 --topic $TOPIC
 
 # Read sample data into the kafka topic
-$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $BROKER --topic ${TOPICS[0]} < $SAMPLE_DATA
+$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $BROKER --topic $TOPIC < $SAMPLE_DATA
 
 source activate rapids
 

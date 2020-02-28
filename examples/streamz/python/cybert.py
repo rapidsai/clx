@@ -1,4 +1,3 @@
-
 import cudf
 import dask
 import json
@@ -41,7 +40,3 @@ if __name__ == '__main__':
     alerts = wel_parsing.map(threshold_alert).sink(print)
     # Start the stream.
     source.start()
-    
-
-
-
