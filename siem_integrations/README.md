@@ -55,6 +55,10 @@ Use this splunk query template to generate report.
     ./splunk/bin/splunk restart
     ```
 
+## CLX_Query_Service
+
+
+### Install CLX_Query_Service
 
 
 ## Contributing Guide
