@@ -10,12 +10,12 @@ ADD . /rapids/clx/
 
 SHELL ["/bin/bash", "-c"]
 
-RUN apt update -y --fix-missing && \
-    apt upgrade -y && \
-    apt install -y vim
+RUN apt-get update -y --fix-missing && \
+    apt-get upgrade -y && \
+    apt-get install -y vim
 
 RUN source activate rapids \
-    && conda install -y -c pytorch pytorch==1.3.1 torchvision=0.4.2 datashader>=0.10.* panel=0.6.* geopandas>=0.6.* pyppeteer s3fs \
+    && conda install -y -c pytorch pytorch==1.4.0 torchvision=0.5.0 datashader>=0.10.* panel=0.6.* geopandas>=0.6.* pyppeteer s3fs \
     && pip install "git+https://github.com/rapidsai/cudatashader.git" \
     && cd /rapids/clx \
     && pip install -e .
