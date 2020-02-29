@@ -26,9 +26,35 @@ In order to utilize splunk2kafka, a [running Kafka instance](https://kafka.apach
 2. Install export2kafka ([Instructions](https://github.com/rapidsai/clx-siem-integration/blob/master/splunk2kafka/export2kafka/README.md))
 
 
-## CLX Query
+## CLX_Query
 
-Coming soon...
+CLX Query is a splunk application with the ability to perform customized queries on the clx python module, which can trigger internal workflows to retrieve the requested analytical report using blazingsql engine.
+
+### Quick Start
+
+Use this splunk query template to generate report.
+```
+| clx query="<query goes here...>"
+```
+
+### Install CLX_Query
+
+1. Update configuration file with hostname and port number of clx restful services.
+
+    ```aidl
+    vi clx_query/default/clx_query_setup.conf
+    ```
+2. Copy CLX_Query to splunk apps directory.
+
+    ```aidl
+    cp -R clx_query splunk/etc/apps
+    ```
+3. Restart splunk application server to take effect on changes.
+
+    ```aidl
+    ./splunk/bin/splunk restart
+    ```
+
 
 
 ## Contributing Guide
