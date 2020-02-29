@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-install_requires = ["confluent_kafka", "python-whois", "requests", "torch==1.3.1"]
+install_requires = ["confluent_kafka", "pytorch-transformers", "seqeval[gpu]", "python-whois", "requests", "mockito", "torch==1.3.1"]
 
 setup(
     name="clx",
@@ -13,5 +13,5 @@ setup(
         "clx.dns": ["resources/*.txt"],
         "clx.heuristics": ["resources/*.csv"],
     },
-    install_requires=install_requires,
+    install_requires=install_requires
 )

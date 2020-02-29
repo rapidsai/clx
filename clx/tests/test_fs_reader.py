@@ -51,13 +51,12 @@ def test_fetch_data_csv(tmpdir, expected_df):
 
 @pytest.mark.parametrize("expected_df", [expected_df])
 def test_fetch_data_parquet(tmpdir, expected_df):
-    fname = str(tmpdir.mkdir("tmp_test_fs_reader"))
+    fname = tmpdir.mkdir("tmp_test_fs_reader").join("person.parquet")
     cudf.io.parquet.to_parquet(expected_df, fname)
-    clx_input_path = fname + "/*.parquet"
 
     config = {
         "type": "fs",
-        "input_path": clx_input_path,
+        "input_path": fname,
         "input_format": "parquet"
     }
 
