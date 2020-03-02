@@ -24,7 +24,7 @@ $KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $BROKER --topic $TOPIC <
 source activate rapids
 
 # Check the environment.
-python /python/env_test.py
+python /python/check_env.py
 
 # Run cybert
 python -i /python/cybert.py
