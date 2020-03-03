@@ -66,7 +66,7 @@ CLX Query Service is a restful service that runs using the django platform, whic
     ```aidl
     pip install django gunicorn djangorestframework
     ``` 
-2. Update settings by adding current query service server running hostname.
+2. Update settings by adding current query service running hostname.
 
     ```aidl
     vi clx_query_service/settings.py
@@ -74,7 +74,7 @@ CLX Query Service is a restful service that runs using the django platform, whic
     ```aidl
     ALLOWED_HOSTS = ["<hostname goes here...>"]
     ``` 
-3. Start CLX Query Service service using gunicorn.
+3. Start query service using gunicorn.
 
      ```aidl
      bash /rapids/clx/siem_integrations/clx_query_service/bin/start_service.sh --help
