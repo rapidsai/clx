@@ -57,9 +57,27 @@ Use this splunk query template to generate report.
 
 ## CLX_Query_Service
 
+CLX Query Service is a restful service that runs using the django platform, which takes requests from the splunk clx query app and executes blazingsql query and returns the json response.
 
 ### Install CLX_Query_Service
 
+1. Install dependencies
+
+    ```aidl
+    pip install django gunicorn djangorestframework
+    ``` 
+2. Update settings by adding current webapp server running hostname.
+
+    ```aidl
+    vi clx_query_service/settings.py
+    ``` 
+    ```aidl
+    ALLOWED_HOSTS = ["<hostname goes here...>"]
+    ``` 
+3. Supervisor can be installed to run it as demon.
+
+##### Know Issues
+1.  BlazingContext memory leak issue [blazingsql-310](https://github.com/BlazingDB/blazingsql/issues/310)
 
 ## Contributing Guide
 
