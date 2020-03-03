@@ -39,7 +39,7 @@ Use this splunk query template to generate report.
 
 ### Install CLX_Query
 
-1. Update configuration file with hostname and port number of clx restful services.
+1. Update configuration file with hostname and port number of clx query service.
 
     ```aidl
     vi clx_query/default/clx_query_setup.conf
@@ -66,7 +66,7 @@ CLX Query Service is a restful service that runs using the django platform, whic
     ```aidl
     pip install django gunicorn djangorestframework
     ``` 
-2. Update settings by adding current webapp server running hostname.
+2. Update settings by adding current query service server running hostname.
 
     ```aidl
     vi clx_query_service/settings.py
