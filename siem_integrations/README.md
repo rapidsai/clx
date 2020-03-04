@@ -38,7 +38,7 @@ In order to utilize splunk2kafka, a [running Kafka instance](https://kafka.apach
 
 CLX Query Service is a restful service that runs using the django platform, which takes requests from the splunk clx query app and executes blazingsql query and returns the json response.
 
-### Install CLX_Query_Service
+### Install and Run CLX_Query_Service
 
 1. Install dependencies if not available.
 
@@ -97,7 +97,7 @@ CLX Query Service is a restful service that runs using the django platform, whic
 
 CLX Query is a splunk application with the ability to perform customized queries on the clx python module, which can trigger internal workflows to retrieve the requested analytical report using blazingsql engine.
 
-### Install CLX_Query
+### Install and Run CLX_Query
 
 1. Update configuration file with hostname and port number of clx query service.
 
