@@ -93,7 +93,7 @@ CLX Query Service is a restful service that runs using the django platform, whic
     
       -h, --help          Print this help
     ```
-4. Run gunicorn as daemon process using supervisor.
+4. Run gunicorn wrapped clx query service application as daemon process using supervisor.
 
    ```aidl
    cp /clx/siem_integrations/clx_query_service/conf/clx_query_service.conf /etc/supervisor
