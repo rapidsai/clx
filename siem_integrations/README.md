@@ -54,7 +54,23 @@ Use this splunk query template to generate report.
     ```aidl
     ./splunk/bin/splunk restart
     ```
+### Download sample dataset and add data
+1.  ```aidl
+    mkdir -p /rapids/my_data/ && cd /rapids/my_data
+    ```
+2.  ```aidl
+    wget http://files.grouplens.org/datasets/movielens/ml-25m.zip
+    ```
+3.  ```aidl
+    unzip ml-25m.zip
+    ```
 
+### Update configuration file with downloaded dataset location.
+   
+ 1. ```aidl
+    vi clx_query_service/conf/clx_blz_reader_conf.yaml
+    ```
+   
 ## CLX_Query_Service
 
 CLX Query Service is a restful service that runs using the django platform, which takes requests from the splunk clx query app and executes blazingsql query and returns the json response.
