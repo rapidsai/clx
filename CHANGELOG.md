@@ -1,6 +1,7 @@
 # clx 0.13.0 (Date TBD)
 
 ## New Features
+- PR #132 CLX query applications
 
 ## Improvements
 - PR #103 DGA detector refactor
