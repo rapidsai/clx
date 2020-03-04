@@ -61,10 +61,10 @@ CLX Query Service is a restful service that runs using the django platform, whic
 
 ### Install CLX_Query_Service
 
-1. Install dependencies
+1. Install dependencies if not available.
 
     ```aidl
-    pip install django gunicorn djangorestframework
+    pip install django gunicorn djangorestframework supervisor
     ``` 
 2. Update settings by adding current query service running hostname.
 
