@@ -77,12 +77,12 @@ CLX Query Service is a restful service that runs using the django platform, whic
 3. Start query service using gunicorn.
 
      ```aidl
-     bash /rapids/clx/siem_integrations/clx_query_service/bin/start_service.sh --help
+     bash /clx/siem_integrations/clx_query_service/bin/start_service.sh --help
      ```
     ``` 
-    Usage: /rapids/clx/siem_integrations/clx_query_service/bin/start_service.sh [POS]... [ARG]...
-    Example-1: bash /rapids/clx/siem_integrations/clx_query_service/bin/start_service.sh -p 8998 -w 2 -t 60
-    Example-2: bash /rapids/clx/siem_integrations/clx_query_service/bin/start_service.sh --port 8990 --workers 4 --timeout 10
+    Usage: /clx/siem_integrations/clx_query_service/bin/start_service.sh [POS]... [ARG]...
+    Example-1: bash /clx/siem_integrations/clx_query_service/bin/start_service.sh -p 8998 -w 2 -t 60
+    Example-2: bash /clx/siem_integrations/clx_query_service/bin/start_service.sh --port 8990 --workers 4 --timeout 10
     
     CLX Query Service Runner...
     
@@ -93,7 +93,23 @@ CLX Query Service is a restful service that runs using the django platform, whic
     
       -h, --help          Print this help
     ```
-3. Supervisor can be installed to run gunicorn as daemon.
+4. Run gunicorn as daemon process using supervisor.
+
+   ```aidl
+   cp /clx/siem_integrations/clx_query_service/conf/clx_query_service.conf /etc/supervisor
+   ```
+   ```aidl
+   supervisord -c /etc/supervisor/clx_query_service.conf
+   ```
+   ```aidl
+   supervisorctl -c supervisor/clx_query_service.conf
+   ```
+   ```aidl
+   start clx_query_service
+   ```
+  
+   
+   
 
 ##### Know Issues
 1.  BlazingContext memory leak issue [blazingsql-310](https://github.com/BlazingDB/blazingsql/issues/310)
