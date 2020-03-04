@@ -26,49 +26,12 @@ In order to utilize splunk2kafka, a [running Kafka instance](https://kafka.apach
 2. Install export2kafka ([Instructions](https://github.com/rapidsai/clx-siem-integration/blob/master/splunk2kafka/export2kafka/README.md))
 
 
-## CLX_Query
+## CLX Query Sample Dataset
 
-CLX Query is a splunk application with the ability to perform customized queries on the clx python module, which can trigger internal workflows to retrieve the requested analytical report using blazingsql engine.
-
-### Quick Start
-
-Use this splunk query template to generate report.
-```
-| clx query="<query goes here...>"
-```
-
-### Install CLX_Query
-
-1. Update configuration file with hostname and port number of clx query service.
-
+1. Download sample dataset.
+    
     ```aidl
-    vi clx_query/default/clx_query_setup.conf
-    ```
-2. Copy CLX_Query to splunk apps directory.
-
-    ```aidl
-    cp -R clx_query splunk/etc/apps
-    ```
-3. Restart splunk application server to take effect on changes.
-
-    ```aidl
-    ./splunk/bin/splunk restart
-    ```
-### Download sample dataset and add data
-1.  ```aidl
-    mkdir -p /rapids/my_data/ && cd /rapids/my_data
-    ```
-2.  ```aidl
     wget http://files.grouplens.org/datasets/movielens/ml-25m.zip
-    ```
-3.  ```aidl
-    unzip ml-25m.zip
-    ```
-
-### Update configuration file with downloaded dataset location.
-   
- 1. ```aidl
-    vi clx_query_service/conf/clx_blz_reader_conf.yaml
     ```
    
 ## CLX_Query_Service
@@ -90,7 +53,13 @@ CLX Query Service is a restful service that runs using the django platform, whic
     ```aidl
     ALLOWED_HOSTS = ["<hostname goes here...>"]
     ``` 
-3. Start query service using gunicorn.
+3. Update configuration file with downloaded dataset location.
+   
+    ```aidl
+    vi clx_query_service/conf/clx_blz_reader_conf.yaml
+    ```
+    
+4. Start query service using gunicorn.
 
      ```aidl
      bash /clx/siem_integrations/clx_query_service/bin/start_service.sh --help
@@ -109,7 +78,7 @@ CLX Query Service is a restful service that runs using the django platform, whic
     
       -h, --help          Print this help
     ```
-4. Run gunicorn wrapped clx query service application as daemon process using supervisor.
+5. Run gunicorn wrapped clx query service application as daemon process using supervisor.
 
    ```aidl
    cp /clx/siem_integrations/clx_query_service/conf/clx_query_service.conf /etc/supervisor
@@ -123,11 +92,36 @@ CLX Query Service is a restful service that runs using the django platform, whic
    ```aidl
    start clx_query_service
    ```
-  
-   
+
+## CLX_Query
+
+CLX Query is a splunk application with the ability to perform customized queries on the clx python module, which can trigger internal workflows to retrieve the requested analytical report using blazingsql engine.
+
+### Install CLX_Query
+
+1. Update configuration file with hostname and port number of clx query service.
+
+    ```aidl
+    vi clx_query/default/clx_query_setup.conf
+    ```
+2. Copy CLX_Query to splunk apps directory.
+
+    ```aidl
+    cp -R clx_query splunk/etc/apps
+    ```
+3. Restart splunk application server to take effect on changes.
+
+    ```aidl
+    ./splunk/bin/splunk restart
+    ```  
+    
+4. Use this sample splunk query to generate report.
+    ```
+    | clx query="SELECT genres, title, count(user_id) as user_cnt, avg(rating) as avg_rating from (SELECT main.movies.title as title, main.movies.genres as genres, main.ratings.userId as user_id, main.ratings.rating as rating FROM main.movies INNER JOIN main.ratings ON (main.ratings.movieId = main.movies.movieId) WHERE main.ratings.rating > 2.5) as tmp GROUP BY genres, title ORDER BY user_cnt DESC, avg_rating DESC"
+    ```   
    
 
-##### Know Issues
+## Know Issues
 1.  BlazingContext memory leak issue [blazingsql-310](https://github.com/BlazingDB/blazingsql/issues/310)
 
 ## Contributing Guide
