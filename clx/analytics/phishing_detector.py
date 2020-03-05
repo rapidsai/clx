@@ -29,8 +29,9 @@ class PhishingDetector:
         if self._model is None:
             self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             self._tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
-            self._model = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=2)
-            self._model.cuda()
+
+        self._model = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=2)
+        self._model.cuda()
 
     def train_model(self, emails_train_gdf, labels_train_gdf, learning_rate=3e-5, max_len=128, batch_size=32, epochs=5):
         tokenized_emails, labels = self._tokenize(emails_train_gdf, labels_train_gdf)
@@ -63,6 +64,15 @@ class PhishingDetector:
 
     def save_model(self, save_to_path="."):
         self._model.save_pretrained(save_to_path)
+
+    def load_model(self, model_path):
+        if self._model is None:
+            self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            self._tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
+
+        self._model = BertForSequenceClassification.from_pretrained(model_path)
+        self._model.cuda()
+        
 
     def predict(self, emails, max_len=128, batch_size=32):
         emails = emails.to_array()
