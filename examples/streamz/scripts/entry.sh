@@ -3,7 +3,7 @@
 BROKER="localhost:9092"
 TOPIC="input"
 SAMPLE_DATA="/data/sample.csv"
-ENV_TEST_SCRIPT="/python/test_env.py"
+ENV_TEST_SCRIPT="/python/check_env.py"
 
 # Start Zookeeper
 $KAFKA_HOME/bin/zookeeper-server-start.sh -daemon $KAFKA_HOME/config/zookeeper.properties
@@ -24,7 +24,7 @@ $KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $BROKER --topic $TOPIC <
 source activate rapids
 
 # Check the environment.
-python /python/check_env.py
+python $ENV_TEST_SCRIPT
 
 # Run cybert
 python -i /python/cybert.py

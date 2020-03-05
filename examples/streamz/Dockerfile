@@ -1,4 +1,4 @@
-ARG image=rapidsai/rapidsai-dev-nightly:0.12-cuda10.1-devel-ubuntu18.04-py3.6
+ARG image=rapidsai/rapidsai-dev-nightly:0.13-cuda10.1-devel-ubuntu18.04-py3.6
 
 FROM ${image}
 USER root
@@ -11,7 +11,6 @@ ADD . /clx
 RUN apt-get update -y && \
     apt-get install -y librdkafka-dev \
                        vim \
-                       git \
                        wget \
                        dnsutils \
                        net-tools \
@@ -40,19 +39,11 @@ ENV KAFKA_HOME /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"
 # Install common conda packages that most issues will require
 RUN source activate rapids \
     && conda install -c conda-forge -c pytorch -c anaconda -c rapidsai \
-                    librdkafka=1.1.0=hb2b7465_0 \
                     streamz=0.5.2=py_0 \
                     python-confluent-kafka=1.1.0=py36h516909a_0 \
-                    ujson=1.35=py36h14c3975_1001 \
-                    pytorch=1.3.1=py3.6_cuda10.1.243_cudnn7.6.3_0 \
-                    graphviz=2.40.1=h0f2764d_1 \
-                    networkx \
-                    pynvml=8.0.3=py_0 \
-                    graphviz=2.40.1=h0f2764d_1 \
-                    python-graphviz=0.13=py_0 \
-                    networkx \
-                    snakeviz=2.0.0=py_0 \
                     openjdk=8.0.152 \
+                    pytorch=1.3.1=py3.6_cuda10.1.243_cudnn7.6.3_0 \
+                    pytorch-pretrained-bert \
     && cd /clx \
     && python setup.py install
 
