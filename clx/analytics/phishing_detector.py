@@ -1,18 +1,12 @@
-import cudf
-from cuml.preprocessing.model_selection import train_test_split as cuml_train_test_split
 from sklearn.model_selection import train_test_split as sklearn_train_test_split
-from sklearn.metrics import f1_score
 from sklearn.metrics import accuracy_score
-from sklearn.metrics import precision_score
 from keras.preprocessing.sequence import pad_sequences
 import torch
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 import logging
-from clx.analytics.detector import Detector
 from transformers import BertTokenizer, AdamW , BertForSequenceClassification
 from tqdm import tqdm, trange
 import numpy as np
-
 
 log = logging.getLogger(__name__)
 
