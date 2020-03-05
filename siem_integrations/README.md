@@ -105,8 +105,7 @@ Download MovieLens stable benchmark [dataset](https://grouplens.org/datasets/mov
     ``` 
 4. Login to Splunk GUI and launch CLX Query application. `Apps> Manage Apps> Clx Query> Launch App`
 5. Run sample query
-    -  Get number of user_id's and their average rating in descending order for each genre and title.
-    -  Consider movies only with rating greater than 2.5.
+    -  Get number of user_id's and their average rating in descending order for each genre and title. Consider movies only with rating greater than 2.5.
         ```
         | clx query="SELECT genres, title, avg(rating) as avg_rating, count(user_id) as user_cnt from (SELECT main.movies.title as title, main.movies.genres as genres, main.ratings.userId as user_id, main.ratings.rating as rating FROM main.movies INNER JOIN main.ratings ON (main.ratings.movieId = main.movies.movieId) WHERE main.ratings.rating > 2.5) as tmp GROUP BY genres, title ORDER BY user_cnt DESC, avg_rating DESC"
         ```
