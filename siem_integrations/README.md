@@ -108,13 +108,14 @@ Download MovieLens stable benchmark [dataset](https://grouplens.org/datasets/mov
     -  Get number of user_id's and their average rating in descending order for each genre and title.
     -  Consider movies only with rating greater than 2.5.
         ```
-        | clx query="SELECT genres, title, count(user_id) as user_cnt, avg(rating) as avg_rating from (SELECT main.movies.title as title, main.movies.genres as genres, main.ratings.userId as user_id, main.ratings.rating as rating FROM main.movies INNER JOIN main.ratings ON (main.ratings.movieId = main.movies.movieId) WHERE main.ratings.rating > 2.5) as tmp GROUP BY genres, title ORDER BY user_cnt DESC, avg_rating DESC"
-        ```   
-        
+        | clx query="SELECT genres, title, avg(rating) as avg_rating, count(user_id) as user_cnt from (SELECT main.movies.title as title, main.movies.genres as genres, main.ratings.userId as user_id, main.ratings.rating as rating FROM main.movies INNER JOIN main.ratings ON (main.ratings.movieId = main.movies.movieId) WHERE main.ratings.rating > 2.5) as tmp GROUP BY genres, title ORDER BY user_cnt DESC, avg_rating DESC"
+        ```
+      -
+        ![clx_query_screeshot](/siem_integrations/clx_query/clx_query.png)
 
 ### Know Issues
 1.  BlazingContext memory leak [blazingsql-310](https://github.com/BlazingDB/blazingsql/issues/310)
-2.  Columns not being inferred from CSV header [blazingsql-265](https://github.com/BlazingDB/blazingsql/issues/265)
+2.  Columns not being inferred from CSV header [blazingsql-265](https://github.com/BlazingDB/blazingsql/issues/265).
 
 ## Contributing Guide
 
