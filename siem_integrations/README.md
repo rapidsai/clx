@@ -32,30 +32,29 @@ In order to utilize splunk2kafka, a [running Kafka instance](https://kafka.apach
 CLX Query is a [Splunk](https:/www.splunk.com) application that requests CLX Query Service ([Django](https:/www.djangoproject.com) RESTful service) to execute queries using CLX python package and get results back to the Splunk GUI. CLX python package uses [BlazingSQL](https://blazingsql.com) engine internally to execute queries. [Gunicorn](https:/gunicorn.org) provides Web Server Gateway Interface to forward requests to CLX Query Service. [Supervisor](http:/supervisor.org) monitors Gunicorn Web Server to ensure it doesn't go offline.
 
 ### Requirements
-Install required dependencies if not available.
+- django
+- gunicorn
+- supervisor
+- djangorestframework
 
-#### Install from Source
-```aidl
-pip install django==3.0.3 gunicorn==20.0.4 djangorestframework==3.11.0 supervisor==4.1.0
-```
-#### Conda Install
-```aidl
-conda install -c conda-forge django=3.0.3 gunicorn=20.0.4 djangorestframework=3.11.0 supervisor=4.1.0
-```
-
+Above packages can be installed using either Conda or source code. Conda installation is preferred as it uses binaries. 
+- Conda Install
+    ```aidl
+    conda install -c conda-forge django=3.0.3 gunicorn=20.0.4 supervisor=4.1.0 djangorestframework=3.11.0
+    ```
+- Install from the Source
+    ```aidl
+    pip install django==3.0.3 gunicorn==20.0.4 supervisor==4.1.0 djangorestframework==3.11.0
+    ```
 ### Download sample dataset
-Download MovieLens stable benchmark dataset. It has 25 million ratings and one million tag applications applied to 62,000 movies by 162,000 users. Includes tag genome data with 15 million relevance scores across 1,129 tags. 
-    
-```aidl
-wget http://files.grouplens.org/datasets/movielens/ml-25m.zip
-```
+Download MovieLens stable benchmark [dataset](https://grouplens.org/datasets/movielens/25m/). It has 25 million ratings and one million tag applications applied to 62,000 movies by 162,000 users. Includes tag genome data with 15 million relevance scores across 1,129 tags. 
 
 ### Install and Run CLX Query Service
  
-1. Update property `ALLOWED HOSTS` in `clx_query_service/clx_query_service/settings.py` with ip address of machine where CLX Query Service is planned to run. Example if docker container with CLX Query Service is running on host `5.56.114.13` then property will be like this `ALLOWED_HOSTS=["5.56.114.13"]`
+1. Update property `ALLOWED HOSTS` in `clx_query_service/clx_query_service/settings.py` with ip address of machine where CLX Query Service is planned to run. Example if docker container with CLX Query Service is running on host `5.56.114.13` then property will be like this `ALLOWED_HOSTS=["5.56.114.13"]`.
 
-2. As we have downloaded sample MovieLens dataset. Now update the configuration file `clx_query_service/conf/clx_blz_reader_conf.yaml` with the location of the dataset. Provide suitable table name for the dataset which will be used in the queries. `header` property is added as workaround for issue [blazingsql-265](https://github.com/BlazingDB/blazingsql/issues/265)
-4. CLX Query Service Runner usage.
+2. As we have downloaded sample MovieLens dataset. Now update the configuration file `clx_query_service/conf/clx_blz_reader_conf.yaml` with the location of the dataset. Provide suitable table name for the dataset which will be used in the queries. The `header` property is added as workaround for issue [blazingsql-265](https://github.com/BlazingDB/blazingsql/issues/265)
+3. CLX Query Service Runner usage.
 
     ```aidl
     bash clx_query_service/bin/start_service.sh --help
@@ -80,7 +79,7 @@ wget http://files.grouplens.org/datasets/movielens/ml-25m.zip
         ```aidl
         cp clx_query_service/conf/clx_query_service.conf /etc/supervisor
         ```
-   3. Add configuration file to Supervisord
+   3. Add configuration file to Supervisord.
         ```aidl
         supervisord -c /etc/supervisor/clx_query_service.conf
         ```
@@ -104,12 +103,14 @@ wget http://files.grouplens.org/datasets/movielens/ml-25m.zip
     ```aidl
     ./splunk/bin/splunk restart
     ``` 
-4. Login to Splunk GUI and launch CLX Query application `Apps> Manage Apps> Clx Query> Launch App` 
-5. Run sample query.
-    ```
-    | clx query="SELECT genres, title, count(user_id) as user_cnt, avg(rating) as avg_rating from (SELECT main.movies.title as title, main.movies.genres as genres, main.ratings.userId as user_id, main.ratings.rating as rating FROM main.movies INNER JOIN main.ratings ON (main.ratings.movieId = main.movies.movieId) WHERE main.ratings.rating > 2.5) as tmp GROUP BY genres, title ORDER BY user_cnt DESC, avg_rating DESC"
-    ```   
-   
+4. Login to Splunk GUI and launch CLX Query application. `Apps> Manage Apps> Clx Query> Launch App`
+5. Run sample query
+    -  Get number of user_id's and their average rating in descending order for each genre and title.
+    -  Consider movies only with rating greater than 2.5.
+        ```
+        | clx query="SELECT genres, title, count(user_id) as user_cnt, avg(rating) as avg_rating from (SELECT main.movies.title as title, main.movies.genres as genres, main.ratings.userId as user_id, main.ratings.rating as rating FROM main.movies INNER JOIN main.ratings ON (main.ratings.movieId = main.movies.movieId) WHERE main.ratings.rating > 2.5) as tmp GROUP BY genres, title ORDER BY user_cnt DESC, avg_rating DESC"
+        ```   
+        
 
 ### Know Issues
 1.  BlazingContext memory leak [blazingsql-310](https://github.com/BlazingDB/blazingsql/issues/310)

@@ -1,4 +1,4 @@
-# Copyright (c) 2019, NVIDIA CORPORATION.
+# Copyright (c) 2020, NVIDIA CORPORATION.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ usage() {
     echo "Example-1: bash $0 -p 8998 -w 2 -t 60"
     echo "Example-2: bash $0 --port 8990 --workers 4 --timeout 10"
     echo
-    echo "CLX Query Service Runner..."
+    echo "CLX Query Service Runner"
     echo
     echo Positional:
     echo "  -p, --port          Port number"
