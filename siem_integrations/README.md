@@ -42,7 +42,7 @@ Above packages can be installed using either Conda or source code. Conda install
     ```aidl
     conda install -c conda-forge django=3.0.3 gunicorn=20.0.4 supervisor=4.1.0 djangorestframework=3.11.0
     ```
-- Install from the Source
+- Install from the source
     ```aidl
     pip install django==3.0.3 gunicorn==20.0.4 supervisor==4.1.0 djangorestframework==3.11.0
     ```
@@ -114,7 +114,7 @@ Download MovieLens stable benchmark [dataset](https://grouplens.org/datasets/mov
         ![clx_query_screeshot](/siem_integrations/clx_query/clx_query.png)
 
 ### Know Issues
-1.  BlazingContext memory leak [blazingsql-310](https://github.com/BlazingDB/blazingsql/issues/310)
+1.  BlazingContext memory leak [blazingsql-310](https://github.com/BlazingDB/blazingsql/issues/310).
 2.  Columns not being inferred from CSV header [blazingsql-265](https://github.com/BlazingDB/blazingsql/issues/265).
 
 ## Contributing Guide
