@@ -52,7 +52,7 @@ def test_write_data_csv(tmpdir, expected_df):
 
 @pytest.mark.parametrize("expected_df", [expected_df])
 def test_write_data_parquet(tmpdir, expected_df):
-    fname = str(tmpdir.mkdir("tmp_test_fs_writer").join("parquet"))
+    fname = str(tmpdir.mkdir("tmp_test_fs_writer").join("person.parquet"))
     config = {
         "type": "fs",
         "output_path": fname,
@@ -61,7 +61,7 @@ def test_write_data_parquet(tmpdir, expected_df):
     writer = FileSystemWriter(config)
     writer.write_data(expected_df)
 
-    result_df = cudf.read_parquet(fname + "/*.parquet")
+    result_df = cudf.read_parquet(fname)
     assert result_df.equals(expected_df)
 
 @pytest.mark.parametrize("expected_df", [expected_df])
