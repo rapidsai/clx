@@ -1,8 +1,11 @@
 import cudf
 import dask
 import json
+import torch
+import torch.nn.functional as F
 from dask_cuda import LocalCUDACluster
 from distributed import Client
+from pytorch_pretrained_bert import BertConfig, BertForTokenClassification, BertTokenizer
 from streamz import Stream
 
 # Define some global configurations
@@ -23,6 +26,7 @@ def wel_parsing(predictions):
 # TODO: Monitor for thresholds and trigger alert by letting those messages pass through here
 def threshold_alert(event_logs):
     return event_logs
+
 
 def worker_init():
     import clx
