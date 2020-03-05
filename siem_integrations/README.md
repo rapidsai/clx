@@ -47,18 +47,18 @@ wget http://files.grouplens.org/datasets/movielens/ml-25m.zip
 
 ### Install and Run CLX Query Service
  
-1. Update property `ALLOWED HOSTS` in `clx_query_service/settings.py` with ip address of machine where docker container is running. Example if docker container is running on host `5.56.114.13` then `ALLOWED_HOSTS=["5.56.114.13"]`
+1. Update property `ALLOWED HOSTS` in `clx_query_service/clx_query_service/settings.py` with ip address of machine where CLX Query Service is planned to run. Example if docker container with CLX Query Service is running on host `5.56.114.13` then property will be like this `ALLOWED_HOSTS=["5.56.114.13"]`
 
-2. As we have downloaded sample MovieLens dataset. Now update the configuration file `clx_query_service/conf/clx_blz_reader_conf.yaml` with the location of the dataset and suitable table name for the dataset.
+2. As we have downloaded sample MovieLens dataset. Now update the configuration file `clx_query_service/conf/clx_blz_reader_conf.yaml` with the location of the dataset. Provide suitable table name for the dataset which will be used in the queries. `header` property is added as workaround for issue [blazingsql-265](https://github.com/BlazingDB/blazingsql/issues/265)
 4. CLX Query Service Runner usage.
 
     ```aidl
-    bash /clx/siem_integrations/clx_query_service/bin/start_service.sh --help
+    bash clx_query_service/bin/start_service.sh --help
     ```
     ``` 
-    Usage: /clx/siem_integrations/clx_query_service/bin/start_service.sh [POS]... [ARG]...
-    Example-1: bash /clx/siem_integrations/clx_query_service/bin/start_service.sh -p 8998 -w 2 -t 60
-    Example-2: bash /clx/siem_integrations/clx_query_service/bin/start_service.sh --port 8990 --workers 4 --timeout 10
+    Usage: clx_query_service/bin/start_service.sh [POS]... [ARG]...
+    Example-1: bash clx_query_service/bin/start_service.sh -p 8998 -w 2 -t 60
+    Example-2: bash clx_query_service/bin/start_service.sh --port 8990 --workers 4 --timeout 10
     
     CLX Query Service Runner
     
@@ -70,7 +70,7 @@ wget http://files.grouplens.org/datasets/movielens/ml-25m.zip
       -h, --help          Print this help
     ```
 5. Run Gunicorn wrapped CLX Query Service application as daemon process using Supervisor.
-   1. Update `command` property in the `clx_query_service/conf/clx_query_service.conf` as per the user requirements.
+   1. Update `command` property in the `clx_query_service/conf/clx_query_service.conf` as per the user requirements. Such as service binding `port`, number of `workers` and request `timeout` seconds.
    2. Copy update configuration file to supervisor location.
         ```aidl
         cp clx_query_service/conf/clx_query_service.conf /etc/supervisor
@@ -83,13 +83,13 @@ wget http://files.grouplens.org/datasets/movielens/ml-25m.zip
         ```aidl
         supervisorctl -c /etc/supervisor/clx_query_service.conf
         ```
-   5.  Start CLX Query Service.
+   5.  Start CLX Query Service from Supervisorctl CLI.
         ```aidl
         start clx_query_service
         ```
 ### Install and Run CLX Query
 
-1. Update configuration file `clx_query/default/clx_query_setup.conf` with hostname and port number of CLX Query Service.
+1. To establish communication between CLX Query and CLX Query Service, update the configuration file `clx query/default/clx_query_setup.conf` with the CLX Query Service hostname and the port number. The value of the `hostname` property should be the same as the IP used in the porperty `ALLOWED HOSTS` of `clx_query_service/clx_query_service/settings.py`. The value of the `port` property should be the same as the number used in the `command` property of `clx_query_service/conf/clx_query_service.conf`.
 
 2. Copy CLX Query to splunk apps directory.
     ```aidl
@@ -107,7 +107,8 @@ wget http://files.grouplens.org/datasets/movielens/ml-25m.zip
    
 
 ### Know Issues
-1.  BlazingContext memory leak issue [blazingsql-310](https://github.com/BlazingDB/blazingsql/issues/310)
+1.  BlazingContext memory leak [blazingsql-310](https://github.com/BlazingDB/blazingsql/issues/310)
+2.  Columns not being inferred from CSV header [blazingsql-265](https://github.com/BlazingDB/blazingsql/issues/265)
 
 ## Contributing Guide
 
