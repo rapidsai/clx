@@ -34,8 +34,13 @@ CLX Query is a [Splunk](https:/www.splunk.com) application that requests CLX Que
 ### Requirements
 Install required dependencies if not available.
 
+#### Install from Source
 ```aidl
-pip install django gunicorn djangorestframework supervisor
+pip install django==3.0.3 gunicorn==20.0.4 djangorestframework==3.11.0 supervisor==4.1.0
+```
+#### Conda Install
+```aidl
+conda install -c conda-forge django=3.0.3 gunicorn=20.0.4 djangorestframework=3.11.0 supervisor=4.1.0
 ```
 
 ### Download sample dataset
