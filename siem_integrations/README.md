@@ -26,50 +26,41 @@ In order to utilize splunk2kafka, a [running Kafka instance](https://kafka.apach
 2. Install export2kafka ([Instructions](https://github.com/rapidsai/clx-siem-integration/blob/master/splunk2kafka/export2kafka/README.md))
 
 
-## CLX Query Sample Dataset
+## CLX Query
 
-1. Download sample dataset.
+### Overview
+CLX Query is a [Splunk](https:/www.splunk.com) application that requests CLX Query Service ([Django](https:/www.djangoproject.com) RESTful service) to execute queries using CLX python package and get results back to the Splunk GUI. CLX python package uses [BlazingSQL](https://blazingsql.com) engine internally to execute queries. [Gunicorn](https:/gunicorn.org) provides Web Server Gateway Interface to forward requests to CLX Query Service. [Supervisor](http:/supervisor.org) monitors Gunicorn Web Server to ensure it doesn't go offline.
+
+### Requirements
+Install required dependencies if not available.
+
+```aidl
+pip install django gunicorn djangorestframework supervisor
+```
+
+### Download sample dataset
+Download MovieLens stable benchmark dataset. It has 25 million ratings and one million tag applications applied to 62,000 movies by 162,000 users. Includes tag genome data with 15 million relevance scores across 1,129 tags. 
     
+```aidl
+wget http://files.grouplens.org/datasets/movielens/ml-25m.zip
+```
+
+### Install and Run CLX Query Service
+ 
+1. Update property `ALLOWED HOSTS` in `clx_query_service/settings.py` with ip address of machine where docker container is running. Example if docker container is running on host `5.56.114.13` then `ALLOWED_HOSTS=["5.56.114.13"]`
+
+2. As we have downloaded sample MovieLens dataset. Now update the configuration file `clx_query_service/conf/clx_blz_reader_conf.yaml` with the location of the dataset and suitable table name for the dataset.
+4. CLX Query Service Runner usage.
+
     ```aidl
-    wget http://files.grouplens.org/datasets/movielens/ml-25m.zip
+    bash /clx/siem_integrations/clx_query_service/bin/start_service.sh --help
     ```
-   
-## CLX_Query_Service
-
-CLX Query Service is a restful service that runs using the django platform, which takes requests from the splunk clx query app and executes blazingsql query and returns the json response.
-
-### Install and Run CLX_Query_Service
-
-1. Install dependencies if not available.
-
-    ```aidl
-    pip install django gunicorn djangorestframework supervisor
-    ``` 
-2. Update settings by adding current query service running hostname.
-
-    ```aidl
-    vi clx_query_service/settings.py
-    ``` 
-    ```aidl
-    ALLOWED_HOSTS = ["<hostname goes here...>"]
-    ``` 
-3. Update configuration file with downloaded dataset location.
-   
-    ```aidl
-    vi clx_query_service/conf/clx_blz_reader_conf.yaml
-    ```
-    
-4. Start query service using gunicorn.
-
-     ```aidl
-     bash /clx/siem_integrations/clx_query_service/bin/start_service.sh --help
-     ```
     ``` 
     Usage: /clx/siem_integrations/clx_query_service/bin/start_service.sh [POS]... [ARG]...
     Example-1: bash /clx/siem_integrations/clx_query_service/bin/start_service.sh -p 8998 -w 2 -t 60
     Example-2: bash /clx/siem_integrations/clx_query_service/bin/start_service.sh --port 8990 --workers 4 --timeout 10
     
-    CLX Query Service Runner...
+    CLX Query Service Runner
     
     Positional:
       -p, --port          Port number
@@ -78,50 +69,44 @@ CLX Query Service is a restful service that runs using the django platform, whic
     
       -h, --help          Print this help
     ```
-5. Run gunicorn wrapped clx query service application as daemon process using supervisor.
+5. Run Gunicorn wrapped CLX Query Service application as daemon process using Supervisor.
+   1. Update `command` property in the `clx_query_service/conf/clx_query_service.conf` as per the user requirements.
+   2. Copy update configuration file to supervisor location.
+        ```aidl
+        cp clx_query_service/conf/clx_query_service.conf /etc/supervisor
+        ```
+   3. Add configuration file to Supervisord
+        ```aidl
+        supervisord -c /etc/supervisor/clx_query_service.conf
+        ```
+   4.  Add configuration file to Supervisorctl.
+        ```aidl
+        supervisorctl -c /etc/supervisor/clx_query_service.conf
+        ```
+   5.  Start CLX Query Service.
+        ```aidl
+        start clx_query_service
+        ```
+### Install and Run CLX Query
 
-   ```aidl
-   cp /clx/siem_integrations/clx_query_service/conf/clx_query_service.conf /etc/supervisor
-   ```
-   ```aidl
-   supervisord -c /etc/supervisor/clx_query_service.conf
-   ```
-   ```aidl
-   supervisorctl -c supervisor/clx_query_service.conf
-   ```
-   ```aidl
-   start clx_query_service
-   ```
+1. Update configuration file `clx_query/default/clx_query_setup.conf` with hostname and port number of CLX Query Service.
 
-## CLX_Query
-
-CLX Query is a splunk application with the ability to perform customized queries on the clx python module, which can trigger internal workflows to retrieve the requested analytical report using blazingsql engine.
-
-### Install and Run CLX_Query
-
-1. Update configuration file with hostname and port number of clx query service.
-
-    ```aidl
-    vi clx_query/default/clx_query_setup.conf
-    ```
-2. Copy CLX_Query to splunk apps directory.
-
+2. Copy CLX Query to splunk apps directory.
     ```aidl
     cp -R clx_query splunk/etc/apps
     ```
 3. Restart splunk application server to take effect on changes.
-
     ```aidl
     ./splunk/bin/splunk restart
-    ```  
-    
-4. Use this sample splunk query to generate report.
+    ``` 
+4. Login to Splunk GUI and launch CLX Query application `Apps> Manage Apps> Clx Query> Launch App` 
+5. Run sample query.
     ```
     | clx query="SELECT genres, title, count(user_id) as user_cnt, avg(rating) as avg_rating from (SELECT main.movies.title as title, main.movies.genres as genres, main.ratings.userId as user_id, main.ratings.rating as rating FROM main.movies INNER JOIN main.ratings ON (main.ratings.movieId = main.movies.movieId) WHERE main.ratings.rating > 2.5) as tmp GROUP BY genres, title ORDER BY user_cnt DESC, avg_rating DESC"
     ```   
    
 
-## Know Issues
+### Know Issues
 1.  BlazingContext memory leak issue [blazingsql-310](https://github.com/BlazingDB/blazingsql/issues/310)
 
 ## Contributing Guide
