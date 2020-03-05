@@ -25,6 +25,11 @@ Create a new container using the image above. When running this container, it wi
 ```
 docker run -it --gpus '"device=0"' --name cybert-streamz -d cybert-streamz:latest
 ```
+*NOTE: To run using your own dataset use the following command, replacing `/path/to/data/dir` with the path to your data directory on your host machine.
+And replacing `/path/to/data/dir/my_sample.csv` with full path to the specific data file within that directory.
+```
+docker run -it --gpus '"device=0"' -v /path/to/data/dir:/path/to/data/dir --name cybert-streamz -d cybert-streamz:latest /path/to/data/dir/my_sample.csv
+```
 
 View the output in the logs
 

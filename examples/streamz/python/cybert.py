@@ -1,3 +1,4 @@
+import argparse
 import cudf
 import dask
 import json
@@ -7,13 +8,6 @@ from dask_cuda import LocalCUDACluster
 from distributed import Client
 from pytorch_pretrained_bert import BertConfig, BertForTokenClassification, BertTokenizer
 from streamz import Stream
-
-# Define some global configurations
-broker = 'localhost:9092'
-topic = "input"
-consumer_group = "streamz"
-consumer_conf = {'bootstrap.servers': broker,
-                 'group.id': consumer_group, 'session.timeout.ms': 60000}
 
 # TODO: Takes the RAW Windows Event logs from Kafka and runs NER predictions against each message.
 def predict_batch(messages):
@@ -27,17 +21,23 @@ def wel_parsing(predictions):
 def threshold_alert(event_logs):
     return event_logs
 
-
 def worker_init():
     import clx
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Cybert using Streamz and Dask. Data will be read from the input kafka topic, processed using cybert, and output printed.")
+    parser.add_argument("broker", default="localhost:9092", help="Kafka broker")
+    parser.add_argument("input_topic", default="input", help="Input kafka topic")
+    parser.add_argument("group_id", default="streamz", help="Kafka group ID")
+    args = parser.parse_args()
     cluster = LocalCUDACluster()
     client = Client(cluster)
     print(client)
     client.run(worker_init)
     # Define the streaming pipeline.
-    source = Stream.from_kafka_batched(topic, consumer_conf, poll_interval='1s',
+    consumer_conf = {'bootstrap.servers': args.broker,
+                 'group.id': args.group_id, 'session.timeout.ms': 60000}
+    source = Stream.from_kafka_batched(args.input_topic, consumer_conf, poll_interval='1s',
                                     npartitions=1, asynchronous=True, dask=False)
     inference = source.map(predict_batch)
     wel_parsing = inference.map(wel_parsing)

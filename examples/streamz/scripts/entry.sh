@@ -1,8 +1,9 @@
 #!/bin/bash
+set +e
 
+SAMPLE_DATA=$1
 BROKER="localhost:9092"
-TOPIC="input"
-SAMPLE_DATA="/data/sample.csv"
+GROUP_ID="streamz"
 ENV_TEST_SCRIPT="/python/check_env.py"
 
 # Start Zookeeper
@@ -27,4 +28,4 @@ source activate rapids
 python $ENV_TEST_SCRIPT
 
 # Run cybert
-python -i /python/cybert.py
+python -i /python/cybert.py --broker $BROKER --input_topic $INPUT_TOPIC --group_id $GROUP_ID
