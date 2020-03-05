@@ -46,11 +46,9 @@ function sed_runner() {
 }
 
 # setup update
-#sed_runner 's/version="0.*"/version='"'${NEXT_FULL_TAG}'"'/g' setup.py
 sed_runner 's/version="0.*"/version="'"${NEXT_FULL_TAG}"'"/g' setup.py
 
 # Dockerfile update
-#sed_runner 's/version=0.*/version=${NEXT_SHORT_TAG}/g' Dockerfile
 sed_runner 's/RAPIDS_VERSION=0.*/RAPIDS_VERSION='"${NEXT_SHORT_TAG}"'/g' Dockerfile
 
 # Sphinx Update
