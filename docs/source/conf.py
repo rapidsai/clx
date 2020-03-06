@@ -40,13 +40,13 @@ release = '0.13.0'
 # ones.
 extensions = [
     'nbsphinx',
-    "sphinx.ext.intersphinx",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
-    "numpydoc",
-    "IPython.sphinxext.ipython_console_highlighting",
-    "IPython.sphinxext.ipython_directive",
-    "nbsphinx"
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
+    'numpydoc',
+    'IPython.sphinxext.ipython_console_highlighting',
+    'IPython.sphinxext.ipython_directive',
+    'nbsphinx'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
