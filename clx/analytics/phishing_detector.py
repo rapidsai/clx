@@ -1,3 +1,4 @@
+import cudf
 from sklearn.model_selection import train_test_split as sklearn_train_test_split
 from sklearn.metrics import accuracy_score
 from keras.preprocessing.sequence import pad_sequences
@@ -100,6 +101,7 @@ class PhishingDetector:
 
         preds = [item for sublist in results for item in sublist]
         preds = np.argmax(preds, axis=1).flatten()
+        preds = cudf.Series(preds.tolist())
 
         return preds
 
