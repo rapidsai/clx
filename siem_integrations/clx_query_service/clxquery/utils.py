@@ -13,6 +13,10 @@
 # limitations under the License.
 
 import yaml
+import logging
+from blazingsql import BlazingContext
+
+log = logging.getLogger(__name__)
 
 """
 Utility script
