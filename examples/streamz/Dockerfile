@@ -58,5 +58,3 @@ RUN wget -q http://www.gtlib.gatech.edu/pub/apache/kafka/2.3.0/kafka_2.11-2.3.0.
         rm /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz
 
 ENTRYPOINT ["/bin/bash", "/scripts/entry.sh"]
-
-CMD []

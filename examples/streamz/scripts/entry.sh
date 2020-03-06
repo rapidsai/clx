@@ -1,7 +1,13 @@
 #!/bin/bash
 set +e
 
-SAMPLE_DATA=$1
+#If sample data filepath is not passed as a parameter, use sample.csv data.
+if [ -n "$1" ]; then
+  SAMPLE_DATA=$1
+else
+  SAMPLE_DATA="/data/sample.csv"
+fi
+
 BROKER="localhost:9092"
 GROUP_ID="streamz"
 ENV_TEST_SCRIPT="/python/check_env.py"
