@@ -1,6 +1,7 @@
 # clx 0.13.0 (Date TBD)
 
 ## New Features
+- PR #133 Phishing detection using BERT
 
 ## Improvements
 - PR #103 DGA detector refactor
