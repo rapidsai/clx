@@ -22,6 +22,8 @@ from dask_cuda import LocalCUDACluster
 from distributed import Client
 from pytorch_pretrained_bert import BertConfig, BertForTokenClassification, BertTokenizer
 from streamz import Stream
+from confluent_kafka import Producer
+import socket
 
 # TODO: Takes the RAW Windows Event logs from Kafka and runs NER predictions against each message.
 def predict_batch(messages):
@@ -35,14 +37,24 @@ def wel_parsing(predictions):
 def threshold_alert(event_logs):
     return event_logs
 
+def sink_to_kafka(event_logs):
+    conf = {"bootstrap.servers": args.broker,
+        "client.id": socket.gethostname(),
+        "session.timeout.ms": 10000}
+    producer = Producer(conf)
+    for event in event_logs:
+        producer.produce(args.output_topic, event)
+    producer.poll(1)
+
 def worker_init():
     import clx
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Cybert using Streamz and Dask. Data will be read from the input kafka topic, processed using cybert, and output printed.")
-    parser.add_argument("broker", default="localhost:9092", help="Kafka broker")
-    parser.add_argument("input_topic", default="input", help="Input kafka topic")
-    parser.add_argument("group_id", default="streamz", help="Kafka group ID")
+    parser.add_argument("--broker", default="localhost:9092", help="Kafka broker")
+    parser.add_argument("--input_topic", default="input", help="Input kafka topic")
+    parser.add_argument("--output_topic", default="output", help="Output kafka topic")
+    parser.add_argument("--group_id", default="streamz", help="Kafka group ID")
     args = parser.parse_args()
     cluster = LocalCUDACluster()
     client = Client(cluster)
@@ -55,6 +67,6 @@ if __name__ == '__main__':
                                     npartitions=1, asynchronous=True, dask=False)
     inference = source.map(predict_batch)
     wel_parsing = inference.map(wel_parsing)
-    alerts = wel_parsing.map(threshold_alert).sink(print)
+    alerts = wel_parsing.map(threshold_alert).map(sink_to_kafka)
     # Start the stream.
     source.start()

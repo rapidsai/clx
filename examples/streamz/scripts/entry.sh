@@ -1,6 +1,12 @@
 #!/bin/bash
 set +e
 
+BROKER="localhost:9092"
+GROUP_ID="streamz"
+ENV_TEST_SCRIPT="/python/check_env.py"
+INPUT_TOPIC="input"
+INPUT_TOPIC="output"
+
 #If sample data filepath is not passed as a parameter, use sample.csv data.
 if [ -n "$1" ]; then
   SAMPLE_DATA=$1
@@ -8,9 +14,7 @@ else
   SAMPLE_DATA="/data/sample.csv"
 fi
 
-BROKER="localhost:9092"
-GROUP_ID="streamz"
-ENV_TEST_SCRIPT="/python/check_env.py"
+echo $JAVA_HOME
 
 # Start Zookeeper
 $KAFKA_HOME/bin/zookeeper-server-start.sh -daemon $KAFKA_HOME/config/zookeeper.properties
@@ -23,10 +27,11 @@ sed -i '/#advertised.listeners=PLAINTEXT:\/\/your.host.name:9092/c\advertised.li
 $KAFKA_HOME/bin/kafka-server-start.sh -daemon $KAFKA_HOME/config/server.properties
 
 # Create kafka topic
-$KAFKA_HOME/bin/kafka-topics.sh --create --bootstrap-server $BROKER --replication-factor 1 --partitions 1 --topic $TOPIC
+$KAFKA_HOME/bin/kafka-topics.sh --create --bootstrap-server $BROKER --replication-factor 1 --partitions 1 --topic $INPUT_TOPIC
+$KAFKA_HOME/bin/kafka-topics.sh --create --bootstrap-server $BROKER --replication-factor 1 --partitions 1 --topic $OUTPUT_TOPIC
 
 # Read sample data into the kafka topic
-$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $BROKER --topic $TOPIC < $SAMPLE_DATA
+$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $BROKER --topic $INPUT_TOPIC < $SAMPLE_DATA
 
 source activate rapids
 
