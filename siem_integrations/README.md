@@ -53,7 +53,7 @@ Download MovieLens stable benchmark [dataset](https://grouplens.org/datasets/mov
  
 1. Update property `ALLOWED HOSTS` in `clx_query_service/clx_query_service/settings.py` with ip address of machine where CLX Query Service is planned to run. Example if docker container with CLX Query Service is running on host `5.56.114.13` then property will be like this `ALLOWED_HOSTS=["5.56.114.13"]`.
 
-2. As we have downloaded sample MovieLens dataset. Now update the configuration file `clx_query_service/conf/clx_blz_reader_conf.yaml` with the location of the dataset. Provide suitable table name for the dataset which will be used in the queries. The `header` property is added as workaround for issue [blazingsql-265](https://github.com/BlazingDB/blazingsql/issues/265)
+2. As we have downloaded sample MovieLens dataset. Now update the configuration file `clx_query_service/conf/clx_blz_reader_conf.yaml` with the location of the dataset. Provide suitable table name for the dataset which will be used in the queries. The `header` property is added as workaround for issue [blazingsql-265](https://github.com/BlazingDB/blazingsql/issues/265).
 3. CLX Query Service Runner usage.
 
     ```aidl
