@@ -6,7 +6,7 @@ NBTEST=${WORKSPACE}/ci/utils/nbtest.sh
 LIBCUDF_KERNEL_CACHE_PATH=${WORKSPACE}/.jitcache
 
 cd ${NOTEBOOKS_DIR}
-NOTEBOOK_LIST=$(git diff --name-only 452dfde2bf69be50ad2fc092a26fe6cb7855b83e $(git merge-base HEAD master) | grep -i .ipynb)
+NOTEBOOK_LIST=$(git diff --name-only ${COMMIT_HASH} $(git merge-base ${COMMIT_HASH} ${TARGET_BRANCH}) | grep -i .ipynb)
 
 echo ">>>  Modified notebook list: \n ${NOTEBOOK_LIST}" 
 # Add notebooks that should be skipped here
