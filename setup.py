@@ -4,7 +4,7 @@ install_requires = ["confluent_kafka", "pytorch-transformers", "seqeval[gpu]", "
 
 setup(
     name="clx",
-    version="0.13.0",
+    version="0.14.0",
     description="CLX",
     author="NVIDIA Corporation",
     packages=find_packages(include=["clx", "clx.*"]),
