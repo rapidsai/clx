@@ -9,6 +9,7 @@
 # clx 0.13.0 (Date TBD)
 
 ## New Features
+- PR #130 Example of streamz
 
 ## Improvements
 - PR #103 DGA detector refactor
