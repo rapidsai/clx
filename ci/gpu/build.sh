@@ -26,6 +26,9 @@ cd $WORKSPACE
 export GIT_DESCRIBE_TAG=`git describe --tags`
 export MINOR_VERSION=`echo $GIT_DESCRIBE_TAG | grep -o -E '([0-9]+\.[0-9]+)'`
 
+# Fetch references to development branch for git diffs
+git fetch origin branch-${MINOR_VERSION}
+
 ################################################################################
 # SETUP - Check environment
 ################################################################################
