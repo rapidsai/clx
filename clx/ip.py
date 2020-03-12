@@ -86,7 +86,7 @@ def is_ip(ips):
     0     True
     1    False
     dtype: bool
-    """    
+    """
     res = cudf.Series(rmm.device_array(len(ips), dtype="bool"))
     ptr = res._column.data.ptr
     is_ip_REGEX = r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
