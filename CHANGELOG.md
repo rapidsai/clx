@@ -11,6 +11,7 @@
 ## Bug Fixes
 - PR #123 Fix update-version.sh
 - PR #129 Fix alert analysis notebook viz using cuxfilter
+- PR #136 Fix tests to support latest cudf changes
 
 # clx 0.12.0 (Date TBD)
 
