@@ -47,12 +47,12 @@ def test_rzscore():
     zscores_df = cudf.DataFrame()
     zscores_df["zscore"] = clx.analytics.stats.rzscore(series, 7)
     expected_zscores_arr = [
-        float("NaN"),
-        float("NaN"),
-        float("NaN"),
-        float("NaN"),
-        float("NaN"),
-        float("NaN"),
+        float(0),
+        float(0),
+        float(0),
+        float(0),
+        float(0),
+        float(0),
         2.374423424,
         -0.645941275,
         -0.683973734,
@@ -75,6 +75,6 @@ def test_rzscore():
     expected_zscores_df["zscore"] = expected_zscores_arr
 
     # Check that columns are equal
-    expected_zscores_df["zscore"] = expected_zscores_df["zscore"].fillna(0)
+    expected_zscores_df["zscore"] = expected_zscores_df["zscore"]
     zscores_df["zscore"] = zscores_df["zscore"].fillna(0)
     assert cp.allclose(expected_zscores_df["zscore"], zscores_df["zscore"])
