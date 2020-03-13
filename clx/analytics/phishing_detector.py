@@ -1,5 +1,6 @@
 import cudf
-from sklearn.model_selection import train_test_split as sklearn_train_test_split
+from cuml.preprocessing.model_selection import train_test_split
+# from sklearn.model_selection import train_test_split as sklearn_train_test_split
 from sklearn.metrics import accuracy_score
 from keras.preprocessing.sequence import pad_sequences
 import torch
@@ -8,6 +9,8 @@ import logging
 from transformers import BertTokenizer, AdamW , BertForSequenceClassification
 from tqdm import tqdm, trange
 import numpy as np
+import os
+import tokenizer
 
 log = logging.getLogger(__name__)
 
@@ -20,33 +23,66 @@ class PhishingDetector:
         self._model = None
         self._optimizer = None
 
-    def init_model(self):
+    def init_model(self, model_or_path="bert-base-uncased"):
         if self._model is None:
             self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-            self._tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
+            #self._tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
 
-        self._model = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=2)
+        self._model = BertForSequenceClassification.from_pretrained(model_or_path, num_labels=2)
         self._model.cuda()
 
-    def train_model(self, emails_train_gdf, labels_train_gdf, learning_rate=3e-5, max_len=128, batch_size=32, epochs=5):
-        tokenized_emails, labels = self._tokenize(emails_train_gdf, labels_train_gdf)
-        input_ids = self._create_input_id(tokenized_emails, max_len)
-        attention_masks = self._create_att_mask(input_ids)
-        train_inputs, validation_inputs, train_labels, validation_labels = sklearn_train_test_split(input_ids, labels, test_size=0.20, random_state=2)
-        train_masks, validation_masks, _, _ = sklearn_train_test_split(attention_masks, input_ids, test_size=0.20, random_state=2)
+    def train_model(self, emails, labels, max_num_sentences=1000000, max_num_chars=100000000, max_rows_tensor=1000000, learning_rate=3e-5, max_len=128, batch_size=32, epochs=5):
 
-        train_dataloader,validation_dataloader = self._create_data_loaders(train_inputs,validation_inputs,train_labels,validation_labels,train_masks,validation_masks,batch_size)
+        emails["label"] = labels
+        train_emails, validation_emails, train_labels, validation_labels = train_test_split(emails, 'label', train_size=0.8, random_state=2)
+
+        # Save train_emails and validation_emails to files for tokenizer. This will change to cudf inputs.
+        train_emails_pd = train_emails.to_pandas()
+        train_emails_pd.iloc[:, 0].to_csv(path="train_emails.txt", header=False, index=False)
+
+        validation_emails_pd = validation_emails.to_pandas()
+        validation_emails_pd.iloc[:, 0].to_csv(path="validation_emails.txt", header=False, index=False)
+
+        # Now get tokenize training and validation
+        train_inputs, train_masks, _ = tokenizer.tokenizer("train_emails.txt", "../../hash_table.txt", max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+        validation_inputs, validation_masks, _ = tokenizer.tokenizer("validation_emails.txt", "../../hash_table.txt", max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+
+        # training fails because if it doesn't have longs here
+        train_inputs = train_inputs.type(torch.LongTensor)
+        validation_inputs = validation_inputs.type(torch.LongTensor)
+
+        # convert labels to tensors
+        train_labels = torch.tensor(train_labels.to_array())
+        validation_labels = torch.tensor(validation_labels.to_array())
+
+        # create dataloaders
+        train_data = TensorDataset(train_inputs, train_masks, train_labels)
+        train_sampler = RandomSampler(train_data)
+        train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)
+
+        validation_data = TensorDataset(validation_inputs, validation_masks, validation_labels)
+        validation_sampler = SequentialSampler(validation_data)
+        validation_dataloader = DataLoader(validation_data, sampler=validation_sampler, batch_size=batch_size)
 
         self._config_optimizer(learning_rate)
 
         self._model = self._train(train_dataloader, validation_dataloader, self._model, epochs)
 
 
-    def evaluate_model(self, emails_test_gdf, labels_test_gdf, max_len=128, batch_size=32):
-        tokenized_emails,labels = self._tokenize(emails_test_gdf, labels_test_gdf)
-        input_ids = self._create_input_id(tokenized_emails, max_len)
-        attention_masks = self._create_att_mask(input_ids)
-        test_dataloader = self._testset_loader(input_ids, attention_masks,labels, batch_size)
+    def evaluate_model(self, emails, labels, max_num_sentences=1000000, max_num_chars=100000000, max_rows_tensor=1000000, max_len=128, batch_size=32):
+
+        # Save test emails to files for tokenizer. This will change to cudf input.
+        test_emails_pd = emails.to_pandas()
+        test_emails_pd.iloc[:, 0].to_csv(path="test_emails.txt", header=False, index=False)
+
+        test_inputs, test_masks, _ = tokenizer.tokenizer("test_emails.txt", "../../hash_table.txt", max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+
+        test_inputs = test_inputs.type(torch.LongTensor)
+        test_labels = torch.tensor(labels.to_array())
+        test_data = TensorDataset(test_inputs, test_masks, test_labels)
+        test_sampler = SequentialSampler(test_data)
+        test_dataloader = DataLoader(test_data, sampler=test_sampler, batch_size=batch_size)
+
         tests, true_labels = self._evaluate_testset(test_dataloader)
 
         flat_tests = [item for sublist in tests for item in sublist]
@@ -69,23 +105,22 @@ class PhishingDetector:
         self._model.cuda()
         
 
-    def predict(self, emails, max_len=128, batch_size=32):
-        emails = emails.to_array()
-        emails = ["[CLS] " + str(email) + " [SEP]" for email in emails]#add cls and sep so they are recognized by the tokenizer
-        tokenized_emails = [self._tokenizer.tokenize(email) for email in emails]
-        input_ids = self._create_input_id(tokenized_emails,max_len)
-        attention_masks = self._create_att_mask(input_ids)
+    def predict(self, emails, max_num_sentences=1000000, max_num_chars=100000000, max_rows_tensor=1000000, max_len=128, batch_size=32):
 
-        inputs = torch.tensor(input_ids)
-        masks = torch.tensor(attention_masks)
-        input_data = TensorDataset(inputs, masks)
-        test_sampler = SequentialSampler(input_data)
-        input_dataloader = DataLoader(input_data, sampler=test_sampler, batch_size=batch_size)
+        predict_emails_pd = emails.to_pandas()
+        predict_emails_pd.to_csv(path="predict_emails.txt", header=False, index=False)
+
+        predict_inputs, predict_masks, _ = tokenizer.tokenizer("predict_emails.txt", "../../hash_table.txt", max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+
+        predict_inputs = predict_inputs.type(torch.LongTensor)
+        predict_data = TensorDataset(predict_inputs, predict_masks)
+        predict_sampler = SequentialSampler(predict_data)
+        predict_dataloader = DataLoader(predict_data, sampler=predict_sampler, batch_size=batch_size)
 
         self._model.eval()
 
         results = []
-        for batch in input_dataloader:
+        for batch in predict_dataloader:
 
             batch = tuple(t.to(self._device) for t in batch)
 
@@ -179,10 +214,8 @@ class PhishingDetector:
                 b_input_ids, b_input_mask, b_labels = batch# Unpack the inputs from dataloader
                 self._optimizer.zero_grad()# Clear out the gradients
                 loss = model(b_input_ids, token_type_ids=None, attention_mask=b_input_mask, labels=b_labels)[0]#forwardpass
-                # print(type(train_loss_set))
 
                 train_loss_set.append(loss.item())
-                # print("loss.item",loss.item())
 
                 loss.backward()
                 self._optimizer.step()#update parameters
