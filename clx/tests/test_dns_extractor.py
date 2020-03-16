@@ -197,23 +197,6 @@ def test_extract_hostname(input_df):
     assert output.equals(expected_output_df["hostname"])
 
 
-def test_get_hostname_split_df():
-    input_df = DataFrame(
-        {"hostname": ["forums.news.cnn.com.ac", "forums.news.cnn.ac", "b.cnn.com"]}
-    )
-
-    expected_output_df = DataFrame(
-        {
-            4: ["ac", "", ""],
-            3: ["com", "ac", ""],
-            2: ["cnn", "cnn", "com"],
-            1: ["news", "news", "cnn"],
-            0: ["forums", "forums", "b"],
-        }
-    )
-    actual_output_df = dns.get_hostname_split_df(input_df["hostname"])
-    assert actual_output_df.equals(expected_output_df)
-
 
 def test_generate_tld_cols():
     hostnames_df = DataFrame(
