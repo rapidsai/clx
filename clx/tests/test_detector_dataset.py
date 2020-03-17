@@ -75,4 +75,8 @@ def test_detector_dataset():
     dataset = DetectorDataset(test_input_df, test_batchsize)
     assert len(dataset.partitioned_dfs) == 2
     assert dataset.partitioned_dfs[0].equals(expected_output_df1)
-    assert dataset.partitioned_dfs[1]["len"].equals(expected_output_df2["len"])
+    assert (
+        dataset.partitioned_dfs[1]
+        .reset_index(drop=True)["len"]
+        .equals(expected_output_df2.reset_index(drop=True)["len"])
+    )
