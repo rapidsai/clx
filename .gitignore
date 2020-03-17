@@ -5,6 +5,9 @@ build/
 dist/
 clx.egg-info/
 
+# Dask
+dask-worker-space/
+
 # IDE
 .idea/
 *.iml

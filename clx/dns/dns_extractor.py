@@ -101,32 +101,6 @@ def extract_hostnames(url_series):
     return hostnames
 
 
-def get_hostname_split_df(hostnames):
-    """Find all words and digits between periods.
-    
-    :param hostnames: Hostnames that are being split.
-    :type hostnames: cudf.Series
-    :return: Hostname splits.
-    :rtype: cudf.DataFrame
-
-    Examples
-    --------
-    >>> import cudf
-    >>> from clx.dns import dns_extractor as dns
-    >>> hostnames = cudf.Series(["www.google.com", "pandas.pydata.org"])
-    >>> dns.get_hostname_split_df(hostnames)
-         2       1       0
-    0  com  google     www
-    1  org  pydata  pandas
-    """
-    hostname_split = hostnames.str.findall("([^.]+)")
-    hostname_split_df = DataFrame()
-    # Assign hostname split to cudf dataframe.
-    for i in range(len(hostname_split) - 1, -1, -1):
-        hostname_split_df[i] = hostname_split[i]
-    return hostname_split_df
-
-
 def generate_tld_cols(hostname_split_df, hostnames, col_len):
     """
     This function generates tld columns.
@@ -309,7 +283,7 @@ def parse_url(url_series, req_cols=None):
     url_index = url_series.index
     del url_series
     log.info("Extracting hostnames is successfully completed.")
-    hostname_split_df = get_hostname_split_df(hostnames)
+    hostname_split_df = hostnames.str.findall("([^.]+)")
     col_len = len(hostname_split_df.columns) - 1
     log.info("Generating tld columns...")
     hostname_split_df = generate_tld_cols(hostname_split_df, hostnames, col_len)

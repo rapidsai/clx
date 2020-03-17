@@ -1,6 +1,7 @@
 # clx 0.13.0 (Date TBD)
 
 ## New Features
+- PR #130 Example of streamz
 - PR #132 CLX query applications
 
 ## Improvements
@@ -11,6 +12,7 @@
 ## Bug Fixes
 - PR #123 Fix update-version.sh
 - PR #129 Fix alert analysis notebook viz using cuxfilter
+- PR #138 Fix test cases to support latest cudf changes
 
 # clx 0.12.0 (Date TBD)
 
