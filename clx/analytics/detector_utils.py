@@ -1,4 +1,3 @@
-import rmm
 import cudf
 import logging
 import numpy as np
@@ -25,16 +24,13 @@ def str2ascii(df, domains_len):
     for i in range(0, columns_cnt):
         split_df[i] = splits[i]
 
-    # https://github.com/rapidsai/cudf/issues/3123
     # Replace null's with ^.
     split_df = split_df.fillna("^")
     temp_df = cudf.DataFrame()
     for col in range(0, columns_cnt):
-        ascii_darr = rmm.device_array(domains_len, dtype=np.int32)
-        split_df[col].str.code_points(ascii_darr.device_ctypes_pointer.value)
-        temp_df[col] = ascii_darr
+        temp_df[col] = split_df[col].str.code_points()
     del split_df
-    # https://github.com/rapidsai/cudf/issues/3123
+   
     # Replace ^ ascii value 94 with 0.
     temp_df = temp_df.replace(94, 0)
     temp_df["len"] = df["len"]
