@@ -113,8 +113,7 @@ Download MovieLens stable benchmark [dataset](https://grouplens.org/datasets/mov
         ![clx_query_screeshot](/siem_integrations/clx_query/clx_query.png)
 
 ### Know Issues
-1.  BlazingContext memory leak [blazingsql-310](https://github.com/BlazingDB/blazingsql/issues/310).
-2.  Columns not being inferred from CSV header [blazingsql-265](https://github.com/BlazingDB/blazingsql/issues/265).
+1.  Columns not being inferred from CSV header [blazingsql-265](https://github.com/BlazingDB/blazingsql/issues/265).
 
 ## Contributing Guide
 
