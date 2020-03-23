@@ -13,7 +13,7 @@ class Cybert:
     Cybert log parser 
     """
     def __init__(self, max_num_logs=100, max_num_chars=100000, max_rows_tensor=1000, stride_len=48, max_seq_len=64):
-        """
+        """Initialize the cybert log parser
         
         :param max_num_logs: Max number of logs for processing
         :type max_num_logs: int
@@ -62,13 +62,13 @@ class Cybert:
         return self._max_rows_tensor
 
     @property
-    def max_stride_len(self):
+    def stride_len(self):
         """Max stride length.
         
         :return: Max stride length.
         :rtype: int
         """
-        return self._max_stride_len
+        return self._stride_len
 
     @property
     def max_seq_len(self):
@@ -88,6 +88,8 @@ class Cybert:
     def load_model(self, model_filepath, label_map, num_labels):
         model_state_dict = torch.load(model_file_path)
         self.model = BertForTokenClassification.from_pretrained('bert-base-cased', state_dict=model_state_dict, num_labels=num_labels)
+        self.model.cuda()
+        self.model.eval()
         self.max_seq_len = max_seq_len
 
     def inference(self, input_ids, attention_masks):
@@ -95,14 +97,13 @@ class Cybert:
             logits = self.model(input_ids, attention_masks)[0]
         logits = F.softmax(logits, dim=2)
         confidences, labels = torch.max(logits,2)
-
         infer_pdf = pd.DataFrame(meta_data.detach().cpu().numpy())
         infer_pdf.columns = ['doc','start','stop']
         infer_pdf['confidences'] = confidences.detach().cpu().numpy().tolist()
         infer_pdf['labels'] = labels.detach().cpu().numpy().tolist()
         infer_pdf['token_ids'] = input_ids.detach().cpu().numpy().tolist()
         processed_infer_pdf = self.postprocessing(infer_pdf)
-        return infer_pdf
+        return processed_infer_pdf
 
     def postprocessing(self, infer_pdf):
         infer_pdf['confidences'] = infer_pdf.apply(lambda row: row['confidences'][row['start']:row['stop']], axis=1)
@@ -113,6 +114,7 @@ class Cybert:
         parsed_df = parsed_df.applymap(self.__decode_cleanup)
         conf_df = pdf.apply(lambda row: self.__confidence_by_label(row), axis=1)
         conf_df = pd.DataFrame(conf_df.tolist())
+        return conf_df
 
     def __tokens_by_label(self,row):
         token_dict = defaultdict(str)
