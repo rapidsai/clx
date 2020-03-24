@@ -1,12 +1,12 @@
-from transformers import BertForTokenClassification
 import cudf
 import numpy as np
+import os
+import pandas as pd
+import tokenizer
 import torch
 import torch.nn.functional as F
-import tokenizer
-import pandas as pd
 from collections import defaultdict
-import os
+from transformers import BertForTokenClassification
 
 class Cybert:
     """
@@ -83,7 +83,7 @@ class Cybert:
         input_ids, attention_masks, meta_data = tokenizer.tokenize_df(raw_data_df, self.hash_file, max_sequence_length = self.max_seq_len,
                                                        stride=self.stride_len, do_lower=False, do_truncate=False, max_num_sentences=self.max_num_logs,
                                                        max_num_chars = self.max_num_chars, max_rows_tensor = self.max_rows_tensor)        
-        return input_ids, attention_masks
+        return input_ids, attention_masks, meta_data
 
     def load_model(self, model_filepath, label_map, num_labels):
         model_state_dict = torch.load(model_file_path)
@@ -92,7 +92,7 @@ class Cybert:
         self.model.eval()
         self.max_seq_len = max_seq_len
 
-    def inference(self, input_ids, attention_masks):
+    def inference(self, input_ids, attention_masks, meta_data):
         with torch.no_grad():
             logits = self.model(input_ids, attention_masks)[0]
         logits = F.softmax(logits, dim=2)
