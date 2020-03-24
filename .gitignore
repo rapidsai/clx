@@ -1,3 +1,15 @@
+## Common
+*.pyc
+*.a
+*.o
+*.so
+*.dylib
+.cache
+.coverage
+.vscode
+*.swp
+.DS_Store
+
 # Python
 __pycache__/
 .pytest_cache/
