@@ -57,7 +57,8 @@ class WindowsEventParser(EventParser):
             temp = self.parse_raw_event(
                 input_chunk, raw_column, self.event_regex[eventcode]
             )
-            output_chunks.append(temp)
+            if not temp.empty:
+                output_chunks.append(temp)
         parsed_dataframe = cudf.concat(output_chunks)
         # Replace null values with empty.
         parsed_dataframe = parsed_dataframe.fillna("")
