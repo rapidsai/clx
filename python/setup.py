@@ -19,11 +19,11 @@ if (os.environ.get('CONDA_PREFIX', None)):
 
 EXTENSIONS = [
     Extension("*",
-        sources=["clx/tokenizers/tokenizer.pyx"],
+        sources=["clx/analytics/tokenizer.pyx"],
         language="c++",
         runtime_library_dirs=[conda_lib_dir],
         library_dirs=[get_python_lib()],
-        libraries=["tokenizers"]
+        libraries=["clx"]
     )
 ]
 

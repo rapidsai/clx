@@ -7,24 +7,24 @@
             "../cpp/src/for_cython.h"
         ],
         "include_dirs": [
-            "clx/tokenizers"
+            "clx/analytics"
         ],
         "language": "c++",
         "libraries": [
-            "tokenizers"
+            "clx"
         ],
         "library_dirs": [
             "/opt/conda/envs/rapids/lib/python3.7/site-packages"
         ],
-        "name": "tokenizer",
+        "name": "clx.analytics.tokenizer",
         "runtime_library_dirs": [
             "/opt/conda/envs/rapids/lib"
         ],
         "sources": [
-            "clx/tokenizers/tokenizer.pyx"
+            "clx/analytics/tokenizer.pyx"
         ]
     },
-    "module_name": "tokenizer"
+    "module_name": "clx.analytics.tokenizer"
 }
 END: Cython Metadata */
 
@@ -632,8 +632,8 @@ static CYTHON_INLINE float __PYX_NAN() {
   #endif
 #endif
 
-#define __PYX_HAVE__tokenizer
-#define __PYX_HAVE_API__tokenizer
+#define __PYX_HAVE__clx__analytics__tokenizer
+#define __PYX_HAVE_API__clx__analytics__tokenizer
 /* Early includes */
 #include <string.h>
 #include "ios"
@@ -852,7 +852,7 @@ static const char *__pyx_filename;
 
 
 static const char *__pyx_f[] = {
-  "clx/tokenizers/tokenizer.pyx",
+  "clx/analytics/tokenizer.pyx",
   "stringsource",
 };
 
@@ -1247,13 +1247,13 @@ static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 
 /* Module declarations from 'libc.stdlib' */
 
-/* Module declarations from 'tokenizer' */
+/* Module declarations from 'clx.analytics.tokenizer' */
 static std::string __pyx_convert_string_from_py_std__in_string(PyObject *); /*proto*/
-#define __Pyx_MODULE_NAME "tokenizer"
-extern int __pyx_module_is_main_tokenizer;
-int __pyx_module_is_main_tokenizer = 0;
+#define __Pyx_MODULE_NAME "clx.analytics.tokenizer"
+extern int __pyx_module_is_main_clx__analytics__tokenizer;
+int __pyx_module_is_main_clx__analytics__tokenizer = 0;
 
-/* Implementation of 'tokenizer' */
+/* Implementation of 'clx.analytics.tokenizer' */
 static PyObject *__pyx_builtin_ValueError;
 static const char __pyx_k_np[] = "np";
 static const char __pyx_k_col[] = "col";
@@ -1305,7 +1305,6 @@ static const char __pyx_k_toDlpack[] = "toDlpack";
 static const char __pyx_k_DataFrame[] = "DataFrame";
 static const char __pyx_k_hash_file[] = "hash_file";
 static const char __pyx_k_serialize[] = "serialize";
-static const char __pyx_k_tokenizer[] = "tokenizer";
 static const char __pyx_k_ValueError[] = "ValueError";
 static const char __pyx_k_byte_count[] = "byte_count";
 static const char __pyx_k_input_file[] = "input_file";
@@ -1329,7 +1328,8 @@ static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_torch_utils_dlpack[] = "torch.utils.dlpack";
 static const char __pyx_k_max_sequence_length[] = "max_sequence_length";
 static const char __pyx_k_device_array_from_ptr[] = "device_array_from_ptr";
-static const char __pyx_k_clx_tokenizers_tokenizer_pyx[] = "clx/tokenizers/tokenizer.pyx";
+static const char __pyx_k_clx_analytics_tokenizer[] = "clx.analytics.tokenizer";
+static const char __pyx_k_clx_analytics_tokenizer_pyx[] = "clx/analytics/tokenizer.pyx";
 static const char __pyx_k_Input_must_be_a_cudf_DataFrame_o[] = "Input must be a cudf.DataFrame or cudf.Series";
 static PyObject *__pyx_n_s_DataFrame;
 static PyObject *__pyx_kp_s_Input_must_be_a_cudf_DataFrame_o;
@@ -1343,7 +1343,8 @@ static PyObject *__pyx_n_s_base_mem;
 static PyObject *__pyx_n_s_byte_count;
 static PyObject *__pyx_n_s_children;
 static PyObject *__pyx_n_s_cline_in_traceback;
-static PyObject *__pyx_kp_s_clx_tokenizers_tokenizer_pyx;
+static PyObject *__pyx_n_s_clx_analytics_tokenizer;
+static PyObject *__pyx_kp_s_clx_analytics_tokenizer_pyx;
 static PyObject *__pyx_n_s_col;
 static PyObject *__pyx_n_s_column;
 static PyObject *__pyx_n_s_cuda;
@@ -1402,14 +1403,13 @@ static PyObject *__pyx_n_s_toDlpack;
 static PyObject *__pyx_n_s_token;
 static PyObject *__pyx_n_s_tokenize_df;
 static PyObject *__pyx_n_s_tokenize_file;
-static PyObject *__pyx_n_s_tokenizer;
 static PyObject *__pyx_n_s_torch;
 static PyObject *__pyx_n_s_torch_utils_dlpack;
 static PyObject *__pyx_n_s_type;
 static PyObject *__pyx_n_s_uint32;
-static PyObject *__pyx_pf_9tokenizer_device_array_from_ptr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_ptr, PyObject *__pyx_v_shape, PyObject *__pyx_v_dtype); /* proto */
-static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_input_file, PyObject *__pyx_v_hash_file, PyObject *__pyx_v_max_sequence_length, PyObject *__pyx_v_stride, PyObject *__pyx_v_do_lower, PyObject *__pyx_v_do_truncate, PyObject *__pyx_v_max_num_sentences, PyObject *__pyx_v_max_num_chars, PyObject *__pyx_v_max_rows_tensor); /* proto */
-static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_input_df, PyObject *__pyx_v_hash_file, PyObject *__pyx_v_max_sequence_length, PyObject *__pyx_v_stride, PyObject *__pyx_v_do_lower, PyObject *__pyx_v_do_truncate, PyObject *__pyx_v_max_num_sentences, PyObject *__pyx_v_max_num_chars, PyObject *__pyx_v_max_rows_tensor); /* proto */
+static PyObject *__pyx_pf_3clx_9analytics_9tokenizer_device_array_from_ptr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_ptr, PyObject *__pyx_v_shape, PyObject *__pyx_v_dtype); /* proto */
+static PyObject *__pyx_pf_3clx_9analytics_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_input_file, PyObject *__pyx_v_hash_file, PyObject *__pyx_v_max_sequence_length, PyObject *__pyx_v_stride, PyObject *__pyx_v_do_lower, PyObject *__pyx_v_do_truncate, PyObject *__pyx_v_max_num_sentences, PyObject *__pyx_v_max_num_chars, PyObject *__pyx_v_max_rows_tensor); /* proto */
+static PyObject *__pyx_pf_3clx_9analytics_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_input_df, PyObject *__pyx_v_hash_file, PyObject *__pyx_v_max_sequence_length, PyObject *__pyx_v_stride, PyObject *__pyx_v_do_lower, PyObject *__pyx_v_do_truncate, PyObject *__pyx_v_max_num_sentences, PyObject *__pyx_v_max_num_chars, PyObject *__pyx_v_max_rows_tensor); /* proto */
 static PyObject *__pyx_int_0;
 static PyObject *__pyx_int_3;
 static PyObject *__pyx_int_48;
@@ -1428,7 +1428,7 @@ static PyObject *__pyx_codeobj__7;
 static PyObject *__pyx_codeobj__9;
 /* Late includes */
 
-/* "tokenizer.pyx":24
+/* "clx/analytics/tokenizer.pyx":24
  * import numpy as np
  * import cupy
  * def device_array_from_ptr(ptr, shape, dtype):             # <<<<<<<<<<<<<<
@@ -1437,9 +1437,9 @@ static PyObject *__pyx_codeobj__9;
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9tokenizer_1device_array_from_ptr(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_9tokenizer_1device_array_from_ptr = {"device_array_from_ptr", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_9tokenizer_1device_array_from_ptr, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_9tokenizer_1device_array_from_ptr(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_3clx_9analytics_9tokenizer_1device_array_from_ptr(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_3clx_9analytics_9tokenizer_1device_array_from_ptr = {"device_array_from_ptr", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_3clx_9analytics_9tokenizer_1device_array_from_ptr, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_3clx_9analytics_9tokenizer_1device_array_from_ptr(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_ptr = 0;
   PyObject *__pyx_v_shape = 0;
   PyObject *__pyx_v_dtype = 0;
@@ -1498,18 +1498,18 @@ static PyObject *__pyx_pw_9tokenizer_1device_array_from_ptr(PyObject *__pyx_self
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("device_array_from_ptr", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 24, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("tokenizer.device_array_from_ptr", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("clx.analytics.tokenizer.device_array_from_ptr", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_9tokenizer_device_array_from_ptr(__pyx_self, __pyx_v_ptr, __pyx_v_shape, __pyx_v_dtype);
+  __pyx_r = __pyx_pf_3clx_9analytics_9tokenizer_device_array_from_ptr(__pyx_self, __pyx_v_ptr, __pyx_v_shape, __pyx_v_dtype);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9tokenizer_device_array_from_ptr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_ptr, PyObject *__pyx_v_shape, PyObject *__pyx_v_dtype) {
+static PyObject *__pyx_pf_3clx_9analytics_9tokenizer_device_array_from_ptr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_ptr, PyObject *__pyx_v_shape, PyObject *__pyx_v_dtype) {
   PyObject *__pyx_v_elemsize = NULL;
   PyObject *__pyx_v_datasize = NULL;
   PyObject *__pyx_v_strides = NULL;
@@ -1525,7 +1525,7 @@ static PyObject *__pyx_pf_9tokenizer_device_array_from_ptr(CYTHON_UNUSED PyObjec
   __Pyx_RefNannySetupContext("device_array_from_ptr", 0);
   __Pyx_INCREF(__pyx_v_dtype);
 
-  /* "tokenizer.pyx":25
+  /* "clx/analytics/tokenizer.pyx":25
  * import cupy
  * def device_array_from_ptr(ptr, shape, dtype):
  *     dtype=np.dtype(dtype)             # <<<<<<<<<<<<<<
@@ -1555,7 +1555,7 @@ static PyObject *__pyx_pf_9tokenizer_device_array_from_ptr(CYTHON_UNUSED PyObjec
   __Pyx_DECREF_SET(__pyx_v_dtype, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "tokenizer.pyx":26
+  /* "clx/analytics/tokenizer.pyx":26
  * def device_array_from_ptr(ptr, shape, dtype):
  *     dtype=np.dtype(dtype)
  *     elemsize = dtype.itemsize             # <<<<<<<<<<<<<<
@@ -1567,7 +1567,7 @@ static PyObject *__pyx_pf_9tokenizer_device_array_from_ptr(CYTHON_UNUSED PyObjec
   __pyx_v_elemsize = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "tokenizer.pyx":27
+  /* "clx/analytics/tokenizer.pyx":27
  *     dtype=np.dtype(dtype)
  *     elemsize = dtype.itemsize
  *     datasize = elemsize * shape[0] * shape[1]             # <<<<<<<<<<<<<<
@@ -1588,7 +1588,7 @@ static PyObject *__pyx_pf_9tokenizer_device_array_from_ptr(CYTHON_UNUSED PyObjec
   __pyx_v_datasize = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "tokenizer.pyx":28
+  /* "clx/analytics/tokenizer.pyx":28
  *     elemsize = dtype.itemsize
  *     datasize = elemsize * shape[0] * shape[1]
  *     strides = (elemsize*shape[1], elemsize)             # <<<<<<<<<<<<<<
@@ -1611,7 +1611,7 @@ static PyObject *__pyx_pf_9tokenizer_device_array_from_ptr(CYTHON_UNUSED PyObjec
   __pyx_v_strides = ((PyObject*)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "tokenizer.pyx":29
+  /* "clx/analytics/tokenizer.pyx":29
  *     datasize = elemsize * shape[0] * shape[1]
  *     strides = (elemsize*shape[1], elemsize)
  *     base_mem = cupy.cuda.memory.UnownedMemory(ptr, datasize, None)             # <<<<<<<<<<<<<<
@@ -1680,7 +1680,7 @@ static PyObject *__pyx_pf_9tokenizer_device_array_from_ptr(CYTHON_UNUSED PyObjec
   __pyx_v_base_mem = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "tokenizer.pyx":30
+  /* "clx/analytics/tokenizer.pyx":30
  *     strides = (elemsize*shape[1], elemsize)
  *     base_mem = cupy.cuda.memory.UnownedMemory(ptr, datasize, None)
  *     mem = cupy.cuda.MemoryPointer(base_mem, 0)             # <<<<<<<<<<<<<<
@@ -1743,7 +1743,7 @@ static PyObject *__pyx_pf_9tokenizer_device_array_from_ptr(CYTHON_UNUSED PyObjec
   __pyx_v_mem = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "tokenizer.pyx":31
+  /* "clx/analytics/tokenizer.pyx":31
  *     base_mem = cupy.cuda.memory.UnownedMemory(ptr, datasize, None)
  *     mem = cupy.cuda.MemoryPointer(base_mem, 0)
  *     return cupy.ndarray(shape, dtype, mem, strides)             # <<<<<<<<<<<<<<
@@ -1811,7 +1811,7 @@ static PyObject *__pyx_pf_9tokenizer_device_array_from_ptr(CYTHON_UNUSED PyObjec
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "tokenizer.pyx":24
+  /* "clx/analytics/tokenizer.pyx":24
  * import numpy as np
  * import cupy
  * def device_array_from_ptr(ptr, shape, dtype):             # <<<<<<<<<<<<<<
@@ -1825,7 +1825,7 @@ static PyObject *__pyx_pf_9tokenizer_device_array_from_ptr(CYTHON_UNUSED PyObjec
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("tokenizer.device_array_from_ptr", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("clx.analytics.tokenizer.device_array_from_ptr", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_elemsize);
@@ -1839,7 +1839,7 @@ static PyObject *__pyx_pf_9tokenizer_device_array_from_ptr(CYTHON_UNUSED PyObjec
   return __pyx_r;
 }
 
-/* "tokenizer.pyx":34
+/* "clx/analytics/tokenizer.pyx":34
  * 
  * 
  * def tokenize_file(input_file, hash_file, max_sequence_length=64, stride=48, do_lower=True, do_truncate=False, max_num_sentences=100, max_num_chars=100000, max_rows_tensor=500):             # <<<<<<<<<<<<<<
@@ -1848,9 +1848,9 @@ static PyObject *__pyx_pf_9tokenizer_device_array_from_ptr(CYTHON_UNUSED PyObjec
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9tokenizer_3tokenize_file(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_9tokenizer_3tokenize_file = {"tokenize_file", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_9tokenizer_3tokenize_file, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_9tokenizer_3tokenize_file(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_3clx_9analytics_9tokenizer_3tokenize_file(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_3clx_9analytics_9tokenizer_3tokenize_file = {"tokenize_file", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_3clx_9analytics_9tokenizer_3tokenize_file, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_3clx_9analytics_9tokenizer_3tokenize_file(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_input_file = 0;
   PyObject *__pyx_v_hash_file = 0;
   PyObject *__pyx_v_max_sequence_length = 0;
@@ -1991,18 +1991,18 @@ static PyObject *__pyx_pw_9tokenizer_3tokenize_file(PyObject *__pyx_self, PyObje
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("tokenize_file", 0, 2, 9, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 34, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("tokenizer.tokenize_file", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("clx.analytics.tokenizer.tokenize_file", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_9tokenizer_2tokenize_file(__pyx_self, __pyx_v_input_file, __pyx_v_hash_file, __pyx_v_max_sequence_length, __pyx_v_stride, __pyx_v_do_lower, __pyx_v_do_truncate, __pyx_v_max_num_sentences, __pyx_v_max_num_chars, __pyx_v_max_rows_tensor);
+  __pyx_r = __pyx_pf_3clx_9analytics_9tokenizer_2tokenize_file(__pyx_self, __pyx_v_input_file, __pyx_v_hash_file, __pyx_v_max_sequence_length, __pyx_v_stride, __pyx_v_do_lower, __pyx_v_do_truncate, __pyx_v_max_num_sentences, __pyx_v_max_num_chars, __pyx_v_max_rows_tensor);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_input_file, PyObject *__pyx_v_hash_file, PyObject *__pyx_v_max_sequence_length, PyObject *__pyx_v_stride, PyObject *__pyx_v_do_lower, PyObject *__pyx_v_do_truncate, PyObject *__pyx_v_max_num_sentences, PyObject *__pyx_v_max_num_chars, PyObject *__pyx_v_max_rows_tensor) {
+static PyObject *__pyx_pf_3clx_9analytics_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_input_file, PyObject *__pyx_v_hash_file, PyObject *__pyx_v_max_sequence_length, PyObject *__pyx_v_stride, PyObject *__pyx_v_do_lower, PyObject *__pyx_v_do_truncate, PyObject *__pyx_v_max_num_sentences, PyObject *__pyx_v_max_num_chars, PyObject *__pyx_v_max_rows_tensor) {
   struct TokenizerResult *__pyx_v_result;
   PyObject *__pyx_v_device_tokenIDS = NULL;
   PyObject *__pyx_v_device_mask = NULL;
@@ -2029,7 +2029,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   PyObject *__pyx_t_15 = NULL;
   __Pyx_RefNannySetupContext("tokenize_file", 0);
 
-  /* "tokenizer.pyx":37
+  /* "clx/analytics/tokenizer.pyx":37
  * 
  *     cdef TokenizerResult *result
  *     result = <TokenizerResult *>calloc(1, sizeof(TokenizerResult))             # <<<<<<<<<<<<<<
@@ -2038,7 +2038,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
  */
   __pyx_v_result = ((struct TokenizerResult *)calloc(1, (sizeof(struct TokenizerResult))));
 
-  /* "tokenizer.pyx":39
+  /* "clx/analytics/tokenizer.pyx":39
  *     result = <TokenizerResult *>calloc(1, sizeof(TokenizerResult))
  * 
  *     cuda_tokenizer_file(input_file.encode(), hash_file.encode(), max_sequence_length, stride, do_lower, do_truncate,             # <<<<<<<<<<<<<<
@@ -2088,7 +2088,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_v_do_lower); if (unlikely((__pyx_t_8 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 39, __pyx_L1_error)
   __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_v_do_truncate); if (unlikely((__pyx_t_9 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 39, __pyx_L1_error)
 
-  /* "tokenizer.pyx":40
+  /* "clx/analytics/tokenizer.pyx":40
  * 
  *     cuda_tokenizer_file(input_file.encode(), hash_file.encode(), max_sequence_length, stride, do_lower, do_truncate,
  *                         max_num_sentences, max_num_chars, max_rows_tensor, result)             # <<<<<<<<<<<<<<
@@ -2099,7 +2099,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   __pyx_t_11 = __Pyx_PyInt_As_unsigned_int(__pyx_v_max_num_chars); if (unlikely((__pyx_t_11 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 40, __pyx_L1_error)
   __pyx_t_12 = __Pyx_PyInt_As_unsigned_int(__pyx_v_max_rows_tensor); if (unlikely((__pyx_t_12 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 40, __pyx_L1_error)
 
-  /* "tokenizer.pyx":39
+  /* "clx/analytics/tokenizer.pyx":39
  *     result = <TokenizerResult *>calloc(1, sizeof(TokenizerResult))
  * 
  *     cuda_tokenizer_file(input_file.encode(), hash_file.encode(), max_sequence_length, stride, do_lower, do_truncate,             # <<<<<<<<<<<<<<
@@ -2113,7 +2113,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
     __PYX_ERR(0, 39, __pyx_L1_error)
   }
 
-  /* "tokenizer.pyx":42
+  /* "clx/analytics/tokenizer.pyx":42
  *                         max_num_sentences, max_num_chars, max_rows_tensor, result)
  * 
  *     device_tokenIDS = device_array_from_ptr(<uintptr_t>result.device_tensor_tokenIDS,             # <<<<<<<<<<<<<<
@@ -2130,7 +2130,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "tokenizer.pyx":43
+  /* "clx/analytics/tokenizer.pyx":43
  * 
  *     device_tokenIDS = device_array_from_ptr(<uintptr_t>result.device_tensor_tokenIDS,
  *                                             shape=(result.nrows_tensor,max_sequence_length),             # <<<<<<<<<<<<<<
@@ -2152,7 +2152,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_shape, __pyx_t_14) < 0) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-  /* "tokenizer.pyx":44
+  /* "clx/analytics/tokenizer.pyx":44
  *     device_tokenIDS = device_array_from_ptr(<uintptr_t>result.device_tensor_tokenIDS,
  *                                             shape=(result.nrows_tensor,max_sequence_length),
  *                                             dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -2167,7 +2167,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_dtype, __pyx_t_13) < 0) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
-  /* "tokenizer.pyx":42
+  /* "clx/analytics/tokenizer.pyx":42
  *                         max_num_sentences, max_num_chars, max_rows_tensor, result)
  * 
  *     device_tokenIDS = device_array_from_ptr(<uintptr_t>result.device_tensor_tokenIDS,             # <<<<<<<<<<<<<<
@@ -2182,7 +2182,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   __pyx_v_device_tokenIDS = __pyx_t_13;
   __pyx_t_13 = 0;
 
-  /* "tokenizer.pyx":45
+  /* "clx/analytics/tokenizer.pyx":45
  *                                             shape=(result.nrows_tensor,max_sequence_length),
  *                                             dtype=np.int32)
  *     device_mask = device_array_from_ptr(<uintptr_t>result.device_attention_mask,             # <<<<<<<<<<<<<<
@@ -2199,7 +2199,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "tokenizer.pyx":46
+  /* "clx/analytics/tokenizer.pyx":46
  *                                             dtype=np.int32)
  *     device_mask = device_array_from_ptr(<uintptr_t>result.device_attention_mask,
  *                                         shape=(result.nrows_tensor,max_sequence_length),             # <<<<<<<<<<<<<<
@@ -2221,7 +2221,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_shape, __pyx_t_14) < 0) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-  /* "tokenizer.pyx":47
+  /* "clx/analytics/tokenizer.pyx":47
  *     device_mask = device_array_from_ptr(<uintptr_t>result.device_attention_mask,
  *                                         shape=(result.nrows_tensor,max_sequence_length),
  *                                         dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -2236,7 +2236,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_dtype, __pyx_t_1) < 0) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "tokenizer.pyx":45
+  /* "clx/analytics/tokenizer.pyx":45
  *                                             shape=(result.nrows_tensor,max_sequence_length),
  *                                             dtype=np.int32)
  *     device_mask = device_array_from_ptr(<uintptr_t>result.device_attention_mask,             # <<<<<<<<<<<<<<
@@ -2251,7 +2251,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   __pyx_v_device_mask = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "tokenizer.pyx":48
+  /* "clx/analytics/tokenizer.pyx":48
  *                                         shape=(result.nrows_tensor,max_sequence_length),
  *                                         dtype=np.int32)
  *     device_metadata = device_array_from_ptr(<uintptr_t>result.device_tensor_metadata,             # <<<<<<<<<<<<<<
@@ -2268,7 +2268,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "tokenizer.pyx":49
+  /* "clx/analytics/tokenizer.pyx":49
  *                                         dtype=np.int32)
  *     device_metadata = device_array_from_ptr(<uintptr_t>result.device_tensor_metadata,
  *                                             shape=(result.nrows_tensor,3),             # <<<<<<<<<<<<<<
@@ -2290,7 +2290,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_shape, __pyx_t_14) < 0) __PYX_ERR(0, 49, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-  /* "tokenizer.pyx":50
+  /* "clx/analytics/tokenizer.pyx":50
  *     device_metadata = device_array_from_ptr(<uintptr_t>result.device_tensor_metadata,
  *                                             shape=(result.nrows_tensor,3),
  *                                             dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -2305,7 +2305,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_dtype, __pyx_t_13) < 0) __PYX_ERR(0, 49, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
-  /* "tokenizer.pyx":48
+  /* "clx/analytics/tokenizer.pyx":48
  *                                         shape=(result.nrows_tensor,max_sequence_length),
  *                                         dtype=np.int32)
  *     device_metadata = device_array_from_ptr(<uintptr_t>result.device_tensor_metadata,             # <<<<<<<<<<<<<<
@@ -2320,7 +2320,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   __pyx_v_device_metadata = __pyx_t_13;
   __pyx_t_13 = 0;
 
-  /* "tokenizer.pyx":52
+  /* "clx/analytics/tokenizer.pyx":52
  *                                             dtype=np.int32)
  * 
  *     token = from_dlpack(device_tokenIDS.toDlpack())             # <<<<<<<<<<<<<<
@@ -2365,7 +2365,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   __pyx_v_token = __pyx_t_13;
   __pyx_t_13 = 0;
 
-  /* "tokenizer.pyx":53
+  /* "clx/analytics/tokenizer.pyx":53
  * 
  *     token = from_dlpack(device_tokenIDS.toDlpack())
  *     mask = from_dlpack(device_mask.toDlpack())             # <<<<<<<<<<<<<<
@@ -2410,7 +2410,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   __pyx_v_mask = __pyx_t_13;
   __pyx_t_13 = 0;
 
-  /* "tokenizer.pyx":54
+  /* "clx/analytics/tokenizer.pyx":54
  *     token = from_dlpack(device_tokenIDS.toDlpack())
  *     mask = from_dlpack(device_mask.toDlpack())
  *     metadata = from_dlpack(device_metadata.toDlpack())             # <<<<<<<<<<<<<<
@@ -2455,7 +2455,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   __pyx_v_metadata = __pyx_t_13;
   __pyx_t_13 = 0;
 
-  /* "tokenizer.pyx":55
+  /* "clx/analytics/tokenizer.pyx":55
  *     mask = from_dlpack(device_mask.toDlpack())
  *     metadata = from_dlpack(device_metadata.toDlpack())
  *     return token.type(torch.long), mask.type(torch.long), metadata.type(torch.long)             # <<<<<<<<<<<<<<
@@ -2547,7 +2547,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   __pyx_t_14 = 0;
   goto __pyx_L0;
 
-  /* "tokenizer.pyx":34
+  /* "clx/analytics/tokenizer.pyx":34
  * 
  * 
  * def tokenize_file(input_file, hash_file, max_sequence_length=64, stride=48, do_lower=True, do_truncate=False, max_num_sentences=100, max_num_chars=100000, max_rows_tensor=500):             # <<<<<<<<<<<<<<
@@ -2563,7 +2563,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   __Pyx_XDECREF(__pyx_t_13);
   __Pyx_XDECREF(__pyx_t_14);
   __Pyx_XDECREF(__pyx_t_15);
-  __Pyx_AddTraceback("tokenizer.tokenize_file", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("clx.analytics.tokenizer.tokenize_file", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_device_tokenIDS);
@@ -2577,7 +2577,7 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
   return __pyx_r;
 }
 
-/* "tokenizer.pyx":58
+/* "clx/analytics/tokenizer.pyx":58
  * 
  * 
  * def tokenize_df(input_df, hash_file, max_sequence_length=64, stride=48, do_lower=True, do_truncate=False, max_num_sentences=100, max_num_chars=100000, max_rows_tensor=500):             # <<<<<<<<<<<<<<
@@ -2586,9 +2586,9 @@ static PyObject *__pyx_pf_9tokenizer_2tokenize_file(CYTHON_UNUSED PyObject *__py
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9tokenizer_5tokenize_df(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_9tokenizer_5tokenize_df = {"tokenize_df", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_9tokenizer_5tokenize_df, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_9tokenizer_5tokenize_df(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_3clx_9analytics_9tokenizer_5tokenize_df(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_3clx_9analytics_9tokenizer_5tokenize_df = {"tokenize_df", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_3clx_9analytics_9tokenizer_5tokenize_df, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_3clx_9analytics_9tokenizer_5tokenize_df(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_input_df = 0;
   PyObject *__pyx_v_hash_file = 0;
   PyObject *__pyx_v_max_sequence_length = 0;
@@ -2729,18 +2729,18 @@ static PyObject *__pyx_pw_9tokenizer_5tokenize_df(PyObject *__pyx_self, PyObject
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("tokenize_df", 0, 2, 9, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 58, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("tokenizer.tokenize_df", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("clx.analytics.tokenizer.tokenize_df", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_9tokenizer_4tokenize_df(__pyx_self, __pyx_v_input_df, __pyx_v_hash_file, __pyx_v_max_sequence_length, __pyx_v_stride, __pyx_v_do_lower, __pyx_v_do_truncate, __pyx_v_max_num_sentences, __pyx_v_max_num_chars, __pyx_v_max_rows_tensor);
+  __pyx_r = __pyx_pf_3clx_9analytics_9tokenizer_4tokenize_df(__pyx_self, __pyx_v_input_df, __pyx_v_hash_file, __pyx_v_max_sequence_length, __pyx_v_stride, __pyx_v_do_lower, __pyx_v_do_truncate, __pyx_v_max_num_sentences, __pyx_v_max_num_chars, __pyx_v_max_rows_tensor);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_input_df, PyObject *__pyx_v_hash_file, PyObject *__pyx_v_max_sequence_length, PyObject *__pyx_v_stride, PyObject *__pyx_v_do_lower, PyObject *__pyx_v_do_truncate, PyObject *__pyx_v_max_num_sentences, PyObject *__pyx_v_max_num_chars, PyObject *__pyx_v_max_rows_tensor) {
+static PyObject *__pyx_pf_3clx_9analytics_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_input_df, PyObject *__pyx_v_hash_file, PyObject *__pyx_v_max_sequence_length, PyObject *__pyx_v_stride, PyObject *__pyx_v_do_lower, PyObject *__pyx_v_do_truncate, PyObject *__pyx_v_max_num_sentences, PyObject *__pyx_v_max_num_chars, PyObject *__pyx_v_max_rows_tensor) {
   PyObject *__pyx_v_col = NULL;
   PyObject *__pyx_v_d_arr = NULL;
   PyObject *__pyx_v_offsets = NULL;
@@ -2778,7 +2778,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   PyObject *__pyx_t_19 = NULL;
   __Pyx_RefNannySetupContext("tokenize_df", 0);
 
-  /* "tokenizer.pyx":60
+  /* "clx/analytics/tokenizer.pyx":60
  * def tokenize_df(input_df, hash_file, max_sequence_length=64, stride=48, do_lower=True, do_truncate=False, max_num_sentences=100, max_num_chars=100000, max_rows_tensor=500):
  * 
  *     if isinstance(input_df, cudf.DataFrame):             # <<<<<<<<<<<<<<
@@ -2795,7 +2795,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   __pyx_t_4 = (__pyx_t_3 != 0);
   if (__pyx_t_4) {
 
-    /* "tokenizer.pyx":61
+    /* "clx/analytics/tokenizer.pyx":61
  * 
  *     if isinstance(input_df, cudf.DataFrame):
  *         col = input_df.iloc[:,0]             # <<<<<<<<<<<<<<
@@ -2810,7 +2810,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
     __pyx_v_col = __pyx_t_1;
     __pyx_t_1 = 0;
 
-    /* "tokenizer.pyx":60
+    /* "clx/analytics/tokenizer.pyx":60
  * def tokenize_df(input_df, hash_file, max_sequence_length=64, stride=48, do_lower=True, do_truncate=False, max_num_sentences=100, max_num_chars=100000, max_rows_tensor=500):
  * 
  *     if isinstance(input_df, cudf.DataFrame):             # <<<<<<<<<<<<<<
@@ -2820,7 +2820,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
     goto __pyx_L3;
   }
 
-  /* "tokenizer.pyx":62
+  /* "clx/analytics/tokenizer.pyx":62
  *     if isinstance(input_df, cudf.DataFrame):
  *         col = input_df.iloc[:,0]
  *     elif isinstance(input_df, cudf.Series):             # <<<<<<<<<<<<<<
@@ -2837,7 +2837,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   __pyx_t_3 = (__pyx_t_4 != 0);
   if (likely(__pyx_t_3)) {
 
-    /* "tokenizer.pyx":63
+    /* "clx/analytics/tokenizer.pyx":63
  *         col = input_df.iloc[:,0]
  *     elif isinstance(input_df, cudf.Series):
  *         col = input_df             # <<<<<<<<<<<<<<
@@ -2847,7 +2847,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
     __Pyx_INCREF(__pyx_v_input_df);
     __pyx_v_col = __pyx_v_input_df;
 
-    /* "tokenizer.pyx":62
+    /* "clx/analytics/tokenizer.pyx":62
  *     if isinstance(input_df, cudf.DataFrame):
  *         col = input_df.iloc[:,0]
  *     elif isinstance(input_df, cudf.Series):             # <<<<<<<<<<<<<<
@@ -2857,7 +2857,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
     goto __pyx_L3;
   }
 
-  /* "tokenizer.pyx":65
+  /* "clx/analytics/tokenizer.pyx":65
  *         col = input_df
  *     else:
  *         raise ValueError("Input must be a cudf.DataFrame or cudf.Series")             # <<<<<<<<<<<<<<
@@ -2873,7 +2873,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   }
   __pyx_L3:;
 
-  /* "tokenizer.pyx":67
+  /* "clx/analytics/tokenizer.pyx":67
  *         raise ValueError("Input must be a cudf.DataFrame or cudf.Series")
  * 
  *     d_arr=cupy.empty(len(input_df), dtype=np.uint32)             # <<<<<<<<<<<<<<
@@ -2910,7 +2910,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   __pyx_v_d_arr = __pyx_t_8;
   __pyx_t_8 = 0;
 
-  /* "tokenizer.pyx":68
+  /* "clx/analytics/tokenizer.pyx":68
  * 
  *     d_arr=cupy.empty(len(input_df), dtype=np.uint32)
  *     col.str.byte_count(d_arr.data.ptr,True)             # <<<<<<<<<<<<<<
@@ -2976,7 +2976,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-  /* "tokenizer.pyx":69
+  /* "clx/analytics/tokenizer.pyx":69
  *     d_arr=cupy.empty(len(input_df), dtype=np.uint32)
  *     col.str.byte_count(d_arr.data.ptr,True)
  *     offsets = cupy.asnumpy(d_arr)             # <<<<<<<<<<<<<<
@@ -3006,7 +3006,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   __pyx_v_offsets = __pyx_t_8;
   __pyx_t_8 = 0;
 
-  /* "tokenizer.pyx":72
+  /* "clx/analytics/tokenizer.pyx":72
  * 
  *     cdef TokenizerResult *result
  *     result = <TokenizerResult *>calloc(1,sizeof(TokenizerResult))             # <<<<<<<<<<<<<<
@@ -3015,7 +3015,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
  */
   __pyx_v_result = ((struct TokenizerResult *)calloc(1, (sizeof(struct TokenizerResult))));
 
-  /* "tokenizer.pyx":74
+  /* "clx/analytics/tokenizer.pyx":74
  *     result = <TokenizerResult *>calloc(1,sizeof(TokenizerResult))
  * 
  *     cdef uintptr_t offsets_array = <uintptr_t>offsets.__array_interface__['data'][0]             # <<<<<<<<<<<<<<
@@ -3034,7 +3034,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __pyx_v_offsets_array = ((uintptr_t)__pyx_t_10);
 
-  /* "tokenizer.pyx":75
+  /* "clx/analytics/tokenizer.pyx":75
  * 
  *     cdef uintptr_t offsets_array = <uintptr_t>offsets.__array_interface__['data'][0]
  *     cdef unsigned int* offsets_ptr = <unsigned int*>offsets_array             # <<<<<<<<<<<<<<
@@ -3043,7 +3043,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
  */
   __pyx_v_offsets_ptr = ((unsigned int *)__pyx_v_offsets_array);
 
-  /* "tokenizer.pyx":76
+  /* "clx/analytics/tokenizer.pyx":76
  *     cdef uintptr_t offsets_array = <uintptr_t>offsets.__array_interface__['data'][0]
  *     cdef unsigned int* offsets_ptr = <unsigned int*>offsets_array
  *     cdef uintptr_t data_device_array = <uintptr_t>col._column.children[1].serialize()[0]['data']['desc']['data'][0]             # <<<<<<<<<<<<<<
@@ -3095,7 +3095,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __pyx_v_data_device_array = ((uintptr_t)__pyx_t_10);
 
-  /* "tokenizer.pyx":77
+  /* "clx/analytics/tokenizer.pyx":77
  *     cdef unsigned int* offsets_ptr = <unsigned int*>offsets_array
  *     cdef uintptr_t data_device_array = <uintptr_t>col._column.children[1].serialize()[0]['data']['desc']['data'][0]
  *     cdef char* data_ptr = <char*> data_device_array             # <<<<<<<<<<<<<<
@@ -3104,7 +3104,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
  */
   __pyx_v_data_ptr = ((char *)__pyx_v_data_device_array);
 
-  /* "tokenizer.pyx":79
+  /* "clx/analytics/tokenizer.pyx":79
  *     cdef char* data_ptr = <char*> data_device_array
  * 
  *     cuda_tokenizer_cudf(data_ptr, offsets_ptr, len(offsets), hash_file.encode(), max_sequence_length, stride, do_lower, do_truncate,             # <<<<<<<<<<<<<<
@@ -3136,7 +3136,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   __pyx_t_14 = __Pyx_PyObject_IsTrue(__pyx_v_do_lower); if (unlikely((__pyx_t_14 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 79, __pyx_L1_error)
   __pyx_t_15 = __Pyx_PyObject_IsTrue(__pyx_v_do_truncate); if (unlikely((__pyx_t_15 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 79, __pyx_L1_error)
 
-  /* "tokenizer.pyx":80
+  /* "clx/analytics/tokenizer.pyx":80
  * 
  *     cuda_tokenizer_cudf(data_ptr, offsets_ptr, len(offsets), hash_file.encode(), max_sequence_length, stride, do_lower, do_truncate,
  *                         max_num_sentences, max_num_chars, max_rows_tensor, result)             # <<<<<<<<<<<<<<
@@ -3147,7 +3147,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   __pyx_t_17 = __Pyx_PyInt_As_unsigned_int(__pyx_v_max_num_chars); if (unlikely((__pyx_t_17 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 80, __pyx_L1_error)
   __pyx_t_18 = __Pyx_PyInt_As_unsigned_int(__pyx_v_max_rows_tensor); if (unlikely((__pyx_t_18 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 80, __pyx_L1_error)
 
-  /* "tokenizer.pyx":79
+  /* "clx/analytics/tokenizer.pyx":79
  *     cdef char* data_ptr = <char*> data_device_array
  * 
  *     cuda_tokenizer_cudf(data_ptr, offsets_ptr, len(offsets), hash_file.encode(), max_sequence_length, stride, do_lower, do_truncate,             # <<<<<<<<<<<<<<
@@ -3161,7 +3161,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
     __PYX_ERR(0, 79, __pyx_L1_error)
   }
 
-  /* "tokenizer.pyx":82
+  /* "clx/analytics/tokenizer.pyx":82
  *                         max_num_sentences, max_num_chars, max_rows_tensor, result)
  * 
  *     device_tokenIDS = device_array_from_ptr(<uintptr_t>result.device_tensor_tokenIDS,             # <<<<<<<<<<<<<<
@@ -3178,7 +3178,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_8);
   __pyx_t_8 = 0;
 
-  /* "tokenizer.pyx":83
+  /* "clx/analytics/tokenizer.pyx":83
  * 
  *     device_tokenIDS = device_array_from_ptr(<uintptr_t>result.device_tensor_tokenIDS,
  *                                             shape=(result.nrows_tensor,max_sequence_length),             # <<<<<<<<<<<<<<
@@ -3200,7 +3200,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   if (PyDict_SetItem(__pyx_t_8, __pyx_n_s_shape, __pyx_t_2) < 0) __PYX_ERR(0, 83, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "tokenizer.pyx":84
+  /* "clx/analytics/tokenizer.pyx":84
  *     device_tokenIDS = device_array_from_ptr(<uintptr_t>result.device_tensor_tokenIDS,
  *                                             shape=(result.nrows_tensor,max_sequence_length),
  *                                             dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -3215,7 +3215,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   if (PyDict_SetItem(__pyx_t_8, __pyx_n_s_dtype, __pyx_t_1) < 0) __PYX_ERR(0, 83, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "tokenizer.pyx":82
+  /* "clx/analytics/tokenizer.pyx":82
  *                         max_num_sentences, max_num_chars, max_rows_tensor, result)
  * 
  *     device_tokenIDS = device_array_from_ptr(<uintptr_t>result.device_tensor_tokenIDS,             # <<<<<<<<<<<<<<
@@ -3230,7 +3230,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   __pyx_v_device_tokenIDS = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "tokenizer.pyx":85
+  /* "clx/analytics/tokenizer.pyx":85
  *                                             shape=(result.nrows_tensor,max_sequence_length),
  *                                             dtype=np.int32)
  *     device_mask = device_array_from_ptr(<uintptr_t>result.device_attention_mask,             # <<<<<<<<<<<<<<
@@ -3247,7 +3247,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_8);
   __pyx_t_8 = 0;
 
-  /* "tokenizer.pyx":86
+  /* "clx/analytics/tokenizer.pyx":86
  *                                             dtype=np.int32)
  *     device_mask = device_array_from_ptr(<uintptr_t>result.device_attention_mask,
  *                                         shape=(result.nrows_tensor,max_sequence_length),             # <<<<<<<<<<<<<<
@@ -3269,7 +3269,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   if (PyDict_SetItem(__pyx_t_8, __pyx_n_s_shape, __pyx_t_2) < 0) __PYX_ERR(0, 86, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "tokenizer.pyx":87
+  /* "clx/analytics/tokenizer.pyx":87
  *     device_mask = device_array_from_ptr(<uintptr_t>result.device_attention_mask,
  *                                         shape=(result.nrows_tensor,max_sequence_length),
  *                                         dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -3284,7 +3284,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   if (PyDict_SetItem(__pyx_t_8, __pyx_n_s_dtype, __pyx_t_6) < 0) __PYX_ERR(0, 86, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "tokenizer.pyx":85
+  /* "clx/analytics/tokenizer.pyx":85
  *                                             shape=(result.nrows_tensor,max_sequence_length),
  *                                             dtype=np.int32)
  *     device_mask = device_array_from_ptr(<uintptr_t>result.device_attention_mask,             # <<<<<<<<<<<<<<
@@ -3299,7 +3299,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   __pyx_v_device_mask = __pyx_t_6;
   __pyx_t_6 = 0;
 
-  /* "tokenizer.pyx":88
+  /* "clx/analytics/tokenizer.pyx":88
  *                                         shape=(result.nrows_tensor,max_sequence_length),
  *                                         dtype=np.int32)
  *     device_metadata = device_array_from_ptr(<uintptr_t>result.device_tensor_metadata,             # <<<<<<<<<<<<<<
@@ -3316,7 +3316,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_8);
   __pyx_t_8 = 0;
 
-  /* "tokenizer.pyx":89
+  /* "clx/analytics/tokenizer.pyx":89
  *                                         dtype=np.int32)
  *     device_metadata = device_array_from_ptr(<uintptr_t>result.device_tensor_metadata,
  *                                             shape=(result.nrows_tensor,3),             # <<<<<<<<<<<<<<
@@ -3338,7 +3338,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   if (PyDict_SetItem(__pyx_t_8, __pyx_n_s_shape, __pyx_t_2) < 0) __PYX_ERR(0, 89, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "tokenizer.pyx":90
+  /* "clx/analytics/tokenizer.pyx":90
  *     device_metadata = device_array_from_ptr(<uintptr_t>result.device_tensor_metadata,
  *                                             shape=(result.nrows_tensor,3),
  *                                             dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -3353,7 +3353,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   if (PyDict_SetItem(__pyx_t_8, __pyx_n_s_dtype, __pyx_t_1) < 0) __PYX_ERR(0, 89, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "tokenizer.pyx":88
+  /* "clx/analytics/tokenizer.pyx":88
  *                                         shape=(result.nrows_tensor,max_sequence_length),
  *                                         dtype=np.int32)
  *     device_metadata = device_array_from_ptr(<uintptr_t>result.device_tensor_metadata,             # <<<<<<<<<<<<<<
@@ -3368,7 +3368,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   __pyx_v_device_metadata = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "tokenizer.pyx":92
+  /* "clx/analytics/tokenizer.pyx":92
  *                                             dtype=np.int32)
  * 
  *     token = from_dlpack(device_tokenIDS.toDlpack())             # <<<<<<<<<<<<<<
@@ -3413,7 +3413,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   __pyx_v_token = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "tokenizer.pyx":93
+  /* "clx/analytics/tokenizer.pyx":93
  * 
  *     token = from_dlpack(device_tokenIDS.toDlpack())
  *     mask = from_dlpack(device_mask.toDlpack())             # <<<<<<<<<<<<<<
@@ -3458,7 +3458,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   __pyx_v_mask = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "tokenizer.pyx":94
+  /* "clx/analytics/tokenizer.pyx":94
  *     token = from_dlpack(device_tokenIDS.toDlpack())
  *     mask = from_dlpack(device_mask.toDlpack())
  *     metadata = from_dlpack(device_metadata.toDlpack())             # <<<<<<<<<<<<<<
@@ -3502,7 +3502,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   __pyx_v_metadata = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "tokenizer.pyx":95
+  /* "clx/analytics/tokenizer.pyx":95
  *     mask = from_dlpack(device_mask.toDlpack())
  *     metadata = from_dlpack(device_metadata.toDlpack())
  *     return token.type(torch.long), mask.type(torch.long), metadata.type(torch.long)             # <<<<<<<<<<<<<<
@@ -3592,7 +3592,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "tokenizer.pyx":58
+  /* "clx/analytics/tokenizer.pyx":58
  * 
  * 
  * def tokenize_df(input_df, hash_file, max_sequence_length=64, stride=48, do_lower=True, do_truncate=False, max_num_sentences=100, max_num_chars=100000, max_rows_tensor=500):             # <<<<<<<<<<<<<<
@@ -3608,7 +3608,7 @@ static PyObject *__pyx_pf_9tokenizer_4tokenize_df(CYTHON_UNUSED PyObject *__pyx_
   __Pyx_XDECREF(__pyx_t_7);
   __Pyx_XDECREF(__pyx_t_8);
   __Pyx_XDECREF(__pyx_t_19);
-  __Pyx_AddTraceback("tokenizer.tokenize_df", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("clx.analytics.tokenizer.tokenize_df", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_col);
@@ -3745,7 +3745,8 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_byte_count, __pyx_k_byte_count, sizeof(__pyx_k_byte_count), 0, 0, 1, 1},
   {&__pyx_n_s_children, __pyx_k_children, sizeof(__pyx_k_children), 0, 0, 1, 1},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
-  {&__pyx_kp_s_clx_tokenizers_tokenizer_pyx, __pyx_k_clx_tokenizers_tokenizer_pyx, sizeof(__pyx_k_clx_tokenizers_tokenizer_pyx), 0, 0, 1, 0},
+  {&__pyx_n_s_clx_analytics_tokenizer, __pyx_k_clx_analytics_tokenizer, sizeof(__pyx_k_clx_analytics_tokenizer), 0, 0, 1, 1},
+  {&__pyx_kp_s_clx_analytics_tokenizer_pyx, __pyx_k_clx_analytics_tokenizer_pyx, sizeof(__pyx_k_clx_analytics_tokenizer_pyx), 0, 0, 1, 0},
   {&__pyx_n_s_col, __pyx_k_col, sizeof(__pyx_k_col), 0, 0, 1, 1},
   {&__pyx_n_s_column, __pyx_k_column, sizeof(__pyx_k_column), 0, 0, 1, 1},
   {&__pyx_n_s_cuda, __pyx_k_cuda, sizeof(__pyx_k_cuda), 0, 0, 1, 1},
@@ -3804,7 +3805,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_token, __pyx_k_token, sizeof(__pyx_k_token), 0, 0, 1, 1},
   {&__pyx_n_s_tokenize_df, __pyx_k_tokenize_df, sizeof(__pyx_k_tokenize_df), 0, 0, 1, 1},
   {&__pyx_n_s_tokenize_file, __pyx_k_tokenize_file, sizeof(__pyx_k_tokenize_file), 0, 0, 1, 1},
-  {&__pyx_n_s_tokenizer, __pyx_k_tokenizer, sizeof(__pyx_k_tokenizer), 0, 0, 1, 1},
   {&__pyx_n_s_torch, __pyx_k_torch, sizeof(__pyx_k_torch), 0, 0, 1, 1},
   {&__pyx_n_s_torch_utils_dlpack, __pyx_k_torch_utils_dlpack, sizeof(__pyx_k_torch_utils_dlpack), 0, 0, 1, 1},
   {&__pyx_n_s_type, __pyx_k_type, sizeof(__pyx_k_type), 0, 0, 1, 1},
@@ -3822,7 +3822,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "tokenizer.pyx":61
+  /* "clx/analytics/tokenizer.pyx":61
  * 
  *     if isinstance(input_df, cudf.DataFrame):
  *         col = input_df.iloc[:,0]             # <<<<<<<<<<<<<<
@@ -3836,7 +3836,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__2);
   __Pyx_GIVEREF(__pyx_tuple__2);
 
-  /* "tokenizer.pyx":65
+  /* "clx/analytics/tokenizer.pyx":65
  *         col = input_df
  *     else:
  *         raise ValueError("Input must be a cudf.DataFrame or cudf.Series")             # <<<<<<<<<<<<<<
@@ -3847,7 +3847,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__3);
   __Pyx_GIVEREF(__pyx_tuple__3);
 
-  /* "tokenizer.pyx":24
+  /* "clx/analytics/tokenizer.pyx":24
  * import numpy as np
  * import cupy
  * def device_array_from_ptr(ptr, shape, dtype):             # <<<<<<<<<<<<<<
@@ -3857,9 +3857,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __pyx_tuple__4 = PyTuple_Pack(8, __pyx_n_s_ptr, __pyx_n_s_shape, __pyx_n_s_dtype, __pyx_n_s_elemsize, __pyx_n_s_datasize, __pyx_n_s_strides, __pyx_n_s_base_mem, __pyx_n_s_mem); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 24, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
-  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(3, 0, 8, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__4, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_clx_tokenizers_tokenizer_pyx, __pyx_n_s_device_array_from_ptr, 24, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) __PYX_ERR(0, 24, __pyx_L1_error)
+  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(3, 0, 8, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__4, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_clx_analytics_tokenizer_pyx, __pyx_n_s_device_array_from_ptr, 24, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) __PYX_ERR(0, 24, __pyx_L1_error)
 
-  /* "tokenizer.pyx":34
+  /* "clx/analytics/tokenizer.pyx":34
  * 
  * 
  * def tokenize_file(input_file, hash_file, max_sequence_length=64, stride=48, do_lower=True, do_truncate=False, max_num_sentences=100, max_num_chars=100000, max_rows_tensor=500):             # <<<<<<<<<<<<<<
@@ -3869,9 +3869,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __pyx_tuple__6 = PyTuple_Pack(16, __pyx_n_s_input_file, __pyx_n_s_hash_file, __pyx_n_s_max_sequence_length, __pyx_n_s_stride, __pyx_n_s_do_lower, __pyx_n_s_do_truncate, __pyx_n_s_max_num_sentences, __pyx_n_s_max_num_chars, __pyx_n_s_max_rows_tensor, __pyx_n_s_result, __pyx_n_s_device_tokenIDS, __pyx_n_s_device_mask, __pyx_n_s_device_metadata, __pyx_n_s_token, __pyx_n_s_mask, __pyx_n_s_metadata); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 34, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
-  __pyx_codeobj__7 = (PyObject*)__Pyx_PyCode_New(9, 0, 16, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__6, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_clx_tokenizers_tokenizer_pyx, __pyx_n_s_tokenize_file, 34, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__7)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_codeobj__7 = (PyObject*)__Pyx_PyCode_New(9, 0, 16, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__6, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_clx_analytics_tokenizer_pyx, __pyx_n_s_tokenize_file, 34, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__7)) __PYX_ERR(0, 34, __pyx_L1_error)
 
-  /* "tokenizer.pyx":58
+  /* "clx/analytics/tokenizer.pyx":58
  * 
  * 
  * def tokenize_df(input_df, hash_file, max_sequence_length=64, stride=48, do_lower=True, do_truncate=False, max_num_sentences=100, max_num_chars=100000, max_rows_tensor=500):             # <<<<<<<<<<<<<<
@@ -3881,7 +3881,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __pyx_tuple__8 = PyTuple_Pack(23, __pyx_n_s_input_df, __pyx_n_s_hash_file, __pyx_n_s_max_sequence_length, __pyx_n_s_stride, __pyx_n_s_do_lower, __pyx_n_s_do_truncate, __pyx_n_s_max_num_sentences, __pyx_n_s_max_num_chars, __pyx_n_s_max_rows_tensor, __pyx_n_s_col, __pyx_n_s_d_arr, __pyx_n_s_offsets, __pyx_n_s_result, __pyx_n_s_offsets_array, __pyx_n_s_offsets_ptr, __pyx_n_s_data_device_array, __pyx_n_s_data_ptr, __pyx_n_s_device_tokenIDS, __pyx_n_s_device_mask, __pyx_n_s_device_metadata, __pyx_n_s_token, __pyx_n_s_mask, __pyx_n_s_metadata); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__8);
   __Pyx_GIVEREF(__pyx_tuple__8);
-  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(9, 0, 23, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__8, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_clx_tokenizers_tokenizer_pyx, __pyx_n_s_tokenize_df, 58, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) __PYX_ERR(0, 58, __pyx_L1_error)
+  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(9, 0, 23, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__8, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_clx_analytics_tokenizer_pyx, __pyx_n_s_tokenize_df, 58, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -4137,14 +4137,14 @@ if (!__Pyx_RefNanny) {
   #if PY_MAJOR_VERSION < 3 && (__PYX_DEFAULT_STRING_ENCODING_IS_ASCII || __PYX_DEFAULT_STRING_ENCODING_IS_DEFAULT)
   if (__Pyx_init_sys_getdefaultencoding_params() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
-  if (__pyx_module_is_main_tokenizer) {
+  if (__pyx_module_is_main_clx__analytics__tokenizer) {
     if (PyObject_SetAttr(__pyx_m, __pyx_n_s_name, __pyx_n_s_main) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   #if PY_MAJOR_VERSION >= 3
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "tokenizer")) {
-      if (unlikely(PyDict_SetItemString(modules, "tokenizer", __pyx_m) < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "clx.analytics.tokenizer")) {
+      if (unlikely(PyDict_SetItemString(modules, "clx.analytics.tokenizer", __pyx_m) < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   #endif
@@ -4165,7 +4165,7 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
 
-  /* "tokenizer.pyx":5
+  /* "clx/analytics/tokenizer.pyx":5
  * from libc.stdint cimport uintptr_t
  * from libc.stdlib cimport calloc, malloc, free
  * import cudf             # <<<<<<<<<<<<<<
@@ -4177,7 +4177,7 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_cudf, __pyx_t_1) < 0) __PYX_ERR(0, 5, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "tokenizer.pyx":6
+  /* "clx/analytics/tokenizer.pyx":6
  * from libc.stdlib cimport calloc, malloc, free
  * import cudf
  * import torch             # <<<<<<<<<<<<<<
@@ -4189,7 +4189,7 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_torch, __pyx_t_1) < 0) __PYX_ERR(0, 6, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "tokenizer.pyx":7
+  /* "clx/analytics/tokenizer.pyx":7
  * import cudf
  * import torch
  * from torch.utils.dlpack import from_dlpack             # <<<<<<<<<<<<<<
@@ -4210,7 +4210,7 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "tokenizer.pyx":22
+  /* "clx/analytics/tokenizer.pyx":22
  *                                   TokenizerResult* result) except+
  * 
  * import numpy as np             # <<<<<<<<<<<<<<
@@ -4222,7 +4222,7 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_np, __pyx_t_2) < 0) __PYX_ERR(0, 22, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "tokenizer.pyx":23
+  /* "clx/analytics/tokenizer.pyx":23
  * 
  * import numpy as np
  * import cupy             # <<<<<<<<<<<<<<
@@ -4234,43 +4234,43 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_cupy, __pyx_t_2) < 0) __PYX_ERR(0, 23, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "tokenizer.pyx":24
+  /* "clx/analytics/tokenizer.pyx":24
  * import numpy as np
  * import cupy
  * def device_array_from_ptr(ptr, shape, dtype):             # <<<<<<<<<<<<<<
  *     dtype=np.dtype(dtype)
  *     elemsize = dtype.itemsize
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_9tokenizer_1device_array_from_ptr, NULL, __pyx_n_s_tokenizer); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 24, __pyx_L1_error)
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_3clx_9analytics_9tokenizer_1device_array_from_ptr, NULL, __pyx_n_s_clx_analytics_tokenizer); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 24, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_device_array_from_ptr, __pyx_t_2) < 0) __PYX_ERR(0, 24, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "tokenizer.pyx":34
+  /* "clx/analytics/tokenizer.pyx":34
  * 
  * 
  * def tokenize_file(input_file, hash_file, max_sequence_length=64, stride=48, do_lower=True, do_truncate=False, max_num_sentences=100, max_num_chars=100000, max_rows_tensor=500):             # <<<<<<<<<<<<<<
  * 
  *     cdef TokenizerResult *result
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_9tokenizer_3tokenize_file, NULL, __pyx_n_s_tokenizer); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_3clx_9analytics_9tokenizer_3tokenize_file, NULL, __pyx_n_s_clx_analytics_tokenizer); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 34, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_tokenize_file, __pyx_t_2) < 0) __PYX_ERR(0, 34, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "tokenizer.pyx":58
+  /* "clx/analytics/tokenizer.pyx":58
  * 
  * 
  * def tokenize_df(input_df, hash_file, max_sequence_length=64, stride=48, do_lower=True, do_truncate=False, max_num_sentences=100, max_num_chars=100000, max_rows_tensor=500):             # <<<<<<<<<<<<<<
  * 
  *     if isinstance(input_df, cudf.DataFrame):
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_9tokenizer_5tokenize_df, NULL, __pyx_n_s_tokenizer); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_3clx_9analytics_9tokenizer_5tokenize_df, NULL, __pyx_n_s_clx_analytics_tokenizer); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_tokenize_df, __pyx_t_2) < 0) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "tokenizer.pyx":1
+  /* "clx/analytics/tokenizer.pyx":1
  * from libcpp cimport bool             # <<<<<<<<<<<<<<
  * from libcpp.string cimport string
  * from libc.stdint cimport uintptr_t
@@ -4296,11 +4296,11 @@ if (!__Pyx_RefNanny) {
   __Pyx_XDECREF(__pyx_t_2);
   if (__pyx_m) {
     if (__pyx_d) {
-      __Pyx_AddTraceback("init tokenizer", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init clx.analytics.tokenizer", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     Py_CLEAR(__pyx_m);
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init tokenizer");
+    PyErr_SetString(PyExc_ImportError, "init clx.analytics.tokenizer");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();

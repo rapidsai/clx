@@ -21,7 +21,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3 -Wno-unused-function")
 set(CU_TOK_LIBS
     cudart
     nvToolsExt
-    tokenizers
+    clx
 )
 
 include_directories(
@@ -39,7 +39,7 @@ ADD_CUSTOM_TARGET(gen_cuda_header ALL
    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/cp_data.h
 )
 
-add_library(tokenizers SHARED
+add_library(clx SHARED
   src/hash_utils.cu
   src/basicTokenizer.cu
   src/wordPieceTokenizer.cu
@@ -47,7 +47,7 @@ add_library(tokenizers SHARED
   src/main.cu
 )
 
-target_link_libraries(tokenizers nvToolsExt)
+target_link_libraries(clx nvToolsExt)
 
 add_executable(tokenizer
   src/main.cu
@@ -60,7 +60,7 @@ set_target_properties(tokenizer
 
 target_link_libraries(tokenizer ${CU_TOK_LIBS})
 
-add_dependencies(tokenizers gen_cuda_header)
+add_dependencies(clx gen_cuda_header)
 
-install(TARGETS tokenizers LIBRARY
+install(TARGETS clx LIBRARY
     DESTINATION lib)
