@@ -7,7 +7,7 @@
 {% set git_revision_count=environ.get('GIT_DESCRIBE_NUMBER', 0) %}
 {% set cuda_version='.'.join(environ.get('CUDA', '9.2').split('.')[:2]) %}
 package:
-  name: libcugraph
+  name: libclx
   version: {{ version }}
 
 source:
@@ -31,11 +31,6 @@ requirements:
   run:
     - libcudf={{ minor_version }}
     - {{ pin_compatible('cudatoolkit', max_pin='x.x') }}
-
-#test:
-#  commands:
-#    - test -f $PREFIX/include/cugraph.h
-
 
 about:
   home: http://rapids.ai/
