@@ -10,6 +10,7 @@
 
 ## New Features
 - PR #130 Example of streamz
+- PR #132 CLX query applications
 
 ## Improvements
 - PR #103 DGA detector refactor
