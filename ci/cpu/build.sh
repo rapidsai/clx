@@ -63,7 +63,7 @@ source ci/cpu/clx/build_clx.sh
 ################################################################################
 
 logger "Upload libclx conda pkg..."
-#source ci/cpu/libclx/upload-anaconda.sh
+source ci/cpu/libclx/upload-anaconda.sh
 
 logger "Upload clx conda pkg..."
-#source ci/cpu/clx/upload-anaconda.sh
+source ci/cpu/clx/upload-anaconda.sh
