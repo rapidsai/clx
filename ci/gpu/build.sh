@@ -67,7 +67,7 @@ conda list
 ################################################################################
 
 logger "Build libclx and clx..."
-$WORKSPACE/build.sh clean libcugraph cugraph
+$WORKSPACE/build.sh clean libclx clx
 
 ################################################################################
 # TEST - Test python package
