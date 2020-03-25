@@ -21,7 +21,7 @@ class ConfigApp(admin.MConfigHandler):
 
     def setup(self):
         if self.requestedAction == admin.ACTION_EDIT:
-            for arg in ["clx_hostname", "clx_port"]:
+            for arg in ["clx_hostname", "clx_port", "clx_query_limit"]:
                 self.supportedArgs.addOptArg(arg)
 
     """                                                           

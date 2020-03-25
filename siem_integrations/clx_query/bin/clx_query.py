@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import logging
+import re
 import sys, requests, json
 from splunklib.searchcommands import (
     dispatch,
@@ -25,6 +26,7 @@ import splunklib.client as client
 
 log = logging.getLogger(__name__)
 
+REGEX_PATTERN = r"([LIMIT|limit]+.[0-9]+$)"
 
 @Configuration()
 class ClxQuery(GeneratingCommand):
@@ -52,6 +54,13 @@ class ClxQuery(GeneratingCommand):
             config["clx_port"],
         )
         url = base_url + "/" + query
+        has_query_limit = re.findall(REGEX_PATTERN, query)
+        
+        if has_query_limit:
+           return url
+        if config["clx_query_limit"]:
+            url = "%s LIMIT %s" %(url, config["clx_query_limit"])
+        
         return url
 
 
