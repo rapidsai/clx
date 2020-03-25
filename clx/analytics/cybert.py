@@ -92,7 +92,8 @@ class Cybert:
         self.model.eval()
         self.max_seq_len = max_seq_len
 
-    def inference(self, input_ids, attention_masks, meta_data):
+    def inference(self, raw_data_df):
+        input_ids, attention_masks, meta_data = self.preprocess(raw_data_df)
         with torch.no_grad():
             logits = self.model(input_ids, attention_masks)[0]
         logits = F.softmax(logits, dim=2)
@@ -102,10 +103,10 @@ class Cybert:
         infer_pdf['confidences'] = confidences.detach().cpu().numpy().tolist()
         infer_pdf['labels'] = labels.detach().cpu().numpy().tolist()
         infer_pdf['token_ids'] = input_ids.detach().cpu().numpy().tolist()
-        processed_infer_pdf = self.postprocessing(infer_pdf)
+        processed_infer_pdf = self.__postprocessing(infer_pdf)
         return processed_infer_pdf
 
-    def postprocessing(self, infer_pdf):
+    def __postprocessing(self, infer_pdf):
         infer_pdf['confidences'] = infer_pdf.apply(lambda row: row['confidences'][row['start']:row['stop']], axis=1)
         infer_pdf['labels'] = infer_pdf.apply(lambda row: row['labels'][row['start']:row['stop']], axis=1)
         infer_pdf['token_ids'] = infer_pdf.apply(lambda row: row['token_ids'][row['start']:row['stop']], axis=1)
