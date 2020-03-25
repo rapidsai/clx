@@ -2,6 +2,7 @@
 
 ## New Features
 - PR #130 Example of streamz
+- PR #141 CUDA BERT Tokenizer
 
 ## Improvements
 - PR #103 DGA detector refactor
