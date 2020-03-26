@@ -8,6 +8,7 @@
 - PR #103 DGA detector refactor
 - PR #120 Use pytest tmpdir fixtures in unit tests
 - PR #125 Added notebook testing to gpuCI gpu build
+- RR #144 Python refactor
 
 ## Bug Fixes
 - PR #123 Fix update-version.sh
