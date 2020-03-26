@@ -32,7 +32,12 @@ class Cybert:
         self._stride_len = stride_len
         self._max_seq_len = max_seq_len
         currdir = os.path.dirname(os.path.abspath(__file__))
-        self.hash_file = currdir + "/resources/hash_table.txt"
+        self._hash_file = currdir + "/resources/hash_table.txt"
+        self._vocab_file = currdir + "/resources/vocab.txt"
+        self._vocab_dict = {}
+        with open(self._vocab_file) as f:
+            for index, line in enumerate(f):
+                self._vocab_dict[index] = line.split()[0]
 
     @property
     def max_num_logs(self):
@@ -79,18 +84,50 @@ class Cybert:
         """
         return self._max_seq_len
 
+    @property
+    def hash_file(self):
+        """Hash table file path.
+        
+        :return: Hash table file path
+        :rtype: str
+        """
+        return self._hash_file
+
+    @property
+    def vocab(self):
+        """Vocab file path.
+        
+        :return: Vocab file path.
+        :rtype: str
+        """
+        return self._vocab_file
+
+    @property
+    def set_vocab(self, vocab_file_path):
+        """      
+        Set source.
+
+        :param source: vocab file path
+        """
+        self._vocab_file = vocab_file_path
+        self._vocab_dict = {}
+        with open(self._vocab_file) as f:
+            for index, line in enumerate(f):
+                self._vocab_dict[index] = line.split()[0]
+
     def preprocess(self, raw_data_df):
-        input_ids, attention_masks, meta_data = tokenizer.tokenize_df(raw_data_df, self.hash_file, max_sequence_length = self.max_seq_len,
-                                                       stride=self.stride_len, do_lower=False, do_truncate=False, max_num_sentences=self.max_num_logs,
-                                                       max_num_chars = self.max_num_chars, max_rows_tensor = self.max_rows_tensor)        
+        input_ids, attention_masks, meta_data = tokenizer.tokenize_df(raw_data_df, self._hash_file, max_sequence_length = self._max_seq_len,
+                                                       stride=self._stride_len, do_lower=False, do_truncate=False, max_num_sentences=self._max_num_logs,
+                                                       max_num_chars = self._max_num_chars, max_rows_tensor = self._max_rows_tensor)       
         return input_ids, attention_masks, meta_data
 
     def load_model(self, model_filepath, label_map, num_labels):
-        model_state_dict = torch.load(model_file_path)
+        model_state_dict = torch.load(model_filepath)
         self.model = BertForTokenClassification.from_pretrained('bert-base-cased', state_dict=model_state_dict, num_labels=num_labels)
         self.model.cuda()
         self.model.eval()
-        self.max_seq_len = max_seq_len
+        self._label_map = label_map
+        self._num_labels = num_labels
 
     def inference(self, raw_data_df):
         input_ids, attention_masks, meta_data = self.preprocess(raw_data_df)
@@ -113,14 +150,14 @@ class Cybert:
         parsed_df = infer_pdf.apply(lambda row: self.__tokens_by_label(row), axis=1)
         parsed_df = pd.DataFrame(parsed_df.tolist())
         parsed_df = parsed_df.applymap(self.__decode_cleanup)
-        conf_df = pdf.apply(lambda row: self.__confidence_by_label(row), axis=1)
+        conf_df = parsed_df.apply(lambda row: self.__confidence_by_label(row), axis=1)
         conf_df = pd.DataFrame(conf_df.tolist())
         return conf_df
 
     def __tokens_by_label(self,row):
         token_dict = defaultdict(str)
         for token, label in zip(row['token_ids'], row['labels']):
-            token_dict[LABEL_MAP[label]] = token_dict[LABEL_MAP[label]] + ' ' + vocab_dict[token]
+            token_dict[self._label_map[label]] = token_dict[self._label_map[label]] + ' ' + self._vocab_dict[token]
         return token_dict
 
     def __confidence_by_label(self,row):
@@ -129,5 +166,6 @@ class Cybert:
             confidence_dict[LABEL_MAP[label]].append(confidence)    
         return confidence_dict
 
-    def __decode_cleanup(self,string):
-        return string.replace(' ##', '').replace(' . ', '.').replace(' : ', ':').replace(' / ','/')
+    def __decode_cleanup(self,row):
+        print(row)
+        return row.replace(' ##', '').replace(' . ', '.').replace(' : ', ':').replace(' / ','/')
