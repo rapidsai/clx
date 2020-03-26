@@ -7,7 +7,16 @@ from Cython.Build import cythonize
 
 from distutils.sysconfig import get_python_lib
 
-install_requires = ["confluent_kafka", "transformers", "seqeval[gpu]", "python-whois", "requests", "mockito", "torch==1.3.1", "cython"]
+install_requires = [
+    "confluent_kafka",
+    "transformers",
+    "seqeval[gpu]",
+    "python-whois",
+    "requests",
+    "mockito",
+    "torch==1.3.1",
+    "cython"
+]
 
 conda_lib_dir = os.path.normpath(sys.prefix) + '/lib'
 conda_include_dir = os.path.normpath(sys.prefix) + '/include'
@@ -18,7 +27,8 @@ if (os.environ.get('CONDA_PREFIX', None)):
     conda_lib_dir = conda_prefix + '/lib'
 
 EXTENSIONS = [
-    Extension("*",
+    Extension(
+        "*",
         sources=["clx/analytics/tokenizer.pyx"],
         language="c++",
         runtime_library_dirs=[conda_lib_dir],
