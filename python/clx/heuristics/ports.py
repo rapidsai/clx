@@ -115,8 +115,9 @@ def major_ports(addr_col, port_col, min_conns=1, eph_min=10000):
     # Doing workaround until fix.
     # gdf.loc[gdf["port"] >= eph_min, "service"] = "ephemeral"
     eph_gdf = gdf[gdf["port"] >= eph_min]
-    eph_gdf["service"] = "ephemeral"
-    gdf = cudf.concat([gdf[gdf["port"] < eph_min], eph_gdf])
+    if not eph_gdf.empty:
+        eph_gdf["service"] = "ephemeral"
+        gdf = cudf.concat([gdf[gdf["port"] < eph_min], eph_gdf])
 
     gdf = gdf.groupby(["addr", "port", "service"], dropna=False, as_index=False).sum()
 

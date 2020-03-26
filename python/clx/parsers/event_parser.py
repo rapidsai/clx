@@ -72,9 +72,8 @@ class EventParser(ABC):
         :return: parsed information.
         :rtype: cudf.DataFrame
         """
-        log.debug(
-            "Parsing raw events. Event type: " + self.event_name + " DataFrame shape: " + str(dataframe.shape)
-        )
+        log.debug("Parsing raw events. Event type: " + self.event_name + " DataFrame shape: " + str(dataframe.shape))
+
         parsed_gdf = cudf.DataFrame({col: [""] for col in self.columns})
         parsed_gdf = parsed_gdf[:0]
         event_specific_columns = event_regex.keys()
@@ -105,11 +104,10 @@ class EventParser(ABC):
         :rtype: cudf.DataFrame
         """
         df["present"] = df[column].str.contains(pattern)
-        return df[df.present is True]
+        return df[df.present]
 
     def _load_regex_yaml(self, yaml_file):
         """Returns a dictionary of the regex contained in the given yaml file"""
         with open(yaml_file) as yaml_file:
             regex_dict = yaml.safe_load(yaml_file)
-
         return regex_dict
