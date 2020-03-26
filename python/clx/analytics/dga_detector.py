@@ -11,13 +11,13 @@ log = logging.getLogger(__name__)
 
 class DGADetector(Detector):
     """
-    This class provides multiple functionalities such as build, train and evaluate the RNNClassifier model 
+    This class provides multiple functionalities such as build, train and evaluate the RNNClassifier model
     to distinguish legitimate and DGA domain names.
     """
 
     def init_model(self, char_vocab=128, hidden_size=100, n_domain_type=2, n_layers=3):
-        """This function instantiates RNNClassifier model to train. And also optimizes to scale it and keep running on parallelism. 
-        
+        """This function instantiates RNNClassifier model to train. And also optimizes to scale it and keep running on parallelism.
+
         :param char_vocab: Vocabulary size is set to 128 ASCII characters.
         :type char_vocab: int
         :param hidden_size: Hidden size of the network.
@@ -72,12 +72,12 @@ class DGADetector(Detector):
 
     def predict(self, domains):
         """This function accepts cudf series of domains as an argument to classify domain names as benign/malicious and returns the learned label for each object in the form of cudf series.
-        
+
         :param domains: List of domains.
         :type domains: cudf.Series
         :return: Predicted results with respect to given domains.
         :rtype: cudf.Series
-        
+
         Examples
         --------
         >>> dd.predict(['nvidia.com', 'dgadomain'])
@@ -134,7 +134,7 @@ class DGADetector(Detector):
 
     def evaluate_model(self, detector_dataset):
         """This function evaluates the trained model to verify it's accuracy.
-        
+
         :param detector_dataset: Instance holds preprocessed data.
         :type detector_dataset: DetectorDataset
         :return: Model accuracy

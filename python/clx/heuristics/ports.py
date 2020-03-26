@@ -15,46 +15,50 @@
 import cudf
 import os
 
+
 class Resources:
 
     _instance = None
-    
+
     @staticmethod
     def get_instance():
-        if Resources._instance == None:
+        if Resources._instance is None:
             Resources()
         return Resources._instance
 
     def __init__(self):
-        if Resources._instance != None:
+        if Resources._instance is not None:
             raise Exception("This is a singleton class")
         else:
             Resources._instance = self
             Resources._instance._iana_lookup_df = self._load_iana_lookup_df()
-            
+
     @property
     def iana_lookup_df(self):
         return self._iana_lookup_df
-    
-    
+
     def _load_iana_lookup_df(self):
         iana_path = "%s/resources/iana_port_lookup.csv" % os.path.dirname(
             os.path.realpath(__file__)
         )
-        colNames = ["port","service"]
-        colTypes = ["int64","str"]
-        iana_lookup_df = cudf.read_csv(iana_path, delimiter=',',
-                names=colNames,
-                dtype=colTypes,
-                skiprows=1)
+        colNames = ["port", "service"]
+        colTypes = ["int64", "str"]
+        iana_lookup_df = cudf.read_csv(
+            iana_path,
+            delimiter=',',
+            names=colNames,
+            dtype=colTypes,
+            skiprows=1
+        )
         iana_lookup_df = iana_lookup_df.dropna()
         iana_lookup_df = iana_lookup_df.groupby(["port"]).min().reset_index()
 
         return iana_lookup_df
 
+
 def major_ports(addr_col, port_col, min_conns=1, eph_min=10000):
-    """Find major ports for each address. This is done by computing the mean number of connections across all 
-    ports for each address and then filters out all ports that don't cross this threshold. Also adds column 
+    """Find major ports for each address. This is done by computing the mean number of connections across all
+    ports for each address and then filters out all ports that don't cross this threshold. Also adds column
     for IANA service name correspondingto each port.
 
     :param addr_col: Column of addresses as strings
@@ -88,14 +92,14 @@ def major_ports(addr_col, port_col, min_conns=1, eph_min=10000):
     # Calculate average number of connections across all ports for each ip
     cnt_avg_gdf = gdf[["addr", "conns"]]
     cnt_avg_gdf = cnt_avg_gdf.groupby(["addr"], as_index=False).mean()
-    cnt_avg_gdf = cnt_avg_gdf.rename(columns={"conns":"avg"})
+    cnt_avg_gdf = cnt_avg_gdf.rename(columns={"conns": "avg"})
 
     # Merge averages to dataframe
     gdf = gdf.merge(cnt_avg_gdf, on=['addr'], how='left')
 
     # Filter out all ip-port pairs below average
-    gdf = gdf[gdf.conns>=gdf.avg]
-    
+    gdf = gdf[gdf.conns >= gdf.avg]
+
     if min_conns > 1:
         gdf = gdf[gdf.conns >= min_conns]
 

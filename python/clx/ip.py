@@ -14,7 +14,6 @@
 
 import cudf
 import nvstrings
-import rmm
 import numpy as np
 
 
@@ -86,7 +85,7 @@ def is_ip(ips):
     0     True
     1    False
     dtype: bool
-    """    
+    """
     is_ip_REGEX = r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
     return ips.str.match(is_ip_REGEX)
 
@@ -164,7 +163,7 @@ def is_unspecified(ips):
     """
     Indicates whether each address is unspecified.
     **Addresses must be IPv4. IPv6 not yet supported.**
-    
+
     :param ips: IP addresses
     :type values: cudf.Series
     :return: booleans

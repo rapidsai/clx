@@ -12,16 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import glob
-import csv
-import os
 import cudf
 import pytest
-import shutil
-import pandas as pd
 
-from pathlib import Path
-from clx.io.factory.factory import Factory
 from clx.io.writer.fs_writer import FileSystemWriter
 
 
@@ -63,6 +56,7 @@ def test_write_data_parquet(tmpdir, expected_df):
 
     result_df = cudf.read_parquet(fname)
     assert result_df.equals(expected_df)
+
 
 @pytest.mark.parametrize("expected_df", [expected_df])
 def test_write_data_orc(tmpdir, expected_df):

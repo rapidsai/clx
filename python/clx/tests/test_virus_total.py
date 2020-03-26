@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import pytest
 import requests
 import cudf
@@ -144,8 +143,7 @@ def test_url_scan(client, url_scan_resp):
     assert json_resp["response_code"] == 1
     assert json_resp["url"] == "http://www.virustotal.com/"
     assert (
-        json_resp["verbose_msg"]
-        == "Scan request successfully queued, come back later for the report"
+        json_resp["verbose_msg"] == "Scan request successfully queued, come back later for the report"
     )
 
 
@@ -158,7 +156,7 @@ def test_url_report(client, url_report_resp):
     assert result["status_code"] == 200
     assert json_resp["response_code"] == 1
     assert json_resp["url"] == "http://www.virustotal.com/"
-    assert json_resp["scans"]["CLEAN MX"]["detected"] == False
+    assert not json_resp["scans"]["CLEAN MX"]["detected"]
     assert json_resp["scans"]["CLEAN MX"]["result"] == "clean site"
 
 
@@ -172,7 +170,7 @@ def test_file_report(client, file_report_resp):
     assert json_resp["resource"] == "99017f6eebbac24f351415dd410d522d"
     assert json_resp["sha1"] == "4d1740485713a2ab3a4f5822a01f645fe8387f92"
     assert json_resp["scan_date"] == "2010-05-15 03:38:44"
-    assert json_resp["scans"]["nProtect"]["detected"] == True
+    assert json_resp["scans"]["nProtect"]["detected"]
 
 
 @pytest.mark.parametrize("client", [client])

@@ -27,8 +27,8 @@ class TestEventParser(object):
         event_name = "eventName"
         columns = ["eventTypeId", "username"]
         self.event_regex = {
-            "eventTypeId": "eventTypeId: ([0-9$]+)",
-            "username": "username: ([a-z\.\-0-9$]+)",
+            "eventTypeId": r"eventTypeId: ([0-9$]+)",
+            "username": r"username: ([a-z\.\-0-9$]+)",
         }
         self.event_parser = TestEventParserImpl(columns, event_name)
 

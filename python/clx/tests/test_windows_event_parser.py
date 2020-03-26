@@ -53,8 +53,7 @@ def validate_4624(parsed_rec):
     assert parsed_rec["id"] == "c54d7f17-8eb8-4d78-a8f7-4b681256e2b3"
     assert parsed_rec["eventcode"] == "4624"
     assert (
-        parsed_rec["detailed_authentication_information_authentication_package"]
-        == "kerberos"
+        parsed_rec["detailed_authentication_information_authentication_package"] == "kerberos"
     )
     assert (
         parsed_rec["new_logon_logon_guid"] == "{e53069f0-662e-0c65-f889-aa8d8770d56a}"
@@ -105,13 +104,11 @@ def validate_4625(parsed_rec):
     assert parsed_rec["id"] == "cf4876f3-716c-415c-994e-84acda054c9c"
     assert parsed_rec["eventcode"] == "4625"
     assert (
-        parsed_rec["detailed_authentication_information_authentication_package"]
-        == "ntlm"
+        parsed_rec["detailed_authentication_information_authentication_package"] == "ntlm"
     )
     assert parsed_rec["new_logon_logon_guid"] == ""
     assert (
-        parsed_rec["failure_information_failure_reason"]
-        == "unknown user name or bad password."
+        parsed_rec["failure_information_failure_reason"] == "unknown user name or bad password."
     )
     assert parsed_rec["failure_information_status"] == "0xc000006d"
     assert parsed_rec["computername"] == "abc.test.com"
@@ -241,8 +238,7 @@ def validate_5157(parsed_rec):
     assert parsed_rec["network_information_source_port"] == "137"
     assert parsed_rec["application_information_process_id"] == "1048"
     assert (
-        parsed_rec["application_information_application_name"]
-        == "\device\harddiskvolume1\windows\system32\svchost.exe"
+        parsed_rec["application_information_application_name"] == "\device\harddiskvolume1\windows\system32\svchost.exe"
     )
     assert parsed_rec["network_information_direction"] == "inbound"
     assert parsed_rec["network_information_source_address"] == "100.20.100.30"
@@ -275,8 +271,7 @@ def validate_4769(parsed_rec):
     assert parsed_rec["account_information_account_name"] == "user@localhost.com"
     assert parsed_rec["account_information_account_domain"] == "localhost.com"
     assert (
-        parsed_rec["account_information_logon_guid"]
-        == "{1f1d4c09-e154-4898-4eb8-e3a03e130d11}"
+        parsed_rec["account_information_logon_guid"] == "{1f1d4c09-e154-4898-4eb8-e3a03e130d11}"
     )
     assert parsed_rec["service_information_service_name"] == "test.localhost.com"
     assert parsed_rec["service_information_service_id"] == "none_mapped"
@@ -376,23 +371,19 @@ def validate_4648(parsed_rec):
     assert parsed_rec["subject_logon_id"] == "0x1ba0e"
     assert parsed_rec["subject_logon_guid"] == "{00000000-0000-0000-0000-000000000000}"
     assert (
-        parsed_rec["account_whose_credentials_were_used_account_name"]
-        == "rsmith@mtg.com"
+        parsed_rec["account_whose_credentials_were_used_account_name"] == "rsmith@mtg.com"
     )
     assert (
-        parsed_rec["account_whose_credentials_were_used_account_domain"]
-        == "win-r9h529rio4y"
+        parsed_rec["account_whose_credentials_were_used_account_domain"] == "win-r9h529rio4y"
     )
     assert (
-        parsed_rec["account_whose_credentials_were_used_logon_guid"]
-        == "{00000000-0000-0000-0000-000000000000}"
+        parsed_rec["account_whose_credentials_were_used_logon_guid"] == "{00000000-0000-0000-0000-000000000000}"
     )
     assert parsed_rec["target_server_target_server_name"] == "sp01.icemail.com"
     assert parsed_rec["target_server_additional_information"] == "sp01.icemail.com"
     assert parsed_rec["process_information_process_id"] == "0x77c"
     assert (
-        parsed_rec["process_information_process_name"]
-        == "c:\program files\internet explorer\iexplore.exe"
+        parsed_rec["process_information_process_name"] == "c:\program files\internet explorer\iexplore.exe"
     )
     assert parsed_rec["network_information_network_address"] == "-"
     assert parsed_rec["network_information_port"] == "-"
@@ -410,8 +401,7 @@ def validate_4672(parsed_rec):
     assert parsed_rec["subject_account_domain"] == "dev"
     assert parsed_rec["subject_logon_id"] == "0x800a513d"
     assert (
-        parsed_rec["privileges"]
-        == "sesecurityprivilege|sebackupprivilege|serestoreprivilege|setakeownershipprivilege|sedebugprivilege|sesystemenvironmentprivilege|seloaddriverprivilege|seimpersonateprivilege"
+        parsed_rec["privileges"] == "sesecurityprivilege|sebackupprivilege|serestoreprivilege|setakeownershipprivilege|sedebugprivilege|sesystemenvironmentprivilege|seloaddriverprivilege|seimpersonateprivilege"
     )
 
 
@@ -424,8 +414,7 @@ def validate_4673(parsed_rec):
     assert parsed_rec["subject_account_name"] == "fvjbvfjbvf$"
     assert parsed_rec["subject_logon_id"] == "0x3e7"
     assert (
-        parsed_rec["service_server"]
-        == "nt local security authority / authentication service"
+        parsed_rec["service_server"] == "nt local security authority / authentication service"
     )
     assert parsed_rec["service_service_name"] == "lsaregisterlogonprocess()"
     assert parsed_rec["process_process_id"] == "0x234"
@@ -472,8 +461,7 @@ def validate_4720(parsed_rec):
     assert parsed_rec["attributes_old_uac_value"] == "0x0"
     assert parsed_rec["attributes_new_uac_value"] == "0x15"
     assert (
-        parsed_rec["attributes_user_account_control"]
-        == "account disabled|'password not required' - enabled|'normal account' - enable"
+        parsed_rec["attributes_user_account_control"] == "account disabled|'password not required' - enabled|'normal account' - enable"
     )
     assert parsed_rec["attributes_user_parameters"] == "-"
     assert parsed_rec["attributes_sid_history"] == "-"
@@ -650,8 +638,7 @@ def validate_4768(parsed_rec):
     assert parsed_rec["account_information_account_name"] == "healthmailbox06ca30c"
     assert parsed_rec["account_information_supplied_realm_name"] == "localhost.com"
     assert (
-        parsed_rec["account_information_user_id"]
-        == "localhost.com\healthmailbox06ca30c"
+        parsed_rec["account_information_user_id"] == "localhost.com\healthmailbox06ca30c"
     )
     assert parsed_rec["additional_information_result_code"] == "0x0"
     assert parsed_rec["additional_information_ticket_options"] == "0x40810010"
@@ -738,5 +725,5 @@ def test3_windows_event_parser():
         "Regex for eventcode 24 is not available in the config file. Please choose from ['4624', '4625', '4634', '4647', '4648', '4672', '4673', '4720', '4722', '4723', '4724', '4725', '4726', '4732', '4738', '4740', '4743', '4756', '4767', '4768', '4769', '4770', '4771', '4781', '4782', '4798', '5156', '5157']"
     )
     with pytest.raises(KeyError) as actual_error:
-        wep = WindowsEventParser(interested_eventcodes=["5156", "24"])
+        WindowsEventParser(interested_eventcodes=["5156", "24"])
         assert actual_error == expected_error

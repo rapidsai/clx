@@ -12,11 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import cudf
 import pytest
-from pathlib import Path
-from clx.io.factory.factory import Factory
 from clx.io.reader.fs_reader import FileSystemReader
 
 expected_df = cudf.DataFrame(
@@ -80,6 +77,7 @@ def test_fetch_data_orc(tmpdir, expected_df):
     fetched_df = reader.fetch_data()
 
     assert fetched_df.equals(expected_df)
+
 
 @pytest.mark.parametrize("expected_df", [expected_df])
 def test_fetch_data_json(tmpdir, expected_df):

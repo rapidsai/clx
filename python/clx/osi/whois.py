@@ -15,9 +15,9 @@
 # use `pip install python-whois`
 import whois
 import logging
-from datetime import datetime
 
 log = logging.getLogger(__name__)
+
 
 class WhoIsLookupClient(object):
 
@@ -28,7 +28,6 @@ class WhoIsLookupClient(object):
         self.sep = sep
         self.datetime_format = datetime_format
 
-    
     def whois(self, domains, arr2str=True):
         """
         Function to access parsed WHOIS data for a given domain.

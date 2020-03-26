@@ -29,7 +29,6 @@ class FileSystemReader(FileReader):
         self._config = config
         self._has_data = True
 
-    
     def fetch_data(self):
         """
         Fetch data using cudf based on provided config object
@@ -52,7 +51,7 @@ class FileSystemReader(FileReader):
             df = cudf.read_json(filepath, **kwargs)
         else:
             raise NotImplementedError("%s is not a supported input_format" % (input_format))
-        
+
         self.has_data = False
         return df
 

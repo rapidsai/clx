@@ -114,7 +114,7 @@ class Workflow(ABC):
                 if key not in self.DEFAULT_PARAMS:
                     setattr(self, key, config[key])
 
-        except:
+        except Exception:
             log.error(
                 "Error creating I/O reader and writer. Please check configurations in workflow config file at {0}".format(
                     yaml_file

@@ -25,7 +25,7 @@ class SplunkNotableParser(EventParser):
     """
     REGEX_FILE = "resources/splunk_notable_regex.yaml"
     EVENT_NAME = "notable"
-    
+
     def __init__(self):
         """Constructor method
         """
@@ -38,11 +38,11 @@ class SplunkNotableParser(EventParser):
 
     def parse(self, dataframe, raw_column):
         """Parses the Splunk notable raw events.
-        
+
         :param dataframe: Raw events to be parsed.
         :type dataframe: cudf.DataFrame
         :param raw_column: Raw data contained column name.
-        :type raw_column: string    
+        :type raw_column: string
         :return: parsed information.
         :rtype: cudf.DataFrame
         """

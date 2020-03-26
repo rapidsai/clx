@@ -15,7 +15,6 @@
 import os
 import cudf
 import logging
-from cudf import DataFrame
 
 log = logging.getLogger(__name__)
 
@@ -26,12 +25,12 @@ class DnsVarsProvider:
 
     @staticmethod
     def get_instance():
-        if DnsVarsProvider.__instance == None:
+        if DnsVarsProvider.__instance is None:
             DnsVarsProvider()
         return DnsVarsProvider.__instance
 
     def __init__(self):
-        if DnsVarsProvider.__instance != None:
+        if DnsVarsProvider.__instance is not None:
             raise Exception("This is a singleton class")
         else:
             DnsVarsProvider.__instance = self
@@ -67,12 +66,12 @@ class DnsVarsProvider:
 
 def extract_hostnames(url_series):
     """This function extracts hostnames from the given urls.
-    
+
     :param url_series: Urls that are to be handled.
     :type url_series: cudf.Series
     :return: Hostnames extracted from the urls.
     :rtype: cudf.Series
-    
+
     Examples
     --------
     >>> from cudf import DataFrame
@@ -147,18 +146,18 @@ def generate_tld_cols(hostname_split_df, hostnames, col_len):
 def _extract_tld(input_df, suffix_df, col_len, col_dict):
     """
     Examples
-    -------- 
+    --------
         input:
                4    3                2          1           0  tld4    tld3             tld2                 tld1                        tld0    idx
             0 ac  com              cnn       news      forums    ac  com.ac       cnn.com.ac      news.cnn.com.ac      forums.news.cnn.com.ac      0
             1     ac               cnn       news      forums            ac           cnn.ac          news.cnn.ac          forums.news.cnn.ac      1
             2                      com        cnn           b                            com              cnn.com                   b.cnn.com      2
-    
+
         output:
                               hostname      domain        suffix       subdomain   idx
             0   forums.news.cnn.com.ac         cnn        com.ac     forums.news     0
             2       forums.news.cnn.ac         cnn            ac     forums.news     1
-            1                b.cnn.com         cnn           com               b     2      
+            1                b.cnn.com         cnn           com               b     2
     """
     tmp_dfs = []
     # Left join on single column dataframe does not provide expected results hence adding dummy column.
@@ -239,19 +238,19 @@ def _verify_req_cols(req_cols, allowed_output_cols):
 
 def parse_url(url_series, req_cols=None):
     """This function extracts subdomain, domain and suffix for a given url.
-    
+
     :param url_df_col: Urls that are to be handled.
     :type url_df_col: cudf.Series
     :param req_cols: Columns requested to extract such as (domain, subdomain, suffix and hostname).
     :type req_cols: set(strings)
     :return: Extracted information of requested columns.
     :rtype: cudf.DataFrame
-    
+
     Examples
     --------
     >>> from cudf import DataFrame
     >>> from clx.dns import dns_extractor as dns
-    >>> 
+    >>>
     >>> input_df = DataFrame(
     ...     {
     ...         "url": [
@@ -265,8 +264,8 @@ def parse_url(url_series, req_cols=None):
     >>> dns.parse_url(input_df["url"])
                 hostname  domain suffix subdomain
     0     www.google.com  google    com       www
-    1          gmail.com   gmail    com          
-    2         github.com  github    com          
+    1          gmail.com   gmail    com
+    2         github.com  github    com
     3  pandas.pydata.org  pydata    org    pandas
     >>> dns.parse_url(input_df["url"], req_cols={'domain', 'suffix'})
        domain suffix

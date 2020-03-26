@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import dask, dask_cudf
+import dask_cudf
 import logging
 from clx.io.reader.file_reader import FileReader
 
 log = logging.getLogger(__name__)
+
 
 class DaskFileSystemReader(FileReader):
     """

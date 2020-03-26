@@ -2,7 +2,7 @@ custom_workflow_param: param_value
 destination:
   index: false
   output_format: csv
-  output_path: /tmp/pytest-of-root/pytest-0/test_workflow_config0/tmp_test_workflow/output_config.csv
+  output_path: /tmp/pytest-of-root/pytest-5/test_workflow_config0/tmp_test_workflow/output_config.csv
   type: fs
 source:
   delimiter: ','
@@ -12,7 +12,7 @@ source:
   - str
   header: 0
   input_format: csv
-  input_path: /tmp/pytest-of-root/pytest-0/test_workflow_config0/tmp_test_workflow/person.csv
+  input_path: /tmp/pytest-of-root/pytest-5/test_workflow_config0/tmp_test_workflow/person.csv
   names:
   - firstname
   - lastname

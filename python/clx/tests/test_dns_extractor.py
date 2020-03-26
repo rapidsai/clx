@@ -48,8 +48,7 @@ def test2_dns_vars_provider():
     expected_error = Exception("This is a singleton class")
 
     with pytest.raises(Exception) as actual_error:
-        sv = dns.DnsVarsProvider()
-        sv = dns.DnsVarsProvider()
+        dns.DnsVarsProvider()
         assert actual_error == expected_error
 
 
@@ -197,7 +196,6 @@ def test_extract_hostname(input_df):
     assert output.equals(expected_output_df["hostname"])
 
 
-
 def test_generate_tld_cols():
     hostnames_df = DataFrame(
         {"hostname": ["forums.news.cnn.com.ac", "forums.news.cnn.ac", "b.cnn.com"]}
@@ -239,5 +237,5 @@ def test_parse_url_invalid_req_cols(input_df):
         % (["hostname", "subdomain", "domain", "suffix"])
     )
     with pytest.raises(ValueError) as actual_error:
-        output_df = dns.parse_url(input_df["url"], req_cols={"test"})
+        dns.parse_url(input_df["url"], req_cols={"test"})
         assert actual_error == expected_error

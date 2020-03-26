@@ -14,7 +14,6 @@
 
 import pytest
 import cudf
-import os
 
 from clx.io.factory.factory import Factory
 from clx.io.reader.kafka_reader import KafkaReader
@@ -108,7 +107,6 @@ def test_get_reader_csv(tmpdir, expected_df):
 def test_get_reader_parquet(tmpdir, expected_df):
     fname = tmpdir.mkdir("tmp_test_factory").join("person.parquet")
     cudf.io.parquet.to_parquet(expected_df, fname)
-    clx_input_path = fname + "/*.parquet"
     config = {
         "type": "fs",
         "input_path": fname,

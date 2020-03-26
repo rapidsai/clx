@@ -25,14 +25,14 @@ datetime_2 = datetime.datetime(2020, 5, 18)
 client = WhoIsLookupClient()
 
 response = {
-        "domain_name": "NVIDIA.COM",
-        "registrar": "Safenames Ltd",
-        "emails": [
-            "abuse@safenames.net",
-            "wadmpfvzi5ei@idp.email",
-            "hostmaster@safenames.net",
-        ],
-        "updated_date": [datetime_1, datetime_2],
+    "domain_name": "NVIDIA.COM",
+    "registrar": "Safenames Ltd",
+    "emails": [
+        "abuse@safenames.net",
+        "wadmpfvzi5ei@idp.email",
+        "hostmaster@safenames.net",
+    ],
+    "updated_date": [datetime_1, datetime_2],
 }
 
 

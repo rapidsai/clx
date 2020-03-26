@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import cudf
 import pytest
 
 from confluent_kafka import Consumer
@@ -62,6 +61,7 @@ def test_read_data_message_error(batch_size):
     assert df.columns == ["Raw"]
     assert df["Raw"].tolist() == ["test message"]
 
+
 @pytest.mark.parametrize("batch_size", [5])
 def test_read_data_no_messages(batch_size):
     consumer = mock(Consumer)
@@ -71,4 +71,4 @@ def test_read_data_no_messages(batch_size):
     df = reader.fetch_data()
 
     # Validate dataframe output
-    assert df.empty == True
+    assert df.empty

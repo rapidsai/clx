@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import cudf
-import csv
 import os
 import pytest
 import yaml
@@ -146,19 +145,19 @@ def test_workflow_config_error(mock_env_home, set_workflow_config):
     test_config["source"] = set_workflow_config[1]
     write_config_file(test_config, workflow_name)
     with pytest.raises(Exception):
-        test_workflow = TestWorkflowImpl(workflow_name)
+        TestWorkflowImpl(workflow_name)
 
     test_config = {}
     test_config["destination"] = set_workflow_config[2]
     write_config_file(test_config, workflow_name)
     with pytest.raises(Exception):
-        test_workflow = TestWorkflowImpl(workflow_name)
+        TestWorkflowImpl(workflow_name)
 
 
 def test_workflow_no_data(tmpdir, mock_env_home, set_workflow_config):
     """ Test confirms that workflow is not run and output not written if no data is returned from the workflow io_reader
     """
-   # Create source and destination configurations
+    # Create source and destination configurations
     source = set_workflow_config[1]
     destination = set_workflow_config[2]
 
@@ -174,12 +173,12 @@ def test_workflow_no_data(tmpdir, mock_env_home, set_workflow_config):
         source=source, destination=destination, name="test-workflow-no-data", custom_workflow_param="test_param"
     ))
     test_workflow.run_workflow()
-    
+
     # Verify workflow not run
-    verify(test_workflow, times=0).workflow(...)  
+    verify(test_workflow, times=0).workflow(...)
 
     # Verify that no output file created.
-    assert os.path.exists(output_path) == False
+    assert not os.path.exists(output_path)
 
 
 def test_workflow_no_enriched_data(tmpdir, mock_env_home, set_workflow_config):
@@ -209,7 +208,7 @@ def test_workflow_no_enriched_data(tmpdir, mock_env_home, set_workflow_config):
     verify(io_writer, times=0).write_data(...)
 
     # Verify that no output file created.
-    assert os.path.exists(output_path) == False
+    assert not os.path.exists(output_path)
 
 
 def test_benchmark_decorator(

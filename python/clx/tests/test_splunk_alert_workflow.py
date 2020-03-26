@@ -91,14 +91,13 @@ def test_splunk_alert_workflow(threshold, interval, window):
     ]
     for col in expected_df.columns:
         assert expected_df[col].equals(actual_df[col])
-    #assert False
 
 
 @pytest.mark.parametrize("threshold", [1.5, 3.05, 1.0])
 @pytest.mark.parametrize("interval", ["hour"])
 @pytest.mark.parametrize("window", [24, 48])
 def test_splunk_alert_workflow_hour(threshold, interval, window):
-    sa_workflow = SplunkAlertWorkflow(
+    SplunkAlertWorkflow(
         "splunk-alert-workflow", threshold=threshold, interval=interval
     )
 
@@ -106,7 +105,7 @@ def test_splunk_alert_workflow_hour(threshold, interval, window):
 @pytest.mark.parametrize("threshold", [2.0])
 @pytest.mark.parametrize("interval", ["minute"])
 def test_splunk_alert_workflow_min(threshold, interval):
-    with pytest.raises(Exception) as e:
-        sa_workflow = SplunkAlertWorkflow(
+    with pytest.raises(Exception):
+        SplunkAlertWorkflow(
             "splunk-alert-workflow", threshold=threshold, interval=interval
         )

@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import cudf
-import pandas
 from clx.parsers.splunk_notable_parser import SplunkNotableParser
 
 TEST_DATA = '1566345812.924, search_name="Test Search Name", orig_time="1566345812.924", info_max_time="1566346500.000000000", info_min_time="1566345300.000000000", info_search_time="1566305689.361160000", message.description="Test Message Description", message.hostname="msg.test.hostname", message.ip="100.100.100.123", message.user_name="user@test.com", severity="info", urgency="medium"'
@@ -127,8 +126,7 @@ def test_splunk_notable_parser():
     assert len(test_output_df4.columns) == 24
     assert test_output_df4["time"][0] == "1566345700"
     assert (
-        test_output_df4["search_name"][0]
-        == "Endpoint - Brute Force against Known User - Rule"
+        test_output_df4["search_name"][0] == "Endpoint - Brute Force against Known User - Rule"
     )
     assert test_output_df4["orig_time"][0] == ""
     assert test_output_df4["urgency"][0] == ""
@@ -188,8 +186,7 @@ def test_splunk_notable_parser():
     assert len(test_output_df6.columns) == 24
     assert test_output_df6["time"][0] == "1566345700"
     assert (
-        test_output_df6["search_name"][0]
-        == "Endpoint - FireEye NX alert for Incident Review (Minor) - Rule"
+        test_output_df6["search_name"][0] == "Endpoint - FireEye NX alert for Incident Review (Minor) - Rule"
     )
     assert test_output_df6["orig_time"][0] == ""
     assert test_output_df6["urgency"][0] == ""
@@ -220,8 +217,7 @@ def test_splunk_notable_parser():
     assert len(test_output_df7.columns) == 24
     assert test_output_df7["time"][0] == "1566345700"
     assert (
-        test_output_df7["search_name"][0]
-        == "Endpoint - Host With Malware Detected (Quarantined or Waived) - Rule"
+        test_output_df7["search_name"][0] == "Endpoint - Host With Malware Detected (Quarantined or Waived) - Rule"
     )
     assert test_output_df7["orig_time"][0] == ""
     assert test_output_df7["urgency"][0] == ""

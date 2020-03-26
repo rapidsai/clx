@@ -59,15 +59,10 @@ class KafkaReader(Reader):
             while running:
                 # First check if batch size or time window has been exceeded
                 if (
-                    rec_cnt >= self._batch_size
-                    or (time.time() - current_time) >= self.time_window
+                    rec_cnt >= self._batch_size or (time.time() - current_time) >= self.time_window
                 ):
                     log.debug(
-                        "Exceeded record count ("
-                        + str(rec_cnt)
-                        + ") or time window ("
-                        + str(time.time() - current_time)
-                        + ")"
+                        "Exceeded record count (" + str(rec_cnt) + ") or time window (" + str(time.time() - current_time) + ")"
                     )
                     running = False
                 # Else poll next message in kafka queue
@@ -91,7 +86,7 @@ class KafkaReader(Reader):
                 df["Raw"] = events
             log.debug("Kafka reader batch aggregation complete. Dataframe size = " + str(df.shape))
             return df
-        except:
+        except Exception:
             log.error("Error fetching data from kafka")
             raise
 

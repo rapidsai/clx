@@ -1,4 +1,3 @@
-import cudf
 import logging
 from clx.analytics import detector_utils as du
 
@@ -12,7 +11,7 @@ class DetectorDataset(object):
 
     def __init__(self, df, batch_size):
         """This function instantiates partitioned datframes and number of the records in all partitions.
-        
+
         :param df: domains dataframe.
         :type df: cudf.DataFrame
         :param batch_size: Number of records in the dataframe.

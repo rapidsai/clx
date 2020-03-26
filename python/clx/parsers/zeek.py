@@ -46,8 +46,8 @@ def parse_log_file(filepath):
     """
     header_gdf = cudf.read_csv(filepath, names=["line"], nrows=8)
     lines = header_gdf["line"].str.split_record()
-    column_names = lines[6][1 : len(lines[6])].to_host()
-    column_types = lines[7][1 : len(lines[7])].to_host()
+    column_names = lines[6][1: len(lines[6])].to_host()
+    column_types = lines[7][1: len(lines[7])].to_host()
     column_dtypes = list(map(lambda x: type_dict.get(x, "str"), column_types))
     log_gdf = cudf.read_csv(
         filepath,

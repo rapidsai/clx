@@ -2,7 +2,6 @@ import logging
 import torch
 import torch.nn as nn
 from abc import ABC, abstractmethod
-from clx.analytics.model.rnn_classifier import RNNClassifier
 
 log = logging.getLogger(__name__)
 
@@ -40,7 +39,7 @@ class Detector(ABC):
 
     def load_model(self, file_path):
         """ This function load already saved model and sets cuda parameters.
-        
+
         :param file_path: File path of a model to loaded.
         :type file_path: string
         """
@@ -52,7 +51,7 @@ class Detector(ABC):
 
     def save_model(self, file_path):
         """ This function saves model to given location.
-        
+
         :param file_path: File path to save model.
         :type file_path: string
         """
@@ -79,7 +78,7 @@ class Detector(ABC):
 
     def leverage_model(self, model):
         """This function leverages model by setting parallelism parameters.
-        
+
         :param model: Model instance.
         :type model: RNNClassifier
         """

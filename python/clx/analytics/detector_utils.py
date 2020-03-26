@@ -1,13 +1,13 @@
 import cudf
 import logging
-import numpy as np
 
 log = logging.getLogger(__name__)
 
 
 def str2ascii(df, domains_len):
-    """This function sorts domain name entries in desc order based on the length of domain and converts domain name to ascii characters.
-    
+    """
+    This function sorts domain name entries in desc order based on the length of domain and converts domain name to ascii characters.
+
     :param df: Domains which requires conversion.
     :type df: cudf.DataFrame
     :param domains_len: Number of entries in df.
@@ -30,7 +30,7 @@ def str2ascii(df, domains_len):
     for col in range(0, columns_cnt):
         temp_df[col] = split_df[col].str.code_points()
     del split_df
-   
+
     # Replace ^ ascii value 94 with 0.
     temp_df = temp_df.replace(94, 0)
     temp_df["len"] = df["len"]

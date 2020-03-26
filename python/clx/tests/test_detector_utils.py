@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import cudf
-import pytest
 from clx.analytics import detector_utils as du
 
 test_domains_len = 2

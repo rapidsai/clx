@@ -14,9 +14,6 @@
 
 import cudf
 import pytest
-import os
-from pathlib import Path
-from clx.io.factory.factory import Factory
 from clx.io.reader.dask_fs_reader import DaskFileSystemReader
 
 expected_df = cudf.DataFrame(
@@ -47,6 +44,7 @@ def test_fetch_data_csv(tmpdir, expected_df):
 
     assert fetched_df.equals(expected_df)
 
+
 @pytest.mark.parametrize("expected_df", [expected_df])
 def test_fetch_data_parquet(tmpdir, expected_df):
     fname = str(tmpdir.mkdir("tmp_test_fs_reader").join("person.parquet"))
@@ -56,14 +54,15 @@ def test_fetch_data_parquet(tmpdir, expected_df):
         "input_path": fname,
         "columns": ["firstname", "lastname", "gender"],
         "input_format": "parquet",
-        "gather_statistics":False, 
-        "split_row_groups":False
+        "gather_statistics": False,
+        "split_row_groups": False
     }
 
     reader = DaskFileSystemReader(config)
     fetched_df = reader.fetch_data().compute()
 
     assert fetched_df.equals(expected_df)
+
 
 @pytest.mark.parametrize("expected_df", [expected_df])
 def test_fetch_data_orc(tmpdir, expected_df):

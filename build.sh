@@ -45,6 +45,7 @@ INSTALL_TARGET=install
 #  from there!
 INSTALL_PREFIX=${PREFIX:=${CONDA_PREFIX}}
 PARALLEL_LEVEL=${PARALLEL_LEVEL:=""}
+BUILD_ABI=${BUILD_ABI:=ON}
 
 function hasArg {
     (( ${NUMARGS} != 0 )) && (echo " ${ARGS} " | grep -q " $1 ")
@@ -96,7 +97,7 @@ if (( ${NUMARGS} == 0 )) || hasArg libclx; then
 
     mkdir -p ${LIBCLX_BUILD_DIR}
     cd ${LIBCLX_BUILD_DIR}
-    cmake .. -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX}
+    cmake .. -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DCMAKE_CXX11_ABI=${BUILD_ABI}
     make -j${PARALLEL_LEVEL} VERBOSE=${VERBOSE} ${INSTALL_TARGET}
 fi
 

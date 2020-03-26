@@ -38,12 +38,11 @@ class VirusTotalClient(object):
     def vt_endpoint_dict(self):
         return self.__vt_endpoint_dict
 
-    
     def file_scan(self, file):
         """
-        This function allows you to send a file for scanning with VirusTotal. 
+        This function allows you to send a file for scanning with VirusTotal.
         Before performing submissions it would be nice to retrieve the latest report on the file.
-        File size limit is 32MB, in order to submit files up to 200MB in size it is mandatory to request a special upload URL 
+        File size limit is 32MB, in order to submit files up to 200MB in size it is mandatory to request a special upload URL
         using the /file/scan/upload_url endpoint.
         """
         file_size_mb = self.__get_file_size(file)
@@ -60,7 +59,6 @@ class VirusTotalClient(object):
         statinfo = os.stat(file)
         return statinfo.st_size / (1024 * 1024)
 
-    
     def file_rescan(self, *resource):
         """
         This function rescan given files.
@@ -74,7 +72,7 @@ class VirusTotalClient(object):
 
     def file_report(self, *resource):
         """
-        The resource argument can be the MD5, SHA-1 or SHA-256 of a file for which you want to retrieve 
+        The resource argument can be the MD5, SHA-1 or SHA-256 of a file for which you want to retrieve
         the most recent antivirus report. You may also specify a scan_id returned by the /file/scan endpoint.
         """
         params = {"apikey": self.api_key, "resource": ",".join(*resource)}

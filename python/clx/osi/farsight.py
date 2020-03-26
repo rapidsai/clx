@@ -19,18 +19,19 @@ import logging
 
 log = logging.getLogger(__name__)
 
-"""
-This class provides functionality to query DNSDB record in various ways
-Example: by IP, DomainName
 
-:param server: Farsight server
-:param header: HTTP headers
-:param apikey: API key
-:param limit: limit
-:param http_proxy: HTTP proxy
-:param https_proxy: HTTPS proxy
-"""
 class FarsightLookupClient(object):
+    """
+    This class provides functionality to query DNSDB record in various ways
+    Example: by IP, DomainName
+
+    :param server: Farsight server
+    :param header: HTTP headers
+    :param apikey: API key
+    :param limit: limit
+    :param http_proxy: HTTP proxy
+    :param https_proxy: HTTPS proxy
+    """
     def __init__(self, server, apikey, limit=None, http_proxy=None, https_proxy=None):
         self.server = server
         self.headers = {"Accept": "application/json", "X-Api-Key": apikey}
@@ -67,7 +68,6 @@ class FarsightLookupClient(object):
             path = "rdata/name/%s" % quoted_name
         return self.__query(path, before, after)
 
-    
     def query_rdata_ip(self, rdata_ip, before=None, after=None):
         """
         query to find DNSDB records matching a specific IP address with given time range.

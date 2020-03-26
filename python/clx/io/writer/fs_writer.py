@@ -27,7 +27,7 @@ class FileSystemWriter(FileWriter):
 
     :param config: dictionary object of config values for **type**, **output_format**, **output_path** (or **output_path**), and cudf writer optional keyword args
     """
- 
+
     def __init__(self, config):
         self._config = config
 
@@ -41,7 +41,6 @@ class FileSystemWriter(FileWriter):
         del kwargs["type"]
         del kwargs["output_format"]
         del kwargs["output_path"]
-
 
         dir = os.path.dirname(filepath)
         if not os.path.isdir(dir):

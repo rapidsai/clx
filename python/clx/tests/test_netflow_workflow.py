@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import cudf
-import pytest
 from clx.workflow.netflow_workflow import NetflowWorkflow
 
 
