@@ -14,6 +14,7 @@ install_requires = [
     "python-whois",
     "requests",
     "mockito",
+    "torch==1.3.1",
     "cython"
 ]
 
