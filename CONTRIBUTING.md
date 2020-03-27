@@ -1,7 +1,5 @@
 # Contributing to CLX
 
-# Contributing to CLX
-
 If you are interested in contributing to CLX, your contributions will fall
 into three categories:
 1. You want to report a bug, feature request, or documentation issue
