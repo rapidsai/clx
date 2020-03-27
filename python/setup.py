@@ -17,6 +17,9 @@ install_requires = [
     "cython"
 ]
 
+if int(os.environ.get('CONDA_BUILD',  0)) == 1:
+    install_requires = []
+
 conda_lib_dir = os.path.normpath(sys.prefix) + '/lib'
 conda_include_dir = os.path.normpath(sys.prefix) + '/include'
 
