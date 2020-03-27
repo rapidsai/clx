@@ -21,11 +21,9 @@ if int(os.environ.get('CONDA_BUILD', 0)) == 1:
     install_requires = []
 
 conda_lib_dir = os.path.normpath(sys.prefix) + '/lib'
-conda_include_dir = os.path.normpath(sys.prefix) + '/include'
 
 if (os.environ.get('CONDA_PREFIX', None)):
     conda_prefix = os.environ.get('CONDA_PREFIX')
-    conda_include_dir = conda_prefix + '/include'
     conda_lib_dir = conda_prefix + '/lib'
 
 EXTENSIONS = [
