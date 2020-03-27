@@ -28,6 +28,7 @@ HELP="$0 [<target> ...] [<flag> ...]
    -v         - verbose build mode
    -g         - build for debug
    -n         - no install step
+   --show_depr_warn - show cmake deprecation warnings
    -h         - print this text
 
  default action (no args) is to build and install 'libclx' then 'clx' targets
@@ -39,6 +40,7 @@ BUILD_DIRS="${LIBCLX_BUILD_DIR} ${CLX_BUILD_DIR}"
 # Set defaults for vars modified by flags to this script
 VERBOSE=""
 INSTALL_TARGET=install
+BUILD_DISABLE_DEPRECATION_WARNING=ON
 
 # Set defaults for vars that may not have been defined externally
 #  FIXME: if PREFIX is not set, check CONDA_PREFIX, but there is no fallback
@@ -75,6 +77,9 @@ fi
 if hasArg -n; then
     INSTALL_TARGET=""
 fi
+if hasArg --show_depr_warn; then
+    BUILD_DISABLE_DEPRECATION_WARNING=OFF
+fi
 
 # If clean given, run it prior to any other steps
 if hasArg clean; then
@@ -96,7 +101,7 @@ if (( ${NUMARGS} == 0 )) || hasArg libclx; then
 
     mkdir -p ${LIBCLX_BUILD_DIR}
     cd ${LIBCLX_BUILD_DIR}
-    cmake .. -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX}
+    cmake .. -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DDISABLE_DEPRECATION_WARNING=${BUILD_DISABLE_DEPRECATION_WARNING}
     make -j${PARALLEL_LEVEL} VERBOSE=${VERBOSE} ${INSTALL_TARGET}
 fi
 
