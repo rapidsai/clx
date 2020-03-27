@@ -31,6 +31,7 @@ EXTENSIONS = [
         "*",
         sources=["clx/analytics/tokenizer.pyx"],
         language="c++",
+        extra_compile_args=['-std=c++14'],
         runtime_library_dirs=[conda_lib_dir],
         library_dirs=[get_python_lib()],
         libraries=["clx"]
