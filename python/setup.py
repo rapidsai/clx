@@ -48,6 +48,7 @@ setup(
     ext_modules=cythonize(EXTENSIONS),
     packages=find_packages(include=["clx", "clx.*"]),
     package_data={
+        "clx.analytics": ["resources/*.txt"],
         "clx.parsers": ["resources/*.yaml"],
         "clx.dns": ["resources/*.txt"],
         "clx.heuristics": ["resources/*.csv"],

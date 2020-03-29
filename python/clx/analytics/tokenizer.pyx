@@ -5,7 +5,8 @@ from libc.stdlib cimport calloc, malloc, free
 import cudf
 import torch
 from torch.utils.dlpack import from_dlpack
-    
+import os
+
 cdef extern from "../../../cpp/src/for_cython.h":
     struct TokenizerResult:
         unsigned int nrows_tensor
@@ -31,7 +32,10 @@ def device_array_from_ptr(ptr, shape, dtype):
     return cupy.ndarray(shape, dtype, mem, strides)
 
 
-def tokenize_file(input_file, hash_file, max_sequence_length=64, stride=48, do_lower=True, do_truncate=False, max_num_sentences=100, max_num_chars=100000, max_rows_tensor=500):
+def tokenize_file(input_file, hash_file="default", max_sequence_length=64, stride=48, do_lower=True, do_truncate=False, max_num_sentences=100, max_num_chars=100000, max_rows_tensor=500):
+
+    if hash_file=="default":
+        hash_file = _get_hash_table_path()
 
     cdef TokenizerResult *result
     result = <TokenizerResult *>calloc(1, sizeof(TokenizerResult))
@@ -55,7 +59,10 @@ def tokenize_file(input_file, hash_file, max_sequence_length=64, stride=48, do_l
     return token.type(torch.long), mask.type(torch.long), metadata.type(torch.long)
 
 
-def tokenize_df(input_df, hash_file, max_sequence_length=64, stride=48, do_lower=True, do_truncate=False, max_num_sentences=100, max_num_chars=100000, max_rows_tensor=500):
+def tokenize_df(input_df, hash_file="default", max_sequence_length=64, stride=48, do_lower=True, do_truncate=False, max_num_sentences=100, max_num_chars=100000, max_rows_tensor=500):
+
+    if hash_file=="default":
+        hash_file = _get_hash_table_path()
 
     if isinstance(input_df, cudf.DataFrame):
         col = input_df.iloc[:,0]
@@ -93,3 +100,9 @@ def tokenize_df(input_df, hash_file, max_sequence_length=64, stride=48, do_lower
     mask = from_dlpack(device_mask.toDlpack())
     metadata = from_dlpack(device_metadata.toDlpack())
     return token.type(torch.long), mask.type(torch.long), metadata.type(torch.long)
+
+def _get_hash_table_path():
+        hash_table_path = "%s/resources/bert_hash_table.txt" % os.path.dirname(
+            os.path.realpath(__file__)
+        )
+        return hash_table_path
