@@ -1,12 +1,11 @@
 import cudf
 from cuml.preprocessing.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from keras.preprocessing.sequence import pad_sequences
 import torch
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 import logging
-from transformers import BertTokenizer, AdamW , BertForSequenceClassification
-from tqdm import tqdm, trange
+from transformers import AdamW, BertForSequenceClassification
+from tqdm import trange
 import numpy as np
 import os
 from clx.analytics import tokenizer
@@ -22,14 +21,12 @@ class PhishingDetector:
         self._optimizer = None
         self._hashpath = self._get_hash_table_path()
 
-
     def init_model(self, model_or_path="bert-base-uncased"):
         if self._model is None:
             self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self._model = BertForSequenceClassification.from_pretrained(model_or_path, num_labels=2)
         self._model.cuda()
-
 
     def train_model(self, emails, labels, max_num_sentences=1000000, max_num_chars=100000000, max_rows_tensor=1000000, learning_rate=3e-5, max_len=128, batch_size=32, epochs=5):
 
@@ -56,7 +53,6 @@ class PhishingDetector:
         self._config_optimizer(learning_rate)
 
         self._model = self._train(train_dataloader, validation_dataloader, self._model, epochs)
-
 
     def evaluate_model(self, emails, labels, max_num_sentences=1000000, max_num_chars=100000000, max_rows_tensor=1000000, max_len=128, batch_size=32):
 
@@ -122,10 +118,8 @@ class PhishingDetector:
         param_optimizer = list(self._model.named_parameters())
         no_decay = ['bias', 'gamma', 'beta']
         optimizer_grouped_parameters = [
-            {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)],
-            'weight_decay_rate': 0.01},
-            {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)],
-            'weight_decay_rate': 0.0}
+            {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay_rate': 0.01},
+            {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay_rate': 0.0}
         ]
         self._optimizer = AdamW(optimizer_grouped_parameters, learning_rate)
 
@@ -135,40 +129,40 @@ class PhishingDetector:
         return np.sum(pred_flat == labels_flat) / len(labels_flat)
 
     def _train(self, train_dataloader, validation_dataloader, model, epochs):
-        train_loss_set = []# Store loss and accuracy
-    
+        train_loss_set = []  # Store loss and accuracy
+
         for _ in trange(epochs, desc="Epoch"):
-            model.train() # Enable training mode
-            tr_loss = 0  # Tracking variables
+            model.train()  # Enable training mode
+            tr_loss = 0   # Tracking variables
             nb_tr_examples, nb_tr_steps = 0, 0
             for step, batch in enumerate(train_dataloader):
-                batch = tuple(t.to(self._device) for t in batch) # Add batch to GPU
-                b_input_ids, b_input_mask, b_labels = batch # Unpack the inputs from dataloader
-                self._optimizer.zero_grad() # Clear out the gradients
-                loss = model(b_input_ids, token_type_ids=None, attention_mask=b_input_mask, labels=b_labels)[0] # forwardpass
+                batch = tuple(t.to(self._device) for t in batch)  # Add batch to GPU
+                b_input_ids, b_input_mask, b_labels = batch  # Unpack the inputs from dataloader
+                self._optimizer.zero_grad()  # Clear out the gradients
+                loss = model(b_input_ids, token_type_ids=None, attention_mask=b_input_mask, labels=b_labels)[0]  # forwardpass
 
                 train_loss_set.append(loss.item())
 
                 loss.backward()
-                self._optimizer.step() # update parameters
-                tr_loss += loss.item() # get a numeric value
+                self._optimizer.step()  # update parameters
+                tr_loss += loss.item()  # get a numeric value
                 nb_tr_examples += b_input_ids.size(0)
                 nb_tr_steps += 1
 
             print("Train loss: {}".format(tr_loss / nb_tr_steps))
 
-            model.eval() # Put model in evaluation mode to evaluate loss on the validation set
+            model.eval()  # Put model in evaluation mode to evaluate loss on the validation set
 
-            eval_loss, eval_accuracy = 0, 0
-            nb_eval_steps, nb_eval_examples = 0, 0
+            eval_accuracy = 0
+            nb_eval_steps = 0
 
             for batch in validation_dataloader:
                 batch = tuple(t.to(self._device) for t in batch)
 
                 b_input_ids, b_input_mask, b_labels = batch
 
-                with torch.no_grad(): # Telling the model not to compute or store gradients, saving memory and speeding up validation
-                    logits = model(b_input_ids, token_type_ids=None, attention_mask=b_input_mask)[0] # Forward pass, calculate logit predictions
+                with torch.no_grad():  # Telling the model not to compute or store gradients, saving memory and speeding up validation
+                    logits = model(b_input_ids, token_type_ids=None, attention_mask=b_input_mask)[0]  # Forward pass, calculate logit predictions
                 logits = logits.detach().cpu().numpy()
                 label_ids = b_labels.to('cpu').numpy()
                 temp_eval_accuracy = self._flatten_accuracy(logits, label_ids)
@@ -179,12 +173,12 @@ class PhishingDetector:
             print("Validation Accuracy: {}".format(eval_accuracy / nb_eval_steps))
 
         return model
-    
+
     def _evaluate_testset(self, test_dataloader):
-        
+
         self._model.eval()
 
-        tests , true_labels = [], []
+        tests, true_labels = [], []
 
         for batch in test_dataloader:
 
@@ -202,4 +196,4 @@ class PhishingDetector:
             tests.append(logits)
             true_labels.append(label_ids)
 
-        return tests,true_labels
+        return tests, true_labels
