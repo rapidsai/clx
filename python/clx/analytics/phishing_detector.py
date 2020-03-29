@@ -9,7 +9,7 @@ from transformers import BertTokenizer, AdamW , BertForSequenceClassification
 from tqdm import tqdm, trange
 import numpy as np
 import os
-import tokenizer
+from clx.analytics import tokenizer
 
 log = logging.getLogger(__name__)
 
@@ -20,6 +20,8 @@ class PhishingDetector:
         self._device = None
         self._model = None
         self._optimizer = None
+        self._hashpath = self._get_hash_table_path()
+
 
     def init_model(self, model_or_path="bert-base-uncased"):
         if self._model is None:
@@ -28,14 +30,15 @@ class PhishingDetector:
         self._model = BertForSequenceClassification.from_pretrained(model_or_path, num_labels=2)
         self._model.cuda()
 
+
     def train_model(self, emails, labels, max_num_sentences=1000000, max_num_chars=100000000, max_rows_tensor=1000000, learning_rate=3e-5, max_len=128, batch_size=32, epochs=5):
 
-        emails["label"] = labels
+        emails["label"] = labels.reset_index(drop=True)
         train_emails, validation_emails, train_labels, validation_labels = train_test_split(emails, 'label', train_size=0.8, random_state=2)
 
         # Tokenize training and validation
-        train_inputs, train_masks, _ = tokenizer.tokenize_df(train_emails, "../../hash_table.txt", max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
-        validation_inputs, validation_masks, _ = tokenizer.tokenize_df(validation_emails, "../../hash_table.txt", max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+        train_inputs, train_masks, _ = tokenizer.tokenize_df(train_emails, self._hashpath, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+        validation_inputs, validation_masks, _ = tokenizer.tokenize_df(validation_emails, self._hashpath, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
 
         # convert labels to tensors
         train_labels = torch.tensor(train_labels.to_array())
@@ -57,7 +60,7 @@ class PhishingDetector:
 
     def evaluate_model(self, emails, labels, max_num_sentences=1000000, max_num_chars=100000000, max_rows_tensor=1000000, max_len=128, batch_size=32):
 
-        test_inputs, test_masks, _ = tokenizer.tokenize_df(emails, "../../hash_table.txt", max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+        test_inputs, test_masks, _ = tokenizer.tokenize_df(emails, self._hashpath, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
 
         test_labels = torch.tensor(labels.to_array())
         test_data = TensorDataset(test_inputs, test_masks, test_labels)
@@ -79,7 +82,7 @@ class PhishingDetector:
 
     def predict(self, emails, max_num_sentences=1000000, max_num_chars=100000000, max_rows_tensor=1000000, max_len=128, batch_size=32):
 
-        predict_inputs, predict_masks, _ = tokenizer.tokenize_df(emails, "../../hash_table.txt", max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+        predict_inputs, predict_masks, _ = tokenizer.tokenize_df(emails, self._hashpath, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
 
         predict_inputs = predict_inputs.type(torch.LongTensor)
         predict_data = TensorDataset(predict_inputs, predict_masks)
@@ -108,6 +111,12 @@ class PhishingDetector:
         preds = cudf.Series(preds.tolist())
 
         return preds
+
+    def _get_hash_table_path(self):
+        hash_table_path = "%s/resources/bert_hash_table.txt" % os.path.dirname(
+            os.path.realpath(__file__)
+        )
+        return hash_table_path
 
     def _config_optimizer(self, learning_rate):
         param_optimizer = list(self._model.named_parameters())
