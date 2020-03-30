@@ -1,3 +1,21 @@
+# clx 0.13.0 (31 Mar 2020)
+
+## New Features
+- PR #130 Example of streamz
+- PR #132 CLX query applications
+
+## Improvements
+- PR #103 DGA detector refactor
+- PR #120 Use pytest tmpdir fixtures in unit tests
+- PR #125 Added notebook testing to gpuCI gpu build
+- RR #144 Python refactor
+
+## Bug Fixes
+- PR #123 Fix update-version.sh
+- PR #129 Fix alert analysis notebook viz using cuxfilter
+- PR #138 Fix test cases to support latest cudf changes
+
+
 # clx 0.12.0 (04 Feb 2020)
 
 ## New Features
@@ -56,7 +74,6 @@
  - PR #42 Include DNS parser in module
  - PR #41 Fix unit test
  - PR #39 Fix gpuCI builds
-
 
 # clx 0.10.0 (Date TBD)
 
