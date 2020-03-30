@@ -18,6 +18,9 @@ Analytics
 .. automodule:: clx.analytics.stats
     :members:
 
+.. automodule:: clx.analytics.tokenizer
+    :members:
+
 DNS Extractor
 -------------
 .. automodule:: clx.dns.dns_extractor
