@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2019, NVIDIA CORPORATION.
+# Copyright (c) 2020, NVIDIA CORPORATION.
 
 # clx build script
 
