@@ -16,6 +16,13 @@ __pycache__/
 build/
 dist/
 clx.egg-info/
+python/clx/analytics/*.cpp
+
+## C++ build directories & artifacts
+CMakeFiles/
+Debug
+build/
+bin/
 
 # Dask
 dask-worker-space/

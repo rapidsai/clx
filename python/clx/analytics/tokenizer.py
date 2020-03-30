@@ -19,7 +19,7 @@ def tokenize_file(input_file, hash_file="default", max_sequence_length=64, strid
     :type do_truncate: bool
     :param max_num_sentences: max num sentences to be encoded in one batch
     :type max_num_sentences: int
-    :param max_num_chars: max num characters
+    :param max_num_chars: max num characters in file
     :type max_num_chars: int
     :param max_rows_tensor: max num of rows in an output tensor
     :type max_rows_tensor: int
@@ -57,7 +57,7 @@ def tokenize_df(input_df, hash_file="default", max_sequence_length=64, stride=48
     :type do_truncate: bool
     :param max_num_sentences: max num sentences to be encoded in one batch
     :type max_num_sentences: int
-    :param max_num_chars: max num characters
+    :param max_num_chars: max num characters in dataframe
     :type max_num_chars: int
     :param max_rows_tensor: max num of rows in an output tensor
     :type max_rows_tensor: int
