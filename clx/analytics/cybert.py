@@ -2,11 +2,11 @@ import cudf
 import numpy as np
 import os
 import pandas as pd
-import tokenizer
 import torch
 import torch.nn.functional as F
 from collections import defaultdict
 from transformers import BertForTokenClassification
+from clx.analytics import tokenizer
 
 class Cybert:
     """
