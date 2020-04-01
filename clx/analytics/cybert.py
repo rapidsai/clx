@@ -115,22 +115,57 @@ class Cybert:
             for index, line in enumerate(f):
                 self._vocab_dict[index] = line.split()[0]
 
-    def preprocess(self, raw_data_df):
+    def __preprocess(self, raw_data_df):
         input_ids, attention_masks, meta_data = tokenizer.tokenize_df(raw_data_df, self._hash_file, max_sequence_length = self._max_seq_len,
                                                        stride=self._stride_len, do_lower=False, do_truncate=False, max_num_sentences=self._max_num_logs,
                                                        max_num_chars = self._max_num_chars, max_rows_tensor = self._max_rows_tensor)       
         return input_ids, attention_masks, meta_data
 
-    def load_model(self, model_filepath, label_map, num_labels):
+    def load_model(self, model_filepath, label_map_filepath, num_labels):
+        """
+        Load cybert model.
+
+        :param model_filepath: Filepath of the model to be loaded
+        :type model_filepath: str
+        :param label_map_filepath: YAML Filepath of the labels to be used
+        :type label_map_filepath: str
+        :param num_labels: Number of labels
+        :type num_labels: int
+
+        Examples
+        --------
+        >>> from clx.analytics.cybert import Cybert
+        >>> cy = Cybert()
+        >>> cy.load_model('/path/to/model', '/path/to/labels.yaml', 21)
+        """
+        with open(label_map_filepath) as label_file:
+            self._label_map = yaml.load(label_file, Loader=yaml.FullLoader)
         model_state_dict = torch.load(model_filepath)
         self.model = BertForTokenClassification.from_pretrained('bert-base-cased', state_dict=model_state_dict, num_labels=num_labels)
         self.model.cuda()
         self.model.eval()
-        self._label_map = label_map
         self._num_labels = num_labels
 
     def inference(self, raw_data_df):
-        input_ids, attention_masks, meta_data = self.preprocess(raw_data_df)
+        """
+        Cybert inference on dataset
+
+        :param raw_data_df: Dataframe containing one column of raw logs
+        :type raw_data_df: cudf.DataFrame
+        :return: Processed inference data
+        :rtype: cudf.DataFrame
+
+        Examples
+        --------
+        >>> import cudf
+        >>> from clx.analytics.cybert import Cybert
+        >>> cy = Cybert()
+        >>> cy.load_model('/path/to/model', '/path/to/labels.yaml', 21)
+        >>> raw_df = cudf.DataFrame()
+        >>> raw_df['logs'] = ['Log event']
+        >>> processed_df = cy.inference(raw_df)
+        """
+        input_ids, attention_masks, meta_data = self.__preprocess(raw_data_df)
         with torch.no_grad():
             logits = self.model(input_ids, attention_masks)[0]
         logits = F.softmax(logits, dim=2)
@@ -167,5 +202,4 @@ class Cybert:
         return confidence_dict
 
     def __decode_cleanup(self,row):
-        print(row)
         return row.replace(' ##', '').replace(' . ', '.').replace(' : ', ':').replace(' / ','/')
