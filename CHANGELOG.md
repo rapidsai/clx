@@ -1,6 +1,7 @@
 # clx 0.14.0 (Date TBD)
 
 ## New Features
+- PR #141 CUDA BERT Tokenizer
 
 ## Improvements
 
@@ -11,7 +12,6 @@
 ## New Features
 - PR #130 Example of streamz
 - PR #132 CLX query applications
-- PR #141 CUDA BERT Tokenizer
 
 ## Improvements
 - PR #103 DGA detector refactor
