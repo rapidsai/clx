@@ -32,8 +32,8 @@ class Cybert:
         self._stride_len = stride_len
         self._max_seq_len = max_seq_len
         currdir = os.path.dirname(os.path.abspath(__file__))
-        self._hash_file = currdir + "/resources/hash_table.txt"
-        self._vocab_file = currdir + "/resources/vocab.txt"
+        self._hash_file = currdir + "/resource/bert_hash_table.txt"
+        self._vocab_file = currdir + "/resources/bert_vocab.txt"
         self._vocab_dict = {}
         with open(self._vocab_file) as f:
             for index, line in enumerate(f):
@@ -115,8 +115,8 @@ class Cybert:
             for index, line in enumerate(f):
                 self._vocab_dict[index] = line.split()[0]
 
-    def __preprocess(self, raw_data_df):
-        input_ids, attention_masks, meta_data = tokenizer.tokenize_df(raw_data_df, self._hash_file, max_sequence_length = self._max_seq_len,
+    def preprocess(self, raw_data_df):
+        input_ids, attention_masks, meta_data = tokenizer.tokenize_df(raw_data_df, hash_file=self._hash_file, max_sequence_length = self._max_seq_len,
                                                        stride=self._stride_len, do_lower=False, do_truncate=False, max_num_sentences=self._max_num_logs,
                                                        max_num_chars = self._max_num_chars, max_rows_tensor = self._max_rows_tensor)       
         return input_ids, attention_masks, meta_data
