@@ -1,10 +1,18 @@
+# clx 0.14.0 (Date TBD)
+
+## New Features
+- PR #141 CUDA BERT Tokenizer
+- PR #133 Phishing detection using BERT
+
+## Improvements
+
+## Bug Fixes
+
 # clx 0.13.0 (Date TBD)
 
 ## New Features
 - PR #130 Example of streamz
 - PR #132 CLX query applications
-- PR #141 CUDA BERT Tokenizer
-- PR #133 Phishing detection using BERT
 
 ## Improvements
 - PR #103 DGA detector refactor
