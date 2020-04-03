@@ -3,7 +3,7 @@ ARG CUDA_VERSION=10.1
 ARG LINUX_VERSION=ubuntu18.04
 ARG PYTHON_VERSION=3.7
 
-FROM gpuci/rapidsai-base:cuda${CUDA_VERSION}-${LINUX_VERSION-gcc7-${PYTHON_VERSION}
+FROM gpuci/rapidsai-base:cuda${CUDA_VERSION}-${LINUX_VERSION}-gcc7-py${PYTHON_VERSION}
 USER root
 
 ADD examples/streamz/scripts /scripts
