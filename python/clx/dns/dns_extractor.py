@@ -94,7 +94,7 @@ def extract_hostnames(url_series):
     Name: 0, dtype: object
     """
 
-    hostnames = url_series.str.extract("([\\w]+[\\.].+*[^/]|[\\-\\w]+[\\.].+*[^/])")[
+    hostnames = url_series.str.extract("([\\w]+[\\.].*[^/]|[\\-\\w]+[\\.].*[^/])")[
         0
     ].str.extract("([\\w\\.\\-]+)")[0]
     return hostnames

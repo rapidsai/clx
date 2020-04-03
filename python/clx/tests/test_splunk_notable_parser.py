@@ -33,7 +33,7 @@ def test_splunk_notable_parser():
 
     test_input_df[raw_colname] = [TEST_DATA]
     test_output_df = snp.parse(test_input_df, raw_colname)
-    assert len(test_output_df.columns) == 24
+    assert len(test_output_df.columns) == 23
     assert test_output_df["time"][0] == "1566345812.924"
     assert test_output_df["search_name"][0] == "Test Search Name"
     assert test_output_df["orig_time"][0] == "1566345812.924"
@@ -52,7 +52,6 @@ def test_splunk_notable_parser():
     assert test_output_df["device_name"][0] == ""
     assert test_output_df["event_name"][0] == ""
     assert test_output_df["event_type"][0] == ""
-    assert test_output_df["id"][0] == ""
     assert test_output_df["ip_address"][0] == ""
     assert test_output_df["message_ip"][0] == "100.100.100.123"
     assert test_output_df["message_username"][0] == "user@test.com"
@@ -62,7 +61,7 @@ def test_splunk_notable_parser():
     test_input_df2 = cudf.DataFrame()
     test_input_df2[raw_colname] = [TEST_DATA2]
     test_output_df2 = snp.parse(test_input_df2, raw_colname)
-    assert len(test_output_df2.columns) == 24
+    assert len(test_output_df2.columns) == 23
     assert test_output_df2["time"][0] == "1548772230"
     assert test_output_df2["search_name"][0] == "Test Search Name 2"
     assert test_output_df2["orig_time"][0] == ""
@@ -82,7 +81,6 @@ def test_splunk_notable_parser():
     assert test_output_df2["device_name"][0] == ""
     assert test_output_df2["event_name"][0] == ""
     assert test_output_df2["event_type"][0] == ""
-    assert test_output_df2["id"][0] == ""
     assert test_output_df2["ip_address"][0] == ""
     assert test_output_df2["message_ip"][0] == ""
     assert test_output_df2["message_username"][0] == ""
@@ -92,7 +90,7 @@ def test_splunk_notable_parser():
     test_input_df3 = cudf.DataFrame()
     test_input_df3[raw_colname] = [TEST_DATA3]
     test_output_df3 = snp.parse(test_input_df3, raw_colname)
-    assert len(test_output_df3.columns) == 24
+    assert len(test_output_df3.columns) == 23
     assert test_output_df3["time"][0] == "1548234811"
     assert test_output_df3["search_name"][0] == "Test Search Name 3"
     assert test_output_df3["orig_time"][0] == ""
@@ -113,7 +111,6 @@ def test_splunk_notable_parser():
     assert test_output_df3["device_name"][0] == ""
     assert test_output_df3["event_name"][0] == ""
     assert test_output_df3["event_type"][0] == ""
-    assert test_output_df3["id"][0] == ""
     assert test_output_df3["ip_address"][0] == ""
     assert test_output_df3["message_ip"][0] == ""
     assert test_output_df3["message_username"][0] == ""
@@ -123,7 +120,7 @@ def test_splunk_notable_parser():
     test_input_df4 = cudf.DataFrame()
     test_input_df4[raw_colname] = [TEST_DATA4]
     test_output_df4 = snp.parse(test_input_df4, raw_colname)
-    assert len(test_output_df4.columns) == 24
+    assert len(test_output_df4.columns) == 23
     assert test_output_df4["time"][0] == "1566345700"
     assert (
         test_output_df4["search_name"][0] == "Endpoint - Brute Force against Known User - Rule"
@@ -144,7 +141,6 @@ def test_splunk_notable_parser():
     assert test_output_df4["device_name"][0] == ""
     assert test_output_df4["event_name"][0] == ""
     assert test_output_df4["event_type"][0] == ""
-    assert test_output_df4["id"][0] == ""
     assert test_output_df4["ip_address"][0] == ""
     assert test_output_df4["message_ip"][0] == ""
     assert test_output_df4["message_username"][0] == ""
@@ -154,7 +150,7 @@ def test_splunk_notable_parser():
     test_input_df5 = cudf.DataFrame()
     test_input_df5[raw_colname] = [TEST_DATA5]
     test_output_df5 = snp.parse(test_input_df5, raw_colname)
-    assert len(test_output_df5.columns) == 24
+    assert len(test_output_df5.columns) == 23
     assert test_output_df5["time"][0] == "1566345700"
     assert test_output_df5["search_name"][0] == "Manual Notable Event - Rule"
     assert test_output_df5["orig_time"][0] == ""
@@ -173,7 +169,6 @@ def test_splunk_notable_parser():
     assert test_output_df5["device_name"][0] == ""
     assert test_output_df5["event_name"][0] == ""
     assert test_output_df5["event_type"][0] == ""
-    assert test_output_df5["id"][0] == ""
     assert test_output_df5["ip_address"][0] == ""
     assert test_output_df5["message_ip"][0] == ""
     assert test_output_df5["message_username"][0] == ""
@@ -183,7 +178,7 @@ def test_splunk_notable_parser():
     test_input_df6 = cudf.DataFrame()
     test_input_df6[raw_colname] = [TEST_DATA6]
     test_output_df6 = snp.parse(test_input_df6, raw_colname)
-    assert len(test_output_df6.columns) == 24
+    assert len(test_output_df6.columns) == 23
     assert test_output_df6["time"][0] == "1566345700"
     assert (
         test_output_df6["search_name"][0] == "Endpoint - FireEye NX alert for Incident Review (Minor) - Rule"
@@ -204,7 +199,6 @@ def test_splunk_notable_parser():
     assert test_output_df6["device_name"][0] == ""
     assert test_output_df6["event_name"][0] == ""
     assert test_output_df6["event_type"][0] == ""
-    assert test_output_df6["id"][0] == ""
     assert test_output_df6["ip_address"][0] == ""
     assert test_output_df6["message_ip"][0] == ""
     assert test_output_df6["message_username"][0] == ""
@@ -214,7 +208,7 @@ def test_splunk_notable_parser():
     test_input_df7 = cudf.DataFrame()
     test_input_df7[raw_colname] = [TEST_DATA7]
     test_output_df7 = snp.parse(test_input_df7, raw_colname)
-    assert len(test_output_df7.columns) == 24
+    assert len(test_output_df7.columns) == 23
     assert test_output_df7["time"][0] == "1566345700"
     assert (
         test_output_df7["search_name"][0] == "Endpoint - Host With Malware Detected (Quarantined or Waived) - Rule"
@@ -235,7 +229,6 @@ def test_splunk_notable_parser():
     assert test_output_df7["device_name"][0] == ""
     assert test_output_df7["event_name"][0] == ""
     assert test_output_df7["event_type"][0] == ""
-    assert test_output_df7["id"][0] == ""
     assert test_output_df7["ip_address"][0] == ""
     assert test_output_df7["message_ip"][0] == ""
     assert test_output_df7["message_username"][0] == ""
