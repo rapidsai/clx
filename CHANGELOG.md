@@ -2,6 +2,7 @@
 
 ## New Features
 - PR #140 Added cybert class and streamz workflow
+- PR #141 CUDA BERT Tokenizer
 
 ## Improvements
 

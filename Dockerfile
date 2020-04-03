@@ -15,9 +15,20 @@ RUN apt update -y --fix-missing && \
     apt install -y vim
 
 RUN source activate rapids \
-    && conda install -y -c pytorch pytorch==1.3.1 torchvision=0.4.2 datashader>=0.10.* panel=0.6.* geopandas>=0.6.* pyppeteer s3fs transformers\
-    && pip install "git+https://github.com/rapidsai/cudatashader.git" \
-    && cd /rapids/clx \
-    && pip install -e .
+    && conda install -c pytorch pytorch==1.3.1 torchvision=0.4.2 datashader>=0.10.* panel=0.6.* geopandas>=0.6.* pyppeteer s3fs \
+    && pip install "git+https://github.com/rapidsai/cudatashader.git"
+
+# libclx build/install
+RUN source activate rapids && \
+    mkdir -p /rapids/clx/cpp/build && \
+    cd /rapids/clx/cpp/build && \
+    cmake .. -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} && \
+    make -j install
+
+# clx build/install
+RUN source activate rapids && \
+    cd /rapids/clx/python && \
+    python setup.py build_ext --inplace && \
+    python setup.py install
 
 WORKDIR /rapids

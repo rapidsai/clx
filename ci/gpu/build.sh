@@ -61,12 +61,13 @@ pip install "git+https://github.com/rapidsai/cudatashader.git"
 
 conda list
 
+
 ################################################################################
-# INSTALL - Build package
+# BUILD - Build libclx and clx from source
 ################################################################################
 
-cd $WORKSPACE/python
-pip install -e .
+logger "Build libclx and clx..."
+$WORKSPACE/build.sh clean libclx clx
 
 ################################################################################
 # TEST - Test python package
