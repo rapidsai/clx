@@ -1,5 +1,0 @@
-destination:
-  index: false
-  output_format: csv
-  output_path: /path/to/output
-  type: fs

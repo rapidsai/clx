@@ -24,9 +24,12 @@ build:
 requirements:
   build:
     - python
+    - cython>=0.29,<0.30
+    - libclx={{ version }}
     - setuptools
   run:
     - python
+    - libclx={{ version }}
     - nvstrings {{ minor_version }}.*
     - cugraph {{ minor_version }}.*
     - dask-cudf {{ minor_version }}.*

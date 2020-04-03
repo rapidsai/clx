@@ -12,7 +12,7 @@ PATH=/conda/bin:$PATH
 source activate gdf
 
 # Run flake8 and get results/return code
-FLAKE=`flake8 --ignore=E501,W605 --exclude="factory.py" python`
+FLAKE=`flake8 --ignore=E501,W605 --exclude="factory.py,perfect_hash.py" python`
 RETVAL=$?
 
 # Output results if failure otherwise show pass

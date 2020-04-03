@@ -1,6 +1,7 @@
 # clx 0.14.0 (Date TBD)
 
 ## New Features
+- PR #141 CUDA BERT Tokenizer
 
 ## Improvements
 
