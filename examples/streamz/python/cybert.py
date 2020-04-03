@@ -24,16 +24,15 @@ import socket
 def inference(messages):
     if type(messages) == str:
         df = cudf.DataFrame()
-        df['stream'] = [messages]
-        print(df)
+        df['stream'] = [messages.decode('utf-8')]
         output_df = cy.inference(df)
-    elif type(messages) == list:
+    elif type(messages) == list and len(messages) > 0:
         df = cudf.DataFrame()
-        df['stream'] = messages
+        df['stream'] = [msg.decode('utf-8') for msg in messages]
         output_df = cy.inference(df)
     else:
         print("ERROR: Unknown type encountered in inference")
-    return output_df.to_json()
+    return [output_df.to_json()]
 
 def sink_to_kafka(event_logs):
     conf = {"bootstrap.servers": args.broker,
@@ -64,7 +63,7 @@ if __name__ == '__main__':
     print(client)
     client.run(worker_init)
     cy = Cybert()
-    cy.load_model(args.model, args.label_map, 21)
+    cy.load_model(args.model, args.label_map)
     # Define the streaming pipeline.
     consumer_conf = {'bootstrap.servers': args.broker,
                      'group.id': args.group_id, 'session.timeout.ms': 60000}

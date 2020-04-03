@@ -127,7 +127,7 @@ class Cybert:
                                                                       max_num_chars = self._max_num_chars, max_rows_tensor = self._max_rows_tensor)
         return input_ids, attention_masks, meta_data
 
-    def load_model(self, model_filepath, label_map_filepath, num_labels):
+    def load_model(self, model_filepath, label_map_filepath):
         """
         Load cybert model.
 
@@ -142,7 +142,7 @@ class Cybert:
         --------
         >>> from clx.analytics.cybert import Cybert
         >>> cy = Cybert()
-        >>> cy.load_model('/path/to/model', '/path/to/labels.yaml', 21)
+        >>> cy.load_model('/path/to/model', '/path/to/labels.yaml')
         """
         with open(label_map_filepath) as label_file:
             self._label_map = yaml.load(label_file, Loader=yaml.FullLoader)
@@ -151,7 +151,7 @@ class Cybert:
         self.model = BertForTokenClassification.from_pretrained('bert-base-cased', state_dict=model_state_dict, num_labels=num_labels)
         self.model.cuda()
         self.model.eval()
-        self._num_labels = num_labels
+        self._num_labels = len(self._label_map) + 1
 
     def inference(self, raw_data_df):
         """
