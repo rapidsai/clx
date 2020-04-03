@@ -3,13 +3,13 @@ ARG CUDA_VERSION=10.1
 ARG LINUX_VERSION=ubuntu18.04
 ARG PYTHON_VERSION=3.7
 
-FROM rapidsai/rapidsai-dev-nightly:${RAPIDS_VERSION}-cuda${CUDA_VERSION}-devel-${LINUX_VERSION}-py${PYTHON_VERSION}
+FROM gpuci/rapidsai-base:cuda${CUDA_VERSION}-${LINUX_VERSION-gcc7-${PYTHON_VERSION}
 USER root
 
 ADD examples/streamz/scripts /scripts
 ADD examples/streamz/data /data
 ADD examples/streamz/python /python
-ADD . /clx
+ADD . /rapids/clx
 
 RUN apt-get update -y && \
     apt-get install -y librdkafka-dev \
@@ -40,15 +40,27 @@ ENV KAFKA_VERSION 2.3.0
 ENV KAFKA_HOME /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"
 
 # Install common conda packages that most issues will require
-RUN source activate rapids \
-    && conda install -c conda-forge -c pytorch -c anaconda -c rapidsai \
+RUN source activate gdf \
+    && conda install -c conda-forge -c pytorch -c anaconda -c rapidsai -c nvidia -c numba \
                     streamz=0.5.2 \
                     python-confluent-kafka=1.1.0 \
                     openjdk=8.0.152 \
                     pytorch=1.3.1 \
-                    pytorch-pretrained-bert \
-    && cd /clx \
-    && python setup.py install
+                    cudf=${RAPIDS_VERSION} \
+                    python=3.7 \
+                    cudatoolkit=10.1 \
+                    dask-cudf=${RAPIDS_VERSION} \
+                    rmm=${RAPIDS_VERSION} \
+                    cudatoolkit=10.1 \
+                    dask>=2.12.0 \
+                    distributed>=2.12.0 \
+                    dask-cudf=${RAPIDS_VERSION} \
+                    dask-cuda=${RAPIDS_VERSION} \
+                    ipython=7.3* \
+                    jupyterlab \
+    && pip install transformers==2.7.0 \
+    && cd /rapids/clx \
+    && ./build.sh clean libclx clx
 
 # Zookeeper
 EXPOSE 2181
@@ -60,4 +72,6 @@ RUN wget -q http://www.gtlib.gatech.edu/pub/apache/kafka/2.3.0/kafka_2.11-2.3.0.
         tar xfz /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz -C /opt && \
         rm /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz
 
-ENTRYPOINT ["/bin/bash", "/scripts/entry.sh"]
+#ENTRYPOINT ["/bin/bash", "/scripts/entry.sh"]
+
+WORKDIR /rapids/clx

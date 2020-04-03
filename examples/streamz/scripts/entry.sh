@@ -9,10 +9,27 @@ ENV_TEST_SCRIPT="/python/check_env.py"
 INPUT_TOPIC="input"
 OUTPUT_TOPIC="output"
 
-#If sample data filepath is not passed as a parameter, use sample.csv data.
-if [ -n "$1" ]; then
-  SAMPLE_DATA=$1
+# Read model file path
+if [[ $1 -eq 0 ]] ; then
+  echo 'ERROR: Model file path not provided.'
+  exit 1
 else
+  MODEL_FILE=$1
+fi
+
+# Read label map
+if [[ $2 -eq 0 ]] ; then
+  echo 'ERROR: Label map file path not provided.'
+  exit 1
+else
+  LABEL_MAP=$2
+fi
+
+#If sample data filepath is not passed as a parameter, use sample.csv data.
+if [ -n "$3" ]; then
+  SAMPLE_DATA=$3
+else
+  echo 'Data file path not provided. Using sample dataset /data/sample.csv'
   SAMPLE_DATA="/data/sample.csv"
 fi
 
@@ -39,4 +56,5 @@ $KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $BROKER --topic $INPUT_T
 python $ENV_TEST_SCRIPT
 
 # Run cybert
-python -i /python/cybert.py --broker $BROKER --input_topic $INPUT_TOPIC --group_id $GROUP_ID
+python -i /rapids/cyshare/github/brhodes10/clx/examples/streamz/python/cybert.py --broker $BROKER --input_topic $INPUT_TOPIC --group_id $GROUP_ID --model $MODEL_FILE --label_map $LABEL_MAP
+

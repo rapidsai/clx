@@ -15,39 +15,40 @@
 import argparse
 import cudf
 import dask
-import json
-import torch
-import torch.nn.functional as F
 from dask_cuda import LocalCUDACluster
 from distributed import Client
-from pytorch_pretrained_bert import BertConfig, BertForTokenClassification, BertTokenizer
 from streamz import Stream
 from confluent_kafka import Producer
 import socket
 
-# TODO: Takes the RAW Windows Event logs from Kafka and runs NER predictions against each message.
-def predict_batch(messages):
-    return messages
-
-# TODO: Takes the prediction results and creates a cuDF from them.
-def wel_parsing(predictions):
-    return predictions
-
-# TODO: Monitor for thresholds and trigger alert by letting those messages pass through here
-def threshold_alert(event_logs):
-    return event_logs
+def inference(messages):
+    if type(messages) == str:
+        df = cudf.DataFrame()
+        df['stream'] = [messages]
+        print(df)
+        output_df = cy.inference(df)
+    elif type(messages) == list:
+        df = cudf.DataFrame()
+        df['stream'] = messages
+        output_df = cy.inference(df)
+    else:
+        print("ERROR: Unknown type encountered in inference")
+    return output_df.to_json()
 
 def sink_to_kafka(event_logs):
     conf = {"bootstrap.servers": args.broker,
-        "client.id": socket.gethostname(),
-        "session.timeout.ms": 10000}
+            "client.id": socket.gethostname(),
+            "session.timeout.ms": 10000}
     producer = Producer(conf)
     for event in event_logs:
         producer.produce(args.output_topic, event)
     producer.poll(1)
 
 def worker_init():
-    import clx
+    from clx.analytics.cybert import Cybert
+    worker = dask.distributed.get_worker()
+    cybert = Cybert()
+    worker.data['cybert'] = cybert
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Cybert using Streamz and Dask. Data will be read from the input kafka topic, processed using cybert, and output printed.")
@@ -55,18 +56,20 @@ if __name__ == '__main__':
     parser.add_argument("--input_topic", default="input", help="Input kafka topic")
     parser.add_argument("--output_topic", default="output", help="Output kafka topic")
     parser.add_argument("--group_id", default="streamz", help="Kafka group ID")
+    parser.add_argument("--model", help="Model filepath")
+    parser.add_argument("--label_map", help="Label map filepath")
     args = parser.parse_args()
     cluster = LocalCUDACluster()
     client = Client(cluster)
     print(client)
     client.run(worker_init)
+    cy = Cybert()
+    cy.load_model(args.model, args.label_map, 21)
     # Define the streaming pipeline.
     consumer_conf = {'bootstrap.servers': args.broker,
-                 'group.id': args.group_id, 'session.timeout.ms': 60000}
+                     'group.id': args.group_id, 'session.timeout.ms': 60000}
     source = Stream.from_kafka_batched(args.input_topic, consumer_conf, poll_interval='1s',
                                     npartitions=1, asynchronous=True, dask=False)
-    inference = source.map(predict_batch)
-    wel_parsing = inference.map(wel_parsing)
-    alerts = wel_parsing.map(threshold_alert).map(sink_to_kafka)
+    inference = source.map(inference).map(sink_to_kafka)
     # Start the stream.
     source.start()
