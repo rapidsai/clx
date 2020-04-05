@@ -146,7 +146,6 @@ class Cybert:
         """
         with open(label_map_filepath) as label_file:
             self._label_map = yaml.load(label_file, Loader=yaml.FullLoader)
-        print(self._label_map)
         model_state_dict = torch.load(model_filepath)
         self._num_labels = len(self._label_map) + 1
         self.model = BertForTokenClassification.from_pretrained('bert-base-cased', state_dict=model_state_dict, num_labels=self._num_labels)
