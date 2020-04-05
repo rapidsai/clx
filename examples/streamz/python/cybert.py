@@ -19,9 +19,11 @@ from dask_cuda import LocalCUDACluster
 from distributed import Client
 from streamz import Stream
 from confluent_kafka import Producer
+from clx.analytics.cybert import Cybert
 import socket
 
 def inference(messages):
+    output_df = None
     if type(messages) == str:
         df = cudf.DataFrame()
         df['stream'] = [messages.decode('utf-8')]

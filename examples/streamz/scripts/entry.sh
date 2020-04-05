@@ -1,60 +1,112 @@
 #!/bin/bash
 set +e
 
-source activate rapids
+#**************************
+# Print usage instructions.
+#**************************
+usage() {
+    local exitcode=0
+    if [ $# != 0 ]; then
+        echo "$@"
+        exitcode=1
+    fi
+    echo "Usage: $0 [POS]... [ARG]..."
+    echo
+    echo "Example-1: bash $0 -b localhost:9092 -g streamz -i input -o output -m /path/to/model.pth -l /path/to/labels.yaml"
+    echo
+    echo "Run cybert model using kafka"
+    echo
+    echo Positional:
+    echo "  -b, --broker       Kafka Broker"
+    echo "  -g, --group_id      Kafka group ID"
+    echo "  -i, --input_topic   Kafka input topic"
+    echo "  -o, --output_topic  Kafka output topic"
+    echo "  -m, --model_file    Cybert model file"
+    echo "  -l, --label_file    Cybert label file"
+    echo "  -d, --data          Cybert data file "
+    echo
+    echo "  -h, --help          Print this help"
+    echo
+    exit $exitcode
+}
 
-BROKER="localhost:9092"
-GROUP_ID="streamz"
-ENV_TEST_SCRIPT="/python/check_env.py"
-INPUT_TOPIC="input"
-OUTPUT_TOPIC="output"
+#*****************************
+# This function print logging.
+#*****************************
+log(){
+  if [[ $# = 2 ]]; then
+     echo "$(date) [$1] : $2"
+  fi
+}
 
-# Read model file path
-if [[ $1 -eq 0 ]] ; then
-  echo 'ERROR: Model file path not provided.'
-  exit 1
-else
-  MODEL_FILE=$1
-fi
+#Verify user input arguments.
+while [ $# != 0 ]; do
+    case $1 in
+    -h|--help) usage ;;
+    -b|--broker) shift; broker=$1 ;;
+    -g|--group_id) shift; group_id=$1 ;;
+    -i|--input_topic) shift; input_topic=$1 ;;
+    -o|--output_topic) shift; output_topic=$1 ;;
+    -m|--model_file) shift; model_file=$1 ;;
+    -l|--label_file) shift; label_file=$1 ;;
+    -d|--data) shift; data=$1 ;;
+    -) usage "Unknown positional: $1" ;;
+    -?*) usage "Unknown positional: $1" ;;
+    esac
+    shift
+done
 
-# Read label map
-if [[ $2 -eq 0 ]] ; then
-  echo 'ERROR: Label map file path not provided.'
-  exit 1
-else
-  LABEL_MAP=$2
-fi
+#**********************************
+#Input arguments type & empty check
+#**********************************
+verify_input_arg(){ 
+	if [[ -z $2 ]]; then
+	  log "ERROR" "Argument '$1' is not provided" 
+	  usage
+	  exit 1
+	fi
+  log "INFO" "$1 = $2"
+}
 
-#If sample data filepath is not passed as a parameter, use sample.csv data.
-if [ -n "$3" ]; then
-  SAMPLE_DATA=$3
-else
-  echo 'Data file path not provided. Using sample dataset /data/sample.csv'
-  SAMPLE_DATA="/data/sample.csv"
-fi
+verify_input_arg "broker" $broker
+verify_input_arg "group_id" $group_id
+verify_input_arg "input_topic", $input_topic
+verify_input_arg "output_topic", $output_topic
+verify_input_arg "model_file", $model_file
+verify_input_arg "label_file", $label_file
+verify_input_arg "data", $data
 
-# Start Zookeeper
+source activate gdf
+
+#**********************************
+# Configure Kafka
+#**********************************
+sed -i "/#listeners=PLAINTEXT:\/\/:9092/c\listeners=PLAINTEXT:\/\/$broker" $KAFKA_HOME/config/server.properties
+sed -i "/#advertised.listeners=PLAINTEXT:\/\/your.host.name:9092/c\advertised.listeners=PLAINTEXT:\/\/$broker" $KAFKA_HOME/config/server.properties
+log "INFO" "Kafka configuration updated"
+#**********************************
+# Run Kafka and Zookeeper
+#**********************************
 $KAFKA_HOME/bin/zookeeper-server-start.sh -daemon $KAFKA_HOME/config/zookeeper.properties
 sleep 3
-
-# Configure Kafka
-sed -i '/#listeners=PLAINTEXT:\/\/:9092/c\listeners=PLAINTEXT:\/\/localhost:9092' $KAFKA_HOME/config/server.properties
-sed -i '/#advertised.listeners=PLAINTEXT:\/\/your.host.name:9092/c\advertised.listeners=PLAINTEXT:\/\/localhost:9092' $KAFKA_HOME/config/server.properties
-
-# Run Kafka
 $KAFKA_HOME/bin/kafka-server-start.sh -daemon $KAFKA_HOME/config/server.properties
 sleep 3
+log "INFO" "Kafka and zookeeper running"
 
-# Create kafka topic
-$KAFKA_HOME/bin/kafka-topics.sh --create --bootstrap-server $BROKER --replication-factor 1 --partitions 1 --topic $INPUT_TOPIC
-$KAFKA_HOME/bin/kafka-topics.sh --create --bootstrap-server $BROKER --replication-factor 1 --partitions 1 --topic $OUTPUT_TOPIC
+#**********************************
+# Create Kafka Topics
+#**********************************
+$KAFKA_HOME/bin/kafka-topics.sh --create --bootstrap-server $broker --replication-factor 1 --partitions 1 --topic $input_topic
+$KAFKA_HOME/bin/kafka-topics.sh --create --bootstrap-server $broker --replication-factor 1 --partitions 1 --topic $output_topic
+log "INFO" "Kafka topics created"
+#**********************************
+# Read Sample Data
+#**********************************
+$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $broker --topic $input_topic < $data
+log "INFO" "Sample data read into kafka topic, $input_topic"
 
-# Read sample data into the kafka topic
-$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $BROKER --topic $INPUT_TOPIC < $SAMPLE_DATA
-
-# Check the environment.
-python $ENV_TEST_SCRIPT
-
-# Run cybert
-python -i /rapids/cyshare/github/brhodes10/clx/examples/streamz/python/cybert.py --broker $BROKER --input_topic $INPUT_TOPIC --group_id $GROUP_ID --model $MODEL_FILE --label_map $LABEL_MAP
-
+#**********************************
+# Run Cybert
+#**********************************
+log "INFO" "Preparing to run cybert"
+python -i /python/cybert.py --input_topic $input_topic --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file

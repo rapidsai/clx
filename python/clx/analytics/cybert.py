@@ -148,10 +148,10 @@ class Cybert:
             self._label_map = yaml.load(label_file, Loader=yaml.FullLoader)
         print(self._label_map)
         model_state_dict = torch.load(model_filepath)
-        self.model = BertForTokenClassification.from_pretrained('bert-base-cased', state_dict=model_state_dict, num_labels=num_labels)
+        self._num_labels = len(self._label_map) + 1
+        self.model = BertForTokenClassification.from_pretrained('bert-base-cased', state_dict=model_state_dict, num_labels=self._num_labels)
         self.model.cuda()
         self.model.eval()
-        self._num_labels = len(self._label_map) + 1
 
     def inference(self, raw_data_df):
         """
@@ -207,4 +207,7 @@ class Cybert:
         return confidence_dict
 
     def __decode_cleanup(self,row):
-        return row.replace(' ##', '').replace(' . ', '.').replace(' : ', ':').replace(' / ','/')
+        if type(row) == str:
+            return row.replace(' ##', '').replace(' . ', '.').replace(' : ', ':').replace(' / ','/')
+        else:
+            return row

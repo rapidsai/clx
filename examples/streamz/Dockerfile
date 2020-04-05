@@ -46,7 +46,7 @@ RUN source activate gdf \
                     python-confluent-kafka=1.1.0 \
                     openjdk=8.0.152 \
                     pytorch=1.3.1 \
-                    cudf=${RAPIDS_VERSION} \
+                    cudf=${RAPIDS_VERSION} \ 
                     python=3.7 \
                     cudatoolkit=10.1 \
                     dask-cudf=${RAPIDS_VERSION} \
@@ -72,6 +72,6 @@ RUN wget -q http://www.gtlib.gatech.edu/pub/apache/kafka/2.3.0/kafka_2.11-2.3.0.
         tar xfz /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz -C /opt && \
         rm /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz
 
-#ENTRYPOINT ["/bin/bash", "/scripts/entry.sh"]
+ENTRYPOINT ["/bin/bash", "/scripts/entry.sh"]
 
 WORKDIR /rapids/clx
