@@ -47,13 +47,6 @@ RUN source activate gdf \
                     openjdk=8.0.152 \
                     pytorch=1.3.1 \
                     cudf=${RAPIDS_VERSION} \ 
-                    python=3.7 \
-                    cudatoolkit=10.1 \
-                    dask-cudf=${RAPIDS_VERSION} \
-                    rmm=${RAPIDS_VERSION} \
-                    cudatoolkit=10.1 \
-                    dask>=2.12.0 \
-                    distributed>=2.12.0 \
                     dask-cudf=${RAPIDS_VERSION} \
                     dask-cuda=${RAPIDS_VERSION} \
                     ipython=7.3* \

@@ -23,7 +23,7 @@ usage() {
     echo "  -o, --output_topic  Kafka output topic"
     echo "  -m, --model_file    Cybert model file"
     echo "  -l, --label_file    Cybert label file"
-    echo "  -d, --data          Cybert data file "
+    echo "  -d, --data          Cybert data file (optional)"
     echo
     echo "  -h, --help          Print this help"
     echo
@@ -74,7 +74,6 @@ verify_input_arg "input_topic", $input_topic
 verify_input_arg "output_topic", $output_topic
 verify_input_arg "model_file", $model_file
 verify_input_arg "label_file", $label_file
-verify_input_arg "data", $data
 
 source activate gdf
 
