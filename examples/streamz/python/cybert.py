@@ -70,7 +70,7 @@ if __name__ == '__main__':
     consumer_conf = {'bootstrap.servers': args.broker,
                      'group.id': args.group_id, 'session.timeout.ms': 60000}
     source = Stream.from_kafka_batched(args.input_topic, consumer_conf, poll_interval='1s',
-                                    npartitions=1, asynchronous=True, dask=False)
+                                    npartitions=1, asynchronous=True, dask=True)
     inference = source.map(inference).map(sink_to_kafka)
     # Start the stream.
     source.start()
