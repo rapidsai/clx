@@ -42,7 +42,7 @@ ENV KAFKA_HOME /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"
 # Install common conda packages that most issues will require
 RUN source activate gdf \
     && conda install -c conda-forge -c pytorch -c anaconda -c rapidsai -c nvidia -c numba \
-                    streamz=0.5.2 \
+                    streamz=0.5.3 \
                     python-confluent-kafka=1.1.0 \
                     openjdk=8.0.152 \
                     pytorch=1.3.1 \
@@ -68,3 +68,4 @@ RUN wget -q http://www.gtlib.gatech.edu/pub/apache/kafka/2.3.0/kafka_2.11-2.3.0.
 ENTRYPOINT ["/bin/bash", "/scripts/entry.sh"]
 
 WORKDIR /rapids/clx
+

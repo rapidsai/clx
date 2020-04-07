@@ -30,7 +30,7 @@ Create a new container using the image above. When running this container, it wi
 
 ##### Preferred - Docker CE v19+ and nvidia-container-toolkit
 ```
-docker run -it --gpus '"device=0"' -v /home/nfs/brhodes/cyshare:/rapids/cyshare -v /home/nfs/brhodes/cybermount/datasets/apache/:/datasets/apache --name cybert-streamz -d cybert-streamz:latest \
+docker run -it --gpus '"device=0"' -p 8787:8787 -v /home/nfs/brhodes/cyshare:/rapids/cyshare -v /home/nfs/brhodes/cybermount/datasets/apache/:/datasets/apache --name cybert-streamz -d cybert-streamz:latest \
 --broker localhost:9092 \
 --group_id streamz \
 --input_topic input \
@@ -42,7 +42,7 @@ docker run -it --gpus '"device=0"' -v /home/nfs/brhodes/cyshare:/rapids/cyshare 
 
 ##### Legacy - Docker CE v18 and nvidia-docker2
 ```
-docker run -it --runtime=nvidia -v /home/nfs/brhodes/cyshare:/rapids/cyshare -v /home/nfs/brhodes/cybermount/datasets/apache/:/datasets/apache --name cybert-streamz -d cybert-streamz:latest \
+docker run -it --runtime=nvidia -p 8787:8787 -v /home/nfs/brhodes/cyshare:/rapids/cyshare -v /home/nfs/brhodes/cybermount/datasets/apache/:/datasets/apache --name cybert-streamz -d cybert-streamz:latest \
 --broker localhost:9092 \
 --group_id streamz \
 --input_topic input \

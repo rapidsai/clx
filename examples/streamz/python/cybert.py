@@ -64,7 +64,7 @@ if __name__ == '__main__':
     client = Client(cluster)
     print(client)
     client.run(worker_init)
-    cy = Cybert()
+    cy = Cybert(max_num_logs=1000000, max_num_chars=100000000, max_rows_tensor=1000000)
     cy.load_model(args.model, args.label_map)
     # Define the streaming pipeline.
     consumer_conf = {'bootstrap.servers': args.broker,
