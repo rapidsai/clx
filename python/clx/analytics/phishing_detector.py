@@ -14,7 +14,9 @@ log = logging.getLogger(__name__)
 
 
 class PhishingDetector:
-
+    """
+    Phishing detection using BERT. This class provides methods for training/loading BERT models, evaluation and prediction. 
+    """
     def __init__(self):
         self._device = None
         self._model = None
@@ -22,6 +24,13 @@ class PhishingDetector:
         self._hashpath = self._get_hash_table_path()
 
     def init_model(self, model_or_path="bert-base-uncased"):
+        """
+        Load a pretrained BERT model. Default is bert-base-uncased.
+
+        :param model_or_path: directory path to model, default is bert-based-uncased
+        :type input_file: str
+
+        """
         if self._model is None:
             self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -29,13 +38,35 @@ class PhishingDetector:
         self._model.cuda()
 
     def train_model(self, emails, labels, max_num_sentences=1000000, max_num_chars=100000000, max_rows_tensor=1000000, learning_rate=3e-5, max_len=128, batch_size=32, epochs=5):
+        """
+        Train the classifier
 
+        :param emails: dataframe where each row contains one column holding email text
+        :type emails: cudf.DataFrame
+        :param labels: series holding labels for each row in email dataframe
+        :type labels: cudf.Series
+        :param max_num_sentences: maximum number of sentences to be encoded by tokenizer in one batch
+        :type max_num_sentences: int
+        :param max_num_chars: maximum number of characters passed to tokenizer
+        :type max_num_chars: int
+        :param max_rows_tensor: maximum number of rows in a tokenizer output tensor
+        :type max_rows_tensor: int
+        :param learning_rate: learning rate
+        :type learning_rate: float
+        :param max_seq_len: Limits the length of the sequence returned by tokenizer. If tokenized sentence is shorter than max_sequence_length, output will be padded with 0s. If the tokenized sentence is longer than max_sequence length it will be truncated to max_len.
+        :type max_seq_len: int
+        :param batch_size: batch size
+        :type batch_size: int
+        :param epoch: epoch, default is 5
+        :type epoch: int
+
+        """
         emails["label"] = labels.reset_index(drop=True)
         train_emails, validation_emails, train_labels, validation_labels = train_test_split(emails, 'label', train_size=0.8, random_state=2)
 
         # Tokenize training and validation
-        train_inputs, train_masks, _ = tokenizer.tokenize_df(train_emails, self._hashpath, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
-        validation_inputs, validation_masks, _ = tokenizer.tokenize_df(validation_emails, self._hashpath, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+        train_inputs, train_masks, _ = tokenizer.tokenize_df(train_emails, self._hashpath, max_sequence_length=max_seq_len, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+        validation_inputs, validation_masks, _ = tokenizer.tokenize_df(validation_emails, self._hashpath, max_sequence_length=max_seq_len, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
 
         # convert labels to tensors
         train_labels = torch.tensor(train_labels.to_array())
@@ -55,8 +86,25 @@ class PhishingDetector:
         self._model = self._train(train_dataloader, validation_dataloader, self._model, epochs)
 
     def evaluate_model(self, emails, labels, max_num_sentences=1000000, max_num_chars=100000000, max_rows_tensor=1000000, max_len=128, batch_size=32):
+        """
+        Evaluate trained BERT model
 
-        test_inputs, test_masks, _ = tokenizer.tokenize_df(emails, self._hashpath, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+        :param emails: dataframe where each row contains one column holding email text
+        :type emails: cudf.Dataframe
+        :param labels: series holding labels for each row in email dataframe
+        :type labels: cudf.Series
+        :param max_num_sentences: maximum number of sentences to be encoded by tokenizer in one batch
+        :type max_num_sentences: int
+        :param max_num_chars: maximum number of characters passed to tokenizer
+        :type max_num_chars: int
+        :param max_rows_tensor: maximum number of rows in a tokenizer output tensor
+        :type max_rows_tensor: int
+        :param max_seq_len: Limits the length of the sequence returned by tokenizer. If tokenized sentence is shorter than max_sequence_length, output will be padded with 0s. If the tokenized sentence is longer than max_sequence length it will be truncated to max_len.
+        :type max_seq_len: int
+        :param batch_size: batch size
+        :type batch_size: int
+        """
+        test_inputs, test_masks, _ = tokenizer.tokenize_df(emails, self._hashpath, max_sequence_length=max_seq_len, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
 
         test_labels = torch.tensor(labels.to_array())
         test_data = TensorDataset(test_inputs, test_masks, test_labels)
@@ -74,11 +122,34 @@ class PhishingDetector:
         return accuracy
 
     def save_model(self, save_to_path="."):
+        """
+        Save trained model
+
+        :param save_to_path: directory path to save model, default is current directory
+        :type save_to_path: str
+        """
         self._model.save_pretrained(save_to_path)
 
     def predict(self, emails, max_num_sentences=1000000, max_num_chars=100000000, max_rows_tensor=1000000, max_len=128, batch_size=32):
+        """
+        Predict the class with the trained model
 
-        predict_inputs, predict_masks, _ = tokenizer.tokenize_df(emails, self._hashpath, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+        :param emails: dataframe where each row contains one column holding email text
+        :type emails: cudf.DataFrame
+        :param max_num_sentences: maximum number of sentences to be encoded by tokenizer in one batch
+        :type max_num_sentences: int
+        :param max_num_chars: maximum number of characters passed to tokenizer
+        :type max_num_chars: int
+        :param max_rows_tensor: maximum number of rows in a tokenizer output tensor
+        :type max_rows_tensor: int
+        :param max_seq_len: Limits the length of the sequence returned by tokenizer. If tokenized sentence is shorter than max_sequence_length, output will be padded with 0s. If the tokenized sentence is longer than max_sequence length it will be truncated to max_len.
+        :type max_seq_len: int
+        :param batch_size: batch size
+        :type batch_size: int
+        :return: predictions: predicted labels (0 or 1) for each email
+        :rtype: cudf.Series
+        """
+        predict_inputs, predict_masks, _ = tokenizer.tokenize_df(emails, self._hashpath, max_sequence_length=max_seq_len, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
 
         predict_inputs = predict_inputs.type(torch.LongTensor)
         predict_data = TensorDataset(predict_inputs, predict_masks)

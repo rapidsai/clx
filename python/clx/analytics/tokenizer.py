@@ -73,7 +73,7 @@ def tokenize_df(input_df, hash_file="default", max_sequence_length=64, stride=48
     >>> from clx.analytics import tokenizer
     >>> import cudf
     >>> df = cudf.read_csv("input.txt")
-    >>> tokens, masks, metadata = tokenizer.tokenize_file(df)
+    >>> tokens, masks, metadata = tokenizer.tokenize_df(df)
     """
     tokens, masks, metadata = tokenizer_wrapper.tokenize_df(input_df, hash_file, max_sequence_length, stride, do_lower, do_truncate, max_num_sentences, max_num_chars, max_rows_tensor)
     return tokens, masks, metadata
