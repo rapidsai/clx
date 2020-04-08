@@ -52,10 +52,9 @@ setup(
         "clx.analytics": ["resources/*.txt"],
         "clx.parsers": ["resources/*.yaml"],
         "clx.dns": ["resources/*.txt"],
-        "clx.heuristics": ["resources/*.csv"],
+        "clx.heuristics": ["resources/*.csv"]
     },
     install_requires=INSTALL_REQUIRES,
     license="Apache",
-    cmdclass=versioneer.get_cmdclass(),
-    zip_safe=False
+    cmdclass=versioneer.get_cmdclass()
 )
