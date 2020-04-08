@@ -10,7 +10,7 @@ else
 fi
 
 if [[ "$PYTHON" == "3.6" ]]; then
-    export UPLOAD_CLX=1
+    export UPLOAD_LIBCLX=1
 else
-    export UPLOAD_CLX=0
+    export UPLOAD_LIBCLX=0
 fi
