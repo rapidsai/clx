@@ -20,7 +20,7 @@ INSTALL_REQUIRES = [
 ]
 
 if int(os.environ.get('CONDA_BUILD', 0)) == 1:
-    install_requires = []
+    INSTALL_REQUIRES = []
 
 conda_lib_dir = os.path.normpath(sys.prefix) + '/lib'
 
