@@ -5,9 +5,10 @@ from setuptools import setup, find_packages
 from setuptools.extension import Extension
 from Cython.Build import cythonize
 
+import versioneer
 from distutils.sysconfig import get_python_lib
 
-install_requires = [
+INSTALL_REQUIRES = [
     "confluent_kafka",
     "transformers",
     "seqeval[gpu]",
@@ -41,7 +42,7 @@ EXTENSIONS = [
 
 setup(
     name="clx",
-    version="0.13.0",
+    version=versioneer.get_version(),
     description="CLX",
     author="NVIDIA Corporation",
     setup_requires=['cython'],
@@ -53,5 +54,8 @@ setup(
         "clx.dns": ["resources/*.txt"],
         "clx.heuristics": ["resources/*.csv"],
     },
-    install_requires=install_requires
+    install_requires=INSTALL_REQUIRES,
+    license="Apache",
+    cmdclass=versioneer.get_cmdclass(),
+    zip_safe=False
 )
