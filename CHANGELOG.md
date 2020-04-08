@@ -4,6 +4,7 @@
 - PR #141 CUDA BERT Tokenizer
 
 ## Improvements
+- PR #149 Add Versioneer
 
 ## Bug Fixes
 
