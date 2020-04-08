@@ -27,9 +27,17 @@ class PhishingDetector:
         """
         Load a pretrained BERT model. Default is bert-base-uncased.
 
-        :param model_or_path: directory path to model, default is bert-based-uncased
+        :param model_or_path: directory path to model, default is bert-base-uncased
         :type input_file: str
 
+        Examples
+        --------
+        >>> from clx.analytics.phishing_detector import PhishingDetector
+        >>> phish_detect = PhishingDetector()
+
+        >>> phish_detect.init_model()  # bert-base-uncased
+
+        >>> phish_detect.init_model(model_path)
         """
         if self._model is None:
             self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -37,7 +45,7 @@ class PhishingDetector:
         self._model = BertForSequenceClassification.from_pretrained(model_or_path, num_labels=2)
         self._model.cuda()
 
-    def train_model(self, emails, labels, max_num_sentences=1000000, max_num_chars=100000000, max_rows_tensor=1000000, learning_rate=3e-5, max_len=128, batch_size=32, epochs=5):
+    def train_model(self, emails, labels, max_num_sentences=1000000, max_num_chars=100000000, max_rows_tensor=1000000, learning_rate=3e-5, max_seq_len=128, batch_size=32, epochs=5):
         """
         Train the classifier
 
@@ -53,13 +61,18 @@ class PhishingDetector:
         :type max_rows_tensor: int
         :param learning_rate: learning rate
         :type learning_rate: float
-        :param max_seq_len: Limits the length of the sequence returned by tokenizer. If tokenized sentence is shorter than max_sequence_length, output will be padded with 0s. If the tokenized sentence is longer than max_sequence length it will be truncated to max_len.
+        :param max_seq_len: Limits the length of the sequence returned by tokenizer. If tokenized sentence is shorter than max_seq_len, output will be padded with 0s. If the tokenized sentence is longer than max_seq_len it will be truncated to max_seq_len.
         :type max_seq_len: int
         :param batch_size: batch size
         :type batch_size: int
         :param epoch: epoch, default is 5
         :type epoch: int
 
+        Examples
+        --------
+        >>> from cuml.preprocessing.model_selection import train_test_split
+        >>> emails_train, emails_test, labels_train, labels_test = train_test_split(train_emails_df, 'label', train_size=0.8)
+        >>> phish_detect.train_model(emails_train, labels_train)
         """
         emails["label"] = labels.reset_index(drop=True)
         train_emails, validation_emails, train_labels, validation_labels = train_test_split(emails, 'label', train_size=0.8, random_state=2)
@@ -85,7 +98,7 @@ class PhishingDetector:
 
         self._model = self._train(train_dataloader, validation_dataloader, self._model, epochs)
 
-    def evaluate_model(self, emails, labels, max_num_sentences=1000000, max_num_chars=100000000, max_rows_tensor=1000000, max_len=128, batch_size=32):
+    def evaluate_model(self, emails, labels, max_num_sentences=1000000, max_num_chars=100000000, max_rows_tensor=1000000, max_seq_len=128, batch_size=32):
         """
         Evaluate trained BERT model
 
@@ -99,10 +112,16 @@ class PhishingDetector:
         :type max_num_chars: int
         :param max_rows_tensor: maximum number of rows in a tokenizer output tensor
         :type max_rows_tensor: int
-        :param max_seq_len: Limits the length of the sequence returned by tokenizer. If tokenized sentence is shorter than max_sequence_length, output will be padded with 0s. If the tokenized sentence is longer than max_sequence length it will be truncated to max_len.
+        :param max_seq_len: Limits the length of the sequence returned by tokenizer. If tokenized sentence is shorter than max_seq_len, output will be padded with 0s. If the tokenized sentence is longer than max_seq_len it will be truncated to max_seq_len.
         :type max_seq_len: int
         :param batch_size: batch size
         :type batch_size: int
+
+        Examples
+        --------
+        >>> from cuml.preprocessing.model_selection import train_test_split
+        >>> emails_train, emails_test, labels_train, labels_test = train_test_split(train_emails_df, 'label', train_size=0.8)
+        >>> phish_detect.evaluate_model(emails_test, labels_test)
         """
         test_inputs, test_masks, _ = tokenizer.tokenize_df(emails, self._hashpath, max_sequence_length=max_seq_len, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
 
@@ -127,10 +146,17 @@ class PhishingDetector:
 
         :param save_to_path: directory path to save model, default is current directory
         :type save_to_path: str
+
+        Examples
+        --------
+        >>> from cuml.preprocessing.model_selection import train_test_split
+        >>> emails_train, emails_test, labels_train, labels_test = train_test_split(train_emails_df, 'label', train_size=0.8)
+        >>> phish_detect.train_model(emails_train, labels_train)
+        >>> phish_detect.save_model()
         """
         self._model.save_pretrained(save_to_path)
 
-    def predict(self, emails, max_num_sentences=1000000, max_num_chars=100000000, max_rows_tensor=1000000, max_len=128, batch_size=32):
+    def predict(self, emails, max_num_sentences=1000000, max_num_chars=100000000, max_rows_tensor=1000000, max_seq_len=128, batch_size=32):
         """
         Predict the class with the trained model
 
@@ -142,12 +168,19 @@ class PhishingDetector:
         :type max_num_chars: int
         :param max_rows_tensor: maximum number of rows in a tokenizer output tensor
         :type max_rows_tensor: int
-        :param max_seq_len: Limits the length of the sequence returned by tokenizer. If tokenized sentence is shorter than max_sequence_length, output will be padded with 0s. If the tokenized sentence is longer than max_sequence length it will be truncated to max_len.
+        :param max_seq_len: Limits the length of the sequence returned by tokenizer. If tokenized sentence is shorter than max_seq_len, output will be padded with 0s. If the tokenized sentence is longer than max_seq_len it will be truncated to max_seq_len.
         :type max_seq_len: int
         :param batch_size: batch size
         :type batch_size: int
         :return: predictions: predicted labels (0 or 1) for each email
         :rtype: cudf.Series
+
+        Examples
+        --------
+        >>> from cuml.preprocessing.model_selection import train_test_split
+        >>> emails_train, emails_test, labels_train, labels_test = train_test_split(train_emails_df, 'label', train_size=0.8)
+        >>> phish_detect.train_model(emails_train, labels_train)
+        >>> predictions = phish_detect(new_emails_df)
         """
         predict_inputs, predict_masks, _ = tokenizer.tokenize_df(emails, self._hashpath, max_sequence_length=max_seq_len, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
 
