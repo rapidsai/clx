@@ -5,9 +5,10 @@ from setuptools import setup, find_packages
 from setuptools.extension import Extension
 from Cython.Build import cythonize
 
+import versioneer
 from distutils.sysconfig import get_python_lib
 
-install_requires = [
+INSTALL_REQUIRES = [
     "confluent_kafka",
     "transformers",
     "seqeval[gpu]",
@@ -19,7 +20,7 @@ install_requires = [
 ]
 
 if int(os.environ.get('CONDA_BUILD', 0)) == 1:
-    install_requires = []
+    INSTALL_REQUIRES = []
 
 conda_lib_dir = os.path.normpath(sys.prefix) + '/lib'
 
@@ -41,7 +42,7 @@ EXTENSIONS = [
 
 setup(
     name="clx",
-    version="0.13.0",
+    version=versioneer.get_version(),
     description="CLX",
     author="NVIDIA Corporation",
     setup_requires=['cython'],
@@ -51,7 +52,9 @@ setup(
         "clx.analytics": ["resources/*.txt"],
         "clx.parsers": ["resources/*.yaml"],
         "clx.dns": ["resources/*.txt"],
-        "clx.heuristics": ["resources/*.csv"],
+        "clx.heuristics": ["resources/*.csv"]
     },
-    install_requires=install_requires
+    install_requires=INSTALL_REQUIRES,
+    license="Apache",
+    cmdclass=versioneer.get_cmdclass()
 )

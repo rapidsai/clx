@@ -45,9 +45,6 @@ function sed_runner() {
     sed -i.bak ''"$1"'' $2 && rm -f ${2}.bak
 }
 
-# setup update
-sed_runner 's/version="0.*"/version="'"${NEXT_FULL_TAG}"'"/g' python/setup.py
-
 # Dockerfile update
 sed_runner 's/RAPIDS_VERSION=0.*/RAPIDS_VERSION='"${NEXT_SHORT_TAG}"'/g' Dockerfile
 
