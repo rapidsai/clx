@@ -5,6 +5,7 @@
 - PR #133 Phishing detection using BERT
 
 ## Improvements
+- PR #149 Add Versioneer
 
 ## Bug Fixes
 
