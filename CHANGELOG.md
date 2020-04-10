@@ -7,6 +7,7 @@
 - PR #149 Add Versioneer
 
 ## Bug Fixes
+- PR #150 Fix splunk alert workflow test
 
 # clx 0.13.0 (Date TBD)
 
