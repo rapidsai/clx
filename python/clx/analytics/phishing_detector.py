@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 
 class PhishingDetector:
     """
-    Phishing detection using BERT. This class provides methods for training/loading BERT models, evaluation and prediction. 
+    Phishing detection using BERT. This class provides methods for training/loading BERT models, evaluation and prediction.
     """
     def __init__(self):
         self._device = None
