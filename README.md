@@ -165,7 +165,7 @@ docker-compose up
 
 <a name="conda"></a>
 
-### Conda Install 
+## Conda Install 
 It is easy to install CLX using conda. You can get a minimal conda installation with Miniconda or get the full installation with Anaconda.
 
 Install and update CLX using the conda command:
