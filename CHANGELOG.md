@@ -5,6 +5,7 @@
 
 ## Improvements
 - PR #149 Add Versioneer
+- PR #151 README and CONTRIBUTING updates
 
 ## Bug Fixes
 - PR #150 Fix splunk alert workflow test
