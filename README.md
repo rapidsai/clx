@@ -106,7 +106,7 @@ For additional examples, browse our complete [API documentation](https://rapidsa
 ## Getting CLX
 ### Intro
 There are 3 ways to get CLX :
-1. [Quick start with CLX Docker Container](#docker)
+1. [Quick Start with CLX Docker Container](#quick)
 1. [Conda Installation](#conda)
 1. [Build from Source](#source)
 
@@ -117,7 +117,7 @@ There are 3 ways to get CLX :
 Prerequisites
 
 * NVIDIA Pascal™ GPU architecture or better
-* CUDA 10.0 or later compatible NVIDIA driver
+* CUDA 10.0+ compatible NVIDIA driver
 * Ubuntu 16.04/18.04 or CentOS 7
 * Docker CE v18+
 * nvidia-docker v2+
@@ -166,10 +166,12 @@ docker-compose up
 <a name="conda"></a>
 
 ### Conda Install 
-You can conda install CLX on an existing RAPIDS container. A RAPIDS image suitable for your environment can be pulled from [https://hub.docker.com/r/rapidsai/rapidsai/](https://hub.docker.com/r/rapidsai/rapidsai/). 
+It is easy to install CLX using conda. You can get a minimal conda installation with Miniconda or get the full installation with Anaconda.
+
+Install and update CLX using the conda command:
 
 ```
-conda install -c rapidsai-nightly -c rapidsai -c nvidia -c pytorch -c conda-forge -c defaults clx
+conda install -c rapidsai-nightly -c nvidia -c pytorch -c conda-forge -c defaults clx
 ```
 
 
