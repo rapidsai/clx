@@ -63,17 +63,23 @@ PYTHON_BUILD_DIR_IN_CONTAINER="${RAPIDS_DIR_IN_CONTAINER}/$(basename "${REPO_PAT
 # running in the container generate build artifacts just as they would
 # in a bare-metal environment, and the host filesystem is able to
 # maintain the host build in BUILD_DIR as well.
+# FIXME: Fix the shellcheck complaints
 # shellcheck disable=SC2001,SC2005,SC2046
 BASE_CONTAINER_BUILD_DIR=${REPO_PATH}/build_$(echo $(basename "${DOCKER_IMAGE}")|sed -e 's/:/_/g')
 CPP_CONTAINER_BUILD_DIR=${BASE_CONTAINER_BUILD_DIR}/cpp
 PYTHON_CONTAINER_BUILD_DIR=${BASE_CONTAINER_BUILD_DIR}/python
-
+# Create build directories. This is to ensure correct owner for directories. If
+# directories don't exist there is side effect from docker volume mounting creating build
+# directories owned by root(volume mount point(s))
+mkdir -p "${REPO_PATH}/${CPP_BUILD_DIR}"
+mkdir -p "${REPO_PATH}/${PYTHON_BUILD_DIR}"
 
 BUILD_SCRIPT="#!/bin/bash
 set -e
 WORKSPACE=${REPO_PATH_IN_CONTAINER}
 PREBUILD_SCRIPT=${REPO_PATH_IN_CONTAINER}/ci/gpu/prebuild.sh
 BUILD_SCRIPT=${REPO_PATH_IN_CONTAINER}/ci/gpu/build.sh
+cd \${WORKSPACE}
 if [ -f \${PREBUILD_SCRIPT} ]; then
     source \${PREBUILD_SCRIPT}
 fi
@@ -90,12 +96,6 @@ fi
 mkdir -p "${BASE_CONTAINER_BUILD_DIR}"
 mkdir -p "${CPP_CONTAINER_BUILD_DIR}"
 mkdir -p "${PYTHON_CONTAINER_BUILD_DIR}"
-# Create build directories. This is to ensure correct owner for directories. If
-# directories don't exist there is side effect from docker volume mounting creating build
-# directories owned by root(volume mount point(s))
-mkdir -p "${REPO_PATH}/${CPP_BUILD_DIR}"
-mkdir -p "${REPO_PATH}/${PYTHON_BUILD_DIR}"
-
 echo "${BUILD_SCRIPT}" > "${CPP_CONTAINER_BUILD_DIR}/build.sh"
 chmod ugo+x "${CPP_CONTAINER_BUILD_DIR}/build.sh"
 
