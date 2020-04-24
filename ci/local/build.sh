@@ -22,7 +22,7 @@ where:
 if [[ -z "${CUDA_VISIBLE_DEVICES}" ]]; then
     NVIDIA_VISIBLE_DEVICES="all"
 else
-    NVIDIA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES}
+    NVIDIA_VISIBLE_DEVICES="device=${CUDA_VISIBLE_DEVICES}"
 fi
 
 while getopts ":hHr:i:s" option; do
