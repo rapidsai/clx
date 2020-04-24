@@ -85,7 +85,7 @@ To install CLX from source, ensure the dependencies are met and follow the steps
 1) Clone the repository and submodules
 
   ```bash
-  # Set the localtion to CLX in an environment variable CLX_HOME
+  # Set the location to CLX in an environment variable CLX_HOME
   export CLX_HOME=$(pwd)/clx
 
   # Download the CLX repo
@@ -172,11 +172,6 @@ $ ./build.sh libclx -n                # compile libclx but do not install
 
 
 Note: This conda installation only applies to Linux and Python versions 3.6/3.7.
-
-### Building and Testing on a gpuCI image locally
-
-Before submitting a pull request, you can do a local build and test on your machine that mimics our gpuCI environment using the `ci/local/build.sh` script.
-For detailed information on usage of this script, see [here](ci/local/README.md).
 
 ## Creating documentation
 
