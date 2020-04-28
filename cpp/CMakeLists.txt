@@ -40,6 +40,27 @@ ADD_CUSTOM_TARGET(gen_cuda_header ALL
    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/cp_data.h
 )
 
+###################################################################################################
+# - RMM -------------------------------------------------------------------------------------------
+
+find_path(RMM_INCLUDE "rmm"
+          HINTS "$ENV{RMM_ROOT}/include")
+
+find_library(RMM_LIBRARY "rmm"
+             HINTS "$ENV{RMM_ROOT}/lib" "$ENV{RMM_ROOT}/build")
+
+message(STATUS "RMM: RMM_LIBRARY set to ${RMM_LIBRARY}")
+message(STATUS "RMM: RMM_INCLUDE set to ${RMM_INCLUDE}")
+
+add_library(rmm SHARED IMPORTED ${RMM_LIBRARY})
+if(RMM_INCLUDE AND RMM_LIBRARY)
+    set_target_properties(rmm PROPERTIES IMPORTED_LOCATION ${RMM_LIBRARY})
+endif(RMM_INCLUDE AND RMM_LIBRARY)
+
+include_directories("${RMM_INCLUDE}")
+link_directories("${RMM_LIBRARY}")
+###################################################################################################
+
 add_library(clx SHARED
   src/hash_utils.cu
   src/basicTokenizer.cu
@@ -59,7 +80,11 @@ set_target_properties(tokenizer
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
 )
 
-target_link_libraries(tokenizer ${CU_TOK_LIBS})
+target_link_libraries(tokenizer ${CU_TOK_LIBS} rmm)
+target_include_directories(tokenizer
+    PRIVATE
+    ./include)
+
 
 add_dependencies(clx gen_cuda_header)
 

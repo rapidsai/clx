@@ -7,6 +7,18 @@
 #include "tokenizer_utils.cuh"
 #include "tokenizers.cuh"
 
+#include <cuda_runtime.h>
+#include <thrust/device_vector.h>
+#include <thrust/for_each.h>
+#include <thrust/extrema.h>
+#include <thrust/remove.h>
+#include <thrust/sequence.h>
+#include <thrust/sort.h>
+#include <thrust/unique.h>
+#include <thrust/transform_scan.h>
+#include <rmm/rmm.h>
+#include <rmm/thrust_rmm_allocator.h>
+
 #define SORT_BIT 22
 #define THREADS_PER_BLOCK 64
 
@@ -169,18 +181,28 @@ void flatten_sentences(const std::vector<std::string>& sentences,
 GpuBasicTokenizer::GpuBasicTokenizer(uint32_t max_num_sentences, uint32_t max_num_chars, bool do_lower_case):
   do_lower_case(do_lower_case), device_cp_metadata(nullptr), device_aux_table(nullptr) {
   transfer_cp_data_to_device(&device_cp_metadata, &device_aux_table);
-  assertCudaSuccess(cudaMalloc(&device_sentence_offsets, sizeof(*device_sentence_offsets) * max_num_sentences + 1));
-  assertCudaSuccess(cudaMalloc(&device_sentences, sizeof(*device_sentences) * max_num_chars));
+
+  auto execpol = rmm::exec_policy(0);
+  //assertCudaSuccess(cudaMalloc(&device_sentence_offsets, sizeof(*device_sentence_offsets) * max_num_sentences + 1));
+  //const size_t device_sentence_offsets_size = sizeof(*device_sentence_offsets) * max_num_sentences + 1;
+  rmm::device_vector<uint32_t> device_sentence_offsets(max_num_sentences + 1,0);
+  
+  //assertCudaSuccess(cudaMalloc(&device_sentences, sizeof(*device_sentences) * max_num_chars));
+  //const size_t device_sentences_size = sizeof(*device_sentences) * max_num_chars;
+  rmm::device_vector<char> device_sentences(max_num_chars,0);
 
   size_t max_BLOCKS = (max_num_chars + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK;
   size_t max_threads_on_device = max_BLOCKS * THREADS_PER_BLOCK;
 
   const size_t max_new_char_total = MAX_NEW_CHARS * max_threads_on_device;
-  const size_t device_code_points_size = sizeof(*device_code_points) * max_new_char_total;
-  assertCudaSuccess(cudaMalloc(&device_code_points, device_code_points_size));
 
-  const size_t device_chars_per_thread_size = sizeof(*device_chars_per_thread) * max_threads_on_device;
-  assertCudaSuccess(cudaMalloc(&device_chars_per_thread, device_chars_per_thread_size));
+  //assertCudaSuccess(cudaMalloc(&device_code_points, device_code_points_size));
+  rmm::device_vector<uint32_t> device_code_points(max_new_char_total,0);
+
+  //const size_t device_chars_per_thread_size = sizeof(*device_chars_per_thread) * max_threads_on_device;
+  //assertCudaSuccess(cudaMalloc(&device_chars_per_thread, device_chars_per_thread_size));
+  rmm::device_vector<uint32_t> device_chars_per_thread(max_threads_on_device,0);
+
 
   // Determine temporary device storage requirements for cub
   size_t temp_storage_scan_bytes = 0;
@@ -191,9 +213,13 @@ GpuBasicTokenizer::GpuBasicTokenizer(uint32_t max_num_sentences, uint32_t max_nu
   cub::DeviceSelect::If(nullptr, temp_storage_select_bytes, device_code_points, device_code_points, 
                         device_num_selected, max_new_char_total, select_op);
   max_cub_storage_bytes = std::max(temp_storage_scan_bytes, temp_storage_select_bytes);
-  assertCudaSuccess(cudaMalloc(&cub_temp_storage, max_cub_storage_bytes));
+  //assertCudaSuccess(cudaMalloc(&cub_temp_storage, max_cub_storage_bytes));
+  //???
+  rmm::device_vector<size_t> cub_temp_storage(max_cub_storage_bytes, 0)
+  
   const size_t device_num_selected_size = sizeof(*device_num_selected);
-  assertCudaSuccess(cudaMalloc(&device_num_selected, device_num_selected_size));
+  //assertCudaSuccess(cudaMalloc(&device_num_selected, device_num_selected_size));
+  rmm::device_vector<size_t> device_num_selected(device_num_selected, 0)
 }
 
 
@@ -300,12 +326,12 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
 }
 
 GpuBasicTokenizer::~GpuBasicTokenizer() {
-  assertCudaSuccess(cudaFree(device_aux_table));
-  assertCudaSuccess(cudaFree(device_cp_metadata));
-  assertCudaSuccess(cudaFree(device_sentences));
-  assertCudaSuccess(cudaFree(device_sentence_offsets));
-  assertCudaSuccess(cudaFree(device_code_points));
-  assertCudaSuccess(cudaFree(device_chars_per_thread));
-  assertCudaSuccess(cudaFree(device_num_selected));
-  assertCudaSuccess(cudaFree(cub_temp_storage));
+//  assertCudaSuccess(cudaFree(device_aux_table));
+//  assertCudaSuccess(cudaFree(device_cp_metadata));
+//  assertCudaSuccess(cudaFree(device_sentences));
+//  assertCudaSuccess(cudaFree(device_sentence_offsets));
+//  assertCudaSuccess(cudaFree(device_code_points));
+//  assertCudaSuccess(cudaFree(device_chars_per_thread));
+//  assertCudaSuccess(cudaFree(device_num_selected));
+//  assertCudaSuccess(cudaFree(cub_temp_storage));
 }
