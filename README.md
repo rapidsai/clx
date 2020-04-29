@@ -180,4 +180,4 @@ conda install -c rapidsai-nightly -c nvidia -c pytorch -c conda-forge -c default
 
 ## Building from Source and Contributing
 
-For contributing guildelines please reference our [guide for contributing](https://github.com/rapidsai/clx/blob/master/CONTRIBUTING.md).
+For contributing guildelines please reference our [guide for contributing](CONTRIBUTING.md).
