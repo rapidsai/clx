@@ -3,6 +3,7 @@
 ## New Features
 - PR #141 CUDA BERT Tokenizer
 - PR #152 Local gpuCI build script
+- PR #133 Phishing detection using BERT
 
 ## Improvements
 - PR #149 Add Versioneer
