@@ -71,76 +71,6 @@ for rule in alerts_per_day_piv.columns:
 
 ```
 
-## Installation
-CLX is available in a Docker container, by building from source, and through Conda installation. There are multiple ways to start the CLX container, depending on if you want a container with only RAPIDS and CLX or you want multiple contianers to run that enable SIEM integration and data ingest.
-
-### Docker Container without SIEM Integration
-
-#### Install via CLX Docker Container
-
-Prerequisites
-
-* NVIDIA Pascal™ GPU architecture or better
-* CUDA 9.2 or 10.0 compatible NVIDIA driver
-* Ubuntu 16.04/18.04 or CentOS 7
-* Docker CE v18+
-* nvidia-docker v2+
-
-Pull the RAPIDS image suitable to your environment and build CLX image.
-
-```aidl
-docker pull rapidsai/rapidsai-dev-nightly:0.12-cuda9.2-devel-ubuntu18.04-py3.7
-docker build --build-arg image=rapidsai/rapidsai-dev-nightly:0.12-cuda9.2-devel-ubuntu18.04-py3.7 -t clx:latest .
-```
-
-Now start the container and the notebook server. There are multiple ways to do this, depending on what version of Docker you have.
-
-##### Preferred - Docker CE v19+ and nvidia-container-toolkit
-```aidl
-docker run  --gpus '"device=0"' \
-  --rm -d \
-  -p 8888:8888 \
-  -p 8787:8787 \
-  -p 8686:8686 \
-  clx:latest
-```
-
-##### Legacy - Docker CE v18 and nvidia-docker2
-```aidl
-docker run --runtime=nvidia \
-  --rm -d \
-  -p 8888:8888 \
-  -p 8787:8787 \
-  -p 8686:8686 \
-  clx:latest
-```
-
-### Docker Container with SIEM Integration
-
-If you want a CLX container with SIEM integration (including data ingest), follow the steps above to pull and build the CLX container. Then use `docker-compose` to start multiple containers running CLX, Kafka, and Zookeeper. 
-
-```aidl
-docker-compose up
-```
-
-### Install from Source
-You can install CLX from source on an existing RAPIDS container. A RAPIDS image suitable for your environment can be pulled from [https://hub.docker.com/r/rapidsai/rapidsai/](https://hub.docker.com/r/rapidsai/rapidsai/).
-
-```aidl
-# Run tests
-pip install pytest
-pytest
-
-# Build and install
-python setup.py install
-```
-### Conda Install 
-You can conda install CLX on an existing RAPIDS container. A RAPIDS image suitable for your environment can be pulled from [https://hub.docker.com/r/rapidsai/rapidsai/](https://hub.docker.com/r/rapidsai/rapidsai/). 
-
-```
-conda install -c rapidsai-nightly -c rapidsai -c nvidia -c pytorch -c conda-forge -c defaults clx
-```
-
 ## Getting Started With Workflows
 
 In addition to traditional Python files and Jupyter notebooks, CLX also includes structure in the form of a workflow. A workflow is a series of data transformations performed on a [GPU dataframe](https://github.com/rapidsai/cudf) that contains raw cyber data, with the goal of surfacing meaningful cyber analytical output. Multiple I/O methods are available, including Kafka and on-disk file stores.
@@ -172,6 +102,82 @@ wf.run_workflow()
 For additional examples, browse our complete [API documentation](https://rapidsai.github.io/clx/), or check out our more detailed [notebooks](https://github.com/rapidsai/clx/tree/master/notebooks).
 
 
-## Contributing
 
-For contributing guildelines please reference our [guide for contributing](https://github.com/rapidsai/clx/blob/master/CONTRIBUTING.md).
+## Getting CLX
+### Intro
+There are 3 ways to get CLX :
+1. [Quick Start with CLX Docker Container](#quick)
+1. [Conda Installation](#conda)
+1. [Build from Source](#source)
+
+<a name="quick"></a>
+
+## Quick Start Docker Container
+
+Prerequisites
+
+* NVIDIA Pascal™ GPU architecture or better
+* CUDA 10.0+ compatible NVIDIA driver
+* Ubuntu 16.04/18.04 or CentOS 7
+* Docker CE v18+
+* nvidia-docker v2+
+
+Pull the RAPIDS image suitable to your environment and build CLX image.
+
+```aidl
+docker pull rapidsai/rapidsai-dev-nightly:0.14-cuda10.1-devel-ubuntu18.04-py3.7
+docker build --build-arg image=rapidsai/rapidsai-dev-nightly:0.14-cuda10.1-devel-ubuntu18.04-py3.7 -t clx:latest .
+```
+
+### Docker Container without SIEM Integration
+
+Start the container and the notebook server. There are multiple ways to do this, depending on what version of Docker you have.
+
+#### Preferred - Docker CE v19+ and nvidia-container-toolkit
+```aidl
+docker run  --gpus '"device=0"' \
+  --rm -d \
+  -p 8888:8888 \
+  -p 8787:8787 \
+  -p 8686:8686 \
+  clx:latest
+```
+
+#### Legacy - Docker CE v18 and nvidia-docker2
+```aidl
+docker run --runtime=nvidia \
+  --rm -d \
+  -p 8888:8888 \
+  -p 8787:8787 \
+  -p 8686:8686 \
+  clx:latest
+```
+
+### Docker Container with SIEM Integration
+
+If you want a CLX container with SIEM integration (including data ingest), follow the steps above to build the CLX image. Then use `docker-compose` to start multiple containers running CLX, Kafka, and Zookeeper. 
+
+```aidl
+docker-compose up
+```
+
+
+
+<a name="conda"></a>
+
+## Conda Install 
+It is easy to install CLX using conda. You can get a minimal conda installation with Miniconda or get the full installation with Anaconda.
+
+Install and update CLX using the conda command:
+
+```
+conda install -c rapidsai-nightly -c nvidia -c pytorch -c conda-forge -c defaults clx
+```
+
+
+
+<a name="source"></a>
+
+## Building from Source and Contributing
+
+For contributing guildelines please reference our [guide for contributing](CONTRIBUTING.md).

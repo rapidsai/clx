@@ -12,6 +12,9 @@ Analytics
 .. autoclass:: clx.analytics.dga_detector.DGADetector
     :members:
 
+.. autoclass:: clx.analytics.phishing_detector.PhishingDetector
+    :members:
+
 .. autoclass:: clx.analytics.model.rnn_classifier.RNNClassifier
     :members:
 

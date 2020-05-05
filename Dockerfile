@@ -15,7 +15,7 @@ RUN apt update -y --fix-missing && \
     apt install -y vim
 
 RUN source activate rapids \
-    && conda install -c pytorch pytorch==1.3.1 torchvision=0.4.2 datashader>=0.10.* panel=0.6.* geopandas>=0.6.* pyppeteer s3fs \
+    && conda install -c pytorch pytorch==1.3.1 torchvision=0.4.2 datashader>=0.10.* panel=0.6.* geopandas>=0.6.* pyppeteer s3fs ipywidgets \
     && pip install "git+https://github.com/rapidsai/cudatashader.git"
 
 # libclx build/install
