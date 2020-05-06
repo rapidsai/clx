@@ -4,6 +4,10 @@
 #include <stdint.h>
 #include <string>
 
+#include <thrust/device_vector.h>
+#include <rmm/rmm.h>
+#include <rmm/thrust_rmm_allocator.h>
+
 template<typename T>
 struct ptr_length_pair 
 {
@@ -102,6 +106,7 @@ class GpuBasicTokenizer {
     
     unsigned char* device_sentences;
     uint32_t* device_sentence_offsets;
+    rmm::device_vector<uint32_t> a_device_sentence_offsets{};
     uint32_t* device_code_points;
     uint32_t* device_chars_per_thread;
     
@@ -186,7 +191,8 @@ class GpuWordPieceTokenizer {
     uint64_t* device_bin_coefficients;
     uint16_t* device_bin_offsets;
 
-    uint32_t* device_token_ids;
+    //uint32_t* device_token_ids;
+    rmm::device_vector<uint32_t> device_token_ids{};
     uint32_t* device_word_indices;
     uint8_t* device_tokens_per_word;
 

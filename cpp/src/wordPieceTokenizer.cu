@@ -280,7 +280,8 @@ __global__ void gpuWordPieceTokenizer(uint32_t* code_points, uint64_t* hash_tabl
 // ---------------------------------------- Word Piece tokenizer definitions ------------------------------------------------------
 // See tokenizers.cuh
 GpuWordPieceTokenizer::GpuWordPieceTokenizer(std::string vocab_file, uint32_t max_num_chars, uint32_t max_inp_chars_per_word): 
-device_hash_table(nullptr), device_bin_coefficients(nullptr), device_bin_offsets(nullptr) {
+device_hash_table(nullptr), device_bin_coefficients(nullptr), device_bin_offsets(nullptr),
+device_token_ids{} {
 
   transfer_hash_info_to_device(vocab_file, &device_hash_table, &device_bin_coefficients, &device_bin_offsets,
                                unk_token_id, first_tok_id, sep_tok_id, outer_hash_a_param, outer_hash_b_param,
@@ -289,8 +290,8 @@ device_hash_table(nullptr), device_bin_coefficients(nullptr), device_bin_offsets
   max_word_length = max_inp_chars_per_word;
   
   const size_t max_new_char_total = MAX_NEW_CHARS * max_num_chars;
-  assertCudaSuccess(cudaMalloc(&device_token_ids, sizeof(*device_token_ids) * max_new_char_total));
-
+  //assertCudaSuccess(cudaMalloc(&device_token_ids, sizeof(*device_token_ids) * max_new_char_total));
+  device_token_ids.resize(max_new_char_total);
   const size_t device_word_indices_bytes = sizeof(*device_word_indices) * 2 * max_new_char_total;
   assertCudaSuccess(cudaMalloc(&device_word_indices, device_word_indices_bytes));
 
@@ -334,7 +335,7 @@ void GpuWordPieceTokenizer::tokenize(ptr_length_pair<uint32_t*>& cp_and_length,
   constexpr uint32_t threads_per_block = 64;
   uint32_t num_blocks = (total_threads + threads_per_block - 1) / threads_per_block;  
   init_data_and_mark_word_start_and_ends<<<num_blocks, threads_per_block>>>(device_code_points, device_start_word_indices, device_end_word_indices, 
-                                                                            num_code_points, device_token_ids, device_tokens_per_word);
+                                                                            num_code_points, thrust::raw_pointer_cast(device_token_ids.data()), device_tokens_per_word);
   assertCudaSuccess(cudaPeekAtLastError());  
 
   uint32_t word_split_blocks = (num_sentences + threads_per_block - 1) / threads_per_block;                                                              
@@ -360,14 +361,14 @@ void GpuWordPieceTokenizer::tokenize(ptr_length_pair<uint32_t*>& cp_and_length,
   const uint32_t wp_threads_per_block = 64;
   const uint32_t num_wp_blocks = (num_words + wp_threads_per_block - 1) / wp_threads_per_block;
   gpuWordPieceTokenizer<<<num_wp_blocks, wp_threads_per_block>>>(device_code_points, device_hash_table, device_bin_coefficients, device_bin_offsets, 
-                                                                 device_token_ids, device_start_word_indices, device_end_word_indices, device_tokens_per_word, 
+    thrust::raw_pointer_cast(device_token_ids.data()), device_start_word_indices, device_end_word_indices, device_tokens_per_word, 
                                                                  unk_token_id, max_word_length, num_words, outer_hash_a_param, outer_hash_b_param, num_outer_bins);
   assertCudaSuccess(cudaPeekAtLastError());  
   
   // Repurpose the input array for the token ids. In the worst case, each code point ends up being a token so this will
   // always have enough memory to store the contiguous tokens.
   uint32_t* contiguous_token_ids = device_code_points;
-  cub::DeviceSelect::If(cub_temp_storage, max_cub_storage_bytes, device_token_ids, contiguous_token_ids, device_num_selected, num_code_points, select_op);
+  cub::DeviceSelect::If(cub_temp_storage, max_cub_storage_bytes, thrust::raw_pointer_cast(device_token_ids.data()), contiguous_token_ids, device_num_selected, num_code_points, select_op);
   assertCudaSuccess(cudaPeekAtLastError());  
   
   // Repurpose start word indices since it is the same size and type as the required output.
@@ -395,7 +396,7 @@ GpuWordPieceTokenizer::~GpuWordPieceTokenizer() {
   assertCudaSuccess(cudaFree(device_bin_coefficients));
   assertCudaSuccess(cudaFree(device_bin_offsets));
 
-  assertCudaSuccess(cudaFree(device_token_ids));
+  //assertCudaSuccess(cudaFree(device_token_ids));
   assertCudaSuccess(cudaFree(device_word_indices));
   assertCudaSuccess(cudaFree(device_tokens_per_word));
   assertCudaSuccess(cudaFree(cub_temp_storage));
