@@ -69,7 +69,7 @@ add_library(clx SHARED
   src/main.cu
 )
 
-target_link_libraries(clx nvToolsExt)
+target_link_libraries(clx nvToolsExt rmm)
 
 add_executable(tokenizer
   src/main.cu
@@ -84,7 +84,6 @@ target_link_libraries(tokenizer ${CU_TOK_LIBS} rmm)
 target_include_directories(tokenizer
     PRIVATE
     ./include)
-
 
 add_dependencies(clx gen_cuda_header)
 
