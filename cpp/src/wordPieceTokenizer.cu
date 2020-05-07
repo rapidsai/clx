@@ -282,7 +282,8 @@ __global__ void gpuWordPieceTokenizer(uint32_t* code_points, uint64_t* hash_tabl
 GpuWordPieceTokenizer::GpuWordPieceTokenizer(std::string vocab_file, uint32_t max_num_chars, uint32_t max_inp_chars_per_word): 
 device_hash_table(nullptr), device_bin_coefficients(nullptr), device_bin_offsets(nullptr),
 device_token_ids{},
-device_word_indices{} {
+device_word_indices{},
+device_tokens_per_word{} {
 
   transfer_hash_info_to_device(vocab_file, &device_hash_table, &device_bin_coefficients, &device_bin_offsets,
                                unk_token_id, first_tok_id, sep_tok_id, outer_hash_a_param, outer_hash_b_param,
@@ -299,15 +300,16 @@ device_word_indices{} {
 
   const size_t four_byte_cp_chunks = 1 + (max_new_char_total - 1) / sizeof(uint32_t);
   const size_t rounded_num_cps = sizeof(uint32_t) * four_byte_cp_chunks;
-  const size_t tokens_per_word_bytes = sizeof(*device_tokens_per_word) * rounded_num_cps; 
-  assertCudaSuccess(cudaMalloc(&device_tokens_per_word, tokens_per_word_bytes));
+  //const size_t tokens_per_word_bytes = sizeof(*device_tokens_per_word) * rounded_num_cps; 
+  //assertCudaSuccess(cudaMalloc(&device_tokens_per_word, tokens_per_word_bytes));
+  device_tokens_per_word.resize(rounded_num_cps);
 
   // Determine temporary device storage requirements for cub
   static NotEqual select_op(std::numeric_limits<uint32_t>::max());
   size_t temp_storage_bytes = 0, temp_storage_bytes_2 = 0;
   cub::DeviceSelect::If(nullptr, temp_storage_bytes, thrust::raw_pointer_cast(device_word_indices.data()), thrust::raw_pointer_cast(device_word_indices.data()), 
                         device_num_selected, 2*max_new_char_total, select_op);
-  cub::DeviceScan::InclusiveSum(nullptr, temp_storage_bytes_2, device_tokens_per_word, 
+  cub::DeviceScan::InclusiveSum(nullptr, temp_storage_bytes_2, thrust::raw_pointer_cast(device_tokens_per_word.data()), 
                         thrust::raw_pointer_cast(device_word_indices.data()), max_new_char_total);
   max_cub_storage_bytes = std::max(temp_storage_bytes, temp_storage_bytes_2);
   assertCudaSuccess(cudaMalloc(&cub_temp_storage, max_cub_storage_bytes));
@@ -338,7 +340,7 @@ void GpuWordPieceTokenizer::tokenize(ptr_length_pair<uint32_t*>& cp_and_length,
   constexpr uint32_t threads_per_block = 64;
   uint32_t num_blocks = (total_threads + threads_per_block - 1) / threads_per_block;  
   init_data_and_mark_word_start_and_ends<<<num_blocks, threads_per_block>>>(device_code_points, device_start_word_indices, device_end_word_indices, 
-                                                                            num_code_points, thrust::raw_pointer_cast(device_token_ids.data()), device_tokens_per_word);
+                                                                            num_code_points, thrust::raw_pointer_cast(device_token_ids.data()), thrust::raw_pointer_cast(device_tokens_per_word.data()));
   assertCudaSuccess(cudaPeekAtLastError());  
 
   uint32_t word_split_blocks = (num_sentences + threads_per_block - 1) / threads_per_block;                                                              
@@ -364,7 +366,7 @@ void GpuWordPieceTokenizer::tokenize(ptr_length_pair<uint32_t*>& cp_and_length,
   const uint32_t wp_threads_per_block = 64;
   const uint32_t num_wp_blocks = (num_words + wp_threads_per_block - 1) / wp_threads_per_block;
   gpuWordPieceTokenizer<<<num_wp_blocks, wp_threads_per_block>>>(device_code_points, device_hash_table, device_bin_coefficients, device_bin_offsets, 
-    thrust::raw_pointer_cast(device_token_ids.data()), device_start_word_indices, device_end_word_indices, device_tokens_per_word, 
+    thrust::raw_pointer_cast(device_token_ids.data()), device_start_word_indices, device_end_word_indices, thrust::raw_pointer_cast(device_tokens_per_word.data()), 
                                                                  unk_token_id, max_word_length, num_words, outer_hash_a_param, outer_hash_b_param, num_outer_bins);
   assertCudaSuccess(cudaPeekAtLastError());  
   
@@ -377,7 +379,7 @@ void GpuWordPieceTokenizer::tokenize(ptr_length_pair<uint32_t*>& cp_and_length,
   // Repurpose start word indices since it is the same size and type as the required output.
   uint32_t* token_id_counts = device_start_word_indices;
   device_start_word_indices = nullptr;
-  cub::DeviceScan::InclusiveSum(cub_temp_storage, max_cub_storage_bytes, device_tokens_per_word, token_id_counts, num_code_points);
+  cub::DeviceScan::InclusiveSum(cub_temp_storage, max_cub_storage_bytes, thrust::raw_pointer_cast(device_tokens_per_word.data()), token_id_counts, num_code_points);
   assertCudaSuccess(cudaPeekAtLastError());  
 
   constexpr uint16_t sen_update_num_threads = 64;       
@@ -401,7 +403,7 @@ GpuWordPieceTokenizer::~GpuWordPieceTokenizer() {
 
   //assertCudaSuccess(cudaFree(device_token_ids));
   //assertCudaSuccess(cudaFree(device_word_indices));
-  assertCudaSuccess(cudaFree(device_tokens_per_word));
+  //assertCudaSuccess(cudaFree(device_tokens_per_word));
   assertCudaSuccess(cudaFree(cub_temp_storage));
   assertCudaSuccess(cudaFree(device_num_selected));
 }

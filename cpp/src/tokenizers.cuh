@@ -193,7 +193,8 @@ class GpuWordPieceTokenizer {
     rmm::device_vector<uint32_t> device_token_ids{};
     //uint32_t* device_word_indices;
     rmm::device_vector<uint32_t> device_word_indices;
-    uint8_t* device_tokens_per_word;
+    //uint8_t* device_tokens_per_word;
+    rmm::device_vector<uint8_t> device_tokens_per_word;
 
     void* cub_temp_storage;
     uint32_t* device_num_selected;
