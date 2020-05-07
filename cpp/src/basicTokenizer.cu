@@ -7,18 +7,6 @@
 #include "tokenizer_utils.cuh"
 #include "tokenizers.cuh"
 
-#include <cuda_runtime.h>
-#include <thrust/device_vector.h>
-#include <thrust/for_each.h>
-#include <thrust/extrema.h>
-#include <thrust/remove.h>
-#include <thrust/sequence.h>
-#include <thrust/sort.h>
-#include <thrust/unique.h>
-#include <thrust/transform_scan.h>
-#include <rmm/rmm.h>
-#include <rmm/thrust_rmm_allocator.h>
-
 #define SORT_BIT 22
 #define THREADS_PER_BLOCK 64
 
@@ -207,7 +195,6 @@ GpuBasicTokenizer::GpuBasicTokenizer(uint32_t max_num_sentences, uint32_t max_nu
   const size_t device_num_selected_size = sizeof(*device_num_selected);
   assertCudaSuccess(cudaMalloc(&device_num_selected, device_num_selected_size));
 }
-
 
 
 
