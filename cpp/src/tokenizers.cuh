@@ -190,9 +190,9 @@ class GpuWordPieceTokenizer {
     uint64_t* device_bin_coefficients;
     uint16_t* device_bin_offsets;
 
-    //uint32_t* device_token_ids;
     rmm::device_vector<uint32_t> device_token_ids{};
-    uint32_t* device_word_indices;
+    //uint32_t* device_word_indices;
+    rmm::device_vector<uint32_t> device_word_indices;
     uint8_t* device_tokens_per_word;
 
     void* cub_temp_storage;
