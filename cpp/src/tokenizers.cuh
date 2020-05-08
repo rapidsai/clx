@@ -308,7 +308,8 @@ class GpuFullTokenizer {
     GpuWordPieceTokenizer word_piece_tokenizer;
     
     uint32_t nrows_tensor_tokenIDS;
-    uint32_t* tensor_tokenIDS; // on device
+    //uint32_t* tensor_tokenIDS; // on device
+    rmm::device_vector<uint32_t> tensor_tokenIDS;
     uint32_t* attention_mask; // on device
     uint32_t* metadata; // on device (one row per tensor row, with 3 elements [rowID, starting_pos, stop_pos])
 
