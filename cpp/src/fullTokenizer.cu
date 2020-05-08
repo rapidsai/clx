@@ -87,13 +87,14 @@ GpuFullTokenizer::GpuFullTokenizer( std::string vocab_file,
   tensor_tokenIDS(max_rows_final_tensor*max_sequence_length),
   attention_mask(max_rows_final_tensor),
   metadata(max_rows_final_tensor*3),
-  device_row2log(max_rows_final_tensor) {
+  device_row2log(max_rows_final_tensor),
+  device_row2row_within_log(max_rows_final_tensor) {
   
   //cudaMalloc(&tensor_tokenIDS, max_rows_final_tensor*max_sequence_length*sizeof(uint32_t));
   //cudaMalloc(&attention_mask, max_rows_final_tensor*max_sequence_length*sizeof(uint32_t));
   //cudaMalloc(&metadata, max_rows_final_tensor*3*sizeof(uint32_t));
   //cudaMalloc(&device_row2log, max_rows_final_tensor*sizeof(uint32_t));
-  cudaMalloc(&device_row2row_within_log, max_rows_final_tensor*sizeof(uint32_t));
+  //cudaMalloc(&device_row2row_within_log, max_rows_final_tensor*sizeof(uint32_t));
 }
 
 
@@ -143,12 +144,15 @@ void GpuFullTokenizer::tokenize(const std::vector<std::string>& sentences) {
   device_row2log.resize(nrows_tensor_tokenIDS);
   //cudaMemcpy(device_row2log, host_row2log.data(), nrows_tensor_tokenIDS*sizeof(uint32_t), cudaMemcpyHostToDevice);
   thrust::copy(host_row2log.begin(), host_row2log.end(), device_row2log.begin());
-  cudaMemcpy(device_row2row_within_log, host_row2row_within_log.data(), nrows_tensor_tokenIDS*sizeof(uint32_t), cudaMemcpyHostToDevice);
+  device_row2row_within_log.resize(nrows_tensor_tokenIDS);
+  //cudaMemcpy(device_row2row_within_log, host_row2row_within_log.data(), nrows_tensor_tokenIDS*sizeof(uint32_t), cudaMemcpyHostToDevice);
+  thrust::copy(host_row2row_within_log.begin(), host_row2row_within_log.end(), device_row2row_within_log.begin());
 
   // compute final-tensor, mask, and metadata
   compute_tensor_metadata_kernel<<<nrows_tensor_tokenIDS, max_sequence_length>>>
                                 (device_token_ids, device_offsets,
-                                thrust::raw_pointer_cast(device_row2log.data()), device_row2row_within_log,
+                                thrust::raw_pointer_cast(device_row2log.data()), 
+                                thrust::raw_pointer_cast(device_row2row_within_log.data()),
                                 max_sequence_length, stride, do_truncate,
                                 thrust::raw_pointer_cast(tensor_tokenIDS.data()), thrust::raw_pointer_cast(attention_mask.data()), thrust::raw_pointer_cast(metadata.data()));
 }
@@ -198,12 +202,15 @@ void GpuFullTokenizer::tokenize(const char* device_sentences, uint32_t* offsets,
   device_row2log.resize(nrows_tensor_tokenIDS);
   //cudaMemcpy(device_row2log, host_row2log.data(), nrows_tensor_tokenIDS*sizeof(uint32_t), cudaMemcpyHostToDevice);
   thrust::copy(host_row2log.begin(), host_row2log.end(), device_row2log.begin());
-  cudaMemcpy(device_row2row_within_log, host_row2row_within_log.data(), nrows_tensor_tokenIDS*sizeof(uint32_t), cudaMemcpyHostToDevice);
+  device_row2row_within_log.resize(nrows_tensor_tokenIDS);
+  //cudaMemcpy(device_row2row_within_log, host_row2row_within_log.data(), nrows_tensor_tokenIDS*sizeof(uint32_t), cudaMemcpyHostToDevice);
+  thrust::copy(host_row2row_within_log.begin(), host_row2row_within_log.end(), device_row2row_within_log.begin());
 
   // compute final-tensor, mask, and metadata
   compute_tensor_metadata_kernel<<<nrows_tensor_tokenIDS, max_sequence_length>>>
                                 (device_token_ids, device_offsets,
-                                thrust::raw_pointer_cast(device_row2log.data()), device_row2row_within_log,
+                                thrust::raw_pointer_cast(device_row2log.data()), 
+                                thrust::raw_pointer_cast(device_row2row_within_log.data()),
                                 max_sequence_length, stride, do_truncate,
                                 thrust::raw_pointer_cast(tensor_tokenIDS.data()), thrust::raw_pointer_cast(attention_mask.data()), thrust::raw_pointer_cast(metadata.data()));
 }
@@ -233,5 +240,5 @@ GpuFullTokenizer::~GpuFullTokenizer() {
   //assertCudaSuccess(cudaFree(attention_mask));
   //assertCudaSuccess(cudaFree(metadata));
   //assertCudaSuccess(cudaFree(device_row2log));
-  assertCudaSuccess(cudaFree(device_row2row_within_log));
+  //assertCudaSuccess(cudaFree(device_row2row_within_log));
  }
