@@ -311,7 +311,7 @@ class GpuFullTokenizer {
     //uint32_t* tensor_tokenIDS; // on device
     rmm::device_vector<uint32_t> tensor_tokenIDS;
     rmm::device_vector<uint32_t> attention_mask; // on device
-    uint32_t* metadata; // on device (one row per tensor row, with 3 elements [rowID, starting_pos, stop_pos])
+    rmm::device_vector<uint32_t> metadata; // on device (one row per tensor row, with 3 elements [rowID, starting_pos, stop_pos])
 
     // correspondence between each row of tensor_tokenIDS and log_id
     uint32_t* device_row2log;
