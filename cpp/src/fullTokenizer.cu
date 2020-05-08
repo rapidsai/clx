@@ -84,10 +84,11 @@ GpuFullTokenizer::GpuFullTokenizer( std::string vocab_file,
   max_sequence_length(max_sequence_length), stride(stride), do_truncate(do_truncate),
   basic_tokenizer(max_num_sentences, max_num_chars, do_lower_case), 
   word_piece_tokenizer(vocab_file, max_num_chars, max_inp_chars_per_word),
-  tensor_tokenIDS(max_rows_final_tensor*max_sequence_length) {
+  tensor_tokenIDS(max_rows_final_tensor*max_sequence_length),
+  attention_mask(max_rows_final_tensor) {
   
   //cudaMalloc(&tensor_tokenIDS, max_rows_final_tensor*max_sequence_length*sizeof(uint32_t));
-  cudaMalloc(&attention_mask, max_rows_final_tensor*max_sequence_length*sizeof(uint32_t));
+  //cudaMalloc(&attention_mask, max_rows_final_tensor*max_sequence_length*sizeof(uint32_t));
   cudaMalloc(&metadata, max_rows_final_tensor*3*sizeof(uint32_t));
   cudaMalloc(&device_row2log, max_rows_final_tensor*sizeof(uint32_t));
   cudaMalloc(&device_row2row_within_log, max_rows_final_tensor*sizeof(uint32_t));
@@ -145,7 +146,7 @@ void GpuFullTokenizer::tokenize(const std::vector<std::string>& sentences) {
                                 (device_token_ids, device_offsets,
                                 device_row2log, device_row2row_within_log,
                                 max_sequence_length, stride, do_truncate,
-                                thrust::raw_pointer_cast(tensor_tokenIDS.data()), attention_mask, metadata);
+                                thrust::raw_pointer_cast(tensor_tokenIDS.data()), thrust::raw_pointer_cast(attention_mask.data()), metadata);
 }
 
 void GpuFullTokenizer::tokenize(const char* device_sentences, uint32_t* offsets, uint32_t offset_size)  {
@@ -198,7 +199,7 @@ void GpuFullTokenizer::tokenize(const char* device_sentences, uint32_t* offsets,
                                 (device_token_ids, device_offsets,
                                 device_row2log, device_row2row_within_log,
                                 max_sequence_length, stride, do_truncate,
-                                thrust::raw_pointer_cast(tensor_tokenIDS.data()), attention_mask, metadata);
+                                thrust::raw_pointer_cast(tensor_tokenIDS.data()), thrust::raw_pointer_cast(attention_mask.data()), metadata);
 }
 
 
@@ -208,12 +209,12 @@ void GpuFullTokenizer::tokenize(const char* device_sentences, uint32_t* offsets,
     
 
  uint32_t* GpuFullTokenizer::get_tensor_tokenIDS(){
-  return thrust::raw_pointer_cast(tensor_tokenIDS.data());;
+  return thrust::raw_pointer_cast(tensor_tokenIDS.data());
  }
 
 
  uint32_t* GpuFullTokenizer::get_attention_mask(){
-   return attention_mask;
+   return thrust::raw_pointer_cast(attention_mask.data());
  }
 
 
@@ -223,7 +224,7 @@ void GpuFullTokenizer::tokenize(const char* device_sentences, uint32_t* offsets,
 
 GpuFullTokenizer::~GpuFullTokenizer() {
   //assertCudaSuccess(cudaFree(tensor_tokenIDS));
-  assertCudaSuccess(cudaFree(attention_mask));
+  //assertCudaSuccess(cudaFree(attention_mask));
   assertCudaSuccess(cudaFree(metadata));
   assertCudaSuccess(cudaFree(device_row2log));
   assertCudaSuccess(cudaFree(device_row2row_within_log));
