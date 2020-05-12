@@ -348,11 +348,13 @@ void GpuWordPieceTokenizer::tokenize(ptr_length_pair<uint32_t*>& cp_and_length,
   uint32_t num_blocks = (total_threads + threads_per_block - 1) / threads_per_block;  
   init_data_and_mark_word_start_and_ends<<<num_blocks, threads_per_block>>>(device_code_points, device_start_word_indices, device_end_word_indices, 
                                                                             num_code_points, thrust::raw_pointer_cast(device_token_ids.data()), thrust::raw_pointer_cast(device_tokens_per_word.data()));
+  assertCudaSuccess(cudaDeviceSynchronize());
   assertCudaSuccess(cudaPeekAtLastError());  
 
   uint32_t word_split_blocks = (num_sentences + threads_per_block - 1) / threads_per_block;                                                              
   mark_sentence_start_and_ends<<<word_split_blocks, threads_per_block>>>(device_code_points, device_sentence_offsets, device_start_word_indices, 
                                                                          device_end_word_indices, num_sentences);
+  assertCudaSuccess(cudaDeviceSynchronize());
   assertCudaSuccess(cudaPeekAtLastError());  
 
   // Now start_word_indices has the word starts scattered throughout the array. We need to select all values not equal to the max uint32_t 
@@ -376,6 +378,7 @@ void GpuWordPieceTokenizer::tokenize(ptr_length_pair<uint32_t*>& cp_and_length,
     thrust::raw_pointer_cast(device_bin_coefficients.data()), thrust::raw_pointer_cast(device_bin_offsets.data()), 
     thrust::raw_pointer_cast(device_token_ids.data()), device_start_word_indices, device_end_word_indices, thrust::raw_pointer_cast(device_tokens_per_word.data()), 
                                                                  unk_token_id, max_word_length, num_words, outer_hash_a_param, outer_hash_b_param, num_outer_bins);
+  assertCudaSuccess(cudaDeviceSynchronize());
   assertCudaSuccess(cudaPeekAtLastError());  
   
   // Repurpose the input array for the token ids. In the worst case, each code point ends up being a token so this will
@@ -393,6 +396,7 @@ void GpuWordPieceTokenizer::tokenize(ptr_length_pair<uint32_t*>& cp_and_length,
   constexpr uint16_t sen_update_num_threads = 64;       
   size_t SEN_KERNEL_BLOCKS = (num_sentences + sen_update_num_threads - 1) / sen_update_num_threads;                  
   update_sentence_lengths<<<SEN_KERNEL_BLOCKS, sen_update_num_threads>>>(device_sentence_offsets, token_id_counts, num_sentences);
+  assertCudaSuccess(cudaDeviceSynchronize());
   assertCudaSuccess(cudaPeekAtLastError());  
 
   // Grab total number of token ids from the device
