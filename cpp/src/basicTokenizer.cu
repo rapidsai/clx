@@ -167,10 +167,12 @@ void flatten_sentences(const std::vector<std::string>& sentences,
 // See tokenizers.cuh
 
 GpuBasicTokenizer::GpuBasicTokenizer(uint32_t max_num_sentences, uint32_t max_num_chars, bool do_lower_case):
-  do_lower_case(do_lower_case), device_cp_metadata(nullptr), device_aux_table(nullptr) {
+  do_lower_case(do_lower_case), device_cp_metadata(nullptr), device_aux_table(nullptr),
+  device_sentence_offsets(max_num_sentences + 1),
+  device_sentences(max_num_chars) {
   transfer_cp_data_to_device(&device_cp_metadata, &device_aux_table);
-  assertCudaSuccess(cudaMalloc(&device_sentence_offsets, sizeof(*device_sentence_offsets) * max_num_sentences + 1));
-  assertCudaSuccess(cudaMalloc(&device_sentences, sizeof(*device_sentences) * max_num_chars));
+  //assertCudaSuccess(cudaMalloc(&device_sentence_offsets, sizeof(*device_sentence_offsets) * max_num_sentences + 1));
+  //assertCudaSuccess(cudaMalloc(&device_sentences, sizeof(*device_sentences) * max_num_chars));
 
   size_t max_BLOCKS = (max_num_chars + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK;
   size_t max_threads_on_device = max_BLOCKS * THREADS_PER_BLOCK;
@@ -209,11 +211,18 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
   }
 
   size_t num_offsets = sentences.size() + 1;
+  std::vector<uint32_t> sentence_offsets(num_offsets);
+  std::vector<char> flattened_sentences(total_sentence_bytes);
+  flatten_sentences(sentences, flattened_sentences.data(), sentence_offsets.data());
+  device_sentence_offsets = sentence_offsets;
+  device_sentences = flattened_sentences; 
+
+  /*size_t num_offsets = sentences.size() + 1;
   uint32_t* sentence_offsets = new uint32_t[num_offsets];
   char* flattened_sentences = new char[total_sentence_bytes];
   flatten_sentences(sentences, flattened_sentences, sentence_offsets);
   assertCudaSuccess(cudaMemcpy(device_sentence_offsets, sentence_offsets, sizeof(*device_sentence_offsets) * num_offsets, cudaMemcpyHostToDevice));
-  assertCudaSuccess(cudaMemcpy(device_sentences, flattened_sentences, total_sentence_bytes, cudaMemcpyHostToDevice));
+  assertCudaSuccess(cudaMemcpy(device_sentences, flattened_sentences, total_sentence_bytes, cudaMemcpyHostToDevice));*/
 
   static NotEqual select_op((1 << SORT_BIT));
   
@@ -222,8 +231,8 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
   const size_t max_new_char_total = MAX_NEW_CHARS * BLOCKS * THREADS_PER_BLOCK;
   size_t threads_on_device = BLOCKS * THREADS_PER_BLOCK;
 
-  gpuBasicTokenizer<<<BLOCKS, THREADS_PER_BLOCK>>>(device_sentences, device_sentence_offsets, total_sentence_bytes, device_cp_metadata, device_aux_table, 
-                                                   device_code_points, device_chars_per_thread, do_lower_case, sentences.size()); 
+  gpuBasicTokenizer<<<BLOCKS, THREADS_PER_BLOCK>>>(device_sentences.data(), thrust::raw_pointer_cast(device_sentence_offsets.data()), total_sentence_bytes, device_cp_metadata, device_aux_table, 
+                                                   device_code_points, device_chars_per_thread, do_lower_case, sentences.size());
   assertCudaSuccess(cudaDeviceSynchronize());
   assertCudaSuccess(cudaPeekAtLastError());                                    
 
@@ -236,10 +245,11 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
 
   constexpr uint16_t SENTENCE_UPDATE_THREADS = 64;                              
   size_t SEN_KERNEL_BLOCKS = (sentences.size() + SENTENCE_UPDATE_THREADS - 1) / SENTENCE_UPDATE_THREADS;   
-  update_sentence_lengths<<<SEN_KERNEL_BLOCKS, SENTENCE_UPDATE_THREADS>>>(device_sentence_offsets, device_chars_per_thread, sentences.size());
+  update_sentence_lengths<<<SEN_KERNEL_BLOCKS, SENTENCE_UPDATE_THREADS>>>(thrust::raw_pointer_cast(device_sentence_offsets.data()), device_chars_per_thread, sentences.size());
+  assertCudaSuccess(cudaDeviceSynchronize())
   assertCudaSuccess(cudaPeekAtLastError());   
 
-  offset_and_length.gpu_ptr = device_sentence_offsets;
+  offset_and_length.gpu_ptr = thrust::raw_pointer_cast(device_sentence_offsets.data());
   offset_and_length.length = sentences.size() + 1;
 
   uint32_t num_chars = 0;
@@ -256,7 +266,8 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
   ptr_length_pair<uint32_t*> offset_and_length;
 
   size_t num_offsets = offset_size + 1;
-  uint32_t* sentence_offsets = new uint32_t[num_offsets];
+  //uint32_t* sentence_offsets = new uint32_t[num_offsets];
+  std::vector<uint32_t> sentence_offsets(num_offsets);
   uint32_t start_copy = 0;
   for(int i = 0; i < offset_size; ++i){
     sentence_offsets[i] = start_copy;
@@ -264,7 +275,9 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
   }
   sentence_offsets[offset_size] = start_copy;
 
-  assertCudaSuccess(cudaMemcpy(device_sentence_offsets, sentence_offsets, sizeof(*device_sentence_offsets) * num_offsets, cudaMemcpyHostToDevice));
+  device_sentence_offsets = sentence_offsets;
+
+  //assertCudaSuccess(cudaMemcpy(device_sentence_offsets, sentence_offsets, sizeof(*device_sentence_offsets) * num_offsets, cudaMemcpyHostToDevice));
 
   static NotEqual select_op((1 << SORT_BIT));
 
@@ -273,7 +286,7 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
   const size_t max_new_char_total = MAX_NEW_CHARS * BLOCKS * THREADS_PER_BLOCK;
   size_t threads_on_device = BLOCKS * THREADS_PER_BLOCK;
 
-  gpuBasicTokenizer<<<BLOCKS, THREADS_PER_BLOCK>>>((unsigned char*)device_sentences_, device_sentence_offsets, sentence_offsets[offset_size], device_cp_metadata, device_aux_table,
+  gpuBasicTokenizer<<<BLOCKS, THREADS_PER_BLOCK>>>((unsigned char*)device_sentences_, thrust::raw_pointer_cast(device_sentence_offsets.data()), sentence_offsets[offset_size], device_cp_metadata, device_aux_table,
                                                    device_code_points, device_chars_per_thread, do_lower_case, offset_size);
   assertCudaSuccess(cudaDeviceSynchronize());
   assertCudaSuccess(cudaPeekAtLastError());
@@ -287,10 +300,11 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
 
   constexpr uint16_t SENTENCE_UPDATE_THREADS = 64;
   size_t SEN_KERNEL_BLOCKS = (offset_size + SENTENCE_UPDATE_THREADS - 1) / SENTENCE_UPDATE_THREADS;
-  update_sentence_lengths<<<SEN_KERNEL_BLOCKS, SENTENCE_UPDATE_THREADS>>>(device_sentence_offsets, device_chars_per_thread, offset_size);
+  update_sentence_lengths<<<SEN_KERNEL_BLOCKS, SENTENCE_UPDATE_THREADS>>>(thrust::raw_pointer_cast(device_sentence_offsets.data()), device_chars_per_thread, offset_size);
+  assertCudaSuccess(cudaDeviceSynchronize())
   assertCudaSuccess(cudaPeekAtLastError());
 
-  offset_and_length.gpu_ptr = device_sentence_offsets;
+  offset_and_length.gpu_ptr = thrust::raw_pointer_cast(device_sentence_offsets.data());
   offset_and_length.length = offset_size + 1;
 
   uint32_t num_chars = 0;
@@ -304,8 +318,8 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
 GpuBasicTokenizer::~GpuBasicTokenizer() {
   assertCudaSuccess(cudaFree(device_aux_table));
   assertCudaSuccess(cudaFree(device_cp_metadata));
-  assertCudaSuccess(cudaFree(device_sentences));
-  assertCudaSuccess(cudaFree(device_sentence_offsets));
+  //assertCudaSuccess(cudaFree(device_sentences));
+  //assertCudaSuccess(cudaFree(device_sentence_offsets));
   assertCudaSuccess(cudaFree(device_code_points));
   assertCudaSuccess(cudaFree(device_chars_per_thread));
   assertCudaSuccess(cudaFree(device_num_selected));
