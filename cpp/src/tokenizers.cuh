@@ -101,10 +101,8 @@ class GpuBasicTokenizer {
     bool do_lower_case;
 
     // pointers to device data needed for tokenization
-    //uint32_t* device_cp_metadata;
-    rmm::device_vector<uint32_t> device_cp_metadata;
-    //uint64_t* device_aux_table;
-    rmm::device_vector<uint64_t> device_aux_table;
+    uint32_t* device_cp_metadata;
+    uint64_t* device_aux_table;
     
     unsigned char* device_sentences;
     uint32_t* device_sentence_offsets;
@@ -188,12 +186,9 @@ class GpuWordPieceTokenizer {
     unsigned int max_word_length;
 
     // pointers to device data needed for tokenization
-    //uint64_t* device_hash_table;
-    rmm::device_vector<uint64_t> device_hash_table;
-    //uint64_t* device_bin_coefficients;
-    rmm::device_vector<uint64_t> device_bin_coefficients;
-    //uint16_t* device_bin_offsets;
-    rmm::device_vector<uint16_t> device_bin_offsets;
+    uint64_t* device_hash_table;
+    uint64_t* device_bin_coefficients;
+    uint16_t* device_bin_offsets;
 
     rmm::device_vector<uint32_t> device_token_ids{};
     //uint32_t* device_word_indices;

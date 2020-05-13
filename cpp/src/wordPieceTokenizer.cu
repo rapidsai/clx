@@ -280,21 +280,14 @@ __global__ void gpuWordPieceTokenizer(uint32_t* code_points, uint64_t* hash_tabl
 // ---------------------------------------- Word Piece tokenizer definitions ------------------------------------------------------
 // See tokenizers.cuh
 GpuWordPieceTokenizer::GpuWordPieceTokenizer(std::string vocab_file, uint32_t max_num_chars, uint32_t max_inp_chars_per_word): 
-/*device_hash_table(nullptr), device_bin_coefficients(nullptr), device_bin_offsets(nullptr),*/
+device_hash_table(nullptr), device_bin_coefficients(nullptr), device_bin_offsets(nullptr),
 device_token_ids{},
 device_word_indices{},
-device_tokens_per_word{},
-device_hash_table{},
-device_bin_coefficients{},
-device_bin_offsets{}
- {
+device_tokens_per_word{} {
 
-  //transfer_hash_info_to_device(vocab_file, &device_hash_table, &device_bin_coefficients, &device_bin_offsets,
-  //                             unk_token_id, first_tok_id, sep_tok_id, outer_hash_a_param, outer_hash_b_param,
-  //                             num_outer_bins);
-  transfer_hash_info_to_device(vocab_file, device_hash_table, device_bin_coefficients, device_bin_offsets,
-                              unk_token_id, first_tok_id, sep_tok_id, outer_hash_a_param, outer_hash_b_param,
-                              num_outer_bins);
+  transfer_hash_info_to_device(vocab_file, &device_hash_table, &device_bin_coefficients, &device_bin_offsets,
+                               unk_token_id, first_tok_id, sep_tok_id, outer_hash_a_param, outer_hash_b_param,
+                               num_outer_bins);
 
   max_word_length = max_inp_chars_per_word;
   
@@ -374,8 +367,7 @@ void GpuWordPieceTokenizer::tokenize(ptr_length_pair<uint32_t*>& cp_and_length,
     
   const uint32_t wp_threads_per_block = 64;
   const uint32_t num_wp_blocks = (num_words + wp_threads_per_block - 1) / wp_threads_per_block;
-  gpuWordPieceTokenizer<<<num_wp_blocks, wp_threads_per_block>>>(device_code_points, thrust::raw_pointer_cast(device_hash_table.data()), 
-    thrust::raw_pointer_cast(device_bin_coefficients.data()), thrust::raw_pointer_cast(device_bin_offsets.data()), 
+  gpuWordPieceTokenizer<<<num_wp_blocks, wp_threads_per_block>>>(device_code_points, device_hash_table, device_bin_coefficients, device_bin_offsets, 
     thrust::raw_pointer_cast(device_token_ids.data()), device_start_word_indices, device_end_word_indices, thrust::raw_pointer_cast(device_tokens_per_word.data()), 
                                                                  unk_token_id, max_word_length, num_words, outer_hash_a_param, outer_hash_b_param, num_outer_bins);
   assertCudaSuccess(cudaDeviceSynchronize());
@@ -409,9 +401,9 @@ void GpuWordPieceTokenizer::tokenize(ptr_length_pair<uint32_t*>& cp_and_length,
 
 
 GpuWordPieceTokenizer::~GpuWordPieceTokenizer() {
-  //assertCudaSuccess(cudaFree(device_hash_table));
-  //assertCudaSuccess(cudaFree(device_bin_coefficients));
-  //assertCudaSuccess(cudaFree(device_bin_offsets));
+  assertCudaSuccess(cudaFree(device_hash_table));
+  assertCudaSuccess(cudaFree(device_bin_coefficients));
+  assertCudaSuccess(cudaFree(device_bin_offsets));
 
   //assertCudaSuccess(cudaFree(device_token_ids));
   //assertCudaSuccess(cudaFree(device_word_indices));

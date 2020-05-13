@@ -62,8 +62,8 @@ void load_hash_information(const std::string& path, uint32_t& outer_table_a, uin
 
 
 // See hash_utils.cuh
-void transfer_hash_info_to_device(const std::string hash_data_file, rmm::device_vector<uint64_t> device_hash_table, 
-                                  rmm::device_vector<uint64_t> device_bin_coefficients, rmm::device_vector<uint16_t> device_bin_offsets,
+void transfer_hash_info_to_device(const std::string hash_data_file, uint64_t** device_hash_table, 
+                                  uint64_t** device_bin_coefficients, uint16_t** device_bin_offsets,
                                   uint16_t& unk_tok_id, uint16_t& first_tok_id, uint16_t& sep_tok_id,
                                   uint32_t& outer_table_a, uint32_t& outer_table_b, uint16_t& num_bins) {
 
