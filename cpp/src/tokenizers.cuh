@@ -196,7 +196,8 @@ class GpuWordPieceTokenizer {
     rmm::device_vector<uint64_t> device_hash_table;
     //uint64_t* device_bin_coefficients;
     rmm::device_vector<uint64_t> device_bin_coefficients;
-    uint16_t* device_bin_offsets;
+    //uint16_t* device_bin_offsets;
+    rmm::device_vector<uint16_t> device_bin_offsets;
 
     rmm::device_vector<uint32_t> device_token_ids{};
     //uint32_t* device_word_indices;
