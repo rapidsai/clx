@@ -315,7 +315,8 @@ device_bin_offsets{} {
   cub::DeviceScan::InclusiveSum(nullptr, temp_storage_bytes_2, thrust::raw_pointer_cast(device_tokens_per_word.data()), 
                         thrust::raw_pointer_cast(device_word_indices.data()), max_new_char_total);
   max_cub_storage_bytes = std::max(temp_storage_bytes, temp_storage_bytes_2);
-  assertCudaSuccess(cudaMalloc(&cub_temp_storage, max_cub_storage_bytes));
+  //assertCudaSuccess(cudaMalloc(&cub_temp_storage, max_cub_storage_bytes));
+  cub_temp_storage.resize(max_cub_storage_bytes);
 //  const size_t device_num_selected_size = sizeof(*device_num_selected);
 //  assertCudaSuccess(cudaMalloc(&device_num_selected, device_num_selected_size));
   device_num_selected.resize(1);  
@@ -357,7 +358,7 @@ void GpuWordPieceTokenizer::tokenize(ptr_length_pair<uint32_t*>& cp_and_length,
   // Now start_word_indices has the word starts scattered throughout the array. We need to select all values not equal to the max uint32_t 
   // and place them at the start of the array. We leverage the fact that the start_word_indices and the end_word indices are contiguous to
   // only launch one device select kernel.
-  cub::DeviceSelect::If(cub_temp_storage, max_cub_storage_bytes, device_start_word_indices, device_start_word_indices, thrust::raw_pointer_cast(device_num_selected.data()), 2*num_code_points, select_op);
+  cub::DeviceSelect::If(thrust::raw_pointer_cast(cub_temp_storage.data()), max_cub_storage_bytes, device_start_word_indices, device_start_word_indices, thrust::raw_pointer_cast(device_num_selected.data()), 2*num_code_points, select_op);
   assertCudaSuccess(cudaPeekAtLastError());  
 
   // Grab the number of words which is the number of threads needed for the main word piece tokenizer kernel. The number of tokens selected out will
@@ -386,13 +387,13 @@ void GpuWordPieceTokenizer::tokenize(ptr_length_pair<uint32_t*>& cp_and_length,
   // Repurpose the input array for the token ids. In the worst case, each code point ends up being a token so this will
   // always have enough memory to store the contiguous tokens.
   uint32_t* contiguous_token_ids = device_code_points;
-  cub::DeviceSelect::If(cub_temp_storage, max_cub_storage_bytes, thrust::raw_pointer_cast(device_token_ids.data()), contiguous_token_ids, thrust::raw_pointer_cast(device_num_selected.data()), num_code_points, select_op);
+  cub::DeviceSelect::If(thrust::raw_pointer_cast(cub_temp_storage.data()), max_cub_storage_bytes, thrust::raw_pointer_cast(device_token_ids.data()), contiguous_token_ids, thrust::raw_pointer_cast(device_num_selected.data()), num_code_points, select_op);
   assertCudaSuccess(cudaPeekAtLastError());  
   
   // Repurpose start word indices since it is the same size and type as the required output.
   uint32_t* token_id_counts = device_start_word_indices;
   device_start_word_indices = nullptr;
-  cub::DeviceScan::InclusiveSum(cub_temp_storage, max_cub_storage_bytes, thrust::raw_pointer_cast(device_tokens_per_word.data()), token_id_counts, num_code_points);
+  cub::DeviceScan::InclusiveSum(thrust::raw_pointer_cast(cub_temp_storage.data()), max_cub_storage_bytes, thrust::raw_pointer_cast(device_tokens_per_word.data()), token_id_counts, num_code_points);
   assertCudaSuccess(cudaPeekAtLastError());  
 
   constexpr uint16_t sen_update_num_threads = 64;       
@@ -418,6 +419,6 @@ GpuWordPieceTokenizer::~GpuWordPieceTokenizer() {
   //assertCudaSuccess(cudaFree(device_token_ids));
   //assertCudaSuccess(cudaFree(device_word_indices));
   //assertCudaSuccess(cudaFree(device_tokens_per_word));
-  assertCudaSuccess(cudaFree(cub_temp_storage));
+//  assertCudaSuccess(cudaFree(cub_temp_storage));
   //assertCudaSuccess(cudaFree(device_num_selected));
 }
