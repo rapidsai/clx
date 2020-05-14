@@ -178,8 +178,9 @@ GpuBasicTokenizer::GpuBasicTokenizer(uint32_t max_num_sentences, uint32_t max_nu
   size_t max_threads_on_device = max_BLOCKS * THREADS_PER_BLOCK;
 
   const size_t max_new_char_total = MAX_NEW_CHARS * max_threads_on_device;
-  const size_t device_code_points_size = sizeof(*device_code_points) * max_new_char_total;
-  assertCudaSuccess(cudaMalloc(&device_code_points, device_code_points_size));
+  //const size_t device_code_points_size = sizeof(*device_code_points) * max_new_char_total;
+  //assertCudaSuccess(cudaMalloc(&device_code_points, device_code_points_size));
+  device_code_points.resize(max_new_char_total);
 
   //const size_t device_chars_per_thread_size = sizeof(*device_chars_per_thread) * max_threads_on_device;
   //assertCudaSuccess(cudaMalloc(&device_chars_per_thread, device_chars_per_thread_size));
@@ -191,7 +192,7 @@ GpuBasicTokenizer::GpuBasicTokenizer(uint32_t max_num_sentences, uint32_t max_nu
   cub::DeviceScan::InclusiveSum(nullptr, temp_storage_scan_bytes, device_chars_per_thread, device_chars_per_thread, max_threads_on_device);
   size_t temp_storage_select_bytes = 0;
   static NotEqual select_op((1 << SORT_BIT));
-  cub::DeviceSelect::If(nullptr, temp_storage_select_bytes, device_code_points, device_code_points, 
+  cub::DeviceSelect::If(nullptr, temp_storage_select_bytes, thrust::raw_pointer_cast(device_code_points.data()), thrust::raw_pointer_cast(device_code_points.data()), 
                         device_num_selected, max_new_char_total, select_op);
   max_cub_storage_bytes = std::max(temp_storage_scan_bytes, temp_storage_select_bytes);
   assertCudaSuccess(cudaMalloc(&cub_temp_storage, max_cub_storage_bytes));
@@ -233,11 +234,11 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
   size_t threads_on_device = BLOCKS * THREADS_PER_BLOCK;
 
   gpuBasicTokenizer<<<BLOCKS, THREADS_PER_BLOCK>>>(thrust::raw_pointer_cast(device_sentences.data()), thrust::raw_pointer_cast(device_sentence_offsets.data()), total_sentence_bytes, device_cp_metadata, device_aux_table, 
-                                                   device_code_points, thrust::raw_pointer_cast(device_chars_per_thread.data()), do_lower_case, sentences.size());
+                                            thrust::raw_pointer_cast(device_code_points.data()), thrust::raw_pointer_cast(device_chars_per_thread.data()), do_lower_case, sentences.size());
   assertCudaSuccess(cudaDeviceSynchronize());
   assertCudaSuccess(cudaPeekAtLastError());                                    
 
-  cub::DeviceSelect::If(cub_temp_storage, max_cub_storage_bytes, device_code_points, device_code_points, device_num_selected, max_new_char_total, select_op);
+  cub::DeviceSelect::If(cub_temp_storage, max_cub_storage_bytes, thrust::raw_pointer_cast(device_code_points.data()), thrust::raw_pointer_cast(device_code_points.data()), device_num_selected, max_new_char_total, select_op);
   assertCudaSuccess(cudaPeekAtLastError());
 
   // We also need to prefix sum the number of characters up to an including the current character in order to get the new sentence lengths.
@@ -255,7 +256,7 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
 
   uint32_t num_chars = 0;
   assertCudaSuccess(cudaMemcpy(&num_chars, offset_and_length.gpu_ptr + sentences.size(), sizeof(num_chars), cudaMemcpyDeviceToHost));
-  cp_and_length.gpu_ptr = device_code_points;
+  cp_and_length.gpu_ptr = thrust::raw_pointer_cast(device_code_points.data());
   cp_and_length.length = num_chars;
   
   return std::make_pair(cp_and_length, offset_and_length);
@@ -288,11 +289,11 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
   size_t threads_on_device = BLOCKS * THREADS_PER_BLOCK;
 
   gpuBasicTokenizer<<<BLOCKS, THREADS_PER_BLOCK>>>((unsigned char*)device_sentences_, thrust::raw_pointer_cast(device_sentence_offsets.data()), sentence_offsets[offset_size], device_cp_metadata, device_aux_table,
-                                                   device_code_points, thrust::raw_pointer_cast(device_chars_per_thread.data()), do_lower_case, offset_size);
+                                                thrust::raw_pointer_cast(device_code_points.data()), thrust::raw_pointer_cast(device_chars_per_thread.data()), do_lower_case, offset_size);
   assertCudaSuccess(cudaDeviceSynchronize());
   assertCudaSuccess(cudaPeekAtLastError());
 
-  cub::DeviceSelect::If(cub_temp_storage, max_cub_storage_bytes, device_code_points, device_code_points, device_num_selected, max_new_char_total, select_op);
+  cub::DeviceSelect::If(cub_temp_storage, max_cub_storage_bytes, thrust::raw_pointer_cast(device_code_points.data()), thrust::raw_pointer_cast(device_code_points.data()), device_num_selected, max_new_char_total, select_op);
   assertCudaSuccess(cudaPeekAtLastError());
 
   // We also need to prefix sum the number of characters up to an including the current character in order to get the new sentence lengths.
@@ -310,7 +311,7 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
 
   uint32_t num_chars = 0;
   assertCudaSuccess(cudaMemcpy(&num_chars, offset_and_length.gpu_ptr + offset_size, sizeof(num_chars), cudaMemcpyDeviceToHost));
-  cp_and_length.gpu_ptr = device_code_points;
+  cp_and_length.gpu_ptr = thrust::raw_pointer_cast(device_code_points.data());
   cp_and_length.length = num_chars;
 
   return std::make_pair(cp_and_length, offset_and_length);
@@ -321,7 +322,7 @@ GpuBasicTokenizer::~GpuBasicTokenizer() {
   assertCudaSuccess(cudaFree(device_cp_metadata));
   //assertCudaSuccess(cudaFree(device_sentences));
   //assertCudaSuccess(cudaFree(device_sentence_offsets));
-  assertCudaSuccess(cudaFree(device_code_points));
+  //assertCudaSuccess(cudaFree(device_code_points));
 //  assertCudaSuccess(cudaFree(device_chars_per_thread));
   assertCudaSuccess(cudaFree(device_num_selected));
   assertCudaSuccess(cudaFree(cub_temp_storage));

@@ -108,7 +108,8 @@ class GpuBasicTokenizer {
     rmm::device_vector<unsigned char> device_sentences;
     //uint32_t* device_sentence_offsets;
     rmm::device_vector<uint32_t> device_sentence_offsets;
-    uint32_t* device_code_points;
+    //uint32_t* device_code_points;
+    rmm::device_vector<uint32_t> device_code_points;
     rmm::device_vector<uint32_t> device_chars_per_thread;
     
     void* cub_temp_storage;
