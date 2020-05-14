@@ -231,7 +231,7 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
   const size_t max_new_char_total = MAX_NEW_CHARS * BLOCKS * THREADS_PER_BLOCK;
   size_t threads_on_device = BLOCKS * THREADS_PER_BLOCK;
 
-  gpuBasicTokenizer<<<BLOCKS, THREADS_PER_BLOCK>>>(device_sentences.data(), thrust::raw_pointer_cast(device_sentence_offsets.data()), total_sentence_bytes, device_cp_metadata, device_aux_table, 
+  gpuBasicTokenizer<<<BLOCKS, THREADS_PER_BLOCK>>>(thrust::raw_pointer_cast(device_sentences.data()), thrust::raw_pointer_cast(device_sentence_offsets.data()), total_sentence_bytes, device_cp_metadata, device_aux_table, 
                                                    device_code_points, device_chars_per_thread, do_lower_case, sentences.size());
   assertCudaSuccess(cudaDeviceSynchronize());
   assertCudaSuccess(cudaPeekAtLastError());                                    

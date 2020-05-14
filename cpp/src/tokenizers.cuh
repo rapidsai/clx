@@ -105,7 +105,7 @@ class GpuBasicTokenizer {
     uint64_t* device_aux_table;
     
     //unsigned char* device_sentences;
-    std::vector<unsigned char> device_sentences;
+    rmm::device_vector<unsigned char> device_sentences;
     //uint32_t* device_sentence_offsets;
     rmm::device_vector<uint32_t> device_sentence_offsets;
     uint32_t* device_code_points;
