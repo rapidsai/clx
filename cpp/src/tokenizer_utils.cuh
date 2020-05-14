@@ -38,7 +38,7 @@ static __global__ void update_sentence_lengths(uint32_t* old_lengths, uint32_t* 
 /*
 
 */
-void transfer_cp_data_to_device(uint32_t **device_cp_metadata, uint64_t **device_aux_data);
+void transfer_cp_data_to_device(rmm::device_vector<uint32_t>& device_cp_metadata, uint64_t **device_aux_data);
 
 
 /*

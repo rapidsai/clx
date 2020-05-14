@@ -101,7 +101,8 @@ class GpuBasicTokenizer {
     bool do_lower_case;
 
     // pointers to device data needed for tokenization
-    uint32_t* device_cp_metadata;
+    //uint32_t* device_cp_metadata;
+    rmm::device_vector<uint32_t> device_cp_metadata;
     uint64_t* device_aux_table;
     
     //unsigned char* device_sentences;
