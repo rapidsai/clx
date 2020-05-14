@@ -169,7 +169,7 @@ __device__ __forceinline__ int retrieve(uint64_t key, uint32_t outer_table_a, ui
 
   num_bins: A reference to the variable where the number of bins for the outer hash is stored
 */
-void transfer_hash_info_to_device(const std::string hash_data_file, uint64_t** device_hash_table, 
+void transfer_hash_info_to_device(const std::string hash_data_file, rmm::device_vector<uint64_t>& device_hash_table, 
                                   uint64_t** device_bin_coefficients, uint16_t** device_bin_offsets,
                                   uint16_t& unk_tok_id, uint16_t& first_tok_id, uint16_t& sep_tok_id,
                                   uint32_t& outer_table_a, uint32_t& outer_table_b, uint16_t& num_bins);
