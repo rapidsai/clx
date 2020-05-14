@@ -194,7 +194,8 @@ class GpuWordPieceTokenizer {
     // pointers to device data needed for tokenization
     //uint64_t* device_hash_table;
     rmm::device_vector<uint64_t> device_hash_table;
-    uint64_t* device_bin_coefficients;
+    //uint64_t* device_bin_coefficients;
+    rmm::device_vector<uint64_t> device_bin_coefficients;
     uint16_t* device_bin_offsets;
 
     rmm::device_vector<uint32_t> device_token_ids{};
