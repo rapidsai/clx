@@ -101,22 +101,15 @@ class GpuBasicTokenizer {
     bool do_lower_case;
 
     // pointers to device data needed for tokenization
-    //uint32_t* device_cp_metadata;
     rmm::device_vector<uint32_t> device_cp_metadata;
-    //uint64_t* device_aux_table;
     rmm::device_vector<uint64_t> device_aux_table;
     
-    //unsigned char* device_sentences;
     rmm::device_vector<unsigned char> device_sentences;
-    //uint32_t* device_sentence_offsets;
     rmm::device_vector<uint32_t> device_sentence_offsets;
-    //uint32_t* device_code_points;
     rmm::device_vector<uint32_t> device_code_points;
     rmm::device_vector<uint32_t> device_chars_per_thread;
     
-    //void* cub_temp_storage;
     rmm::device_vector<size_t> cub_temp_storage;
-    //uint32_t* device_num_selected;
     rmm::device_vector<uint32_t> device_num_selected;
     size_t max_cub_storage_bytes;
 };
@@ -193,22 +186,15 @@ class GpuWordPieceTokenizer {
     unsigned int max_word_length;
 
     // pointers to device data needed for tokenization
-    //uint64_t* device_hash_table;
     rmm::device_vector<uint64_t> device_hash_table;
-    //uint64_t* device_bin_coefficients;
     rmm::device_vector<uint64_t> device_bin_coefficients;
-    //uint16_t* device_bin_offsets;
     rmm::device_vector<uint16_t> device_bin_offsets;
 
     rmm::device_vector<uint32_t> device_token_ids{};
-    //uint32_t* device_word_indices;
     rmm::device_vector<uint32_t> device_word_indices;
-    //uint8_t* device_tokens_per_word;
     rmm::device_vector<uint8_t> device_tokens_per_word;
 
-    //void* cub_temp_storage;
     rmm::device_vector<size_t> cub_temp_storage;
-    //uint32_t* device_num_selected;
     rmm::device_vector<uint32_t> device_num_selected;
     size_t max_cub_storage_bytes;
 };
@@ -320,7 +306,6 @@ class GpuFullTokenizer {
     GpuWordPieceTokenizer word_piece_tokenizer;
     
     uint32_t nrows_tensor_tokenIDS;
-    //uint32_t* tensor_tokenIDS; // on device
     rmm::device_vector<uint32_t> tensor_tokenIDS;
     rmm::device_vector<uint32_t> attention_mask; // on device
     rmm::device_vector<uint32_t> metadata; // on device (one row per tensor row, with 3 elements [rowID, starting_pos, stop_pos])
@@ -328,7 +313,6 @@ class GpuFullTokenizer {
     // correspondence between each row of tensor_tokenIDS and log_id
     rmm::device_vector<uint32_t> device_row2log;
     // correspondence between each row of tensor_tokenIDS and row number within s specific log
-    //uint32_t* device_row2row_within_log;
     rmm::device_vector<uint32_t> device_row2row_within_log;
     uint32_t max_sequence_length;
     uint32_t stride;

@@ -173,19 +173,13 @@ GpuBasicTokenizer::GpuBasicTokenizer(uint32_t max_num_sentences, uint32_t max_nu
   device_cp_metadata{},
   device_aux_table{} {
   transfer_cp_data_to_device(device_cp_metadata, device_aux_table);
-  //assertCudaSuccess(cudaMalloc(&device_sentence_offsets, sizeof(*device_sentence_offsets) * max_num_sentences + 1));
-  //assertCudaSuccess(cudaMalloc(&device_sentences, sizeof(*device_sentences) * max_num_chars));
 
   size_t max_BLOCKS = (max_num_chars + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK;
   size_t max_threads_on_device = max_BLOCKS * THREADS_PER_BLOCK;
 
   const size_t max_new_char_total = MAX_NEW_CHARS * max_threads_on_device;
-  //const size_t device_code_points_size = sizeof(*device_code_points) * max_new_char_total;
-  //assertCudaSuccess(cudaMalloc(&device_code_points, device_code_points_size));
   device_code_points.resize(max_new_char_total);
 
-  //const size_t device_chars_per_thread_size = sizeof(*device_chars_per_thread) * max_threads_on_device;
-  //assertCudaSuccess(cudaMalloc(&device_chars_per_thread, device_chars_per_thread_size));
   device_chars_per_thread.resize(max_threads_on_device);
 
   // Determine temporary device storage requirements for cub
@@ -197,10 +191,7 @@ GpuBasicTokenizer::GpuBasicTokenizer(uint32_t max_num_sentences, uint32_t max_nu
   cub::DeviceSelect::If(nullptr, temp_storage_select_bytes, thrust::raw_pointer_cast(device_code_points.data()), thrust::raw_pointer_cast(device_code_points.data()), 
                         thrust::raw_pointer_cast(device_num_selected.data()), max_new_char_total, select_op);
   max_cub_storage_bytes = std::max(temp_storage_scan_bytes, temp_storage_select_bytes);
-  //assertCudaSuccess(cudaMalloc(&cub_temp_storage, max_cub_storage_bytes));
   cub_temp_storage.resize(max_cub_storage_bytes);
-  //const size_t device_num_selected_size = sizeof(*device_num_selected);
-  //assertCudaSuccess(cudaMalloc(&device_num_selected, device_num_selected_size));
   device_num_selected.resize(1);
 }
 
@@ -263,7 +254,6 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
   ptr_length_pair<uint32_t*> offset_and_length;
 
   size_t num_offsets = offset_size + 1;
-  //uint32_t* sentence_offsets = new uint32_t[num_offsets];
   std::vector<uint32_t> sentence_offsets(num_offsets);
   uint32_t start_copy = 0;
   for(int i = 0; i < offset_size; ++i){
@@ -273,8 +263,6 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
   sentence_offsets[offset_size] = start_copy;
 
   device_sentence_offsets = sentence_offsets;
-
-  //assertCudaSuccess(cudaMemcpy(device_sentence_offsets, sentence_offsets, sizeof(*device_sentence_offsets) * num_offsets, cudaMemcpyHostToDevice));
 
   static NotEqual select_op((1 << SORT_BIT));
 

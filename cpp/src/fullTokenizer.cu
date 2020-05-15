@@ -89,12 +89,6 @@ GpuFullTokenizer::GpuFullTokenizer( std::string vocab_file,
   metadata(max_rows_final_tensor*3),
   device_row2log(max_rows_final_tensor),
   device_row2row_within_log(max_rows_final_tensor) {
-  
-  //cudaMalloc(&tensor_tokenIDS, max_rows_final_tensor*max_sequence_length*sizeof(uint32_t));
-  //cudaMalloc(&attention_mask, max_rows_final_tensor*max_sequence_length*sizeof(uint32_t));
-  //cudaMalloc(&metadata, max_rows_final_tensor*3*sizeof(uint32_t));
-  //cudaMalloc(&device_row2log, max_rows_final_tensor*sizeof(uint32_t));
-  //cudaMalloc(&device_row2row_within_log, max_rows_final_tensor*sizeof(uint32_t));
 }
 
 
@@ -142,10 +136,8 @@ void GpuFullTokenizer::tokenize(const std::vector<std::string>& sentences) {
 
   // copy info to GPU
   device_row2log.resize(nrows_tensor_tokenIDS);
-  //cudaMemcpy(device_row2log, host_row2log.data(), nrows_tensor_tokenIDS*sizeof(uint32_t), cudaMemcpyHostToDevice);
   thrust::copy(host_row2log.begin(), host_row2log.end(), device_row2log.begin());
   device_row2row_within_log.resize(nrows_tensor_tokenIDS);
-  //cudaMemcpy(device_row2row_within_log, host_row2row_within_log.data(), nrows_tensor_tokenIDS*sizeof(uint32_t), cudaMemcpyHostToDevice);
   thrust::copy(host_row2row_within_log.begin(), host_row2row_within_log.end(), device_row2row_within_log.begin());
 
   // compute final-tensor, mask, and metadata
@@ -200,10 +192,8 @@ void GpuFullTokenizer::tokenize(const char* device_sentences, uint32_t* offsets,
 
   // copy info to GPU
   device_row2log.resize(nrows_tensor_tokenIDS);
-  //cudaMemcpy(device_row2log, host_row2log.data(), nrows_tensor_tokenIDS*sizeof(uint32_t), cudaMemcpyHostToDevice);
   thrust::copy(host_row2log.begin(), host_row2log.end(), device_row2log.begin());
   device_row2row_within_log.resize(nrows_tensor_tokenIDS);
-  //cudaMemcpy(device_row2row_within_log, host_row2row_within_log.data(), nrows_tensor_tokenIDS*sizeof(uint32_t), cudaMemcpyHostToDevice);
   thrust::copy(host_row2row_within_log.begin(), host_row2row_within_log.end(), device_row2row_within_log.begin());
 
   // compute final-tensor, mask, and metadata
