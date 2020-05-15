@@ -5,6 +5,7 @@
 
 ## Improvements
 - PR #149 Add Versioneer
+- PR #155 Tokenizer rmm integration 
 
 ## Bug Fixes
 - PR #150 Fix splunk alert workflow test
