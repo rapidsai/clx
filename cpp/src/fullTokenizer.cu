@@ -155,7 +155,6 @@ void GpuFullTokenizer::tokenize(const std::vector<std::string>& sentences) {
                                 thrust::raw_pointer_cast(device_row2row_within_log.data()),
                                 max_sequence_length, stride, do_truncate,
                                 thrust::raw_pointer_cast(tensor_tokenIDS.data()), thrust::raw_pointer_cast(attention_mask.data()), thrust::raw_pointer_cast(metadata.data()));
-  assertCudaSuccess(cudaDeviceSynchronize());
 }
 
 void GpuFullTokenizer::tokenize(const char* device_sentences, uint32_t* offsets, uint32_t offset_size)  {
@@ -214,7 +213,6 @@ void GpuFullTokenizer::tokenize(const char* device_sentences, uint32_t* offsets,
                                 thrust::raw_pointer_cast(device_row2row_within_log.data()),
                                 max_sequence_length, stride, do_truncate,
                                 thrust::raw_pointer_cast(tensor_tokenIDS.data()), thrust::raw_pointer_cast(attention_mask.data()), thrust::raw_pointer_cast(metadata.data()));
-  assertCudaSuccess(cudaDeviceSynchronize());
 }
 
 
@@ -238,9 +236,4 @@ void GpuFullTokenizer::tokenize(const char* device_sentences, uint32_t* offsets,
  }
 
 GpuFullTokenizer::~GpuFullTokenizer() {
-  //assertCudaSuccess(cudaFree(tensor_tokenIDS));
-  //assertCudaSuccess(cudaFree(attention_mask));
-  //assertCudaSuccess(cudaFree(metadata));
-  //assertCudaSuccess(cudaFree(device_row2log));
-  //assertCudaSuccess(cudaFree(device_row2row_within_log));
  }
