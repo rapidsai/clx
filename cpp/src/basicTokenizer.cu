@@ -197,7 +197,8 @@ GpuBasicTokenizer::GpuBasicTokenizer(uint32_t max_num_sentences, uint32_t max_nu
   cub::DeviceSelect::If(nullptr, temp_storage_select_bytes, thrust::raw_pointer_cast(device_code_points.data()), thrust::raw_pointer_cast(device_code_points.data()), 
                         thrust::raw_pointer_cast(device_num_selected.data()), max_new_char_total, select_op);
   max_cub_storage_bytes = std::max(temp_storage_scan_bytes, temp_storage_select_bytes);
-  assertCudaSuccess(cudaMalloc(&cub_temp_storage, max_cub_storage_bytes));
+  //assertCudaSuccess(cudaMalloc(&cub_temp_storage, max_cub_storage_bytes));
+  cub_temp_storage.resize(max_cub_storage_bytes);
   //const size_t device_num_selected_size = sizeof(*device_num_selected);
   //assertCudaSuccess(cudaMalloc(&device_num_selected, device_num_selected_size));
   device_num_selected.resize(1);
@@ -241,11 +242,11 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
   assertCudaSuccess(cudaDeviceSynchronize());
   assertCudaSuccess(cudaPeekAtLastError());                                    
 
-  cub::DeviceSelect::If(cub_temp_storage, max_cub_storage_bytes, thrust::raw_pointer_cast(device_code_points.data()), thrust::raw_pointer_cast(device_code_points.data()), thrust::raw_pointer_cast(device_num_selected.data()), max_new_char_total, select_op);
+  cub::DeviceSelect::If(thrust::raw_pointer_cast(cub_temp_storage.data()), max_cub_storage_bytes, thrust::raw_pointer_cast(device_code_points.data()), thrust::raw_pointer_cast(device_code_points.data()), thrust::raw_pointer_cast(device_num_selected.data()), max_new_char_total, select_op);
   assertCudaSuccess(cudaPeekAtLastError());
 
   // We also need to prefix sum the number of characters up to an including the current character in order to get the new sentence lengths.
-  cub::DeviceScan::InclusiveSum(cub_temp_storage, max_cub_storage_bytes, thrust::raw_pointer_cast(device_chars_per_thread.data()), thrust::raw_pointer_cast(device_chars_per_thread.data()), threads_on_device);  
+  cub::DeviceScan::InclusiveSum(thrust::raw_pointer_cast(cub_temp_storage.data()), max_cub_storage_bytes, thrust::raw_pointer_cast(device_chars_per_thread.data()), thrust::raw_pointer_cast(device_chars_per_thread.data()), threads_on_device);  
   assertCudaSuccess(cudaPeekAtLastError());
 
   constexpr uint16_t SENTENCE_UPDATE_THREADS = 64;                              
@@ -296,11 +297,11 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
   assertCudaSuccess(cudaDeviceSynchronize());
   assertCudaSuccess(cudaPeekAtLastError());
 
-  cub::DeviceSelect::If(cub_temp_storage, max_cub_storage_bytes, thrust::raw_pointer_cast(device_code_points.data()), thrust::raw_pointer_cast(device_code_points.data()), thrust::raw_pointer_cast(device_num_selected.data()), max_new_char_total, select_op);
+  cub::DeviceSelect::If(thrust::raw_pointer_cast(cub_temp_storage.data()), max_cub_storage_bytes, thrust::raw_pointer_cast(device_code_points.data()), thrust::raw_pointer_cast(device_code_points.data()), thrust::raw_pointer_cast(device_num_selected.data()), max_new_char_total, select_op);
   assertCudaSuccess(cudaPeekAtLastError());
 
   // We also need to prefix sum the number of characters up to an including the current character in order to get the new sentence lengths.
-  cub::DeviceScan::InclusiveSum(cub_temp_storage, max_cub_storage_bytes, thrust::raw_pointer_cast(device_chars_per_thread.data()), thrust::raw_pointer_cast(device_chars_per_thread.data()), threads_on_device);
+  cub::DeviceScan::InclusiveSum(thrust::raw_pointer_cast(cub_temp_storage.data()), max_cub_storage_bytes, thrust::raw_pointer_cast(device_chars_per_thread.data()), thrust::raw_pointer_cast(device_chars_per_thread.data()), threads_on_device);
   assertCudaSuccess(cudaPeekAtLastError());
 
   constexpr uint16_t SENTENCE_UPDATE_THREADS = 64;
@@ -328,5 +329,5 @@ GpuBasicTokenizer::~GpuBasicTokenizer() {
   //assertCudaSuccess(cudaFree(device_code_points));
 //  assertCudaSuccess(cudaFree(device_chars_per_thread));
 //  assertCudaSuccess(cudaFree(device_num_selected));
-  assertCudaSuccess(cudaFree(cub_temp_storage));
+//  assertCudaSuccess(cudaFree(cub_temp_storage));
 }
