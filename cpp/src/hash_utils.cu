@@ -76,7 +76,7 @@ void transfer_hash_info_to_device(const std::string hash_data_file, rmm::device_
                         bin_coefficients, bin_offsets);
 
   // Transfer hash table vectors
-  malloc_and_copy_vec_to_device_new(device_hash_table, hash_table);
-  malloc_and_copy_vec_to_device_new(device_bin_coefficients, bin_coefficients);
-  malloc_and_copy_vec_to_device_new(device_bin_offsets, bin_offsets); 
+  malloc_and_copy_vec_to_device(device_hash_table, hash_table);
+  malloc_and_copy_vec_to_device(device_bin_coefficients, bin_coefficients);
+  malloc_and_copy_vec_to_device(device_bin_offsets, bin_offsets); 
 }

@@ -142,8 +142,8 @@ __global__ void gpuBasicTokenizer(const unsigned char* sentences,  uint32_t* dev
 
 
 void transfer_cp_data_to_device(rmm::device_vector<uint32_t>& device_cp_metadata, rmm::device_vector<uint64_t>& device_aux_data) {
-  malloc_and_copy_vec_to_device_new(device_cp_metadata, cp_data);
-  malloc_and_copy_vec_to_device_new(device_aux_data, aux_data);
+  malloc_and_copy_vec_to_device(device_cp_metadata, cp_data);
+  malloc_and_copy_vec_to_device(device_aux_data, aux_data);
 }
 
 
@@ -222,13 +222,6 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
   flatten_sentences(sentences, flattened_sentences.data(), sentence_offsets.data());
   device_sentence_offsets = sentence_offsets;
   device_sentences = flattened_sentences; 
-
-  /*size_t num_offsets = sentences.size() + 1;
-  uint32_t* sentence_offsets = new uint32_t[num_offsets];
-  char* flattened_sentences = new char[total_sentence_bytes];
-  flatten_sentences(sentences, flattened_sentences, sentence_offsets);
-  assertCudaSuccess(cudaMemcpy(device_sentence_offsets, sentence_offsets, sizeof(*device_sentence_offsets) * num_offsets, cudaMemcpyHostToDevice));
-  assertCudaSuccess(cudaMemcpy(device_sentences, flattened_sentences, total_sentence_bytes, cudaMemcpyHostToDevice));*/
 
   static NotEqual select_op((1 << SORT_BIT));
   
