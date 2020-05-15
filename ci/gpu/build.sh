@@ -76,6 +76,7 @@ $WORKSPACE/build.sh clean libclx clx
 if hasArg --skip-tests; then
     logger "Skipping Tests..."
 else
+    cd ${WORKSPACE}/python
     py.test --ignore=ci --cache-clear --junitxml=${WORKSPACE}/junit-clx.xml -v
     ${WORKSPACE}/ci/gpu/test-notebooks.sh 2>&1 | tee nbtest.log
     python ${WORKSPACE}/ci/utils/nbtestlog2junitxml.py nbtest.log
