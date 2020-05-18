@@ -42,16 +42,18 @@ python --version
 # FIX Added to deal with Anancoda SSL verification issues during conda builds
 conda config --set ssl_verify False
 
+conda remove blas libblas
+conda install pytorch torchvision -c pytorch
+
 logger "conda install required packages"
-conda install -y -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge -c defaults -c pytorch -c rapidsai/label/pytorch \
+conda install -y -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge -c defaults \
     "cugraph=${MINOR_VERSION}" \
+    "cuml=${MINOR_VERSION}" \
     "cuxfilter=${MINOR_VERSION}" \
     "cupy>=6.6.0,<8.0.0a0,!=7.1.0" \
     "dask>=2.8.0" \
     "distributed>=2.8.0" \
     "dask-cudf=${MINOR_VERSION}" \
-    "pytorch==1.3.1" \
-    "torchvision=0.4.2" \
     "seaborn" \
     "s3fs" \
     "nodejs"
