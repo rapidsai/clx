@@ -8,6 +8,7 @@
 ## Improvements
 - PR #149 Add Versioneer
 - PR #151 README and CONTRIBUTING updates
+- PR #159 Update to PyTorch 1.5
 
 ## Bug Fixes
 - PR #150 Fix splunk alert workflow test
