@@ -12,6 +12,7 @@
 ## Bug Fixes
 - PR #150 Fix splunk alert workflow test
 - PR #154 Local gpuCI build fix
+- PR #158 Fix test cases to support latest cudf changes
 
 # clx 0.13.0 (Date TBD)
 
