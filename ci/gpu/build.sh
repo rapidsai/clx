@@ -47,11 +47,10 @@ conda install -y -c pytorch -c rapidsai/label/pytorch pytorch=1.3.1 torchvision=
 conda install -y -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge -c defaults \
     "cugraph=${MINOR_VERSION}" \
     "cuxfilter=${MINOR_VERSION}" \
-    "cupy>=6.6.0,<8.0.0a0,!=7.1.0" \
-    "dask>=2.8.0" \
-    "distributed>=2.8.0" \
+    "cupy>=7,<8.0.0a0" \
+    "dask>=2.12.0" \
+    "distributed>=2.12.0" \
     "dask-cudf=${MINOR_VERSION}" \
-    "seaborn" \
     "s3fs" \
     "nodejs"
 
