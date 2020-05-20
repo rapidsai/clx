@@ -163,7 +163,7 @@ def test_workflow_no_data(tmpdir, mock_env_home, set_workflow_config):
 
     test_dir = tmpdir.mkdir("tmp_test_workflow")
     input_path = str(test_dir.join("input_empty.csv"))
-    empty_df.to_csv(input_path, index=False)
+    empty_df.to_csv(input_path)
     output_path = str(test_dir.join("output_empty.csv"))
     source["input_path"] = input_path
     destination["output_path"] = output_path

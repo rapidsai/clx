@@ -234,7 +234,7 @@ def test_generate_tld_cols():
 def test_parse_url_invalid_req_cols(input_df):
     expected_error = ValueError(
         "Given req_cols must be subset of %s"
-        % (["hostname", "subdomain", "domain", "suffix"])
+        % ('["hostname", "subdomain", "domain", "suffix"]')
     )
     with pytest.raises(ValueError) as actual_error:
         dns.parse_url(input_df["url"], req_cols={"test"})
