@@ -14,6 +14,7 @@
 
 import cudf
 import pytest
+import os
 import torch
 from clx.analytics import tokenizer
 
@@ -166,7 +167,9 @@ expected_masks = torch.tensor(
 expected_metadata = torch.tensor([[0, 0, 10]], device="cuda")
 
 
-@pytest.mark.skip(reason="torch CUDA 10.2 incompatibility")
+@pytest.mark.skipif(
+    os.environ["CUDA_VERSION"] >= "10.2", reason="torch CUDA 10.2 incompatibility"
+)
 @pytest.mark.parametrize(
     "input_sentence, expected_tokens, expected_masks, expected_metadata",
     [(input_sentence, expected_tokens, expected_masks, expected_metadata)],
@@ -186,7 +189,9 @@ def test_tokenize_file(
     assert actual_metadata.equal(expected_metadata)
 
 
-@pytest.mark.skip(reason="torch CUDA 10.2 incompatibility")
+@pytest.mark.skipif(
+    os.environ["CUDA_VERSION"] >= "10.2", reason="torch CUDA 10.2 incompatibility"
+)
 @pytest.mark.parametrize(
     "input_sentence, expected_tokens, expected_masks, expected_metadata",
     [(input_sentence, expected_tokens, expected_masks, expected_metadata)],
