@@ -44,14 +44,11 @@ conda config --set ssl_verify False
 
 logger "conda install required packages"
 conda install -y -c conda-forge -c rapidsai -c rapidsai-nightly -c nvidia \
-    "cupy>=7,<8.0.0a0" \
     "cugraph=${MINOR_VERSION}" \
     "cuxfilter=${MINOR_VERSION}" \
     "dask>=2.8.0" \
     "distributed>=2.8.0" \
-    "dask-cudf=${MINOR_VERSION}" \
-    "s3fs" \
-    "nodejs"
+    "dask-cudf=${MINOR_VERSION}"
 
 # Install master version of cudatashader
 pip install "git+https://github.com/rapidsai/cudatashader.git"
