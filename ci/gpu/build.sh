@@ -43,16 +43,12 @@ python --version
 conda config --set ssl_verify False
 
 logger "conda install required packages"
-conda install -y -c pytorch -c rapidsai/label/pytorch pytorch=1.3.1 torchvision=0.4.2
 conda install -y -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge -c defaults \
     "cugraph=${MINOR_VERSION}" \
     "cuxfilter=${MINOR_VERSION}" \
-    "cupy>=7,<8.0.0a0" \
     "dask>=2.12.0" \
     "distributed>=2.12.0" \
-    "dask-cudf=${MINOR_VERSION}" \
-    "s3fs" \
-    "nodejs"
+    "dask-cudf=${MINOR_VERSION}"
 
 # Install master version of cudatashader
 pip install "git+https://github.com/rapidsai/cudatashader.git"
