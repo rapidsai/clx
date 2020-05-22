@@ -8,12 +8,11 @@ channels:
 - pytorch
 - rapidsai/label/pytorch
 dependencies:
-- cugraph=0.13.*
-- cuxfilter=0.13.*
-- cupy>=6.6.0,<8.0.0a0,!=7.1.0
+- cugraph=0.14.*
+- cuxfilter=0.14.*
 - dask>=2.8.0
 - distributed>=2.8.0
-- dask-cudf=0.13.*
+- dask-cudf=0.14.*
 - pytorch==1.3.1
 - torchvision=0.4.2
 - cython>=0.29,<0.30
