@@ -99,7 +99,7 @@ wf = netflow_workflow.NetflowWorkflow(source=source, destination=dest, name="my-
 wf.run_workflow()
 ```
 
-For additional examples, browse our complete [API documentation](https://rapidsai.github.io/clx/), or check out our more detailed [notebooks](https://github.com/rapidsai/clx/tree/master/notebooks).
+For additional examples, browse our complete [API documentation](https://docs.rapids.ai/api/clx/nightly/api.html), or check out our more detailed [notebooks](https://github.com/rapidsai/clx/tree/master/notebooks).
 
 
 
