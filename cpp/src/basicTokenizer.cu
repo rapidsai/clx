@@ -142,8 +142,8 @@ __global__ void gpuBasicTokenizer(const unsigned char* sentences,  uint32_t* dev
 
 
 void transfer_cp_data_to_device(rmm::device_vector<uint32_t>& device_cp_metadata, rmm::device_vector<uint64_t>& device_aux_data) {
-  malloc_and_copy_vec_to_device(device_cp_metadata, cp_data);
-  malloc_and_copy_vec_to_device(device_aux_data, aux_data);
+  device_cp_metadata = cp_data;
+  device_aux_data = aux_data;
 }
 
 
