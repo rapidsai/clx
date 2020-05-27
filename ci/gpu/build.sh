@@ -43,7 +43,7 @@ python --version
 conda config --set ssl_verify False
 
 logger "conda install required packages"
-conda install -y -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge -c defaults \
+conda install -y \
     "cugraph=${MINOR_VERSION}" \
     "cuxfilter=${MINOR_VERSION}" \
     "dask>=2.12.0" \
