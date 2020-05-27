@@ -167,12 +167,11 @@ void flatten_sentences(const std::vector<std::string>& sentences,
 // See tokenizers.cuh
 
 GpuBasicTokenizer::GpuBasicTokenizer(uint32_t max_num_sentences, uint32_t max_num_chars, bool do_lower_case, std::vector<uint32_t> const& cp_metadata, std::vector<uint64_t> const& aux_table) :
-  do_lower_case(do_lower_case), /*device_cp_metadata(nullptr), device_aux_table(nullptr),*/
+  do_lower_case(do_lower_case),
   device_sentence_offsets(max_num_sentences + 1),
   device_sentences(max_num_chars),
-  device_cp_metadata{},
-  device_aux_table{} {
-  transfer_cp_data_to_device(device_cp_metadata, device_aux_table);
+  device_cp_metadata{cp_metadata},
+  device_aux_table{aux_table} {
 
   size_t max_BLOCKS = (max_num_chars + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK;
   size_t max_threads_on_device = max_BLOCKS * THREADS_PER_BLOCK;
