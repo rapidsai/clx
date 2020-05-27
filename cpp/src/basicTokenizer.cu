@@ -248,13 +248,8 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
   ptr_length_pair<uint32_t*> offset_and_length;
 
   size_t num_offsets = offset_size + 1;
-  std::vector<uint32_t> sentence_offsets(num_offsets);
-  uint32_t start_copy = 0;
-  for(int i = 0; i < offset_size; ++i){
-    sentence_offsets[i] = start_copy;
-    start_copy += offsets[i];
-  }
-  sentence_offsets[offset_size] = start_copy;
+  device_sentence_offsets = offsets;
+  thrust::exclusive_scan(thrust::device, device_sentence_offsets.begin(), device_sentence_offsets.end(), device_sentence_offsets.begin(), 0);
 
   device_sentence_offsets = sentence_offsets;
 
