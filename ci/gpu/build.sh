@@ -43,11 +43,10 @@ python --version
 conda config --set ssl_verify False
 
 logger "conda install required packages"
-conda install -y -c conda-forge -c rapidsai -c rapidsai-nightly -c nvidia \
+conda install \
     "cugraph=${MINOR_VERSION}" \
-    "cuxfilter=${MINOR_VERSION}" \
-    "dask>=2.8.0" \
-    "distributed>=2.8.0" \
+    "dask>=2.12.0" \
+    "distributed>=2.12.0" \
     "dask-cudf=${MINOR_VERSION}"
 
 # Install master version of cudatashader
