@@ -251,7 +251,6 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
   device_sentence_offsets = offsets;
   thrust::exclusive_scan(thrust::device, device_sentence_offsets.begin(), device_sentence_offsets.end(), device_sentence_offsets.begin(), 0);
 
-  device_sentence_offsets = sentence_offsets;
 
   static NotEqual select_op((1 << SORT_BIT));
 
