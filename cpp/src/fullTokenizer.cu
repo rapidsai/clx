@@ -136,10 +136,8 @@ void GpuFullTokenizer::tokenize(const std::vector<std::string>& sentences) {
   }
 
   // copy info to GPU
-  device_row2log.resize(nrows_tensor_tokenIDS);
-  thrust::copy(host_row2log.begin(), host_row2log.end(), device_row2log.begin());
-  device_row2row_within_log.resize(nrows_tensor_tokenIDS);
-  thrust::copy(host_row2row_within_log.begin(), host_row2row_within_log.end(), device_row2row_within_log.begin());
+  device_row2log = host_row2log;
+  device_row2row_within_log = host_row2row_within_log;
 
   // compute final-tensor, mask, and metadata
   compute_tensor_metadata_kernel<<<nrows_tensor_tokenIDS, max_sequence_length>>>
@@ -192,10 +190,8 @@ void GpuFullTokenizer::tokenize(const char* device_sentences, uint32_t* offsets,
   }
 
   // copy info to GPU
-  device_row2log.resize(nrows_tensor_tokenIDS);
-  thrust::copy(host_row2log.begin(), host_row2log.end(), device_row2log.begin());
-  device_row2row_within_log.resize(nrows_tensor_tokenIDS);
-  thrust::copy(host_row2row_within_log.begin(), host_row2row_within_log.end(), device_row2row_within_log.begin());
+  device_row2log = host_row2log;
+  device_row2row_within_log = host_row2row_within_log;
 
   // compute final-tensor, mask, and metadata
   compute_tensor_metadata_kernel<<<nrows_tensor_tokenIDS, max_sequence_length>>>
