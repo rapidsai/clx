@@ -7,7 +7,7 @@
 #define MAX_NEW_CHARS 3
 
 
-// A selection op for cub to get elements from an array not equal to a certain value. See 
+// A selection op for cub to get elements from an array not equal to a certain value. See
 // https://nvlabs.github.io/cub/structcub_1_1_device_partition.html for an example of this
 // struct.
 struct NotEqual
@@ -16,7 +16,7 @@ struct NotEqual
 
     __host__ __device__ __forceinline__
     NotEqual(uint32_t val_to_omit) : val_to_omit(val_to_omit) {}
-    
+
     __host__ __device__ __forceinline__
     bool operator()(const uint32_t &a) const {
         return (a != val_to_omit);
@@ -35,16 +35,7 @@ static __global__ void update_sentence_lengths(uint32_t* old_lengths, uint32_t* 
   }
 }
 
-/*
 
-*/
-void transfer_cp_data_to_device(rmm::device_vector<uint32_t>& device_cp_metadata, rmm::device_vector<uint64_t>& device_aux_data);
-
-
-/*
-
-
-*/
 void gpu_basic_tokenize(const std::vector<std::string>& sentences, bool do_lower_case, uint32_t*& device_result_code_points,
                         uint32_t*& device_cleaned_sentence_lengths, uint32_t* device_cp_metadata, uint64_t* device_aux_data,
                         uint32_t* device_sentence_offsets);
@@ -61,7 +52,7 @@ void gpu_basic_tokenize(const std::vector<std::string>& sentences, bool do_lower
   dev_sentence_offsets: A pointer an array containing the index of the starting character of each sentence with
                         an extra space at the end containing the total number of characters. As a result, this
                         array is of length num_sentences + 1.
-  
+
   dev_hash_table: A pointer to the flattened hash_table on the device
 
   dev_bin_coefficients: A pointer to the coefficients for each hash bin
@@ -72,7 +63,7 @@ void gpu_basic_tokenize(const std::vector<std::string>& sentences, bool do_lower
 
   max_word_length: The maximum length of a word. Any word longer than this length is replaced by the unknown
                    token.
-    
+
   num_code_points: The total number of code points after basic tokenization
 
   num_sentences: The total number of sentences to be tokenized
@@ -89,19 +80,19 @@ void gpu_basic_tokenize(const std::vector<std::string>& sentences, bool do_lower
                    separated by a space code point.
 
   dev_sentence_offsets - Updates the sentence offsets to be the index of the starting token_id for each sentence.
-                         The last slot is updated to contain the total number of token_ids. 
+                         The last slot is updated to contain the total number of token_ids.
 
-                         Therefore, assuming  pair is the return value of this function, 
+                         Therefore, assuming  pair is the return value of this function,
                          pair.second == dev_sentence_offsets[num_sentences].
-                        
+
 
   Returns
   ---------
   The total number of token ids.
 */
 uint32_t gpuWordPieceTokenize(uint32_t* dev_code_points, uint32_t* dev_sentence_offsets,
-                              uint64_t* dev_hash_table, uint64_t* dev_bin_coefficients, 
-                              uint16_t* dev_bin_offsets, uint16_t unk_tok_id, 
-                              uint16_t max_word_length, size_t num_code_points, 
-                              uint32_t num_sentences, uint32_t outer_table_a, 
-                              uint32_t outer_table_b, uint16_t num_bins);  
+                              uint64_t* dev_hash_table, uint64_t* dev_bin_coefficients,
+                              uint16_t* dev_bin_offsets, uint16_t unk_tok_id,
+                              uint16_t max_word_length, size_t num_code_points,
+                              uint32_t num_sentences, uint32_t outer_table_a,
+                              uint32_t outer_table_b, uint16_t num_bins);
