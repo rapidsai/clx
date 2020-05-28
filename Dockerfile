@@ -1,6 +1,6 @@
 # An integration test & dev container based on rapids-dev-nightly with CLX installed from current branch
-ARG RAPIDS_VERSION=0.14
-ARG CUDA_VERSION=10.2
+ARG RAPIDS_VERSION=0.15
+ARG CUDA_VERSION=10.1
 ARG LINUX_VERSION=ubuntu18.04
 ARG PYTHON_VERSION=3.7
 FROM rapidsai/rapidsai-dev-nightly:${RAPIDS_VERSION}-cuda${CUDA_VERSION}-devel-${LINUX_VERSION}-py${PYTHON_VERSION}

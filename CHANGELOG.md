@@ -1,3 +1,12 @@
+# clx 0.15.0 (Date TBD)
+
+## New Features
+
+## Improvements
+- PR #159 Update to PyTorch 1.5
+
+## Bug Fixes
+
 # clx 0.14.0 (Date TBD)
 
 ## New Features
@@ -8,12 +17,13 @@
 ## Improvements
 - PR #149 Add Versioneer
 - PR #151 README and CONTRIBUTING updates
-- PR #159 Update to PyTorch 1.5
+- PR #160 Build script updates
 
 ## Bug Fixes
 - PR #150 Fix splunk alert workflow test
 - PR #154 Local gpuCI build fix
 - PR #158 Fix test cases to support latest cudf changes
+- PR #164 GPU build fix
 
 # clx 0.13.0 (Date TBD)
 
