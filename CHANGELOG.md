@@ -17,6 +17,7 @@
 - PR #149 Add Versioneer
 - PR #151 README and CONTRIBUTING updates
 - PR #160 Build script updates
+- PR #167 Add git commit to conda package
 
 ## Bug Fixes
 - PR #150 Fix splunk alert workflow test
