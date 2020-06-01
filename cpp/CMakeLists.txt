@@ -8,6 +8,7 @@ project(cuda_tokenizer LANGUAGES CXX CUDA)
 
 find_package(PythonInterp 3 REQUIRED)
 find_package(PythonLibs 3 REQUIRED)
+find_package(benchmark REQUIRED)
 
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}  \
 --expt-relaxed-constexpr \
@@ -59,7 +60,8 @@ endif(RMM_INCLUDE AND RMM_LIBRARY)
 
 include_directories("${RMM_INCLUDE}")
 link_directories("${RMM_LIBRARY}")
-###################################################################################################
+
+
 
 add_library(clx SHARED
   src/hash_utils.cu
@@ -75,17 +77,41 @@ add_executable(tokenizer
   src/main.cu
 )
 
+add_executable(tokenizerBenchmark
+  benchmark/tokenizer_benchmark.cu
+)
+
 set_target_properties(tokenizer
   PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
 )
 
+set_target_properties(tokenizerBenchmark
+  PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+)
+
 target_link_libraries(tokenizer ${CU_TOK_LIBS} rmm)
+
+target_link_libraries(tokenizerBenchmark ${CU_TOK_LIBS} rmm benchmark::benchmark)
+
 target_include_directories(tokenizer
     PRIVATE
     ./include)
+
+
+#### GTEST
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INCLUDE_DIRS})
+add_executable(tokenizer_tests tests/tokenizer.cu)
+target_link_libraries(tokenizer_tests ${GTEST_LIBRARIES} ${CU_TOK_LIBS} rmm)
+set_target_properties(tokenizer_tests
+  PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+)
 
 add_dependencies(clx gen_cuda_header)
 
 install(TARGETS clx LIBRARY
     DESTINATION lib)
+
