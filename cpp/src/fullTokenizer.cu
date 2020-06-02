@@ -86,7 +86,7 @@ GpuFullTokenizer::GpuFullTokenizer( std::string vocab_file,
   basic_tokenizer(max_num_sentences, max_num_chars, cp_data, aux_data, do_lower_case),
   word_piece_tokenizer(vocab_file, max_num_chars, max_inp_chars_per_word),
   tensor_tokenIDS(max_rows_final_tensor*max_sequence_length),
-  attention_mask(max_rows_final_tensor),
+  attention_mask(max_rows_final_tensor*max_sequence_length),
   metadata(max_rows_final_tensor*3),
   device_row2log(max_rows_final_tensor),
   device_row2row_within_log(max_rows_final_tensor) {
