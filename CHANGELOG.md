@@ -1,4 +1,4 @@
-# clx 0.14.0 (Date TBD)
+# clx 0.14.0 (03 Jun 2020)
 
 ## New Features
 - PR #141 CUDA BERT Tokenizer
