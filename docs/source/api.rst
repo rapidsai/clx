@@ -12,10 +12,16 @@ Analytics
 .. autoclass:: clx.analytics.dga_detector.DGADetector
     :members:
 
+.. autoclass:: clx.analytics.phishing_detector.PhishingDetector
+    :members:
+
 .. autoclass:: clx.analytics.model.rnn_classifier.RNNClassifier
     :members:
 
 .. automodule:: clx.analytics.stats
+    :members:
+
+.. automodule:: clx.analytics.tokenizer
     :members:
 
 DNS Extractor

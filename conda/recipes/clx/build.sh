@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-python ./python/setup.py install --single-version-externally-managed --record=record.txt
+
+./build.sh clx

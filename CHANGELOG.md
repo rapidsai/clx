@@ -1,3 +1,21 @@
+# clx 0.14.0 (03 Jun 2020)
+
+## New Features
+- PR #141 CUDA BERT Tokenizer
+- PR #152 Local gpuCI build script
+- PR #133 Phishing detection using BERT
+
+## Improvements
+- PR #149 Add Versioneer
+- PR #151 README and CONTRIBUTING updates
+- PR #160 Build script updates
+
+## Bug Fixes
+- PR #150 Fix splunk alert workflow test
+- PR #154 Local gpuCI build fix
+- PR #158 Fix test cases to support latest cudf changes
+- PR #164 GPU build fix
+
 # clx 0.13.0 (31 Mar 2020)
 
 ## New Features

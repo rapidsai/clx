@@ -58,19 +58,6 @@ def test_splunk_alert_workflow(threshold, interval, window):
     raw_df = cudf.DataFrame({"raw": TEST_DATA})
     actual_df = sa_workflow.workflow(raw_df)
     expected_df = cudf.DataFrame()
-    expected_df = expected_df.set_index(
-        cudf.Series(
-            [
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6
-            ]
-        )
-    )
     expected_df["time"] = [
         1517702400,
         1516924800,

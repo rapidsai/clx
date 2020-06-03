@@ -43,30 +43,24 @@ python --version
 conda config --set ssl_verify False
 
 logger "conda install required packages"
-conda install -y -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge -c defaults -c pytorch -c rapidsai/label/pytorch \
+conda install \
     "cugraph=${MINOR_VERSION}" \
-    "cuxfilter=${MINOR_VERSION}" \
-    "cupy>=6.6.0,<8.0.0a0,!=7.1.0" \
-    "dask>=2.8.0" \
-    "distributed>=2.8.0" \
-    "dask-cudf=${MINOR_VERSION}" \
-    "pytorch==1.3.1" \
-    "torchvision=0.4.2" \
-    "seaborn" \
-    "s3fs" \
-    "nodejs"
+    "dask>=2.12.0" \
+    "distributed>=2.12.0" \
+    "dask-cudf=${MINOR_VERSION}"
 
 # Install master version of cudatashader
 pip install "git+https://github.com/rapidsai/cudatashader.git"
 
 conda list
 
+
 ################################################################################
-# INSTALL - Build package
+# BUILD - Build libclx and clx from source
 ################################################################################
 
-cd $WORKSPACE/python
-pip install -e .
+logger "Build libclx and clx..."
+$WORKSPACE/build.sh clean libclx clx
 
 ################################################################################
 # TEST - Test python package
@@ -75,6 +69,7 @@ pip install -e .
 if hasArg --skip-tests; then
     logger "Skipping Tests..."
 else
+    cd ${WORKSPACE}/python
     py.test --ignore=ci --cache-clear --junitxml=${WORKSPACE}/junit-clx.xml -v
     ${WORKSPACE}/ci/gpu/test-notebooks.sh 2>&1 | tee nbtest.log
     python ${WORKSPACE}/ci/utils/nbtestlog2junitxml.py nbtest.log
