@@ -5,6 +5,7 @@
 ## Improvements
 
 ## Bug Fixes
+- PR #169 Fix documentation links
 
 # clx 0.14.0 (Date TBD)
 
