@@ -43,19 +43,16 @@ python --version
 conda config --set ssl_verify False
 
 conda remove blas libblas
-conda install pytorch torchvision -c pytorch
+# conda install pytorch=1.5.0 torchvision -c pytorch
 
 logger "conda install required packages"
-conda install -y -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge -c defaults \
+conda install -c pytorch \
     "cugraph=${MINOR_VERSION}" \
-    "cuml=${MINOR_VERSION}" \
-    "cupy>=7,<8.0.0a0" \
     "dask>=2.12.0" \
     "distributed>=2.12.0" \
     "dask-cudf=${MINOR_VERSION}" \
-    "seaborn" \
-    "s3fs" \
-    "nodejs"
+    "pytorch=1.5.0" \
+    "torchvision"
 
 # Install master version of cudatashader
 pip install "git+https://github.com/rapidsai/cudatashader.git"
