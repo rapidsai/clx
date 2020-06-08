@@ -14,10 +14,6 @@
 import os
 import cudf
 import pytest
-import torch
-import torch.nn as nn
-from cudf import DataFrame
-from mockito import when, mock, verify
 from clx.analytics.detector_dataset import DetectorDataset
 from clx.analytics.dga_detector import DGADetector
 from clx.analytics.model.rnn_classifier import RNNClassifier
@@ -53,7 +49,7 @@ def test_predict():
     dd.load_model(model_filepath)
     actual_output = dd.predict(test_domains)
     expected_output = cudf.Series([1, 0])
-    assert actual_output.equals(actual_output)
+    assert actual_output.equals(expected_output)
 
 
 def test_train_model():
