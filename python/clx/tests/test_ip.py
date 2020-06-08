@@ -23,6 +23,7 @@ def test_ip_to_int():
     actual = clx.ip.ip_to_int(input)
     assert actual.equals(expected)
 
+
 @pytest.mark.skip(reason="nvstrings int2ip not yet ported to libcudf")
 def test_int_to_ip():
     input = cudf.Series([89088434, 1585596973])
