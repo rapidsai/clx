@@ -13,7 +13,6 @@
 # limitations under the License.
 import os
 import cudf
-import pytest
 from clx.analytics.detector_dataset import DetectorDataset
 from clx.analytics.dga_detector import DGADetector
 from clx.analytics.model.rnn_classifier import RNNClassifier
