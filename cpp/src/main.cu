@@ -8,7 +8,7 @@
 #include "cuda_profiler_api.h"
 #include "tokenizers.cuh"
 #include "nvToolsExt.h"
-#include "for_cython.h"
+#include <for_cython.h>
 using namespace std::chrono;
 
 #define MAX_NUM_SENTENCES 100
@@ -45,7 +45,7 @@ void cuda_tokenizer_file(std::string input_file_name, std::string hash_file, uin
                          uint32_t max_num_sentences_, uint32_t max_num_chars_, uint32_t max_rows_tensor_, TokenizerResult *result)  {
   // Create tokenizer
   nvtxRangePushA("create Tokenizer");
-  GpuFullTokenizer tokenizer(hash_file, max_num_sentences_, max_num_chars_, max_rows_tensor_, 
+  GpuFullTokenizer tokenizer(hash_file, max_num_sentences_, max_num_chars_, max_rows_tensor_,
                                    max_sequence_length, stride, do_truncate, do_lower);
   nvtxRangePop();
 

@@ -1,5 +1,5 @@
 #include <benchmark/benchmark.h>
-#include "../src/for_cython.h"
+#include <for_cython.h>
 
 #define MAX_NUM_SENTENCES 101
 #define MAX_NUM_CHARS 150000

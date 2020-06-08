@@ -1,4 +1,4 @@
-#include "../src/for_cython.h"
+#include <for_cython.h>
 #include <iostream>
 #include <fstream>
 #include <gtest/gtest.h>
