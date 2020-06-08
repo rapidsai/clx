@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import cudf
-import nvstrings
 import numpy as np
 
 
