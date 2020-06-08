@@ -1,6 +1,7 @@
 # clx 0.15.0 (Date TBD)
 
 ## New Features
+- PR # Add CLX Code of Conduct
 
 ## Improvements
 
