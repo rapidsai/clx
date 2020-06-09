@@ -62,7 +62,7 @@ class KafkaWriter:
 
     def _generate_delimited_ouput_col(self, gdf):
         first_col = gdf.columns[0]
-        gdf[first_col] = gdf[first_col].astype("str").str.fillna("")
+        gdf[first_col] = gdf[first_col].astype("str").fillna("")
         gdf[self.output_colname] = gdf[first_col].astype("str").str.rstrip()
         for col in gdf.columns[1:-1]:
             gdf[col] = gdf[col].astype("str").fillna("")
