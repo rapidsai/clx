@@ -43,9 +43,8 @@ python --version
 conda config --set ssl_verify False
 
 logger "conda install required packages"
-conda install -y \
+conda install \
     "cugraph=${MINOR_VERSION}" \
-    "cuxfilter=${MINOR_VERSION}" \
     "dask>=2.12.0" \
     "distributed>=2.12.0" \
     "dask-cudf=${MINOR_VERSION}"

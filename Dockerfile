@@ -1,5 +1,5 @@
 # An integration test & dev container based on rapids-dev-nightly with CLX installed from current branch
-ARG RAPIDS_VERSION=0.14
+ARG RAPIDS_VERSION=0.15
 ARG CUDA_VERSION=10.1
 ARG LINUX_VERSION=ubuntu18.04
 ARG PYTHON_VERSION=3.7
