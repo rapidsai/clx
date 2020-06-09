@@ -5,6 +5,7 @@
 ## Improvements
 
 ## Bug Fixes
+- PR #169 Fix documentation links
 - PR #171 Fix errors from nvstrings removal
 
 # clx 0.14.0 (Date TBD)
