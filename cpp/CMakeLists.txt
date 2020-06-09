@@ -1,9 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
 
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CUDA_STANDARD 14)
-
 project(cuda_tokenizer LANGUAGES CXX CUDA)
 
 find_package(PythonInterp 3 REQUIRED)
@@ -172,10 +168,11 @@ link_directories("${RMM_LIBRARY}")
 # - add google benchmark --------------------------------------------------------------------------
 
 if(BUILD_BENCHMARKS)
-
+  message(STATUS "BUILD BENCHMARKS: ${BUILD_BENCHMARKS}")
   include(ConfigureGoogleBenchmark)
 
   if(GBENCH_FOUND)
+    message(STATUS "GBENCH_FOUND: ${GBENCH_FOUND}")
     message(STATUS "Google C++ Benchmarking Framework (Google Benchmark) found in ${GBENCH_ROOT}")
     include_directories(${GBENCH_INCLUDE_DIR})
     add_subdirectory(${CMAKE_SOURCE_DIR}/benchmarks)
@@ -227,13 +224,7 @@ add_executable(tokenizer
   src/main.cu
 )
 
-add_executable(tokenizer_benchmark
-  benchmarks/tokenizer_benchmark.cu
-)
-
 target_link_libraries(tokenizer ${CU_TOK_LIBS} rmm)
-
-target_link_libraries(tokenizer_benchmark ${CU_TOK_LIBS} rmm benchmark benchmark_main)
 
 target_link_libraries(clx nvToolsExt rmm)
 
@@ -245,13 +236,6 @@ set_target_properties(tokenizer
   PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
 )
-
-set_target_properties(tokenizer_benchmark
-  PROPERTIES
-  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
-)
-
-set_target_properties(tokenizer_benchmark PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 add_custom_target(build_benchmarks_clx
                   DEPENDS ${BENCHMARK_LIST})

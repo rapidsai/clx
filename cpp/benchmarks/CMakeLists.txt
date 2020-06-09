@@ -22,21 +22,12 @@ endfunction(ConfigureBench)
 
 ###################################################################################################
 # - include paths ---------------------------------------------------------------------------------
-message(STATUS "1. ${CUB_INCLUDE_DIR} \n 2. ${THRUST_INCLUDE_DIR} \n 3. ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} \n4. ${CMAKE_BINARY_DIR}/include \n5. ${CMAKE_SOURCE_DIR}/include \n6. ${CMAKE_SOURCE_DIR} \n7. ${CMAKE_SOURCE_DIR}/src \n8. ${CMAKE_SOURCE_DIR}/thirdparty/dlpack/include \n9. ${CMAKE_SOURCE_DIR}/thirdparty/jitify \n10. ${CMAKE_SOURCE_DIR}/thirdparty/libcudacxx/include \n11. ${GTEST_INCLUDE_DIR} \n111. ${GBENCH_INCLUDE_DIR} \n12. ${ARROW_INCLUDE_DIR} \n13. ${FLATBUFFERS_INCLUDE_DIR} \n14. ${RMM_INCLUDE} \n15. ${CMAKE_CURRENT_SOURCE_DIR}")
-include_directories(#"${CUB_INCLUDE_DIR}"
-                    #"${THRUST_INCLUDE_DIR}"
-                    "${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}"
+include_directories("${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}"
                     "${CMAKE_BINARY_DIR}/include"
                     "${CMAKE_SOURCE_DIR}/include"
                     "${CMAKE_SOURCE_DIR}"
                     "${CMAKE_SOURCE_DIR}/src"
-                    #"${CMAKE_SOURCE_DIR}/thirdparty/dlpack/include"
-                    #"${CMAKE_SOURCE_DIR}/thirdparty/jitify"
-                    #"${CMAKE_SOURCE_DIR}/thirdparty/libcudacxx/include"
-                    #"${GTEST_INCLUDE_DIR}"
                     "${GBENCH_INCLUDE_DIR}"
-                    #"${ARROW_INCLUDE_DIR}"
-                    #"${FLATBUFFERS_INCLUDE_DIR}"
                     "${RMM_INCLUDE}"
                     "${CMAKE_CURRENT_SOURCE_DIR}")
 
