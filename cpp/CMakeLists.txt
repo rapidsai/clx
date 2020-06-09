@@ -113,36 +113,12 @@ set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}  \
 -O3 \
 -lineinfo")
 
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/" ${CMAKE_MODULE_PATH})
+
 # Build options
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(BUILD_TESTS "Configure CMake to build tests" ON)
 option(BUILD_BENCHMARKS "Configure CMake to build (google) benchmarks" OFF)
-
-###################################################################################################
-
-set(CU_TOK_LIBS
-    cudart
-    nvToolsExt
-    clx
-)
-
-include_directories(
-  ./cub
-  ./include
-)
-
-add_custom_command(
-  OUTPUT ${CMAKE_SOURCE_DIR}/src/cp_data.h
-  COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/python/generate_gpu_metadata.py --out_file ${CMAKE_SOURCE_DIR}/src/cp_data.h
-  DEPENDS python/generate_gpu_metadata.py
-  COMMENT "Generating code point meta data"
-)
-
-ADD_CUSTOM_TARGET(gen_cuda_header ALL
-   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/cp_data.h
-)
-
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/" ${CMAKE_MODULE_PATH})
 
 ###################################################################################################
 # - RMM -------------------------------------------------------------------------------------------
@@ -205,21 +181,50 @@ add_library(clx SHARED
   src/main.cu
 )
 ###################################################################################################
-# - gtest -------------------------------------------------------------------------------
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
-add_executable(tokenizer_tests tests/tokenizer_test.cu)
-target_link_libraries(tokenizer_tests ${GTEST_LIBRARIES} ${CU_TOK_LIBS} rmm)
-set_target_properties(tokenizer_tests
-  PROPERTIES
-  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
-)
+# - add gtest -------------------------------------------------------------------------------------
+
+if(BUILD_TESTS)
+    include(CTest)
+    include(ConfigureGoogleTest)
+
+    if(GTEST_FOUND)
+        message(STATUS "Google C++ Testing Framework (Google Test) found in ${GTEST_ROOT}")
+        include_directories(${GTEST_INCLUDE_DIR})
+        add_subdirectory(${CMAKE_SOURCE_DIR}/tests)
+    else()
+        message(AUTHOR_WARNING "Google C++ Testing Framework (Google Test) not found: automated tests are disabled.")
+    endif(GTEST_FOUND)
+endif(BUILD_TESTS)
+
+message(STATUS "CLX_TEST_LIST set to: ${CLX_TEST_LIST}")
 
 ###################################################################################################
 # - include paths ---------------------------------------------------------------------------------
 
 include_directories("${RMM_INCLUDE}")
 ###################################################################################################
+set(CU_TOK_LIBS
+    cudart
+    nvToolsExt
+    clx
+)
+
+include_directories(
+  ./cub
+  ./include
+)
+
+add_custom_command(
+  OUTPUT ${CMAKE_SOURCE_DIR}/src/cp_data.h
+  COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/python/generate_gpu_metadata.py --out_file ${CMAKE_SOURCE_DIR}/src/cp_data.h
+  DEPENDS python/generate_gpu_metadata.py
+  COMMENT "Generating code point meta data"
+)
+
+ADD_CUSTOM_TARGET(gen_cuda_header ALL
+   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/cp_data.h
+)
+
 add_executable(tokenizer
   src/main.cu
 )
