@@ -14,7 +14,6 @@
 
 import cudf
 import clx.ip
-import pytest
 
 
 def test_ip_to_int():
