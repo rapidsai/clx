@@ -57,7 +57,7 @@ def int_to_ip(values):
     1    94.130.74.45
     dtype: object
     """
-    raise NotImplementedError
+    return cudf.Series(values._column.int2ip())
 
 
 def is_ip(ips):

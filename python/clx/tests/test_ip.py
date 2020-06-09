@@ -24,7 +24,6 @@ def test_ip_to_int():
     assert actual.equals(expected)
 
 
-@pytest.mark.skip(reason="nvstrings int2ip not yet ported to cudf")
 def test_int_to_ip():
     input = cudf.Series([89088434, 1585596973])
     expected = cudf.Series(["5.79.97.178", "94.130.74.45"])
