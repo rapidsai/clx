@@ -116,7 +116,7 @@ set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}  \
 # Build options
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(BUILD_TESTS "Configure CMake to build tests" ON)
-option(BUILD_BENCHMARKS "Configure CMake to build (google) benchmarks" ON)
+option(BUILD_BENCHMARKS "Configure CMake to build (google) benchmarks" OFF)
 
 ###################################################################################################
 
