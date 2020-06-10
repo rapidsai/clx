@@ -144,11 +144,9 @@ link_directories("${RMM_LIBRARY}")
 # - add google benchmark --------------------------------------------------------------------------
 
 if(BUILD_BENCHMARKS)
-  message(STATUS "BUILD BENCHMARKS: ${BUILD_BENCHMARKS}")
   include(ConfigureGoogleBenchmark)
 
   if(GBENCH_FOUND)
-    message(STATUS "GBENCH_FOUND: ${GBENCH_FOUND}")
     message(STATUS "Google C++ Benchmarking Framework (Google Benchmark) found in ${GBENCH_ROOT}")
     include_directories(${GBENCH_INCLUDE_DIR})
     add_subdirectory(${CMAKE_SOURCE_DIR}/benchmarks)

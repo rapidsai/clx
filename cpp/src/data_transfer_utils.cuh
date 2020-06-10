@@ -16,4 +16,3 @@ inline void gpuCheck(cudaError_t err, const char *file, int line) {
 }
 
 #define assertCudaSuccess(cu_err) {gpuCheck((cu_err), __FILE__, __LINE__);}
-

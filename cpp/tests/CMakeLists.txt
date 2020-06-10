@@ -40,11 +40,6 @@ endfunction(ConfigureTest)
 ###################################################################################################
 # - include paths ---------------------------------------------------------------------------------
 
-#include_directories("${CUB_INCLUDE_DIR}"
-#                    "${THRUST_INCLUDE_DIR}"
-#                    "${JITIFY_INCLUDE_DIR}"
-#                    "${LIBCUDACXX_INCLUDE_DIR}")
-
 if(CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES)
     include_directories("${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}")
 endif()
