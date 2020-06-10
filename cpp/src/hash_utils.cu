@@ -45,7 +45,7 @@ void load_hash_information(const std::string& path, uint32_t& outer_table_a, uin
   uint64_t hash_table_length = std::stoull(line);
   hash_table.resize(hash_table_length);
 
-  for(int i = 0; i < hash_table_length; ++i) {
+  for(uint32_t i = 0; i < hash_table_length; ++i) {
     std::getline(hash_file, line);
     hash_table[i] = std::stoull(line);
   }

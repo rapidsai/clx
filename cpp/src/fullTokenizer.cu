@@ -111,7 +111,7 @@ void GpuFullTokenizer::tokenize(const std::vector<std::string>& sentences) {
   nrows_tensor_tokenIDS = 0;
   std::vector<uint32_t> nrows_per_log;
   nrows_per_log.resize(sentences.size());
-  for (int i=0; i<sentences.size(); i++){
+  for (uint32_t i=0; i<sentences.size(); i++){
     uint32_t ntokens = host_offsets[i+1] - host_offsets[i];
     if (do_truncate || ntokens <= max_sequence_length) nrows_per_log[i] = 1;
     else{
@@ -127,8 +127,8 @@ void GpuFullTokenizer::tokenize(const std::vector<std::string>& sentences) {
   host_row2log.resize(nrows_tensor_tokenIDS);
   host_row2row_within_log.resize(nrows_tensor_tokenIDS);
   int row_id = 0;
-  for (int i=0; i<sentences.size(); i++){
-    for (int j=0; j<nrows_per_log[i]; j++){
+  for (uint32_t i=0; i<sentences.size(); i++){
+    for (uint32_t j=0; j<nrows_per_log[i]; j++){
       host_row2log[row_id] = i;
       host_row2row_within_log[row_id]=j;
       row_id++;
@@ -165,7 +165,7 @@ void GpuFullTokenizer::tokenize(const char* device_sentences, uint32_t* offsets,
   nrows_tensor_tokenIDS = 0;
   std::vector<uint32_t> nrows_per_log;
   nrows_per_log.resize(offset_size);
-  for (int i=0; i<offset_size; i++){
+  for (uint32_t i=0; i<offset_size; i++){
     uint32_t ntokens = host_offsets[i+1] - host_offsets[i];
     if (do_truncate || ntokens <= max_sequence_length) nrows_per_log[i] = 1;
     else{
@@ -181,8 +181,8 @@ void GpuFullTokenizer::tokenize(const char* device_sentences, uint32_t* offsets,
   host_row2log.resize(nrows_tensor_tokenIDS);
   host_row2row_within_log.resize(nrows_tensor_tokenIDS);
   int row_id = 0;
-  for (int i=0; i<offset_size; i++){
-    for (int j=0; j<nrows_per_log[i]; j++){
+  for (uint32_t i=0; i<offset_size; i++){
+    for (uint32_t j=0; j<nrows_per_log[i]; j++){
       host_row2log[row_id] = i;
       host_row2row_within_log[row_id]=j;
       row_id++;

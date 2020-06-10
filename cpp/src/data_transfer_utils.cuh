@@ -7,7 +7,7 @@
 #include <rmm/rmm.h>
 #include <rmm/thrust_rmm_allocator.h>
 
-static void gpuCheck(cudaError_t err, const char *file, int line) {
+inline void gpuCheck(cudaError_t err, const char *file, int line) {
   if (err != cudaSuccess) {
       std::cerr << cudaGetErrorString(err) << " in file " << file << " at line "
                                            << line << "." << std::endl;

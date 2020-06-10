@@ -147,7 +147,7 @@ void flatten_sentences(const std::vector<std::string>& sentences,
                        uint32_t* sentence_offsets) {
 
   uint32_t start_copy = 0;
-  for(int i = 0; i < sentences.size(); ++i){
+  for(uint32_t i = 0; i < sentences.size(); ++i){
     const uint32_t sentence_length = sentences[i].size();
 
     sentences[i].copy(flattened_sentences + start_copy, sentence_length);
@@ -250,7 +250,7 @@ std::pair<ptr_length_pair<uint32_t*>, ptr_length_pair<uint32_t*>> GpuBasicTokeni
   size_t num_offsets = offset_size + 1;
   std::vector<uint32_t> sentence_offsets(num_offsets);
   uint32_t start_copy = 0;
-  for(int i = 0; i < offset_size; ++i){
+  for(uint32_t i = 0; i < offset_size; ++i){
     sentence_offsets[i] = start_copy;
     start_copy += offsets[i];
   }
