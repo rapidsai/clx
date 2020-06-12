@@ -7,7 +7,7 @@ import torch
 from torch.utils.dlpack import from_dlpack
 import os
 
-cdef extern from "../../../cpp/src/for_cython.h":
+cdef extern from "../../../cpp/include/for_cython.h":
     struct TokenizerResult:
         unsigned int nrows_tensor
         unsigned int* device_tensor_tokenIDS

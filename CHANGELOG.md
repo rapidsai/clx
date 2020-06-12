@@ -19,6 +19,7 @@
 - PR #149 Add Versioneer
 - PR #151 README and CONTRIBUTING updates
 - PR #160 Build script updates
+- PR #155 Tokenizer rmm integration
 
 ## Bug Fixes
 - PR #150 Fix splunk alert workflow test
