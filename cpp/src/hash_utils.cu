@@ -6,16 +6,16 @@
 #include "data_transfer_utils.cuh"
 
 
-void load_hash_information(const std::string& path, uint32_t& outer_table_a, uint32_t& outer_table_b, 
+void load_hash_information(const std::string& path, uint32_t& outer_table_a, uint32_t& outer_table_b,
                            uint16_t& num_bins, uint16_t& unk_tok_id, uint16_t& first_tok_id,
                            uint16_t& sep_tok_id, std::vector<uint64_t>& hash_table,
                            std::vector<uint64_t>& bin_coefficients, std::vector<uint16_t>& bin_offsets) {
 
-  std::ifstream hash_file(path); 
+  std::ifstream hash_file(path);
   if(!hash_file.good()) {
     std::cerr << "Hash file " << path << " not found." << std::endl;
     exit(1);
-  }  
+  }
 
   std::string line;
   std::getline(hash_file, line);
@@ -45,7 +45,7 @@ void load_hash_information(const std::string& path, uint32_t& outer_table_a, uin
   uint64_t hash_table_length = std::stoull(line);
   hash_table.resize(hash_table_length);
 
-  for(int i = 0; i < hash_table_length; ++i) {
+  for(uint32_t i = 0; i < hash_table_length; ++i) {
     std::getline(hash_file, line);
     hash_table[i] = std::stoull(line);
   }
@@ -62,8 +62,8 @@ void load_hash_information(const std::string& path, uint32_t& outer_table_a, uin
 
 
 // See hash_utils.cuh
-void transfer_hash_info_to_device(const std::string hash_data_file, uint64_t** device_hash_table, 
-                                  uint64_t** device_bin_coefficients, uint16_t** device_bin_offsets,
+void transfer_hash_info_to_device(const std::string hash_data_file, rmm::device_vector<uint64_t>& device_hash_table,
+                                  rmm::device_vector<uint64_t>& device_bin_coefficients, rmm::device_vector<uint16_t>& device_bin_offsets,
                                   uint16_t& unk_tok_id, uint16_t& first_tok_id, uint16_t& sep_tok_id,
                                   uint32_t& outer_table_a, uint32_t& outer_table_b, uint16_t& num_bins) {
 
@@ -72,11 +72,11 @@ void transfer_hash_info_to_device(const std::string hash_data_file, uint64_t** d
   std::vector<uint16_t> bin_offsets;
 
   load_hash_information(hash_data_file, outer_table_a, outer_table_b, num_bins,
-                        unk_tok_id, first_tok_id, sep_tok_id, hash_table, 
+                        unk_tok_id, first_tok_id, sep_tok_id, hash_table,
                         bin_coefficients, bin_offsets);
 
   // Transfer hash table vectors
-  malloc_and_copy_vec_to_device(device_hash_table, hash_table);
-  malloc_and_copy_vec_to_device(device_bin_coefficients, bin_coefficients);
-  malloc_and_copy_vec_to_device(device_bin_offsets, bin_offsets); 
+  device_hash_table = hash_table;
+  device_bin_coefficients = bin_coefficients;
+  device_bin_offsets = bin_offsets;
 }
