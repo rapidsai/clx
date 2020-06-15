@@ -3,6 +3,7 @@
 ## New Features
 
 ## Improvements
+- PR #174 Install dependencies via meta package
 
 ## Bug Fixes
 - PR #169 Fix documentation links
