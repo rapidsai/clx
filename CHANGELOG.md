@@ -3,6 +3,7 @@
 ## New Features
 
 ## Improvements
+- PR #175 GPU tokenizer updates
 
 ## Bug Fixes
 - PR #169 Fix documentation links
