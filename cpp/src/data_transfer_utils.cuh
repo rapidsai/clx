@@ -4,7 +4,6 @@
 #include <iostream>
 
 #include <thrust/device_vector.h>
-#include <rmm/rmm.h>
 #include <rmm/thrust_rmm_allocator.h>
 
 inline void gpuCheck(cudaError_t err, const char *file, int line) {

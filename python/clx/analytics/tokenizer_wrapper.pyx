@@ -71,9 +71,7 @@ def tokenize_df(input_df, hash_file="default", max_sequence_length=64, stride=48
     else:
         raise ValueError("Input must be a cudf.DataFrame or cudf.Series")
 
-    d_arr=cupy.empty(len(input_df), dtype=np.uint32)
-    col.str.byte_count(d_arr.data.ptr,True)
-    offsets = cupy.asnumpy(d_arr)
+    offsets = col.str.byte_count().to_array()
 
     cdef TokenizerResult *result
     result = <TokenizerResult *>calloc(1,sizeof(TokenizerResult))
