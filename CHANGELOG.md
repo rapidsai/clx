@@ -4,6 +4,7 @@
 
 ## Improvements
 - PR #174 Install dependencies via meta package
+- PR #175 GPU tokenizer updates
 
 ## Bug Fixes
 - PR #169 Fix documentation links
