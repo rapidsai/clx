@@ -5,7 +5,6 @@
 #include <string>
 
 #include <thrust/device_vector.h>
-#include <rmm/rmm.h>
 #include <rmm/thrust_rmm_allocator.h>
 
 template<typename T>

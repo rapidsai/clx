@@ -4,7 +4,6 @@
 #include <gtest/gtest.h>
 
 #include <thrust/device_vector.h>
-#include <rmm/rmm.h>
 #include <rmm/thrust_rmm_allocator.h>
 
 #define MAX_NUM_SENTENCES 101
