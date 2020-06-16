@@ -45,9 +45,12 @@ conda config --set ssl_verify False
 logger "conda install required packages"
 conda install \
     "cugraph=${MINOR_VERSION}" \
-    "dask>=2.12.0" \
-    "distributed>=2.12.0" \
-    "dask-cudf=${MINOR_VERSION}"
+    "dask-cudf=${MINOR_VERSION}" \
+    "rapids-build-env=$MINOR_VERSION.*"
+
+# https://docs.rapids.ai/maintainers/depmgmt/ 
+# conda remove -f rapids-build-env
+# conda install "your-pkg=1.0.0"
 
 # Install master version of cudatashader
 pip install "git+https://github.com/rapidsai/cudatashader.git"
