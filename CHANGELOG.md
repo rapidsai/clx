@@ -3,6 +3,7 @@
 ## New Features
 
 ## Improvements
+- PR #174 Install dependencies via meta package
 - PR #175 GPU tokenizer updates
 - PR #159 Update to PyTorch 1.5
 

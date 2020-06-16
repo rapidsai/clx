@@ -48,11 +48,14 @@ conda remove blas libblas
 logger "conda install required packages"
 conda install -c pytorch \
     "cugraph=${MINOR_VERSION}" \
-    "dask>=2.12.0" \
-    "distributed>=2.12.0" \
     "dask-cudf=${MINOR_VERSION}" \
     "pytorch=1.5.0" \
     "torchvision"
+    "rapids-build-env=$MINOR_VERSION.*"
+
+# https://docs.rapids.ai/maintainers/depmgmt/ 
+# conda remove -f rapids-build-env
+# conda install "your-pkg=1.0.0"
 
 # Install master version of cudatashader
 pip install "git+https://github.com/rapidsai/cudatashader.git"
