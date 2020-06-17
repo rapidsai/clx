@@ -55,10 +55,6 @@ conda install -c pytorch \
     "cython" \
     "pytest"
 
-# https://docs.rapids.ai/maintainers/depmgmt/ 
-# conda remove -f rapids-build-env
-# conda install "your-pkg=1.0.0"
-
 # Install master version of cudatashader
 pip install "git+https://github.com/rapidsai/cudatashader.git"
 

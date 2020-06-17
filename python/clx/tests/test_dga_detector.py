@@ -16,6 +16,7 @@ import cudf
 from clx.analytics.detector_dataset import DetectorDataset
 from clx.analytics.dga_detector import DGADetector
 from clx.analytics.model.rnn_classifier import RNNClassifier
+import torch
 
 test_dataset_len = 4
 test_batchsize = 2
@@ -37,29 +38,33 @@ model_filepath = "%s/input/rnn_classifier_2020-06-08_20_48_03.pth" % os.path.dir
 
 
 def test_load_model():
-    dd = DGADetector()
-    dd.load_model(model_filepath)
-    assert isinstance(dd.model, RNNClassifier)
+    if torch.cuda.is_available():
+        dd = DGADetector()
+        dd.load_model(model_filepath)
+        assert isinstance(dd.model, RNNClassifier)
 
 
 def test_predict():
-    dd = DGADetector()
-    test_domains = cudf.Series(["nvidia.com", "dfsdfsdf"])
-    dd.load_model(model_filepath)
-    actual_output = dd.predict(test_domains)
-    expected_output = cudf.Series([1, 0])
-    assert actual_output.equals(expected_output)
+    if torch.cuda.is_available():
+        dd = DGADetector()
+        test_domains = cudf.Series(["nvidia.com", "dfsdfsdf"])
+        dd.load_model(model_filepath)
+        actual_output = dd.predict(test_domains)
+        expected_output = cudf.Series([1, 0])
+        assert actual_output.equals(expected_output)
 
 
 def test_train_model():
-    dd = DGADetector()
-    dd.init_model()
-    total_loss = dd.train_model(dataset)
-    assert isinstance(total_loss, (int, float))
+    if torch.cuda.is_available():
+        dd = DGADetector()
+        dd.init_model()
+        total_loss = dd.train_model(dataset)
+        assert isinstance(total_loss, (int, float))
 
 
 def test_evaluate_model():
-    dd = DGADetector()
-    dd.init_model()
-    accuracy = dd.evaluate_model(dataset)
-    assert isinstance(accuracy, (int, float))
+    if torch.cuda.is_available():
+        dd = DGADetector()
+        dd.init_model()
+        accuracy = dd.evaluate_model(dataset)
+        assert isinstance(accuracy, (int, float))
