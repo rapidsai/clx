@@ -42,7 +42,7 @@ python --version
 # FIX Added to deal with Anancoda SSL verification issues during conda builds
 conda config --set ssl_verify False
 
-conda remove blas libblas
+conda remove nomkl blas libblas
 # conda install pytorch=1.5.0 torchvision -c pytorch
 
 logger "conda install required packages"
@@ -51,7 +51,9 @@ conda install -c pytorch \
     "dask-cudf=${MINOR_VERSION}" \
     "pytorch=1.5.0" \
     "torchvision"
-    "rapids-build-env=$MINOR_VERSION.*"
+    "cmake" \
+    "cython" \
+    "pytest"
 
 # https://docs.rapids.ai/maintainers/depmgmt/ 
 # conda remove -f rapids-build-env
