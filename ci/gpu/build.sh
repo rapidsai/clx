@@ -50,7 +50,7 @@ conda install -c pytorch \
     "cugraph=${MINOR_VERSION}" \
     "dask-cudf=${MINOR_VERSION}" \
     "pytorch=1.5.0" \
-    "torchvision"
+    "torchvision" \
     "cmake" \
     "cython" \
     "pytest"
