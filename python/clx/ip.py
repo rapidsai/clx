@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import cudf
-import nvstrings
 import numpy as np
 
 
@@ -58,13 +57,7 @@ def int_to_ip(values):
     1    94.130.74.45
     dtype: object
     """
-    return cudf.Series(
-        nvstrings.int2ip(
-            values.astype("int32")._column.data_array_view,
-            count=len(values),
-            bdevmem=True,
-        )
-    )
+    return cudf.Series(values._column.int2ip())
 
 
 def is_ip(ips):
@@ -294,11 +287,11 @@ def netmask(ips, prefixlen=16):
         kwargs=dict(kwarg1=mask_int),
     )
 
-    out1 = x["out1"].astype(str)._column.nvstrings
-    out2 = x["out2"].astype(str)._column.nvstrings
-    out3 = x["out3"].astype(str)._column.nvstrings
-    out4 = x["out4"].astype(str)._column.nvstrings
-    df["net_mask"] = out1.cat(out2, sep=".").cat(out3, sep=".").cat(out4, sep=".")
+    out1 = x["out1"].astype(str)
+    out2 = x["out2"].astype(str)
+    out3 = x["out3"].astype(str)
+    out4 = x["out4"].astype(str)
+    df["net_mask"] = out1.str.cat(out2, sep=".").str.cat(out3, sep=".").str.cat(out4, sep=".")
     return df["net_mask"]
 
 
@@ -342,11 +335,11 @@ def hostmask(ips, prefixlen=16):
         kwargs=dict(kwarg1=host_mask_int),
     )
 
-    out1 = x["out1"].astype(str)._column.nvstrings
-    out2 = x["out2"].astype(str)._column.nvstrings
-    out3 = x["out3"].astype(str)._column.nvstrings
-    out4 = x["out4"].astype(str)._column.nvstrings
-    df["hostmask"] = out1.cat(out2, sep=".").cat(out3, sep=".").cat(out4, sep=".")
+    out1 = x["out1"].astype(str)
+    out2 = x["out2"].astype(str)
+    out3 = x["out3"].astype(str)
+    out4 = x["out4"].astype(str)
+    df["hostmask"] = out1.str.cat(out2, sep=".").str.cat(out3, sep=".").str.cat(out4, sep=".")
     return df["hostmask"]
 
 
@@ -393,9 +386,9 @@ def mask(ips, masks):
         kwargs=dict(kwarg1=0),
     )
 
-    out1 = x["out1"].astype(str)._column.nvstrings
-    out2 = x["out2"].astype(str)._column.nvstrings
-    out3 = x["out3"].astype(str)._column.nvstrings
-    out4 = x["out4"].astype(str)._column.nvstrings
-    df["mask"] = out1.cat(out2, sep=".").cat(out3, sep=".").cat(out4, sep=".")
+    out1 = x["out1"].astype(str)
+    out2 = x["out2"].astype(str)
+    out3 = x["out3"].astype(str)
+    out4 = x["out4"].astype(str)
+    df["mask"] = out1.str.cat(out2, sep=".").str.cat(out3, sep=".").str.cat(out4, sep=".")
     return df["mask"]

@@ -8,7 +8,7 @@
 #include "cuda_profiler_api.h"
 #include "tokenizers.cuh"
 #include "nvToolsExt.h"
-#include "for_cython.h"
+#include <for_cython.h>
 using namespace std::chrono;
 
 #define MAX_NUM_SENTENCES 100
@@ -45,7 +45,7 @@ void cuda_tokenizer_file(std::string input_file_name, std::string hash_file, uin
                          uint32_t max_num_sentences_, uint32_t max_num_chars_, uint32_t max_rows_tensor_, TokenizerResult *result)  {
   // Create tokenizer
   nvtxRangePushA("create Tokenizer");
-  GpuFullTokenizer tokenizer(hash_file, max_num_sentences_, max_num_chars_, max_rows_tensor_, 
+  GpuFullTokenizer tokenizer(hash_file, max_num_sentences_, max_num_chars_, max_rows_tensor_,
                                    max_sequence_length, stride, do_truncate, do_lower);
   nvtxRangePop();
 
@@ -126,16 +126,16 @@ int main(int argc, char *argv[]) {
   cudaMemcpy(host_metadata.data(), result->device_tensor_metadata, result->nrows_tensor*3*sizeof(uint32_t), cudaMemcpyDeviceToHost);
 
   printf("\n --- TENSOR --- \n");
-  for (int i=0; i<host_final_tensor.size(); i++){
+  for (uint32_t i=0; i<host_final_tensor.size(); i++){
     if (i!=0 && i%max_sequence_length==0) printf("\n\n");
     printf("%u ",host_final_tensor[i]);
   }
   printf("\n");
   printf("\n\n --- MASK ---- \n");
-  for (int i=0; i<host_attn_mask.size(); i++){
+  for (uint32_t i=0; i<host_attn_mask.size(); i++){
     if (i!=0 &&  i%max_sequence_length==0) printf("\n\n");
     printf("%u ", host_attn_mask[i]);
   }
   printf("\n\n --- METADATA ---- \n");
-  for (int i=0; i<result->nrows_tensor; i++) printf("%u %u %u\n", host_metadata[i*3], host_metadata[i*3+1], host_metadata[i*3+2]);
+  for (uint32_t i=0; i<result->nrows_tensor; i++) printf("%u %u %u\n", host_metadata[i*3], host_metadata[i*3+1], host_metadata[i*3+2]);
 }

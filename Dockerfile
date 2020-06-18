@@ -1,5 +1,5 @@
 # An integration test & dev container based on rapids-dev-nightly with CLX installed from current branch
-ARG RAPIDS_VERSION=0.14
+ARG RAPIDS_VERSION=0.15
 ARG CUDA_VERSION=10.1
 ARG LINUX_VERSION=ubuntu18.04
 ARG PYTHON_VERSION=3.7
@@ -15,7 +15,7 @@ RUN apt update -y --fix-missing && \
     apt install -y vim
 
 RUN source activate rapids \
-    && conda install -c pytorch pytorch==1.3.1 torchvision=0.4.2 datashader>=0.10.* panel=0.6.* geopandas>=0.6.* pyppeteer s3fs \
+    && conda install datashader>=0.10.* panel=0.6.* geopandas>=0.6.* pyppeteer s3fs ipywidgets \
     && pip install "git+https://github.com/rapidsai/cudatashader.git"
 
 # libclx build/install
