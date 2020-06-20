@@ -48,12 +48,14 @@ conda remove nomkl blas libblas
 logger "conda install required packages"
 conda install -c pytorch \
     "cugraph=${MINOR_VERSION}" \
+    "cuml=${MINOR_VERSION}" \
     "dask-cudf=${MINOR_VERSION}" \
     "pytorch=1.5.0" \
     "torchvision" \
     "cmake" \
     "cython" \
-    "pytest"
+    "pytest" \
+    "s3fs"
 
 # Install master version of cudatashader
 pip install "git+https://github.com/rapidsai/cudatashader.git"
