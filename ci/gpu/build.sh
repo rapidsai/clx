@@ -52,6 +52,7 @@ conda install -c pytorch \
     "dask-cudf=${MINOR_VERSION}" \
     "pytorch=1.5.0" \
     "torchvision" \
+    "scikit-learn" \
     "cmake" \
     "cython" \
     "pytest" \
