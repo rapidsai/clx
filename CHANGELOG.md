@@ -5,6 +5,7 @@
 ## Improvements
 - PR #174 Install dependencies via meta package
 - PR #175 GPU tokenizer updates
+- PR #181 CLX Query to support dask blazingsql
 
 ## Bug Fixes
 - PR #169 Fix documentation links
