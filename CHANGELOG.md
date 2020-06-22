@@ -10,6 +10,7 @@
 - PR #169 Fix documentation links
 - PR #171 Fix errors from nvstrings removal
 - PR #178 Update local build to use new gpuCI image
+- PR #180 Remove remaining references to nvstrings
 
 # clx 0.14.0 (Date TBD)
 
