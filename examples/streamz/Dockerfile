@@ -1,9 +1,9 @@
-ARG RAPIDS_VERSION=0.13
+ARG RAPIDS_VERSION=0.15
 ARG CUDA_VERSION=10.1
 ARG LINUX_VERSION=ubuntu18.04
 ARG PYTHON_VERSION=3.7
 
-FROM gpuci/rapidsai-base:cuda${CUDA_VERSION}-${LINUX_VERSION}-gcc7-py${PYTHON_VERSION}
+FROM gpuci/rapidsai:${RAPIDS_VERSION}-cuda${CUDA_VERSION}-devel-${LINUX_VERSION}-py${PYTHON_VERSION}
 USER root
 
 ADD examples/streamz/scripts /scripts
@@ -40,20 +40,32 @@ ENV KAFKA_VERSION 2.3.0
 ENV KAFKA_HOME /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"
 
 # Install common conda packages that most issues will require
-RUN source activate gdf \
+RUN source activate rapids \
     && conda install -c conda-forge -c pytorch -c anaconda -c rapidsai -c nvidia -c numba \
                     streamz=0.5.3 \
                     python-confluent-kafka=1.1.0 \
                     openjdk=8.0.152 \
                     pytorch=1.3.1 \
-                    cudf=${RAPIDS_VERSION} \ 
+                    cudf=${RAPIDS_VERSION} \
                     dask-cudf=${RAPIDS_VERSION} \
                     dask-cuda=${RAPIDS_VERSION} \
                     ipython=7.3* \
                     jupyterlab \
-    && pip install transformers==2.7.0 \
-    && cd /rapids/clx \
-    && ./build.sh clean libclx clx
+                    rmm=${RAPIDS_VERSION} \
+    && pip install transformers==2.7.0
+
+# libclx build/install
+RUN source activate rapids && \
+    mkdir -p /rapids/clx/cpp/build && \
+    cd /rapids/clx/cpp/build && \
+    cmake .. -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} && \
+    make -j install
+
+# clx build/install
+RUN source activate rapids && \
+    cd /rapids/clx/python && \
+    python setup.py build_ext --inplace && \
+    python setup.py install
 
 # Zookeeper
 EXPOSE 2181
