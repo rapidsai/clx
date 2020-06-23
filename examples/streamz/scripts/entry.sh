@@ -59,9 +59,9 @@ done
 #**********************************
 #Input arguments type & empty check
 #**********************************
-verify_input_arg(){ 
+verify_input_arg(){
 	if [[ -z $2 ]]; then
-	  log "ERROR" "Argument '$1' is not provided" 
+	  log "ERROR" "Argument '$1' is not provided"
 	  usage
 	  exit 1
 	fi
@@ -75,7 +75,7 @@ verify_input_arg "output_topic", $output_topic
 verify_input_arg "model_file", $model_file
 verify_input_arg "label_file", $label_file
 
-source activate gdf
+source activate rapids
 
 #**********************************
 # Configure Kafka
