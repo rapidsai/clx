@@ -22,37 +22,70 @@ from confluent_kafka import Producer
 from clx.analytics.cybert import Cybert
 import socket
 
+
 def inference(messages):
+    print("Entering inference ... # Messages: " + str(len(messages)))
     output_df = None
+    worker = dask.distributed.get_worker()
+    print("Dask Inference worker: " + str(worker))
+
     if type(messages) == str:
         df = cudf.DataFrame()
-        df['stream'] = [messages.decode('utf-8')]
-        output_df = cy.inference(df)
+        df["stream"] = [
+            messages.decode("utf-8")
+        ]  # Single row, single column dataframe. Is this really what you want? I assume CUDA parser needs it this way?
+        # output_df = cy.inference(df)    # This line is likely what was causing you problems as it tried to serilize and move the Cybert object between processes.
+        output_df = worker["cybert"].inference(
+            df
+        )  # Use this instead to get the process local Cybert instance that is also GPU local and aware
+
     elif type(messages) == list and len(messages) > 0:
         df = cudf.DataFrame()
-        df['stream'] = [msg.decode('utf-8') for msg in messages]
-        output_df = cy.inference(df)
+        df["stream"] = [msg.decode("utf-8") for msg in messages]
+        # output_df = cy.inference(df)
+        output_df = worker["cybert"].inference(df)
     else:
         print("ERROR: Unknown type encountered in inference")
     return [output_df.to_json()]
 
+
 def sink_to_kafka(event_logs):
-    conf = {"bootstrap.servers": args.broker,
-            "client.id": socket.gethostname(),
-            "session.timeout.ms": 10000}
-    producer = Producer(conf)
+    producer_confs = {
+        "bootstrap.servers": args.broker,
+        "client.id": socket.gethostname(),
+        "session.timeout.ms": 10000,
+    }
+    producer = Producer(
+        producer_confs
+    )  # Need to find a better way to share the producer instances. This will cause big time slowdowns.
     for event in event_logs:
         producer.produce(args.output_topic, event)
     producer.poll(1)
 
+
 def worker_init():
     from clx.analytics.cybert import Cybert
-    worker = dask.distributed.get_worker()
-    cybert = Cybert()
-    worker.data['cybert'] = cybert
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Cybert using Streamz and Dask. Data will be read from the input kafka topic, processed using cybert, and output printed.")
+    worker = dask.distributed.get_worker()
+    print("Worker in worker_init() " + str(worker))
+
+    # Create Cybert instance
+    cy = Cybert()
+    print("After 'cy' creation")
+    print("Model File: " + str(args.model) + " Label Map: " + str(args.label_map))
+    cy.load_model(args.model, args.label_map)
+    print("after load_model call")
+    worker.data["cybert"] = cy
+
+    print("Cybert module created and loaded ...")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Cybert using Streamz and Dask. \
+                                                  Data will be read from the input kafka topic, \
+                                                  processed using cybert, and output printed."
+    )
     parser.add_argument("--broker", default="localhost:9092", help="Kafka broker")
     parser.add_argument("--input_topic", default="input", help="Input kafka topic")
     parser.add_argument("--output_topic", default="output", help="Output kafka topic")
@@ -60,17 +93,29 @@ if __name__ == '__main__':
     parser.add_argument("--model", help="Model filepath")
     parser.add_argument("--label_map", help="Label map filepath")
     args = parser.parse_args()
-    cluster = LocalCUDACluster()
+
+    cluster = LocalCUDACluster(CUDA_VISIBLE_DEVICES=0)
     client = Client(cluster)
     print(client)
+    print("Initializing Cybert instances on each Dask worker")
     client.run(worker_init)
-    cy = Cybert(max_num_logs=1000000, max_num_chars=100000000, max_rows_tensor=1000000)
-    cy.load_model(args.model, args.label_map)
+
     # Define the streaming pipeline.
-    consumer_conf = {'bootstrap.servers': args.broker,
-                     'group.id': args.group_id, 'session.timeout.ms': 60000}
-    source = Stream.from_kafka_batched(args.input_topic, consumer_conf, poll_interval='1s',
-                                    npartitions=1, asynchronous=True, dask=True)
+    consumer_conf = {
+        "bootstrap.servers": args.broker,
+        "group.id": args.group_id,
+        "session.timeout.ms": 60000,
+    }
+
+    source = Stream.from_kafka_batched(
+        args.input_topic,
+        consumer_conf,
+        poll_interval="1s",
+        npartitions=1,
+        asynchronous=True,
+        dask=True,
+    )
     inference = source.map(inference).map(sink_to_kafka)
+
     # Start the stream.
     source.start()
