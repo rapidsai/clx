@@ -2,7 +2,7 @@
 ARG CUDA_VERSION=10.2
 ARG CUDA_SHORT_VERSION=${CUDA_VERSION}
 ARG LINUX_VERSION=ubuntu18.04
-FROM nvidia/cuda:${CUDA_VERSION}-devel-${LINUX_VERSION}
+FROM gpuci/miniconda-cuda:${CUDA_VERSION}-devel-${LINUX_VERSION}
 ENV DEBIAN_FRONTEND=noninteractive
 
 ARG CC=5
@@ -16,13 +16,6 @@ RUN apt update -y --fix-missing && \
       g++-${CXX} \
       libboost-all-dev \
       tzdata
-
-# Install conda
-ADD https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh /miniconda.sh
-RUN sh /miniconda.sh -b -p /conda && /conda/bin/conda update -n base conda
-ENV PATH=${PATH}:/conda/bin
-# Enables "source activate conda"
-SHELL ["/bin/bash", "-c"]
 
 # Add everything from the local build context
 ADD . /clx/
