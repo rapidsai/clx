@@ -1,4 +1,4 @@
-# An integration test & dev container which builds and installs cuDF from master
+# An integration test & dev container which builds and installs CLX from default branch
 ARG CUDA_VERSION=10.2
 ARG CUDA_SHORT_VERSION=${CUDA_VERSION}
 ARG LINUX_VERSION=ubuntu18.04
