@@ -51,7 +51,11 @@ RUN source activate rapids \
                     dask-cuda=${RAPIDS_VERSION} \
                     ipython=7.3* \
                     jupyterlab \
+<<<<<<< HEAD
                     rmm=${RAPIDS_VERSION} \
+=======
+                    rmm=0.14.* \
+>>>>>>> 4a4f86c9bfa4a489244343cad473a645957ed429
     && pip install transformers==2.7.0
 
 # libclx build/install
@@ -80,4 +84,3 @@ RUN wget -q http://www.gtlib.gatech.edu/pub/apache/kafka/2.3.0/kafka_2.11-2.3.0.
 ENTRYPOINT ["/bin/bash"]
 
 WORKDIR /rapids/clx
-
