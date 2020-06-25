@@ -80,7 +80,7 @@ if hasArg --skip-tests; then
 else
     cd ${WORKSPACE}/python
     # Override HOME for HuggingFace model downloads
-    HOME=${WORKSPACE}
+    HOME=$(pwd)
     py.test --ignore=ci --cache-clear --junitxml=${WORKSPACE}/junit-clx.xml -v
     ${WORKSPACE}/ci/gpu/test-notebooks.sh 2>&1 | tee nbtest.log
     python ${WORKSPACE}/ci/utils/nbtestlog2junitxml.py nbtest.log
