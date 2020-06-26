@@ -23,12 +23,8 @@ S3_BASE_PATH = "rapidsai-data/cyber/clx"
 EMAILS_TSV = "spam_assassin_hardham_200_20021010.tsv"
 
 phish_detect = PhishingDetector()
-
-
-def test_init_model():
-    if torch.cuda.is_available():
-        phish_detect.init_model()
-        assert isinstance(phish_detect._model, transformers.modeling_bert.BertForSequenceClassification)
+if torch.cuda.is_available():
+    phish_detect.init_model()
 
 
 def test_train_model(tmpdir):
