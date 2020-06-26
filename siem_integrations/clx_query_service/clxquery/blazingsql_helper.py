@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from dask_cuda import LocalCUDACluster
+from dask.distributed import Client
 from blazingsql import BlazingContext
 import logging
 
@@ -22,9 +24,10 @@ This class provides functionality to run blazingSQL queires and drop tables.
 
 
 class BlazingSQLHelper:
-    def __init__(self, pool=False):
-        # Setting pool=True allocates half the GPU memory.
-        self._bc = BlazingContext(pool=pool)
+    def __init__(self):
+        cluster = LocalCUDACluster()
+        client = Client(cluster)
+        self._bc = BlazingContext(dask_client = client, network_interface = 'lo')
 
     """This function runs blazingSQL query. 
     
@@ -45,7 +48,7 @@ class BlazingSQLHelper:
         sql = config["sql"]
         log.debug("Executing query: %s" % (sql))
         result = self._bc.sql(sql)
-        self.has_data = False
+        result = result.compute()
         return result
 
     """This function drops blazingSQL tables.
