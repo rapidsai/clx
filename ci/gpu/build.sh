@@ -52,11 +52,15 @@ conda install \
 # conda remove -f rapids-build-env
 # conda install "your-pkg=1.0.0"
 
-# Install master version of cudatashader
+# Install the master version of dask, distributed, and cudatashader
+logger "pip install git+https://github.com/dask/distributed.git --upgrade --no-deps"
+pip install "git+https://github.com/dask/distributed.git" --upgrade --no-deps
+logger "pip install git+https://github.com/dask/dask.git --upgrade --no-deps"
+pip install "git+https://github.com/dask/dask.git" --upgrade --no-deps
+logger "pip install git+https://github.com/rapidsai/cudatashader.git --upgrade --no-deps"
 pip install "git+https://github.com/rapidsai/cudatashader.git"
 
 conda list
-
 
 ################################################################################
 # BUILD - Build libclx and clx from source
