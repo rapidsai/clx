@@ -15,6 +15,7 @@
 - PR #178 Update local build to use new gpuCI image
 - PR #180 Remove remaining references to nvstrings
 - PR #182 Fix errors from update to cudf's column rename method
+- PR #185 Update gpu build to use latest dask
 
 # clx 0.14.0 (Date TBD)
 
