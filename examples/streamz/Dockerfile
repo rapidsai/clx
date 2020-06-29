@@ -1,4 +1,4 @@
-ARG RAPIDS_VERSION=0.15
+ARG RAPIDS_VERSION=0.14
 ARG CUDA_VERSION=10.1
 ARG LINUX_VERSION=ubuntu18.04
 ARG PYTHON_VERSION=3.7
@@ -40,33 +40,25 @@ ENV KAFKA_VERSION 2.3.0
 ENV KAFKA_HOME /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"
 
 # Install common conda packages that most issues will require
-RUN source activate rapids \
+RUN conda env create -f /rapids/clx/conda/environments/clx_dev.yml \
+    && source activate clx_dev \
     && conda install -c conda-forge -c pytorch -c anaconda -c rapidsai -c nvidia -c numba \
                     streamz=0.5.3 \
                     python-confluent-kafka=1.1.0 \
                     openjdk=8.0.152 \
                     pytorch=1.3.1 \
-                    cudf=${RAPIDS_VERSION} \
-                    dask-cudf=${RAPIDS_VERSION} \
-                    dask-cuda=${RAPIDS_VERSION} \
-                    ipython=7.3* \
-                    jupyterlab \
-<<<<<<< HEAD
-                    rmm=${RAPIDS_VERSION} \
-=======
-                    rmm=0.14.* \
->>>>>>> 4a4f86c9bfa4a489244343cad473a645957ed429
+                    dask-cuda=0.14.* \
     && pip install transformers==2.7.0
 
 # libclx build/install
-RUN source activate rapids && \
+RUN source activate clx_dev && \
     mkdir -p /rapids/clx/cpp/build && \
     cd /rapids/clx/cpp/build && \
     cmake .. -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} && \
     make -j install
 
 # clx build/install
-RUN source activate rapids && \
+RUN source activate clx_dev && \
     cd /rapids/clx/python && \
     python setup.py build_ext --inplace && \
     python setup.py install

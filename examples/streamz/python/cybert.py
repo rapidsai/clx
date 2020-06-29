@@ -59,6 +59,7 @@ def sink_to_kafka(event_logs):
         producer_confs
     )  # Need to find a better way to share the producer instances. This will cause big time slowdowns.
     for event in event_logs:
+        print("sending event to kafka: ", event)
         producer.produce(args.output_topic, event)
     producer.poll(1)
 
@@ -80,6 +81,15 @@ def worker_init():
     print("Cybert module created and loaded ...")
 
 
+def worker_init2():
+    print("testing")
+
+
+def testing(messages):
+    print(messages)
+    return messages
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Cybert using Streamz and Dask. \
@@ -94,7 +104,21 @@ if __name__ == "__main__":
     parser.add_argument("--label_map", help="Label map filepath")
     args = parser.parse_args()
 
-    cluster = LocalCUDACluster(CUDA_VISIBLE_DEVICES=0)
+    cluster = LocalCUDACluster(
+        CUDA_VISIBLE_DEVICES=[0], n_workers=1
+    )  # This is just because my box has 2 gpus
+    # threads_per_worker=1,    # Usually 1 worker per GPU makes sense, can adjust if needed.
+    # processes=True,          # Threads could be used but for whatever reason I like processes better
+    # memory_limit="20GB", # Host memory PER process (this * n_workers)
+    # device_memory_limit=None,
+    # data=None,
+    # local_directory=None,
+    # protocol=None,
+    # enable_tcp_over_ucx=False,
+    # enable_infiniband=False,
+    # enable_nvlink=False,
+    # ucx_net_devices=None,
+    # rmm_pool_size=None)
     client = Client(cluster)
     print(client)
     print("Initializing Cybert instances on each Dask worker")
@@ -106,7 +130,7 @@ if __name__ == "__main__":
         "group.id": args.group_id,
         "session.timeout.ms": 60000,
     }
-
+    print("Consumer conf:", consumer_conf)
     source = Stream.from_kafka_batched(
         args.input_topic,
         consumer_conf,
@@ -115,7 +139,6 @@ if __name__ == "__main__":
         asynchronous=True,
         dask=True,
     )
-    inference = source.map(inference).map(sink_to_kafka)
 
-    # Start the stream.
+    inference = source.map(inference).gather().map(sink_to_kafka)
     source.start()
