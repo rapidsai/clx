@@ -24,9 +24,9 @@ copyright = '2019, NVIDIA'
 author = 'NVIDIA'
 
 # The short X.Y version
-version = '0.13'
+version = '0.15'
 # The full version, including alpha/beta/rc tags
-release = '0.13.0'
+release = '0.15.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -40,13 +40,13 @@ release = '0.13.0'
 # ones.
 extensions = [
     'nbsphinx',
-    "sphinx.ext.intersphinx",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
-    "numpydoc",
-    "IPython.sphinxext.ipython_console_highlighting",
-    "IPython.sphinxext.ipython_directive",
-    "nbsphinx"
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
+    'numpydoc',
+    'IPython.sphinxext.ipython_console_highlighting',
+    'IPython.sphinxext.ipython_directive',
+    'nbsphinx'
 ]
 
 # Add any paths that contain templates here, relative to this directory.

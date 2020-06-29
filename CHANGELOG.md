@@ -1,13 +1,58 @@
+# clx 0.15.0 (Date TBD)
+
+## New Features
+- PR #170 Add CLX Code of Conduct
+
+## Improvements
+- PR #174 Install dependencies via meta package
+- PR #175 GPU tokenizer updates
+- PR #181 CLX Query to support dask blazingsql
+
+## Bug Fixes
+- PR #169 Fix documentation links
+- PR #171 Fix errors from nvstrings removal
+- PR #178 Update local build to use new gpuCI image
+- PR #180 Remove remaining references to nvstrings
+- PR #182 Fix errors from update to cudf's column rename method
+
+# clx 0.14.0 (Date TBD)
+
+## New Features
+- PR #141 CUDA BERT Tokenizer
+- PR #152 Local gpuCI build script
+- PR #133 Phishing detection using BERT
+
+## Improvements
+- PR #149 Add Versioneer
+- PR #151 README and CONTRIBUTING updates
+- PR #160 Build script updates
+- PR #167 Add git commit to conda package
+- PR #172 Add docs build script
+- PR #155 Tokenizer rmm integration
+- PR #172 Add docs build script
+
+## Bug Fixes
+- PR #150 Fix splunk alert workflow test
+- PR #154 Local gpuCI build fix
+- PR #158 Fix test cases to support latest cudf changes
+- PR #164 GPU build fix
+
 # clx 0.13.0 (Date TBD)
 
 ## New Features
+- PR #130 Example of streamz
+- PR #132 CLX query applications
 
 ## Improvements
 - PR #103 DGA detector refactor
 - PR #120 Use pytest tmpdir fixtures in unit tests
+- PR #125 Added notebook testing to gpuCI gpu build
+- RR #144 Python refactor
 
 ## Bug Fixes
-
+- PR #123 Fix update-version.sh
+- PR #129 Fix alert analysis notebook viz using cuxfilter
+- PR #138 Fix test cases to support latest cudf changes
 
 # clx 0.12.0 (Date TBD)
 
@@ -66,7 +111,6 @@
  - PR #42 Include DNS parser in module
  - PR #41 Fix unit test
  - PR #39 Fix gpuCI builds
-
 
 # clx 0.10.0 (Date TBD)
 

@@ -1,0 +1,12 @@
+input_format: csv
+tables:
+ - 
+   input_path: "/rapids/my_data/movies"
+   table_name: movies
+   header: 0
+ - 
+   input_path: "/rapids/my_data/ratings"
+   table_name: ratings
+   header: 0
+type: blazingsql
+

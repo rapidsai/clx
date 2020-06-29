@@ -1,9 +1,31 @@
+## Common
+*.pyc
+*.a
+*.o
+*.so
+*.dylib
+.cache
+.coverage
+.vscode
+*.swp
+.DS_Store
+
 # Python
 __pycache__/
 .pytest_cache/
 build/
 dist/
 clx.egg-info/
+python/clx/analytics/*.cpp
+
+## C++ build directories & artifacts
+CMakeFiles/
+Debug
+build/
+bin/
+
+# Dask
+dask-worker-space/
 
 # IDE
 .idea/

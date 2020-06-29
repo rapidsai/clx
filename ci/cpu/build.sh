@@ -12,17 +12,13 @@ function logger() {
 
 # Set path and build parallel level
 export PATH=/conda/bin:/usr/local/cuda/bin:$PATH
+export PARALLEL_LEVEL=4
 
 # Set home to the job's workspace
 export HOME=$WORKSPACE
-export CUDA_REL=${CUDA_VERSION%.*}
 
 # Switch to project root; also root of repo checkout
 cd $WORKSPACE
-
-# Get latest tag and number of commits since tag
-export GIT_DESCRIBE_TAG=`git describe --abbrev=0 --tags`
-export GIT_DESCRIBE_NUMBER=`git rev-list ${GIT_DESCRIBE_TAG}..HEAD --count`
 
 # If nightly build, append current YYMMDD to version
 if [[ "$BUILD_MODE" = "branch" && "$SOURCE_BRANCH" = branch-* ]] ; then
@@ -48,15 +44,22 @@ conda list
 # FIX Added to deal with Anancoda SSL verification issues during conda builds
 conda config --set ssl_verify False
 
-################################################################################
-# BUILD - Conda package build
-################################################################################
-
-conda build conda/recipes/clx --python=${PYTHON}
-
-################################################################################
-# UPLOAD - Conda package
+###############################################################################
+# BUILD - Conda package builds (conda deps: libclx <- clx)
 ################################################################################
 
-logger "Upload conda pkg..."
-source ci/cpu/upload-anaconda.sh
+logger "Build conda pkg for libclx..."
+source ci/cpu/libclx/build_libclx.sh
+
+logger "Build conda pkg for clx..."
+source ci/cpu/clx/build_clx.sh
+
+################################################################################
+# UPLOAD - Conda packages
+################################################################################
+
+logger "Upload libclx conda pkg..."
+source ci/cpu/libclx/upload-anaconda.sh
+
+logger "Upload clx conda pkg..."
+source ci/cpu/clx/upload-anaconda.sh

@@ -17,6 +17,7 @@ CURRENT_TAG=`git tag | grep -xE 'v[0-9\.]+' | sort --version-sort | tail -n 1 | 
 CURRENT_MAJOR=`echo $CURRENT_TAG | awk '{split($0, a, "."); print a[1]}'`
 CURRENT_MINOR=`echo $CURRENT_TAG | awk '{split($0, a, "."); print a[2]}'`
 CURRENT_PATCH=`echo $CURRENT_TAG | awk '{split($0, a, "."); print a[3]}'`
+CURRENT_SHORT_TAG=${CURRENT_MAJOR}.${CURRENT_MINOR}
 NEXT_MAJOR=$((CURRENT_MAJOR + 1))
 NEXT_MINOR=$((CURRENT_MINOR + 1))
 NEXT_PATCH=$((CURRENT_PATCH + 1))
@@ -45,12 +46,16 @@ function sed_runner() {
     sed -i.bak ''"$1"'' $2 && rm -f ${2}.bak
 }
 
-# setup update
-sed_runner 's/version="0.*"/version='"'${NEXT_FULL_TAG}'"'/g' setup.py
-
 # Dockerfile update
-sed_runner 's/version=0.*/version=${NEXT_SHORT_TAG}/g' Dockerfile
+sed_runner 's/RAPIDS_VERSION=0.*/RAPIDS_VERSION='"${NEXT_SHORT_TAG}"'/g' Dockerfile
 
 # Sphinx Update
-sed_runner 's/release = .*/release = '"'${NEXT_FULL_TAG}'"'/g' docs/source/conf.py
-sed_runner 's/version = */version = '"'${NEXT_SHORT_TAG}'"'/g' docs/source/conf.py
+sed_runner 's/version = *.*/version = '"'${NEXT_SHORT_TAG}'"'/g' docs/source/conf.py
+sed_runner 's/release = *.*.*/release = '"'${NEXT_FULL_TAG}'"'/g' docs/source/conf.py
+
+# conda environment
+for FILE in conda/environments/*.yml; do
+   sed_runner "s/cugraph=${CURRENT_SHORT_TAG}/cugraph=${NEXT_SHORT_TAG}/g" ${FILE};
+   sed_runner "s/cuxfilter=${CURRENT_SHORT_TAG}/cuxfilter=${NEXT_SHORT_TAG}/g" ${FILE};
+   sed_runner "s/dask-cudf=${CURRENT_SHORT_TAG}/dask-cudf=${NEXT_SHORT_TAG}/g" ${FILE};
+done

@@ -38,28 +38,32 @@ source activate gdf
 
 logger "Check versions..."
 python --version
-gcc --version
-g++ --version
 
 # FIX Added to deal with Anancoda SSL verification issues during conda builds
 conda config --set ssl_verify False
 
-conda install nvstrings=${MINOR_VERSION} cugraph=${MINOR_VERSION} dask-cudf=${MINOR_VERSION} \
-   requests yaml python-confluent-kafka python-whois dask
+logger "conda install required packages"
+conda install \
+    "cugraph=${MINOR_VERSION}" \
+    "dask-cudf=${MINOR_VERSION}" \
+    "rapids-build-env=$MINOR_VERSION.*"
 
-conda install -y pytorch==1.3.1 torchvision -c pytorch
+# https://docs.rapids.ai/maintainers/depmgmt/ 
+# conda remove -f rapids-build-env
+# conda install "your-pkg=1.0.0"
 
-pip install mockito
-pip install cupy-cuda${CUDA_SHORT}
+# Install master version of cudatashader
+pip install "git+https://github.com/rapidsai/cudatashader.git"
 
 conda list
 
+
 ################################################################################
-# INSTALL - Build package
+# BUILD - Build libclx and clx from source
 ################################################################################
 
-cd $WORKSPACE
-python setup.py build_ext --inplace
+logger "Build libclx and clx..."
+$WORKSPACE/build.sh clean libclx clx
 
 ################################################################################
 # TEST - Test python package
@@ -68,5 +72,8 @@ python setup.py build_ext --inplace
 if hasArg --skip-tests; then
     logger "Skipping Tests..."
 else
+    cd ${WORKSPACE}/python
     py.test --ignore=ci --cache-clear --junitxml=${WORKSPACE}/junit-clx.xml -v
+    ${WORKSPACE}/ci/gpu/test-notebooks.sh 2>&1 | tee nbtest.log
+    python ${WORKSPACE}/ci/utils/nbtestlog2junitxml.py nbtest.log
 fi
