@@ -56,6 +56,7 @@ sed_runner 's/release = *.*.*/release = '"'${NEXT_FULL_TAG}'"'/g' docs/source/co
 # conda environment
 for FILE in conda/environments/*.yml; do
    sed_runner "s/cugraph=${CURRENT_SHORT_TAG}/cugraph=${NEXT_SHORT_TAG}/g" ${FILE};
+   sed_runner "s/cuml=${CURRENT_SHORT_TAG}/cuml=${NEXT_SHORT_TAG}/g" ${FILE};
    sed_runner "s/cuxfilter=${CURRENT_SHORT_TAG}/cuxfilter=${NEXT_SHORT_TAG}/g" ${FILE};
    sed_runner "s/dask-cudf=${CURRENT_SHORT_TAG}/dask-cudf=${NEXT_SHORT_TAG}/g" ${FILE};
 done
