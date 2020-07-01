@@ -43,7 +43,6 @@ python --version
 conda config --set ssl_verify False
 
 conda remove nomkl blas libblas
-# conda install pytorch=1.5.0 torchvision -c pytorch
 
 logger "conda install required packages"
 conda install -c pytorch \
@@ -51,7 +50,7 @@ conda install -c pytorch \
     "cuml=${MINOR_VERSION}" \
     "dask-cudf=${MINOR_VERSION}" \
     "pytorch=1.5.0" \
-    "torchvision=0.6.0" \
+    "torchvision" \
     "scikit-learn" \
     "cmake" \
     "cython" \
