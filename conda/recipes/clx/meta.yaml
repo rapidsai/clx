@@ -39,8 +39,8 @@ requirements:
     - pandas
     - python-whois
     - pytest
-    - pytorch 1.5.0
-    - torchvision 0.6.0
+    - pytorch 1.5.*
+    - torchvision 0.6.*
 
 
 about:
