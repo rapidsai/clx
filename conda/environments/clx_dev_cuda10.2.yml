@@ -17,7 +17,7 @@ dependencies:
 - cython>=0.29,<0.30
 - cudatoolkit=10.2
 - pytorch=1.5.0
-- torchvision
+- torchvision=0.6.0
 - scikit-learn>=0.21
 - s3fs
 - ipywidgets
