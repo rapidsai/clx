@@ -38,8 +38,7 @@ requirements:
     - dask
     - pandas
     - python-whois
-    - pytest
-    - pytorch 1.5.*
+    - pytorch
     - torchvision
 
 
