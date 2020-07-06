@@ -42,14 +42,14 @@ def test_evaluate_model():
     if torch.cuda.is_available():
         X_test = cudf.DataFrame({"email": ["email 1", "email 2"]})
         y_test = cudf.Series([0, 0])
-        accuracy = phish_detect.evaluate_model(X_test, y_test)
+        accuracy = phish_detect.evaluate_model(X_test, y_test, max_num_sentences=2, max_num_chars=1000, max_rows_tensor=100, max_seq_len=128, batch_size=32)
         assert accuracy >= 0.0 and accuracy <= 1.0
 
 
 def test_predict():
     if torch.cuda.is_available():
         X_test = cudf.DataFrame({"email": ["email 1", "email 2"]})
-        preds = phish_detect.predict(X_test)
+        preds = phish_detect.predict(X_test, max_num_sentences=2, max_num_chars=1000, max_rows_tensor=100, max_seq_len=128, batch_size=32)
         assert preds.isin([0, 1]).equals(cudf.Series([True, True]))
 
 
