@@ -9,27 +9,20 @@ from collections import defaultdict
 from transformers import BertForTokenClassification
 from clx.analytics import tokenizer
 
+
 class Cybert:
     """
     Cybert log parser
     """
-    def __init__(self, max_num_logs=100, max_num_chars=100000, max_rows_tensor=1000, stride_len=48, max_seq_len=64):
+
+    def __init__(self, stride_len=116, max_seq_len=128):
         """Initialize the cybert log parser
 
-        :param max_num_logs: Max number of logs for processing
-        :type max_num_logs: int
-        :param max_num_chars: Max number of chars for processing
-        :type max_num_chars: int
-        :param max_rows_tensor: Max row tensor for processing
-        :type max_rows_tensor: int
         :param stride_len: Max stride length for processing
         :type stride_len: int
         :param max_seq_len: Max sequence length for processing
         :type max_seq_len: int
         """
-        self._max_num_logs = max_num_logs
-        self._max_num_chars = max_num_chars
-        self._max_rows_tensor = max_rows_tensor
         self._stride_len = stride_len
         self._max_seq_len = max_seq_len
         currdir = os.path.dirname(os.path.abspath(__file__))
@@ -39,33 +32,6 @@ class Cybert:
         with open(self._vocab_file) as f:
             for index, line in enumerate(f):
                 self._vocab_dict[index] = line.split()[0]
-
-    @property
-    def max_num_logs(self):
-        """Max number of logs.
-
-        :return: Max number of logs.
-        :rtype: int
-        """
-        return self._max_num_logs
-
-    @property
-    def max_num_chars(self):
-        """Max number of characters.
-
-        :return: Max number of characters.
-        :rtype: int
-        """
-        return self._max_num_chars
-
-    @property
-    def max_rows_tensor(self):
-        """Max number of rows in tensor.
-
-        :return: Max number of rows in tensor.
-        :rtype: int
-        """
-        return self._max_rows_tensor
 
     @property
     def stride_len(self):
@@ -116,15 +82,31 @@ class Cybert:
             for index, line in enumerate(f):
                 self._vocab_dict[index] = line.split()[0]
 
-
     @property
     def label_map(self):
         return self._label_map
 
-    def preprocess(self, raw_data_df):
-        input_ids, attention_masks, meta_data = tokenizer.tokenize_df(raw_data_df, hash_file=self._hash_file, max_sequence_length = self._max_seq_len,
-                                                                      stride=self._stride_len, do_lower=False, do_truncate=False, max_num_sentences=self._max_num_logs,
-                                                                      max_num_chars = self._max_num_chars, max_rows_tensor = self._max_rows_tensor)
+    def __preprocess(self, raw_data_col):
+        raw_data_col = raw_data_col.str.replace('"', "")
+        raw_data_col = raw_data_col.str.replace("\\r", " ")
+        raw_data_col = raw_data_col.str.replace("\\t", " ")
+        raw_data_col = raw_data_col.str.replace("=", "= ")
+        raw_data_col = raw_data_col.str.replace("\\n", " ")
+        max_num_logs = len(raw_data_col)
+        byte_count = raw_data_col.str.byte_count()
+        max_num_chars = byte_count.sum()
+        max_rows_tensor = int((byte_count / 348).ceil().sum())
+        input_ids, attention_masks, meta_data = tokenizer.tokenize_df(
+            raw_data_col,
+            hash_file=self._hash_file,
+            max_sequence_length=self._max_seq_len,
+            stride=self._stride_len,
+            do_lower=False,
+            do_truncate=False,
+            max_num_sentences=max_num_logs,
+            max_num_chars=max_num_chars,
+            max_rows_tensor=max_rows_tensor,
+        )
         return input_ids, attention_masks, meta_data
 
     def load_model(self, model_filepath, label_map_filepath):
@@ -133,31 +115,34 @@ class Cybert:
 
         :param model_filepath: Filepath of the model to be loaded
         :type model_filepath: str
-        :param label_map_filepath: YAML Filepath of the labels to be used
+        :param label_map_filepath: Filepath of the labels to be used
         :type label_map_filepath: str
-        :param num_labels: Number of labels
-        :type num_labels: int
 
         Examples
         --------
         >>> from clx.analytics.cybert import Cybert
         >>> cy = Cybert()
-        >>> cy.load_model('/path/to/model', '/path/to/labels.yaml')
+        >>> cy.load_model('/path/to/model', '/path/to/labels.txt')
         """
-        with open(label_map_filepath) as label_file:
-            self._label_map = yaml.load(label_file, Loader=yaml.FullLoader)
+        self._label_map_file = label_map_filepath
+        self._label_map = {}
+        with open(self._label_map_file) as f:
+            for index, line in enumerate(f):
+                self._label_map[index] = line.split()[0]
         model_state_dict = torch.load(model_filepath)
-        self._num_labels = len(self._label_map) + 1
-        self.model = BertForTokenClassification.from_pretrained('bert-base-cased', state_dict=model_state_dict, num_labels=self._num_labels)
+        self._num_labels = len(self._label_map)
+        self.model = BertForTokenClassification.from_pretrained(
+            "bert-base-cased", state_dict=model_state_dict, num_labels=self._num_labels
+        )
         self.model.cuda()
         self.model.eval()
 
-    def inference(self, raw_data_df):
+    def inference(self, raw_data_col):
         """
         Cybert inference on dataset
 
-        :param raw_data_df: Dataframe containing one column of raw logs
-        :type raw_data_df: cudf.DataFrame
+        :param raw_data_col: Series containing raw logs
+        :type raw_data_col: cudf.Series
         :return: Processed inference data
         :rtype: cudf.DataFrame
 
@@ -166,47 +151,80 @@ class Cybert:
         >>> import cudf
         >>> from clx.analytics.cybert import Cybert
         >>> cy = Cybert()
-        >>> cy.load_model('/path/to/model', '/path/to/labels.yaml', 21)
+        >>> cy.load_model('/path/to/model', '/path/to/labels.txt')
         >>> raw_df = cudf.DataFrame()
         >>> raw_df['logs'] = ['Log event']
-        >>> processed_df = cy.inference(raw_df)
+        >>> processed_df = cy.inference(raw_df['logs'])
         """
-        input_ids, attention_masks, meta_data = self.preprocess(raw_data_df)
+        input_ids, attention_masks, meta_data = self.__preprocess(raw_data_col)
         with torch.no_grad():
             logits = self.model(input_ids, attention_masks)[0]
         logits = F.softmax(logits, dim=2)
-        confidences, labels = torch.max(logits,2)
+        confidences, labels = torch.max(logits, 2)
         infer_pdf = pd.DataFrame(meta_data.detach().cpu().numpy())
-        infer_pdf.columns = ['doc','start','stop']
-        infer_pdf['confidences'] = confidences.detach().cpu().numpy().tolist()
-        infer_pdf['labels'] = labels.detach().cpu().numpy().tolist()
-        infer_pdf['token_ids'] = input_ids.detach().cpu().numpy().tolist()
-        processed_infer_pdf = self.__postprocessing(infer_pdf)
-        return processed_infer_pdf
+        infer_pdf.columns = ["doc", "start", "stop"]
+        infer_pdf["confidences"] = confidences.detach().cpu().numpy().tolist()
+        infer_pdf["labels"] = labels.detach().cpu().numpy().tolist()
+        infer_pdf["token_ids"] = input_ids.detach().cpu().numpy().tolist()
 
-    def __postprocessing(self, infer_input_pdf):
-        infer_input_pdf['confidences'] = infer_input_pdf.apply(lambda row: row['confidences'][row['start']:row['stop']], axis=1)
-        infer_input_pdf['labels'] = infer_input_pdf.apply(lambda row: row['labels'][row['start']:row['stop']], axis=1)
-        infer_input_pdf['token_ids'] = infer_input_pdf.apply(lambda row: row['token_ids'][row['start']:row['stop']], axis=1)
-        parsed_df = infer_input_pdf.apply(lambda row: self.__tokens_by_label(row), axis=1)
-        parsed_df = pd.DataFrame(parsed_df.tolist())
-        parsed_df = parsed_df.applymap(self.__decode_cleanup)
-        return parsed_df
+        # cut overlapping edges
+        infer_pdf["confidences"] = infer_pdf.apply(
+            lambda row: row["confidences"][row["start"] : row["stop"]], axis=1
+        )
+        infer_pdf["labels"] = infer_pdf.apply(
+            lambda row: row["labels"][row["start"] : row["stop"]], axis=1
+        )
+        infer_pdf["token_ids"] = infer_pdf.apply(
+            lambda row: row["token_ids"][row["start"] : row["stop"]], axis=1
+        )
 
-    def __tokens_by_label(self,row):
+        # aggregated logs
+        infer_pdf = infer_pdf.groupby("doc").agg(
+            {"token_ids": "sum", "confidences": "sum", "labels": "sum"}
+        )
+
+        # parse_by_label
+        parsed_dfs = infer_pdf.apply(
+            lambda row: self.__parsed_by_label(row), axis=1, result_type="expand"
+        )
+        parsed_df = pd.DataFrame(parsed_dfs[0].tolist())
+        confidence_df = pd.DataFrame(parsed_dfs[1].tolist())
+        confidence_df = (
+            confidence_df.drop(["X"], axis=1).applymap(np.mean).applymap(np.mean)
+        )
+
+        # decode cleanup
+        parsed_df = self.__decode_cleanup(parsed_df)
+        return parsed_df, confidence_df
+
+    def __parsed_by_label(self, row):
         token_dict = defaultdict(str)
-        for token, label in zip(row['token_ids'], row['labels']):
-            token_dict[self._label_map[label]] = token_dict[self._label_map[label]] + ' ' + self._vocab_dict[token]
-        return token_dict
-
-    def __confidence_by_label(self,row):
         confidence_dict = defaultdict(list)
-        for label, confidence in zip(row['labels'], row['confidences']):
-            confidence_dict[LABEL_MAP[label]].append(confidence)
-        return confidence_dict
+        for label, confidence, token_id in zip(
+            row["labels"], row["confidences"], row["token_ids"]
+        ):
+            text_token = self._vocab_dict[token_id]
+            if text_token[:2] != "##":
+                ## if not a subword use the current label, else use previous
+                new_label = label
+                new_confidence = confidence
+            token_dict[self._label_map[new_label]] = (
+                token_dict[self._label_map[new_label]] + " " + text_token
+            )
+            confidence_dict[self._label_map[label]].append(new_confidence)
+        return token_dict, confidence_dict
 
-    def __decode_cleanup(self,row):
-        if type(row) == str:
-            return row.replace(' ##', '').replace(' . ', '.').replace(' : ', ':').replace(' / ','/')
-        else:
-            return row
+    def __decode_cleanup(self, df):
+        return (
+            df.replace(" ##", "", regex=True)
+            .replace(" : ", ":", regex=True)
+            .replace("\[ ", "[", regex=True)
+            .replace(" ]", "]", regex=True)
+            .replace(" /", "/", regex=True)
+            .replace("/ ", "/", regex=True)
+            .replace(" - ", "-", regex=True)
+            .replace(" \( ", " (", regex=True)
+            .replace(" \) ", ") ", regex=True)
+            .replace("\+ ", "+", regex=True)
+            .replace(" . ", ".", regex=True)
+        )
