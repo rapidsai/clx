@@ -49,7 +49,7 @@ conda install -c pytorch \
     "cugraph=${MINOR_VERSION}" \
     "cuml=${MINOR_VERSION}" \
     "dask-cudf=${MINOR_VERSION}" \
-    "pytorch=1.5.0" \
+    "pytorch=1.5.*" \
     "torchvision" \
     "scikit-learn" \
     "cmake" \
