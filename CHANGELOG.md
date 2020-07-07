@@ -1,14 +1,21 @@
 # clx 0.15.0 (Date TBD)
 
 ## New Features
+- PR #170 Add CLX Code of Conduct
 
 ## Improvements
 - PR #174 Install dependencies via meta package
 - PR #175 GPU tokenizer updates
+- PR #181 CLX Query to support dask blazingsql
+- PR #159 Update to PyTorch 1.5
 
 ## Bug Fixes
 - PR #169 Fix documentation links
 - PR #171 Fix errors from nvstrings removal
+- PR #178 Update local build to use new gpuCI image
+- PR #180 Remove remaining references to nvstrings
+- PR #182 Fix errors from update to cudf's column rename method
+- PR #185 Update gpu build to use latest dask
 
 # clx 0.14.0 (Date TBD)
 
@@ -22,6 +29,7 @@
 - PR #149 Add Versioneer
 - PR #151 README and CONTRIBUTING updates
 - PR #160 Build script updates
+- PR #167 Add git commit to conda package
 - PR #172 Add docs build script
 - PR #155 Tokenizer rmm integration
 - PR #172 Add docs build script
@@ -53,7 +61,7 @@
 
 ## New Features
 - PR #93 Add Bokeh visualization back to Alert Analysis notebook
- 
+
 ## Improvements
 - PR #88 Documentation updates
 - PR #85 Add codeowners
@@ -81,7 +89,7 @@
  - PR #48 Added port heuristic to detect major ports
  - PR #60 Added DGA detection notebook and DNS log parsing notebook
  - PR #76 Added update-version script
- 
+
 ## Improvements
  - PR #70 Sphinx doc formatting improvements
  - PR #58 Update docker image

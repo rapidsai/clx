@@ -17,12 +17,8 @@ def str2ascii(df, domains_len):
     """
     df["len"] = df["domain"].str.len()
     df = df.sort_values("len", ascending=False).reset_index()
-    splits = df["domain"].str.findall("[\w\.\-\@]")
-    split_df = cudf.DataFrame()
-    columns_cnt = len(splits)
-
-    for i in range(0, columns_cnt):
-        split_df[i] = splits[i]
+    split_df = df["domain"].str.findall("[\w\.\-\@]")
+    columns_cnt = len(split_df.columns)
 
     # Replace null's with ^.
     split_df = split_df.fillna("^")

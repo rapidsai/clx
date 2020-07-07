@@ -38,9 +38,15 @@ class ClxQuery(GeneratingCommand):
             if config.name == "clx_query_setup":
                 clx_config = config.iter().next().content
 
-        url = self.construct_url(clx_config, self.query)
-        response = requests.get(url)
-
+        url = self.construct_url(clx_config)
+        has_query_limit = re.findall(REGEX_PATTERN, self.query)
+        
+        payload = {'query': self.query}
+        if not has_query_limit and clx_config["clx_query_limit"]:
+           self.query = "%s LIMIT %s" %(self.query, clx_config["clx_query_limit"])
+           payload = {'query': self.query}
+        response = requests.post(url, data=payload)
+        
         if response.status_code != 200:
             yield {"ERROR": response.content}
         else:
@@ -48,19 +54,12 @@ class ClxQuery(GeneratingCommand):
             for result in results:
                 yield result
 
-    def construct_url(self, config, query):
-        base_url = "http://%s:%s/clxquery" % (
+    def construct_url(self, config):
+        url = "http://%s:%s/%s/" % (
             config["clx_hostname"],
             config["clx_port"],
+        'clxquery'
         )
-        url = base_url + "/" + query
-        has_query_limit = re.findall(REGEX_PATTERN, query)
-        
-        if has_query_limit:
-           return url
-        if config["clx_query_limit"]:
-            url = "%s LIMIT %s" %(url, config["clx_query_limit"])
-        
         return url
 
 

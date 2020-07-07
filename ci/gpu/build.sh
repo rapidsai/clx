@@ -42,21 +42,30 @@ python --version
 # FIX Added to deal with Anancoda SSL verification issues during conda builds
 conda config --set ssl_verify False
 
+conda remove nomkl blas libblas
+
 logger "conda install required packages"
-conda install \
+conda install -c pytorch \
     "cugraph=${MINOR_VERSION}" \
+    "cuml=${MINOR_VERSION}" \
     "dask-cudf=${MINOR_VERSION}" \
-    "rapids-build-env=$MINOR_VERSION.*"
+    "pytorch=1.5.*" \
+    "torchvision" \
+    "scikit-learn" \
+    "cmake" \
+    "cython" \
+    "pytest" \
+    "s3fs"
 
-# https://docs.rapids.ai/maintainers/depmgmt/ 
-# conda remove -f rapids-build-env
-# conda install "your-pkg=1.0.0"
-
-# Install master version of cudatashader
+# Install the master version of dask, distributed, and cudatashader
+logger "pip install git+https://github.com/dask/distributed.git --upgrade --no-deps"
+pip install "git+https://github.com/dask/distributed.git" --upgrade --no-deps
+logger "pip install git+https://github.com/dask/dask.git --upgrade --no-deps"
+pip install "git+https://github.com/dask/dask.git" --upgrade --no-deps
+logger "pip install git+https://github.com/rapidsai/cudatashader.git --upgrade --no-deps"
 pip install "git+https://github.com/rapidsai/cudatashader.git"
 
 conda list
-
 
 ################################################################################
 # BUILD - Build libclx and clx from source
