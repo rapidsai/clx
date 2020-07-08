@@ -75,7 +75,7 @@ verify_input_arg "output_topic", $output_topic
 verify_input_arg "model_file", $model_file
 verify_input_arg "label_file", $label_file
 
-source activate clx_dev
+source activate clx
 
 #**********************************
 # Configure Kafka
