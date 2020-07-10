@@ -111,7 +111,7 @@ if (( ${NUMARGS} == 0 )) || hasArg clx; then
     cd ${REPODIR}/python
     if [[ ${INSTALL_TARGET} != "" ]]; then
         python setup.py build_ext --inplace
-        python setup.py install --single-version-externally-managed --record=record.txt
+        python setup.py install
     else
 	    python setup.py build_ext --inplace --library-dir=${LIBCLX_BUILD_DIR}
     fi
