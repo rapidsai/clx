@@ -44,6 +44,8 @@ conda list
 # FIX Added to deal with Anancoda SSL verification issues during conda builds
 conda config --set ssl_verify False
 
+conda remove -y nomkl blas libblas
+
 ###############################################################################
 # BUILD - Conda package builds (conda deps: libclx <- clx)
 ################################################################################
