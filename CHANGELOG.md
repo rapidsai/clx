@@ -17,6 +17,7 @@
 - PR #180 Remove remaining references to nvstrings
 - PR #182 Fix errors from update to cudf's column rename method
 - PR #185 Update gpu build to use latest dask
+- PR #192 Conda build fix
 
 # clx 0.14.0 (Date TBD)
 
