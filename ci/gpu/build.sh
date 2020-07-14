@@ -42,15 +42,20 @@ python --version
 # FIX Added to deal with Anancoda SSL verification issues during conda builds
 conda config --set ssl_verify False
 
-logger "conda install required packages"
-conda install \
-    "cugraph=${MINOR_VERSION}" \
-    "dask-cudf=${MINOR_VERSION}" \
-    "rapids-build-env=$MINOR_VERSION.*"
+conda remove nomkl blas libblas
 
-# https://docs.rapids.ai/maintainers/depmgmt/ 
-# conda remove -f rapids-build-env
-# conda install "your-pkg=1.0.0"
+logger "conda install required packages"
+conda install -c pytorch \
+    "cugraph=${MINOR_VERSION}" \
+    "cuml=${MINOR_VERSION}" \
+    "dask-cudf=${MINOR_VERSION}" \
+    "pytorch=1.5.*" \
+    "torchvision" \
+    "scikit-learn" \
+    "cmake" \
+    "cython" \
+    "pytest" \
+    "s3fs"
 
 # Install the master version of dask, distributed, and cudatashader
 logger "pip install git+https://github.com/dask/distributed.git --upgrade --no-deps"
