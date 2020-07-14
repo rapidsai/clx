@@ -19,44 +19,53 @@ from clx.analytics import tokenizer
 
 input_sentence = "Key length indicates the length of the generated session key."
 
-expected_tokens = torch.tensor([[3145, 3091, 7127, 1996, 3091, 1997, 1996, 7013, 5219, 3145, 1012, 0,
-                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                0, 0, 0, 0]], device="cuda")
 
-expected_masks = torch.tensor([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]], device='cuda')
+def get_expected():
 
-expected_metadata = torch.tensor([[0, 0, 10]], device="cuda")
+    tokens = torch.tensor([[3145, 3091, 7127, 1996, 3091, 1997, 1996, 7013, 5219, 3145, 1012, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0]], device="cuda")
 
+    masks = torch.tensor([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]], device='cuda')
 
-@pytest.mark.parametrize("input_sentence, expected_tokens, expected_masks, expected_metadata", [(input_sentence, expected_tokens, expected_masks, expected_metadata)])
-def test_tokenize_file(tmpdir, input_sentence, expected_tokens, expected_masks, expected_metadata):
-    fname = tmpdir.mkdir("tmp_test_tokenizer").join("test1.txt")
-    fname.write(input_sentence)
+    metadata = torch.tensor([[0, 0, 10]], device="cuda")
 
-    assert fname.read() == input_sentence
-
-    actual_tokens, actual_masks, actual_metadata = tokenizer.tokenize_file(str(fname))
-
-    assert actual_tokens.equal(expected_tokens)
-    assert actual_masks.equal(expected_masks)
-    assert actual_metadata.equal(expected_metadata)
+    return tokens, masks, metadata
 
 
-@pytest.mark.parametrize("input_sentence, expected_tokens, expected_masks, expected_metadata", [(input_sentence, expected_tokens, expected_masks, expected_metadata)])
-def test_tokenize_df(tmpdir, input_sentence, expected_tokens, expected_masks, expected_metadata):
-    fname = tmpdir.mkdir("tmp_test_tokenizer").join("test1.txt")
-    fname.write(input_sentence)
+@pytest.mark.parametrize("input_sentence", [(input_sentence)])
+def test_tokenize_file(tmpdir, input_sentence):
+    if torch.cuda.is_available():
+        expected_tokens, expected_masks, expected_metadata = get_expected()
+        fname = tmpdir.mkdir("tmp_test_tokenizer").join("test1.txt")
+        fname.write(input_sentence)
 
-    assert fname.read() == input_sentence
+        assert fname.read() == input_sentence
 
-    df = cudf.read_csv(fname, header=None)
-    actual_tokens, actual_masks, actual_metadata = tokenizer.tokenize_df(df)
+        actual_tokens, actual_masks, actual_metadata = tokenizer.tokenize_file(str(fname))
 
-    assert actual_tokens.equal(expected_tokens)
-    assert actual_masks.equal(expected_masks)
-    assert actual_metadata.equal(expected_metadata)
+        assert actual_tokens.equal(expected_tokens)
+        assert actual_masks.equal(expected_masks)
+        assert actual_metadata.equal(expected_metadata)
+
+
+@pytest.mark.parametrize("input_sentence", [(input_sentence)])
+def test_tokenize_df(tmpdir, input_sentence):
+    if torch.cuda.is_available():
+        expected_tokens, expected_masks, expected_metadata = get_expected()
+        fname = tmpdir.mkdir("tmp_test_tokenizer").join("test1.txt")
+        fname.write(input_sentence)
+
+        assert fname.read() == input_sentence
+
+        df = cudf.read_csv(fname, header=None)
+        actual_tokens, actual_masks, actual_metadata = tokenizer.tokenize_df(df)
+
+        assert actual_tokens.equal(expected_tokens)
+        assert actual_masks.equal(expected_masks)
+        assert actual_metadata.equal(expected_metadata)

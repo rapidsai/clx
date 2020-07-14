@@ -8,6 +8,8 @@
 - PR #174 Install dependencies via meta package
 - PR #175 GPU tokenizer updates
 - PR #181 CLX Query to support dask blazingsql
+- PR #159 Update to PyTorch 1.5
+- PR #191 Update conda upload versions for new supported CUDA/Python
 
 ## Bug Fixes
 - PR #169 Fix documentation links
@@ -16,6 +18,7 @@
 - PR #180 Remove remaining references to nvstrings
 - PR #182 Fix errors from update to cudf's column rename method
 - PR #185 Update gpu build to use latest dask
+- PR #190: Fix issue with incorrect docker image being used in local build script
 
 # clx 0.14.0 (Date TBD)
 
