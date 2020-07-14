@@ -33,7 +33,7 @@ requirements:
     - cugraph {{ minor_version }}.*
     - cuml {{ minor_version }}.*
     - dask-cudf {{ minor_version }}.*
-    - pytorch<=1.5
+    - pytorch=1.5.*
     - torchvision
 
 about:
