@@ -25,7 +25,6 @@ requirements:
     - python
     - cython>=0.29,<0.30
     - libclx={{ version }}
-    - setuptools
   run:
     - python
     - mkl
@@ -34,7 +33,7 @@ requirements:
     - cugraph {{ minor_version }}.*
     - cuml {{ minor_version }}.*
     - dask-cudf {{ minor_version }}.*
-    - pytorch=1.5.*
+    - pytorch<=1.5
     - torchvision
 
 about:

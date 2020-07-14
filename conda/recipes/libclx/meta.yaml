@@ -26,11 +26,14 @@ build:
     - VERSION_SUFFIX
 
 requirements:
-  build:
+  host:
+    - mkl
     - cmake>=3.14
     - libcudf={{ minor_version }}
     - cudatoolkit {{ cuda_version }}.*
   run:
+    - libblas * *mkl
+    - mkl
     - libcudf={{ minor_version }}
     - {{ pin_compatible('cudatoolkit', max_pin='x.x') }}
 
