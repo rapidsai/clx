@@ -2,7 +2,7 @@
 
 ## New Features
 - PR #170 Add CLX Code of Conduct
-
+- PR #193 AC notebook 
 ## Improvements
 - PR #174 Install dependencies via meta package
 - PR #175 GPU tokenizer updates
