@@ -55,7 +55,8 @@ conda install -c pytorch \
     "cmake" \
     "cython" \
     "pytest" \
-    "s3fs"
+    "s3fs" \
+    "ipython"
 
 # Install the master version of dask, distributed, and cudatashader
 logger "pip install git+https://github.com/dask/distributed.git --upgrade --no-deps"
