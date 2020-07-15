@@ -18,6 +18,7 @@
 - PR #182 Fix errors from update to cudf's column rename method
 - PR #185 Update gpu build to use latest dask
 - PR #190: Fix issue with incorrect docker image being used in local build script
+- PR #192 Conda build fix
 
 # clx 0.14.0 (Date TBD)
 

@@ -21,17 +21,14 @@ build:
     - VERSION_SUFFIX
 
 requirements:
-  host:
-    - mkl
   build:
     - python
     - cython>=0.29,<0.30
     - libclx={{ version }}
-    - setuptools
   run:
-    - libblas * *mkl
-    - mkl
     - python
+    - mkl
+    - scikit-learn>=0.21
     - libclx={{ version }}
     - cugraph {{ minor_version }}.*
     - cuml {{ minor_version }}.*
