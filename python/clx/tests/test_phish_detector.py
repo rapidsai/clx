@@ -34,7 +34,7 @@ def test_train_model(tmpdir):
         fs.get(S3_BASE_PATH + "/" + EMAILS_TSV, fname)
         emails_gdf = cudf.read_csv(fname, delimiter='\t', header=None, names=['label', 'email'])
         X_train, X_test, y_train, y_test = train_test_split(emails_gdf, 'label', train_size=0.8, random_state=10)
-        phish_detect.train_model(X_train, y_train, epochs=1)
+        phish_detect.train_model(X_train, y_train, max_num_sentences=100000, max_num_chars=10000000, max_rows_tensor=100000, learning_rate=3e-5, max_seq_len=128, batch_size=32, epochs=1)
         assert isinstance(phish_detect._model, transformers.modeling_bert.BertForSequenceClassification)
 
 
