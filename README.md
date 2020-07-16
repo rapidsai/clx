@@ -1,6 +1,6 @@
 # <div align="left"><img src="https://rapids.ai/assets/images/rapids_logo.png" width="90px"/>&nbsp;&nbsp;Cyber Log Accelerators (CLX)</div>
 
-**NOTE:** For the latest stable [README.md](https://github.com/rapidsai/clx/blob/master/README.md) ensure you are on the `master` branch.
+**NOTE:** For the latest stable [README.md](https://github.com/rapidsai/clx/blob/main/README.md) ensure you are on the `main` branch.
 
 CLX ("clicks") provides a collection of [RAPIDS](https://rapids.ai/) examples for security analysts, data scientists, and engineers to quickly get started applying RAPIDS and GPU acceleration to real-world cybersecurity use cases.
 
@@ -99,7 +99,7 @@ wf = netflow_workflow.NetflowWorkflow(source=source, destination=dest, name="my-
 wf.run_workflow()
 ```
 
-For additional examples, browse our complete [API documentation](https://docs.rapids.ai/api/clx/nightly/api.html), or check out our more detailed [notebooks](https://github.com/rapidsai/clx/tree/master/notebooks).
+For additional examples, browse our complete [API documentation](https://docs.rapids.ai/api/clx/nightly/api.html), or check out our more detailed [notebooks](https://github.com/rapidsai/clx/tree/main/notebooks).
 
 
 
@@ -155,7 +155,7 @@ docker run --runtime=nvidia \
 
 ### Docker Container with SIEM Integration
 
-If you want a CLX container with SIEM integration (including data ingest), follow the steps above to build the CLX image. Then use `docker-compose` to start multiple containers running CLX, Kafka, and Zookeeper. 
+If you want a CLX container with SIEM integration (including data ingest), follow the steps above to build the CLX image. Then use `docker-compose` to start multiple containers running CLX, Kafka, and Zookeeper.
 
 ```aidl
 docker-compose up
@@ -165,7 +165,7 @@ docker-compose up
 
 <a name="conda"></a>
 
-## Conda Install 
+## Conda Install
 It is easy to install CLX using conda. You can get a minimal conda installation with Miniconda or get the full installation with Anaconda.
 
 Install and update CLX using the conda command:
