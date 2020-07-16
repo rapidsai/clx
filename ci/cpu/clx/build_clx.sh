@@ -5,5 +5,5 @@ if [ "$BUILD_CLX" == "1" ]; then
   echo "Building clx"
   CUDA_REL=${CUDA_VERSION%.*}
 
-  conda build conda/recipes/clx --python=$PYTHON
+  conda build -c pytorch -c nvidia -c conda-forge -c defaults conda/recipes/clx --python=$PYTHON
 fi
