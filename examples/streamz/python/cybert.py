@@ -31,18 +31,12 @@ def inference(messages):
 
     if type(messages) == str:
         df = cudf.DataFrame()
-        df["stream"] = [
-            messages.decode("utf-8")
-        ]  # Single row, single column dataframe. Is this really what you want? I assume CUDA parser needs it this way?
-        # output_df = cy.inference(df)    # This line is likely what was causing you problems as it tried to serilize and move the Cybert object between processes.
-        output_df = worker["cybert"].inference(
-            df
-        )  # Use this instead to get the process local Cybert instance that is also GPU local and aware
-
+        df["stream"] = [messages.decode("utf-8")]
+        output_df = worker["cybert"].inference(df)
     elif type(messages) == list and len(messages) > 0:
         df = cudf.DataFrame()
         df["stream"] = [msg.decode("utf-8") for msg in messages]
-        # output_df = cy.inference(df)
+
         output_df = worker["cybert"].inference(df)
     else:
         print("ERROR: Unknown type encountered in inference")
@@ -55,11 +49,8 @@ def sink_to_kafka(event_logs):
         "client.id": socket.gethostname(),
         "session.timeout.ms": 10000,
     }
-    producer = Producer(
-        producer_confs
-    )  # Need to find a better way to share the producer instances. This will cause big time slowdowns.
+    producer = Producer(producer_confs)
     for event in event_logs:
-        print("sending event to kafka: ", event)
         producer.produce(args.output_topic, event)
     producer.poll(1)
 
@@ -81,45 +72,39 @@ def worker_init():
     print("Cybert module created and loaded ...")
 
 
-def worker_init2():
-    print("testing")
-
-
-def testing(messages):
-    print(messages)
-    return messages
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Cybert using Streamz and Dask. \
                                                   Data will be read from the input kafka topic, \
                                                   processed using cybert, and output printed."
     )
-    parser.add_argument("--broker", default="localhost:9092", help="Kafka broker")
-    parser.add_argument("--input_topic", default="input", help="Input kafka topic")
-    parser.add_argument("--output_topic", default="output", help="Output kafka topic")
-    parser.add_argument("--group_id", default="streamz", help="Kafka group ID")
-    parser.add_argument("--model", help="Model filepath")
-    parser.add_argument("--label_map", help="Label map filepath")
+    parser.add_argument("-b", "--broker", default="localhost:9092", help="Kafka broker")
+    parser.add_argument(
+        "-i", "--input_topic", default="input", help="Input kafka topic"
+    )
+    parser.add_argument(
+        "-o", "--output_topic", default="output", help="Output kafka topic"
+    )
+    parser.add_argument("-g", "--group_id", default="streamz", help="Kafka group ID")
+    parser.add_argument("-m", "--model", help="Model filepath")
+    parser.add_argument("-l", "--label_map", help="Label map filepath")
+    parser.add_argument(
+        "-d",
+        "--dask_scheduler",
+        help="Dask scheduler address. If not provided a new dask cluster will be created",
+    )
+    parser.add_argument("-c", "--cuda_visible_devices", nargs="+", type=int, help="")
     args = parser.parse_args()
 
-    cluster = LocalCUDACluster(
-        CUDA_VISIBLE_DEVICES=[0], n_workers=1
-    )  # This is just because my box has 2 gpus
-    # threads_per_worker=1,    # Usually 1 worker per GPU makes sense, can adjust if needed.
-    # processes=True,          # Threads could be used but for whatever reason I like processes better
-    # memory_limit="20GB", # Host memory PER process (this * n_workers)
-    # device_memory_limit=None,
-    # data=None,
-    # local_directory=None,
-    # protocol=None,
-    # enable_tcp_over_ucx=False,
-    # enable_infiniband=False,
-    # enable_nvlink=False,
-    # ucx_net_devices=None,
-    # rmm_pool_size=None)
-    client = Client(cluster)
+    if "dask_scheduler" in args:
+        client = Client(args["dask_scheduler"])
+    else:
+        cluster = LocalCUDACluster(
+            CUDA_VISIBLE_DEVICES=args["cuda_visible_devices"],
+            n_workers=len(args["cuda_visible_devices"]),
+        )
+        client = Client(cluster)
+
     print(client)
     print("Initializing Cybert instances on each Dask worker")
     client.run(worker_init)

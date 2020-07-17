@@ -105,7 +105,23 @@ $KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $broker --topic $input_t
 log "INFO" "Sample data read into kafka topic, $input_topic"
 
 #**********************************
+# Start Dask Scheduler
+#**********************************
+#log "INFO" "Starting Dask Scheduler at localhost:8787"
+CUDA_VISIBLE_DEVICES='0' nohup dask-scheduler --dashboard-address 8787 2>&1 &
+
+#**********************************
+# Start Dask CUDA Worker
+#**********************************
+dask-cuda-worker localhost:8786 2>&1 &
+
+#**********************************
+# Start Jupyter Notebook
+#**********************************
+jupyter notebook --port=8888 --no-browser --ip=0.0.0.0 --allow-root
+
+#**********************************
 # Run Cybert
 #**********************************
 log "INFO" "Preparing to run cybert"
-python -i /python/cybert.py --input_topic $input_topic --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file
+python -i /python/cybert.py --input_topic input --output_topic output --group_id $group_id --model $model_file --label_map $label_file
