@@ -123,13 +123,12 @@ class SplunkAlertWorkflow(Workflow):
         index_list = gdf[index_col].unique()
         piv_gdf = cudf.DataFrame({index_col: list(range(len(index_list)))})
         piv_gdf[index_col] = index_list
-
+        
         piv_groups = gdf[piv_col].unique()
-        piv_groups = dict({piv_groups[i]: i for i in range(len(piv_groups))})
-        for group in piv_groups:
-            temp_df = gdf[gdf[piv_col] == group]
+        for i in range(len(piv_groups)):
+            temp_df = gdf[gdf[piv_col] == piv_groups[i]]
             temp_df = temp_df[[index_col, v_col]]
-            temp_df.columns = [index_col, group]
+            temp_df.columns = [index_col, piv_groups[i]]
             piv_gdf = piv_gdf.merge(temp_df, on=[index_col], how="left")
         piv_gdf = piv_gdf.set_index(index_col)
         piv_gdf = piv_gdf.sort_index()
