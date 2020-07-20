@@ -7,7 +7,7 @@ channels:
 - conda-forge
 - pytorch
 dependencies:
-- python=3.7
+- numpy>=1.17.3,<1.19.0
 - cugraph=0.15.*
 - cuml=0.15.*
 - cuxfilter=0.15.*
