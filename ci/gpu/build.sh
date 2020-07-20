@@ -52,6 +52,7 @@ conda install -c pytorch \
     "pytorch=1.5.*" \
     "torchvision" \
     "scikit-learn" \
+    "numpy>=1.17.3,<1.19.0" \
     "cmake" \
     "cython" \
     "pytest" \
