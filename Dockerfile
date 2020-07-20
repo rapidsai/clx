@@ -2,6 +2,7 @@
 ARG CUDA_VERSION=10.2
 ARG CUDA_SHORT_VERSION=${CUDA_VERSION}
 ARG LINUX_VERSION=ubuntu18.04
+ARG PYTHON_VERSION=3.7
 FROM gpuci/miniconda-cuda:${CUDA_VERSION}-devel-${LINUX_VERSION}
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -21,7 +22,7 @@ RUN apt update -y --fix-missing && \
 ADD . /clx/
 
 ARG CUDA_SHORT_VERSION
-RUN conda env create --name clx --file /clx/conda/environments/clx_dev_cuda${CUDA_SHORT_VERSION}.yml
+RUN conda env create --name clx --file /clx/conda/environments/clx_dev_cuda${CUDA_SHORT_VERSION}.yml python=${PYTHON_VERSION}
 
 # libclx build/install
 ENV CC=/usr/bin/gcc-${CC}
