@@ -1,5 +1,5 @@
 # An integration test & dev container which builds and installs CLX from default branch
-ARG CUDA_VERSION=10.2
+ARG CUDA_VERSION=10.1
 ARG CUDA_SHORT_VERSION=${CUDA_VERSION}
 ARG LINUX_VERSION=ubuntu18.04
 FROM gpuci/miniconda-cuda:${CUDA_VERSION}-devel-${LINUX_VERSION}
@@ -19,6 +19,9 @@ RUN apt update -y --fix-missing && \
 
 # Add everything from the local build context
 ADD . /rapids/clx/
+
+RUN mkdir -p /rapids/utils 
+COPY ./docker/start_jupyter.sh ./docker/stop_jupyter.sh /rapids/utils/
 
 ARG CUDA_SHORT_VERSION
 ARG PYTHON_VERSION=3.7
