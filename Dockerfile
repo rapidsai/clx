@@ -2,7 +2,6 @@
 ARG CUDA_VERSION=10.2
 ARG CUDA_SHORT_VERSION=${CUDA_VERSION}
 ARG LINUX_VERSION=ubuntu18.04
-ARG PYTHON_VERSION=3.7
 FROM gpuci/miniconda-cuda:${CUDA_VERSION}-devel-${LINUX_VERSION}
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -19,31 +18,32 @@ RUN apt update -y --fix-missing && \
       tzdata
 
 # Add everything from the local build context
-ADD . /clx/
+ADD . /rapids/clx/
 
 ARG CUDA_SHORT_VERSION
-RUN conda env create --name clx --file /clx/conda/environments/clx_dev_cuda${CUDA_SHORT_VERSION}.yml python=${PYTHON_VERSION}
+ARG PYTHON_VERSION=3.7
+RUN conda env create --name rapids --file /rapids/clx/conda/environments/clx_dev_cuda${CUDA_SHORT_VERSION}.yml python=${PYTHON_VERSION}
 
 # libclx build/install
 ENV CC=/usr/bin/gcc-${CC}
 ENV CXX=/usr/bin/g++-${CXX}
-RUN source activate clx && \
-    mkdir -p /clx/cpp/build && \
-    cd /clx/cpp/build && \
+RUN source activate rapids && \
+    mkdir -p /rapids/clx/cpp/build && \
+    cd /rapids/clx/cpp/build && \
     cmake .. -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} && \
     make -j install
 
 # clx build/install
-RUN source activate clx && \
-    cd /clx/python && \
+RUN source activate rapids && \
+    cd /rapids/clx/python && \
     python setup.py build_ext --inplace && \
     python setup.py install
 
-WORKDIR /clx
+WORKDIR /rapids/clx
 
 ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
 RUN chmod +x /usr/bin/tini && \
-    echo "source activate clx" >> ~/.bashrc
-ENTRYPOINT [ "/usr/bin/tini", "--", "/clx/docker/.start_jupyter_run_in_rapids.sh" ]
+    echo "source activate rapids" >> ~/.bashrc
+ENTRYPOINT [ "/usr/bin/tini", "--", "/rapids/clx/docker/.run_in_rapids.sh" ]
 CMD [ "/bin/bash" ]
