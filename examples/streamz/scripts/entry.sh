@@ -17,13 +17,14 @@ usage() {
     echo "Run cybert model using kafka"
     echo
     echo Positional:
-    echo "  -b, --broker       Kafka Broker"
-    echo "  -g, --group_id      Kafka group ID"
-    echo "  -i, --input_topic   Kafka input topic"
-    echo "  -o, --output_topic  Kafka output topic"
-    echo "  -m, --model_file    Cybert model file"
-    echo "  -l, --label_file    Cybert label file"
-    echo "  -d, --data          Cybert data file (optional)"
+    echo "  -b, --broker               Kafka Broker"
+    echo "  -g, --group_id             Kafka group ID"
+    echo "  -i, --input_topic          Kafka input topic"
+    echo "  -o, --output_topic         Kafka output topic"
+    echo "  -m, --model_file           Cybert model file"
+    echo "  -l, --label_file           Cybert label file"
+    echo "  -d, --data                 Cybert data file (optional)"
+    echo "  -c, --cuda_visible_devices Cuda visible devices, ex: 0,1,2 (optional)"
     echo
     echo "  -h, --help          Print this help"
     echo
@@ -50,6 +51,7 @@ while [ $# != 0 ]; do
     -m|--model_file) shift; model_file=$1 ;;
     -l|--label_file) shift; label_file=$1 ;;
     -d|--data) shift; data=$1 ;;
+    -c|--cuda_visible_devices) shift; data=$1 ;;
     -) usage "Unknown positional: $1" ;;
     -?*) usage "Unknown positional: $1" ;;
     esac
@@ -108,20 +110,26 @@ log "INFO" "Sample data read into kafka topic, $input_topic"
 # Start Dask Scheduler
 #**********************************
 #log "INFO" "Starting Dask Scheduler at localhost:8787"
-CUDA_VISIBLE_DEVICES='0' nohup dask-scheduler --dashboard-address 8787 2>&1 &
+DASK_DASHBOARD_PORT=8787
+DASK_SCHEDULER_PORT=8786
+CUDA_VISIBLE_DEVICES="${cuda_visible_devices}" nohup dask-scheduler --dashboard-address ${DASK_DASHBOARD_PORT} 2>&1 &
+DASK_SCHEDULER_HOST=`hostname --ip-address`
+DASK_SCHEDULER="${DASK_SCHEDULER_HOST}:${DASK_SCHEDULER_PORT}"
+log "INFO" "Dask scheduler running"
 
 #**********************************
 # Start Dask CUDA Worker
 #**********************************
-dask-cuda-worker localhost:8786 2>&1 &
+nohup dask-cuda-worker localhost:8786 2>&1 &
 
 #**********************************
 # Start Jupyter Notebook
 #**********************************
-jupyter notebook --port=8888 --no-browser --ip=0.0.0.0 --allow-root
+nohup jupyter notebook --port=8888 --no-browser --ip=0.0.0.0 --allow-root 2>&1 &
 
 #**********************************
 # Run Cybert
 #**********************************
 log "INFO" "Preparing to run cybert"
-python -i /python/cybert.py --input_topic input --output_topic output --group_id $group_id --model $model_file --label_map $label_file
+log "INFO" "python -i /python/cybert.py --input_topic input --output_topic output --group_id $group_id --model $model_file --label_map $label_file --dask_scheduler ${DASK_SCHEDULER}"
+python -i /python/cybert.py --input_topic input --output_topic output --group_id $group_id --model $model_file --label_map $label_file --dask_scheduler ${DASK_SCHEDULER}
