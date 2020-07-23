@@ -1,10 +1,10 @@
 version: '3'
 services:
-  #JupyterLab will be available at port 8888
+  #JupyterLab will be available at port 9888
   clx:
     build: .
     ports:
-      - "8888:8888"
+      - "9888:8888"
       - "8787:8787"
       - "8686:8686"
     stdin_open: true
