@@ -42,7 +42,7 @@ ADD . /clx
 ARG CUDA_SHORT_VERSION
 RUN conda env create --name clx --file /clx/conda/environments/clx_dev_cuda${CUDA_SHORT_VERSION}.yml
 
-RUN conda activate clx && conda install -c rapidsai -c nvidia -c pytorch -c conda-forge -c defaults \
+RUN source activate clx && conda install -c rapidsai -c nvidia -c pytorch -c conda-forge -c defaults \
     python-confluent-kafka \
     streamz \
     dask-cuda \
@@ -80,4 +80,4 @@ ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
 RUN chmod +x /usr/bin/tini && \
     echo "source activate clx" >> ~/.bashrc
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/bin/bash", "/scripts/entry.sh"]
