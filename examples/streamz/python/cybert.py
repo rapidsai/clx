@@ -24,33 +24,34 @@ import socket
 
 
 def inference(messages):
-    print("Entering inference ... # Messages: " + str(len(messages)))
     output_df = None
     worker = dask.distributed.get_worker()
-    print("Dask Inference worker: " + str(worker))
 
     if type(messages) == str:
         df = cudf.DataFrame()
         df["stream"] = [messages.decode("utf-8")]
-        output_df = worker["cybert"].inference(df)
+        parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
     elif type(messages) == list and len(messages) > 0:
         df = cudf.DataFrame()
         df["stream"] = [msg.decode("utf-8") for msg in messages]
-
-        output_df = worker["cybert"].inference(df)
+        parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
     else:
         print("ERROR: Unknown type encountered in inference")
-    return [output_df.to_json()]
+    return parsed_df, confidence_df
 
 
-def sink_to_kafka(event_logs):
+def sink_to_kafka(event_dfs):
+    parsed_df = event_dfs[0]
+    confidence_df = event_dfs[1]
     producer_confs = {
         "bootstrap.servers": args.broker,
         "client.id": socket.gethostname(),
         "session.timeout.ms": 10000,
     }
     producer = Producer(producer_confs)
-    for event in event_logs:
+    for event in parsed_df.to_records():
+        producer.produce(args.output_topic, event)
+    for event in confidence_df.to_records():
         producer.produce(args.output_topic, event)
     producer.poll(1)
 
@@ -59,17 +60,18 @@ def worker_init():
     from clx.analytics.cybert import Cybert
 
     worker = dask.distributed.get_worker()
-    print("Worker in worker_init() " + str(worker))
-
-    # Create Cybert instance
     cy = Cybert()
-    print("After 'cy' creation")
-    print("Model File: " + str(args.model) + " Label Map: " + str(args.label_map))
+    print(
+        "Initializing Dask worker: "
+        + str(worker)
+        + " with cybert model. Model File: "
+        + str(args.model)
+        + " Label Map: "
+        + str(args.label_map)
+    )
     cy.load_model(args.model, args.label_map)
-    print("after load_model call")
     worker.data["cybert"] = cy
-
-    print("Cybert module created and loaded ...")
+    print("Successfully initialized dask worker " + str(worker))
 
 
 if __name__ == "__main__":
@@ -89,19 +91,31 @@ if __name__ == "__main__":
     parser.add_argument("-m", "--model", help="Model filepath")
     parser.add_argument("-l", "--label_map", help="Label map filepath")
     parser.add_argument(
-        "-d",
         "--dask_scheduler",
         help="Dask scheduler address. If not provided a new dask cluster will be created",
     )
-    parser.add_argument("-c", "--cuda_visible_devices", nargs="+", type=int, help="")
+    parser.add_argument(
+        "--cuda_visible_devices",
+        nargs="+",
+        type=int,
+        help="Cuda visible devices (ex: '0 1 2')",
+    )
+    parser.add_argument(
+        "--max_batch_size",
+        default=1000,
+        type=int,
+        help="Max batch size to read from kafka",
+    )
     args = parser.parse_args()
 
-    if "dask_scheduler" in args:
-        client = Client(args["dask_scheduler"])
+    if args.dask_scheduler is not None:
+        print("Dask scheduler:", args.dask_scheduler)
+        client = Client(args.dask_scheduler)
     else:
+        cuda_visible_devices = args.cuda_visible_devices
+        n_workers = len(cuda_visible_devices)
         cluster = LocalCUDACluster(
-            CUDA_VISIBLE_DEVICES=args["cuda_visible_devices"],
-            n_workers=len(args["cuda_visible_devices"]),
+            CUDA_VISIBLE_DEVICES=cuda_visible_devices, n_workers=n_workers
         )
         client = Client(cluster)
 
@@ -123,6 +137,7 @@ if __name__ == "__main__":
         npartitions=1,
         asynchronous=True,
         dask=True,
+        max_batch_size=args.max_batch_size,
     )
 
     inference = source.map(inference).gather().map(sink_to_kafka)
