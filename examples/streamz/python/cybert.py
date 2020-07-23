@@ -50,9 +50,9 @@ def sink_to_kafka(event_dfs):
     }
     producer = Producer(producer_confs)
     for event in parsed_df.to_records():
-        producer.produce(args.output_topic, event)
+        producer.produce(args.output_topic, str(event))
     for event in confidence_df.to_records():
-        producer.produce(args.output_topic, event)
+        producer.produce(args.output_topic, str(event))
     producer.poll(1)
 
 
