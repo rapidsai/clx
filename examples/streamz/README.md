@@ -16,7 +16,7 @@ Here we share an example in which we demonstrate how to read [Windows Event Logs
 First pull the latest version of rapids suitable for your environment
 
 ```
-docker pull rapidsai/rapidsai-dev-nightly:0.13-cuda10.1-devel-ubuntu18.04-py3.6
+docker pull rapidsai/rapidsai-dev-nightly:0.15-cuda10.2-devel-ubuntu18.04-py3.7
 ```
 
 Then create a new image using the Dockerfile provided. This docker image will contain all needed components including [Kafka](https://kafka.apache.org/) and [Zookeeper](https://zookeeper.apache.org/).
@@ -30,35 +30,37 @@ Create a new container using the image above. When running this container, it wi
 
 ##### Preferred - Docker CE v19+ and nvidia-container-toolkit
 ```
-docker run -it --gpus '"device=0"' -p 8787:8787 -v /home/nfs/brhodes/cyshare:/rapids/cyshare -v /home/nfs/brhodes/cybermount/datasets/apache/:/datasets/apache --name cybert-streamz -d cybert-streamz:latest \
+docker run -it --gpus '"device=0,1,2"' -p 8787:8787 -v /path/to/dataset:/path/to/dataset --name cybert-streamz -d cybert-streamz:latest \
 --broker localhost:9092 \
 --group_id streamz \
 --input_topic input \
 --output_topic output \
 --model_file /path/to/model.pth \
---label_file /path/to/label.yaml \
+--label_file /path/to/label.txt \
+--cuda_visible_devices 0,1,2 \
 --data /path/to/dataset (optional)
 ```
 
 ##### Legacy - Docker CE v18 and nvidia-docker2
 ```
-docker run -it --runtime=nvidia -p 8787:8787 -v /home/nfs/brhodes/cyshare:/rapids/cyshare -v /home/nfs/brhodes/cybermount/datasets/apache/:/datasets/apache --name cybert-streamz -d cybert-streamz:latest \
+docker run -it --runtime=nvidia -p 8787:8787 -v /path/to/dataset:/path/to/dataset --name cybert-streamz -d cybert-streamz:latest \
 --broker localhost:9092 \
 --group_id streamz \
 --input_topic input \
 --output_topic output \
 --model_file /path/to/model.pth \
 --label_file /path/to/label.yaml \
+--cuda_visible_devices 0,1,2 \
 --data /path/to/dataset (optional)
 ```
 
-View the output in the logs
+View the container output in the logs
 
 ```
 docker logs cybert-streamz
 ```
 
-Output will be pushed to the kafka topic named `output`. To view the output, log into the container and run 
+Processed data will be pushed to the kafka topic named `output`. To view all processed output run: 
 ```
-$KAFKA_HOME/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --from-beginning --topic output
+docker exec cybert-streamz bash -c 'source activate clx && $KAFKA_HOME/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic output --from-beginning'
 ```

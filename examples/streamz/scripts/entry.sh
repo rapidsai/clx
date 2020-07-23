@@ -23,8 +23,8 @@ usage() {
     echo "  -o, --output_topic         Kafka output topic"
     echo "  -m, --model_file           Cybert model file"
     echo "  -l, --label_file           Cybert label file"
+    echo "  -c, --cuda_visible_devices Cuda visible devices, ex: 0,1,2"
     echo "  -d, --data                 Cybert data file (optional)"
-    echo "  -c, --cuda_visible_devices Cuda visible devices, ex: 0,1,2 (optional)"
     echo
     echo "  -h, --help          Print this help"
     echo
