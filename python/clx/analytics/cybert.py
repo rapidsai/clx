@@ -1,4 +1,5 @@
 import cudf
+import cupy
 import numpy as np
 import os
 import pandas as pd
@@ -6,8 +7,8 @@ import torch
 import torch.nn.functional as F
 import logging
 from collections import defaultdict
+from torch.utils.dlpack import from_dlpack
 from transformers import BertForTokenClassification
-from clx.analytics import tokenizer
 
 log = logging.getLogger(__name__)
 
@@ -80,14 +81,19 @@ class Cybert:
         
         self._byte_count = raw_data_df.str.byte_count()
         self._max_num_chars = self._byte_count.sum()
-        self._max_rows_tensor = int((self._byte_count/348).ceil().sum())
+        self._max_rows_tensor = int((self._byte_count/120).ceil().sum())
         
-        input_ids, attention_masks, meta_data = tokenizer.tokenize_df(raw_data_df, hash_file=self._hashpath, \
-                                                                      max_sequence_length=max_seq_len, \
-                                                                      stride=stride_len,do_lower=False, do_truncate=False, \
-                                                                      max_num_sentences=len(raw_data_df),\
-                                                       max_num_chars = self._max_num_chars, max_rows_tensor = self._max_rows_tensor)       
-        return input_ids, attention_masks, meta_data
+        input_ids, attention_mask, meta_data = raw_data_df.str.subword_tokenize(self._hashpath, 128, 116,
+                                                                                max_num_strings=len(raw_data_df),\
+                                                                                max_num_chars=self._max_num_chars,\
+                                                                                max_rows_tensor=self._max_rows_tensor,\
+                                                                                do_lower=False, do_truncate=False)
+        num_rows = int(len(input_ids)/128)
+        input_ids = from_dlpack((input_ids.reshape(num_rows,128).astype(cupy.float)).toDlpack())
+        attention_mask = from_dlpack((attention_mask.reshape(num_rows,128).astype(cupy.float)).toDlpack())
+        meta_data = meta_data.reshape(num_rows, 3)
+            
+        return input_ids.type(torch.long), attention_mask.type(torch.long), meta_data
 
     def inference(self, raw_data_df):
         """
@@ -114,7 +120,7 @@ class Cybert:
             logits = self._model(input_ids, attention_masks)[0]
         logits = F.softmax(logits, dim=2)
         confidences, labels = torch.max(logits,2)
-        infer_pdf = pd.DataFrame(meta_data.detach().cpu().numpy())
+        infer_pdf = pd.DataFrame(meta_data).astype(int)
         infer_pdf.columns = ['doc','start','stop']
         infer_pdf['confidences'] = confidences.detach().cpu().numpy().tolist()
         infer_pdf['labels'] = labels.detach().cpu().numpy().tolist()
@@ -145,7 +151,7 @@ class Cybert:
         infer_pdf = infer_pdf.groupby('doc').agg({'token_ids': 'sum', 'confidences': 'sum', 'labels': 'sum'})
         
         #parse_by_label
-        parsed_dfs = infer_pdf.apply(lambda row: self.__parsed_by_label(row), axis=1, result_type='expand')
+        parsed_dfs = infer_pdf.apply(lambda row: self.__get_label_dicts(row), axis=1, result_type='expand')
         parsed_df = pd.DataFrame(parsed_dfs[0].tolist())
         confidence_df = pd.DataFrame(parsed_dfs[1].tolist())
         confidence_df = confidence_df.drop(['X'], axis=1).applymap(np.mean)
@@ -154,7 +160,7 @@ class Cybert:
         parsed_df = self.__decode_cleanup(parsed_df)
         return parsed_df, confidence_df
 
-    def __parsed_by_label(self, row):
+    def __get_label_dicts(self, row):
         token_dict = defaultdict(str)
         confidence_dict = defaultdict(list) 
         for label, confidence, token_id in zip(row['labels'], row['confidences'], row['token_ids']):
