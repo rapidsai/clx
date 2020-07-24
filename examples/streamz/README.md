@@ -30,7 +30,7 @@ Create a new container using the image above. When running this container, it wi
 
 ##### Preferred - Docker CE v19+ and nvidia-container-toolkit
 ```
-docker run -it --gpus '"device=0,1,2"' -p 8787:8787 -v /path/to/dataset:/path/to/dataset --name cybert-streamz -d cybert-streamz:latest \
+docker run -it --gpus '"device=0,1,2"' -p 8787:8787 -v /path/to/dataset:/path/to/dataset -v /path/to/model.pth:/path/to/model.pth -v /path/to/label.txt:/path/to/label.txt --name cybert-streamz -d cybert-streamz:latest \
 --broker localhost:9092 \
 --group_id streamz \
 --input_topic input \
@@ -38,12 +38,12 @@ docker run -it --gpus '"device=0,1,2"' -p 8787:8787 -v /path/to/dataset:/path/to
 --model_file /path/to/model.pth \
 --label_file /path/to/label.txt \
 --cuda_visible_devices 0,1,2 \
---data /path/to/dataset (optional)
+--data /path/to/dataset
 ```
 
 ##### Legacy - Docker CE v18 and nvidia-docker2
 ```
-docker run -it --runtime=nvidia -p 8787:8787 -v /path/to/dataset:/path/to/dataset --name cybert-streamz -d cybert-streamz:latest \
+docker run -it --runtime=nvidia -p 8787:8787 -v /path/to/dataset:/path/to/dataset -v /path/to/model.pth:/path/to/model.pth -v /path/to/label.txt:/path/to/label.txt --name cybert-streamz -d cybert-streamz:latest \
 --broker localhost:9092 \
 --group_id streamz \
 --input_topic input \
@@ -51,10 +51,12 @@ docker run -it --runtime=nvidia -p 8787:8787 -v /path/to/dataset:/path/to/datase
 --model_file /path/to/model.pth \
 --label_file /path/to/label.yaml \
 --cuda_visible_devices 0,1,2 \
---data /path/to/dataset (optional)
+--data /path/to/dataset
 ```
 
-View the container output in the logs
+View the data processing activity on the dask dashboard by visiting `localhost:8787` or `<host>:8787` 
+
+View the cyBERT script output in the container logs
 
 ```
 docker logs cybert-streamz

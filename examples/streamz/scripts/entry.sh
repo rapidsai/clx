@@ -24,7 +24,7 @@ usage() {
     echo "  -m, --model_file           Cybert model file"
     echo "  -l, --label_file           Cybert label file"
     echo "  -c, --cuda_visible_devices Cuda visible devices, ex: 0,1,2"
-    echo "  -d, --data                 Cybert data file (optional)"
+    echo "  -d, --data                 Cybert data file"
     echo
     echo "  -h, --help          Print this help"
     echo
