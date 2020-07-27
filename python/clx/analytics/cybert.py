@@ -151,7 +151,7 @@ class Cybert:
         parsed_df, confidence_df = self.__postprocess(infer_pdf)
         return parsed_df, confidence_df
 
-    def _get_hash_table_path(self):
+    def __get_hash_table_path(self):
         hash_table_path = "%s/resources/bert-base-cased-hash.txt" % os.path.dirname(
             os.path.realpath(__file__)
         )
