@@ -2,6 +2,7 @@
 
 ## New Features
 - PR #170 Add CLX Code of Conduct
+- PR #176 Add Periodicity Detection Notebook
 
 ## Improvements
 - PR #174 Install dependencies via meta package
