@@ -84,20 +84,25 @@ To install CLX from source, ensure the dependencies are met and follow the steps
 
 1) Clone the repository and submodules
 
-  ```bash
+```bash
   # Set the location to CLX in an environment variable CLX_HOME
   export CLX_HOME=$(pwd)/clx
 
   # Download the CLX repo
   git clone https://github.com/rapidsai/clx.git $CLX_HOME
-
+```
 
 2) Create the conda development environment
 
 ```bash
 # create the conda environment (assuming in base `clx` directory)
 
-conda env create --name clx_dev --file conda/environments/clx_dev.yml
+# for CUDA 10.1
+conda env create --name clx_dev --file conda/environments/clx_dev_cuda10.1.yml
+
+# for CUDA 10.2
+conda env create --name clx_dev --file conda/environments/clx_dev_cuda10.2.yml
+
 
 # activate the environment
 conda activate clx_dev
@@ -110,8 +115,11 @@ conda deactivate
 
 
 ```bash
+# for CUDA 10.1
+conda env update --name clx_dev --file conda/environments/clx_dev_cuda10.1.yml
 
-conda env update --name clx_dev --file conda/environments/clx_dev.yml
+# for CUDA 10.2
+conda env update --name clx_dev --file conda/environments/clx_dev_cuda10.2.yml
 
 conda activate clx_dev
 ```
