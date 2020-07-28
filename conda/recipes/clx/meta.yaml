@@ -35,6 +35,7 @@ requirements:
     - dask-cudf {{ minor_version }}.*
     - pytorch=1.5
     - torchvision
+    - transformers
 
 about:
   home: http://rapids.ai/

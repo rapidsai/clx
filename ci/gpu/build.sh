@@ -45,7 +45,7 @@ conda config --set ssl_verify False
 conda remove nomkl blas libblas
 
 logger "conda install required packages"
-conda install -c pytorch \
+conda install -c pytorch -c gwerbin \
     "cugraph=${MINOR_VERSION}" \
     "cuml=${MINOR_VERSION}" \
     "dask-cudf=${MINOR_VERSION}" \
@@ -53,6 +53,11 @@ conda install -c pytorch \
     "torchvision" \
     "scikit-learn" \
     "numpy>=1.17.3,<1.19.0" \
+    "python-confluent-kafka" \
+    "transformers" \
+    "seqeval" \
+    "python-whois" \
+    "requests" \
     "cmake" \
     "cython" \
     "pytest" \
@@ -64,8 +69,10 @@ logger "pip install git+https://github.com/dask/distributed.git --upgrade --no-d
 pip install "git+https://github.com/dask/distributed.git" --upgrade --no-deps
 logger "pip install git+https://github.com/dask/dask.git --upgrade --no-deps"
 pip install "git+https://github.com/dask/dask.git" --upgrade --no-deps
-logger "pip install git+https://github.com/rapidsai/cudatashader.git --upgrade --no-deps"
+logger "pip install git+https://github.com/rapidsai/cudatashader.git"
 pip install "git+https://github.com/rapidsai/cudatashader.git"
+logger "pip install mockito"
+pip install mockito
 
 conda list
 

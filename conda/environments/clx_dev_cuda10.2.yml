@@ -6,6 +6,8 @@ channels:
 - rapidsai-nightly
 - conda-forge
 - pytorch
+- gwerbin
+- auto
 dependencies:
 - numpy>=1.17.3,<1.19.0
 - cugraph=0.15.*
@@ -22,6 +24,11 @@ dependencies:
 - scikit-learn>=0.21
 - s3fs
 - ipywidgets
+- python-confluent-kafka
+- transformers
+- seqeval
+- python-whois
+- seaborn
 - pip
 - pytest
 - jupyterlab
@@ -34,6 +41,5 @@ dependencies:
   - "git+https://github.com/dask/dask.git"
   - "git+https://github.com/dask/distributed.git"
   - "git+https://github.com/rapidsai/cudatashader.git"
-  - seaborn
-  - pytorch-transformers
   - wget
+  - mockito

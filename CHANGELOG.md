@@ -2,13 +2,16 @@
 
 ## New Features
 - PR #170 Add CLX Code of Conduct
+- PR #176 Add Periodicity Detection Notebook
 - PR #193 AC notebook 
+
 ## Improvements
 - PR #174 Install dependencies via meta package
 - PR #175 GPU tokenizer updates
 - PR #181 CLX Query to support dask blazingsql
 - PR #159 Update to PyTorch 1.5
 - PR #191 Update conda upload versions for new supported CUDA/Python
+- PR #203 CLX docker and conda environment updates
 
 ## Bug Fixes
 - PR #169 Fix documentation links
