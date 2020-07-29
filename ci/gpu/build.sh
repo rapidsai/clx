@@ -75,6 +75,7 @@ logger "pip install git+https://github.com/rapidsai/cudatashader.git"
 pip install "git+https://github.com/rapidsai/cudatashader.git"
 logger "pip install mockito"
 pip install mockito
+pip install wget
 
 conda list
 
