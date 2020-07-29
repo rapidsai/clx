@@ -10,8 +10,7 @@ TOPLEVEL_NB_FOLDERS=$(find . -name *.ipynb |cut -d'/' -f2|sort -u)
 
 # Add notebooks that should be skipped here
 # (space-separated list of filenames without paths)
-SKIPNBS="DGA_Detection.ipynb FLAIR_DNS_Log_Parsing.ipynb Alert_Analysis_with_CLX.ipynb cybert_example_training.ipynb CLX_Workflow_Notebook1.ipynb CLX_Workflow_Notebook2.ipynb CLX_Workflow_Notebook3.ipynb Network_Mapping_With_RAPIDS_And_CLX.ipynb Phishing_Detection_using_Bert_CLX.ipynb"
-
+SKIPNBS="FLAIR_DNS_Log_Parsing.ipynb CLX_Workflow_Notebook1.ipynb"
 
 ## Check env
 env
