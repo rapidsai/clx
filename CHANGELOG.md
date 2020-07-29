@@ -23,6 +23,7 @@
 - PR #190 Fix issue with incorrect docker image being used in local build script
 - PR #192 Conda build fix
 - PR #197 Fix errors from Python 3.8 conda build and cudf update
+- P# #205 Build and notebook fixes/updates
 
 # clx 0.14.0 (Date TBD)
 
