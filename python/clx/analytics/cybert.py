@@ -21,9 +21,13 @@ class Cybert:
     def __init__(self):
         self._model = None
         self._label_map = {}
+        resources_dir = "%s/resources" % os.path.dirname(os.path.realpath(__file__))
+        vocabpath = "%s/bert-base-cased-vocab.txt" % resources_dir
         self._vocab_lookup = {}
-        self._vocabpath = self.__get_vocab_file_path()
-        self._hashpath = self.__get_hash_table_path()
+        with open(vocabpath) as f:
+            for index, line in enumerate(f):
+                self._vocab_lookup[index] = line.split()[0]
+        self._hashpath = "%s/bert-base-cased-hash.txt" % resources_dir
 
     def load_model(
         self, model_filepath, label_map_filepath, pretrained_model="bert-base-cased"
@@ -48,10 +52,6 @@ class Cybert:
         >>> cyparse = Cybert()
         >>> cyparse.load_model('/path/to/model.pth', '/path/to/labels.txt')
         """
-        with open(self._vocabpath) as f:
-            for index, line in enumerate(f):
-                self._vocab_lookup[index] = line.split()[0]
-
         with open(label_map_filepath) as f:
             for index, line in enumerate(f):
                 self._label_map[index] = line.split()[0]
@@ -65,12 +65,12 @@ class Cybert:
         self._model.cuda()
         self._model.eval()
 
-    def preprocess(self, raw_data_df, stride_len=116, max_seq_len=128):
+    def preprocess(self, raw_data_col, stride_len=116, max_seq_len=128):
         """
         Preprocess and tokenize data for cybert model inference.
 
-        :param raw_data_df: logs to be processed
-        :type model_filepath: cudf.Series
+        :param raw_data_col: logs to be processed
+        :type raw_data_col: cudf.Series
         :param stride_len: Max stride length for processing, default is 116
         :type stride_len: int
         :param max_seq_len: Max sequence length for processing, default is 128
@@ -85,23 +85,23 @@ class Cybert:
         >>> raw_df = cudf.Series(['Log event 1', 'Log event 2'])
         >>> input_ids, attention_masks, meta_data = cyparse.preprocess(raw_df)
         """
-        raw_data_df = raw_data_df.str.replace('"', "")
-        raw_data_df = raw_data_df.str.replace("\\r", " ")
-        raw_data_df = raw_data_df.str.replace("\\t", " ")
-        raw_data_df = raw_data_df.str.replace("=", "= ")
-        raw_data_df = raw_data_df.str.replace("\\n", " ")
+        raw_data_col = raw_data_col.str.replace('"', "")
+        raw_data_col = raw_data_col.str.replace("\\r", " ")
+        raw_data_col = raw_data_col.str.replace("\\t", " ")
+        raw_data_col = raw_data_col.str.replace("=", "= ")
+        raw_data_col = raw_data_col.str.replace("\\n", " ")
 
-        self._byte_count = raw_data_df.str.byte_count()
-        self._max_num_chars = self._byte_count.sum()
-        self._max_rows_tensor = int((self._byte_count / 120).ceil().sum())
+        byte_count = raw_data_col.str.byte_count()
+        max_num_chars = byte_count.sum()
+        max_rows_tensor = int((byte_count / 120).ceil().sum())
 
-        input_ids, att_mask, meta_data = raw_data_df.str.subword_tokenize(
+        input_ids, att_mask, meta_data = raw_data_col.str.subword_tokenize(
             self._hashpath,
             128,
             116,
-            max_num_strings=len(raw_data_df),
-            max_num_chars=self._max_num_chars,
-            max_rows_tensor=self._max_rows_tensor,
+            max_num_strings=len(raw_data_col),
+            max_num_chars=max_num_chars,
+            max_rows_tensor=max_rows_tensor,
             do_lower=False,
             do_truncate=False,
         )
@@ -117,12 +117,12 @@ class Cybert:
 
         return input_ids.type(torch.long), att_mask.type(torch.long), meta_data
 
-    def inference(self, raw_data_df):
+    def inference(self, raw_data_col):
         """
         Cybert inference and postprocessing on dataset
 
-        :param raw_data_df: logs to be processed
-        :type raw_data_df: cudf.Series
+        :param raw_data_col: logs to be processed
+        :type raw_data_col: cudf.Series
         :return: parsed_df
         :rtype: pandas.DataFrame
         :return: confidence_df
@@ -134,10 +134,10 @@ class Cybert:
         >>> from clx.analytics.cybert import Cybert
         >>> cyparse = Cybert()
         >>> cyparse.load_model('/path/to/model.pth', '/path/to/labels.txt')
-        >>> raw_data_df = cudf.Series(['Log event 1', 'Log event 2'])
-        >>> processed_df, confidence_df = cy.inference(raw_data_df)
+        >>> raw_data_col = cudf.Series(['Log event 1', 'Log event 2'])
+        >>> processed_df, confidence_df = cy.inference(raw_data_col)
         """
-        input_ids, attention_masks, meta_data = self.preprocess(raw_data_df)
+        input_ids, attention_masks, meta_data = self.preprocess(raw_data_col)
         with torch.no_grad():
             logits = self._model(input_ids, attention_masks)[0]
         logits = F.softmax(logits, dim=2)
@@ -150,18 +150,6 @@ class Cybert:
 
         parsed_df, confidence_df = self.__postprocess(infer_pdf)
         return parsed_df, confidence_df
-
-    def __get_hash_table_path(self):
-        hash_table_path = "%s/resources/bert-base-cased-hash.txt" % os.path.dirname(
-            os.path.realpath(__file__)
-        )
-        return hash_table_path
-
-    def __get_vocab_file_path(self):
-        vocab_file_path = "%s/resources/bert-base-cased-vocab.txt" % os.path.dirname(
-            os.path.realpath(__file__)
-        )
-        return vocab_file_path
 
     def __postprocess(self, infer_pdf):
         # cut overlapping edges
