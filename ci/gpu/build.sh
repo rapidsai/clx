@@ -63,7 +63,8 @@ conda install -c pytorch -c gwerbin \
     "pytest" \
     "s3fs" \
     "ipython" \
-    "matplotlib"
+    "matplotlib" \
+    "nbconvert"
 
 # Install the master version of dask, distributed, and cudatashader
 logger "pip install git+https://github.com/dask/distributed.git --upgrade --no-deps"
