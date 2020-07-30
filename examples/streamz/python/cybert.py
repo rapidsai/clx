@@ -18,42 +18,42 @@ import dask
 from dask_cuda import LocalCUDACluster
 from distributed import Client
 from streamz import Stream
-from confluent_kafka import Producer
+import confluent_kafka as ck
 from clx.analytics.cybert import Cybert
 import socket
+import signal
+import random
+import time
+import sys
 
 
 def inference(messages):
-    output_df = None
     worker = dask.distributed.get_worker()
-
+    batch_start_time = int(round(time.time()))
+    size = 0
     if type(messages) == str:
         df = cudf.DataFrame()
         df["stream"] = [messages.decode("utf-8")]
         parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
+        size = len(df)
     elif type(messages) == list and len(messages) > 0:
         df = cudf.DataFrame()
         df["stream"] = [msg.decode("utf-8") for msg in messages]
         parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
+        size = len(df)
     else:
         print("ERROR: Unknown type encountered in inference")
-    return parsed_df, confidence_df
+    return (parsed_df, confidence_df, batch_start_time, size)
 
 
-def sink_to_kafka(event_dfs):
-    parsed_df = event_dfs[0]
-    confidence_df = event_dfs[1]
-    producer_confs = {
-        "bootstrap.servers": args.broker,
-        "client.id": socket.gethostname(),
-        "session.timeout.ms": 10000,
-    }
-    producer = Producer(producer_confs)
-    for event in parsed_df.to_records():
-        producer.produce(args.output_topic, str(event))
-    for event in confidence_df.to_records():
-        producer.produce(args.output_topic, str(event))
-    producer.poll(1)
+def sink_to_kafka(processed_data):
+    parsed_df = processed_data[0]
+    confidence_df = processed_data[1]
+    producer = ck.Producer(producer_confs)
+    producer.produce(args.output_topic, parsed_df.to_json())
+    producer.produce(args.output_topic, confidence_df.to_json())
+    producer.flush()
+    return processed_data
 
 
 def worker_init():
@@ -72,6 +72,32 @@ def worker_init():
     cy.load_model(args.model, args.label_map)
     worker.data["cybert"] = cy
     print("Successfully initialized dask worker " + str(worker))
+
+
+def calc_benchmark(processed_data):
+    t1 = int(round(time.time() * 1000))
+    t2 = 0
+    size = 0.0
+    batch_count = 0
+    # Find min and max time while keeping track of batch count and size
+    for result in processed_data:
+        (ts1, ts2, sz) = (result[2], result[3], result[4])
+        if ts1 == 0 or ts2 == 0:
+            continue
+        batch_count = batch_count + 1
+        t1 = min(t1, ts1)
+        t2 = max(t2, ts2)
+        size += sz / 2
+    time_diff = t2 - t1
+    return time_diff
+
+
+def signal_term_handler(signal, frame):
+    print("Exiting streamz script...")
+    if args.benchmark:
+        time_diff = calc_benchmark(output)
+        print("Job duration: {:.2f} secs".format(time_diff))
+    sys.exit(0)
 
 
 if __name__ == "__main__":
@@ -106,6 +132,7 @@ if __name__ == "__main__":
         type=int,
         help="Max batch size to read from kafka",
     )
+    parser.add_argument("--benchmark", help="Capture benchmark", action="store_true")
     args = parser.parse_args()
 
     if args.dask_scheduler is not None:
@@ -124,10 +151,12 @@ if __name__ == "__main__":
     client.run(worker_init)
 
     # Define the streaming pipeline.
+    j = random.randint(0, 100000)
     consumer_conf = {
         "bootstrap.servers": args.broker,
-        "group.id": args.group_id,
+        "group.id": args.group_id + "-%i" % j,
         "session.timeout.ms": 60000,
+        "auto.offset.reset": "earliest",
     }
     print("Consumer conf:", consumer_conf)
     source = Stream.from_kafka_batched(
@@ -139,6 +168,26 @@ if __name__ == "__main__":
         dask=True,
         max_batch_size=args.max_batch_size,
     )
+    producer_confs = {
+        "bootstrap.servers": args.broker,
+        # "client.id": socket.gethostname(),
+        "session.timeout.ms": 10000,
+    }
+    # Handle docker container and script exit
+    signal.signal(signal.SIGTERM, signal_term_handler)
+    signal.signal(signal.SIGINT, signal_term_handler)
 
-    inference = source.map(inference).gather().map(sink_to_kafka)
+    # If benchmark arg is True, use streamz to compute benchmark
+    if args.benchmark:
+        print("Benchmark will be calculated")
+        output = (
+            source.map(inference)
+            .map(lambda x: (x[0], x[1], x[2], int(round(time.time())), x[3]))
+            .map(sink_to_kafka)
+            .gather()
+            .sink_to_list()
+        )
+    else:
+        output = source.map(inference).map(sink_to_kafka).gather()
+
     source.start()
