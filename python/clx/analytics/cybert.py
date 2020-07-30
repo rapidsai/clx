@@ -1,4 +1,3 @@
-import cudf
 import cupy
 import numpy as np
 import os
@@ -15,7 +14,8 @@ log = logging.getLogger(__name__)
 
 class Cybert:
     """
-    Cyber log parsing using BERT. This class provides methods for loading models, prediction, and postprocessing.
+    Cyber log parsing using BERT. This class provides methods for
+    loading models, prediction, and postprocessing.
     """
 
     def __init__(self):
@@ -26,16 +26,20 @@ class Cybert:
         self._hashpath = self.__get_hash_table_path()
 
     def load_model(
-        self, model_filepath, label_map_filepath, pretrained_model="bert-base-cased"
+            self, model_filepath, label_map_filepath, pretrained_model="bert-base-cased"
     ):
         """
         Load cybert model.
 
-        :param model_filepath: Filepath of the model (.pth or .bin) to be loaded
+        :param model_filepath: Filepath of the model (.pth or .bin) to
+        be loaded
         :type model_filepath: str
-        :param label_map_filepath: Filepath of the labels (.txt) to be used
+        :param label_map_filepath: Filepath of the labels (.txt) to be
+        used
         :type label_map_filepath: str
-        :param pretrained_model: Name of pretrained model to be loaded from transformers repo, default is bert-base-cased
+        :param pretrained_model: Name of pretrained model to be loaded from
+        transformers
+        repo, default is bert-base-cased
         :type pretrained_model: str
 
         Examples
@@ -78,8 +82,8 @@ class Cybert:
         >>> from clx.analytics.cybert import Cybert
         >>> cyparse = Cybert()
         >>> cyparse.load_model('/path/to/model.pth', '/path/to/labels.txt')
-        >>> raw_data_df = cudf.Series(['Log event 1', 'Log event 2'])
-        >>> input_ids, attention_masks, meta_data = cyparse.preprocess(raw_data_df)
+        >>> raw_df = cudf.Series(['Log event 1', 'Log event 2'])
+        >>> input_ids, attention_masks, meta_data = cyparse.preprocess(raw_df)
         """
         raw_data_df = raw_data_df.str.replace('"', "")
         raw_data_df = raw_data_df.str.replace("\\r", " ")
@@ -91,7 +95,7 @@ class Cybert:
         self._max_num_chars = self._byte_count.sum()
         self._max_rows_tensor = int((self._byte_count / 120).ceil().sum())
 
-        input_ids, attention_mask, meta_data = raw_data_df.str.subword_tokenize(
+        input_ids, att_mask, meta_data = raw_data_df.str.subword_tokenize(
             self._hashpath,
             128,
             116,
@@ -101,16 +105,17 @@ class Cybert:
             do_lower=False,
             do_truncate=False,
         )
+
         num_rows = int(len(input_ids) / 128)
         input_ids = from_dlpack(
             (input_ids.reshape(num_rows, 128).astype(cupy.float)).toDlpack()
         )
-        attention_mask = from_dlpack(
-            (attention_mask.reshape(num_rows, 128).astype(cupy.float)).toDlpack()
+        att_mask = from_dlpack(
+            (att_mask.reshape(num_rows, 128).astype(cupy.float)).toDlpack()
         )
         meta_data = meta_data.reshape(num_rows, 3)
 
-        return input_ids.type(torch.long), attention_mask.type(torch.long), meta_data
+        return input_ids.type(torch.long), att_mask.type(torch.long), meta_data
 
     def inference(self, raw_data_df):
         """
@@ -146,7 +151,7 @@ class Cybert:
         parsed_df, confidence_df = self.__postprocess(infer_pdf)
         return parsed_df, confidence_df
 
-    def __get_hash_table_path(self):
+    def _get_hash_table_path(self):
         hash_table_path = "%s/resources/bert-base-cased-hash.txt" % os.path.dirname(
             os.path.realpath(__file__)
         )
@@ -161,13 +166,15 @@ class Cybert:
     def __postprocess(self, infer_pdf):
         # cut overlapping edges
         infer_pdf["confidences"] = infer_pdf.apply(
-            lambda row: row["confidences"][row["start"] : row["stop"]], axis=1
+            lambda row: row["confidences"][row["start"]:row["stop"]], axis=1
         )
+
         infer_pdf["labels"] = infer_pdf.apply(
-            lambda row: row["labels"][row["start"] : row["stop"]], axis=1
+            lambda row: row["labels"][row["start"]:row["stop"]], axis=1
         )
+
         infer_pdf["token_ids"] = infer_pdf.apply(
-            lambda row: row["token_ids"][row["start"] : row["stop"]], axis=1
+            lambda row: row["token_ids"][row["start"]:row["stop"]], axis=1
         )
 
         # aggregated logs
@@ -177,7 +184,7 @@ class Cybert:
 
         # parse_by_label
         parsed_dfs = infer_pdf.apply(
-            lambda row: self.__parsed_by_label(row), axis=1, result_type="expand"
+            lambda row: self.__get_label_dicts(row), axis=1, result_type="expand"
         )
         parsed_df = pd.DataFrame(parsed_dfs[0].tolist())
         confidence_df = pd.DataFrame(parsed_dfs[1].tolist())
@@ -187,19 +194,19 @@ class Cybert:
         parsed_df = self.__decode_cleanup(parsed_df)
         return parsed_df, confidence_df
 
-    def __parsed_by_label(self, row):
+    def __get_label_dicts(self, row):
         token_dict = defaultdict(str)
         confidence_dict = defaultdict(list)
         for label, confidence, token_id in zip(
-            row["labels"], row["confidences"], row["token_ids"]
+                row["labels"], row["confidences"], row["token_ids"]
         ):
             text_token = self._vocab_lookup[token_id]
             if text_token[:2] != "##":
-                ## if not a subword use the current label, else use previous
+                # if not a subword use the current label, else use previous
                 new_label = label
                 new_confidence = confidence
             token_dict[self._label_map[new_label]] = (
-                token_dict[self._label_map[new_label]] + " " + text_token
+                    token_dict[self._label_map[new_label]] + " " + text_token
             )
             confidence_dict[self._label_map[label]].append(new_confidence)
         return token_dict, confidence_dict
@@ -207,14 +214,14 @@ class Cybert:
     def __decode_cleanup(self, df):
         return (
             df.replace(" ##", "", regex=True)
-            .replace(" : ", ":", regex=True)
-            .replace("\[ ", "[", regex=True)
-            .replace(" ]", "]", regex=True)
-            .replace(" /", "/", regex=True)
-            .replace("/ ", "/", regex=True)
-            .replace(" - ", "-", regex=True)
-            .replace(" \( ", " (", regex=True)
-            .replace(" \) ", ") ", regex=True)
-            .replace("\+ ", "+", regex=True)
-            .replace(" . ", ".", regex=True)
+                .replace(" : ", ":", regex=True)
+                .replace("\[ ", "[", regex=True)
+                .replace(" ]", "]", regex=True)
+                .replace(" /", "/", regex=True)
+                .replace("/ ", "/", regex=True)
+                .replace(" - ", "-", regex=True)
+                .replace(" \( ", " (", regex=True)
+                .replace(" \) ", ") ", regex=True)
+                .replace("\+ ", "+", regex=True)
+                .replace(" . ", ".", regex=True)
         )
