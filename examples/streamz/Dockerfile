@@ -34,10 +34,10 @@ ENV SCALA_VERSION 2.11
 ENV KAFKA_VERSION 2.3.0
 ENV KAFKA_HOME /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"
 
-# Add everything from the local build context
-ADD examples/streamz/scripts /scripts
-ADD examples/streamz/data /data
-ADD examples/streamz/python /python
+ENV CYBERT_HOME /opt/cybert
+ADD examples/streamz/scripts "$CYBERT_HOME"/scripts
+ADD examples/streamz/data "$CYBERT_HOME"/data
+ADD examples/streamz/python "$CYBERT_HOME"/python
 ADD . /clx
 
 ARG CUDA_SHORT_VERSION
@@ -81,4 +81,4 @@ ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
 RUN chmod +x /usr/bin/tini && \
     echo "source activate clx" >> ~/.bashrc
-ENTRYPOINT ["/bin/bash", "/scripts/entry.sh"]
+ENTRYPOINT ["/usr/bin/tini", "--", "/bin/bash", "$CYBERT_HOME/scripts/entry.sh"]

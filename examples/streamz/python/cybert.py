@@ -28,28 +28,27 @@ import sys
 
 
 def inference(messages):
+    # Messages will be received and run through cyBERT inferencing
     worker = dask.distributed.get_worker()
     batch_start_time = int(round(time.time()))
     size = 0
+    df = cudf.DataFrame()
     if type(messages) == str:
-        df = cudf.DataFrame()
         df["stream"] = [messages.decode("utf-8")]
-        parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
-        size = len(df)
     elif type(messages) == list and len(messages) > 0:
-        df = cudf.DataFrame()
         df["stream"] = [msg.decode("utf-8") for msg in messages]
-        parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
-        size = len(df)
     else:
         print("ERROR: Unknown type encountered in inference")
+    parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
+    size = len(df)
     return (parsed_df, confidence_df, batch_start_time, size)
 
 
 def sink_to_kafka(processed_data):
+    # Parsed data and confidence scores will be published to provided kafka producer
     parsed_df = processed_data[0]
     confidence_df = processed_data[1]
-    producer = ck.Producer(producer_confs)
+    producer = ck.Producer(producer_conf)
     producer.produce(args.output_topic, parsed_df.to_json())
     producer.produce(args.output_topic, confidence_df.to_json())
     producer.flush()
@@ -87,20 +86,27 @@ def calc_benchmark(processed_data):
         batch_count = batch_count + 1
         t1 = min(t1, ts1)
         t2 = max(t2, ts2)
-        size += sz / 2
+        size += sz / 10
     time_diff = t2 - t1
-    return time_diff
+    throughput_mbps = size / (1024.0 * time_diff) if time_diff > 0 else 0
+    avg_batch_size = size / (1024.0 * batch_count)
+    return (time_diff, throughput_mbps, avg_batch_size)
 
 
 def signal_term_handler(signal, frame):
     print("Exiting streamz script...")
     if args.benchmark:
-        time_diff = calc_benchmark(output)
-        print("Job duration: {:.2f} secs".format(time_diff))
+        (time_diff, throughput_mbps, avg_batch_size) = calc_benchmark(output)
+        print("*** BENCHMARK ***")
+        print(
+            "Job duration: {:.3f} secs, Throughput(mb/sec):{:.3f}, Avg. Batch size(mb):{:.3f}".format(
+                time_diff, throughput_mbps, avg_batch_size
+            )
+        )
     sys.exit(0)
 
 
-if __name__ == "__main__":
+def parse_arguments():
     parser = argparse.ArgumentParser(
         description="Cybert using Streamz and Dask. \
                                                   Data will be read from the input kafka topic, \
@@ -134,27 +140,44 @@ if __name__ == "__main__":
     )
     parser.add_argument("--benchmark", help="Capture benchmark", action="store_true")
     args = parser.parse_args()
+    return args
 
-    if args.dask_scheduler is not None:
-        print("Dask scheduler:", args.dask_scheduler)
-        client = Client(args.dask_scheduler)
+
+def create_dask_client(dask_scheduler, cuda_visible_devices=[0]):
+    # If a dask scheduler is provided create client using that address
+    # otherwise create a new dask cluster
+    if dask_scheduler is not None:
+        print("Dask scheduler:", dask_scheduler)
+        client = Client(dask_scheduler)
     else:
-        cuda_visible_devices = args.cuda_visible_devices
         n_workers = len(cuda_visible_devices)
         cluster = LocalCUDACluster(
             CUDA_VISIBLE_DEVICES=cuda_visible_devices, n_workers=n_workers
         )
         client = Client(cluster)
-
     print(client)
-    print("Initializing Cybert instances on each Dask worker")
+    return client
+
+
+if __name__ == "__main__":
+    # Parse arguments
+    args = parse_arguments()
+    # Handle script exit
+    signal.signal(signal.SIGTERM, signal_term_handler)
+    signal.signal(signal.SIGINT, signal_term_handler)
+    # Kafka producer configuration for processed output data
+    producer_conf = {
+        "bootstrap.servers": args.broker,
+        "session.timeout.ms": 10000,
+    }
+    print("Producer conf:", producer_conf)
+    client = create_dask_client(args.dask_scheduler, args.cuda_visible_devices)
     client.run(worker_init)
 
     # Define the streaming pipeline.
-    j = random.randint(0, 100000)
     consumer_conf = {
         "bootstrap.servers": args.broker,
-        "group.id": args.group_id + "-%i" % j,
+        "group.id": args.group_id,
         "session.timeout.ms": 60000,
         "auto.offset.reset": "earliest",
     }
@@ -168,14 +191,6 @@ if __name__ == "__main__":
         dask=True,
         max_batch_size=args.max_batch_size,
     )
-    producer_confs = {
-        "bootstrap.servers": args.broker,
-        # "client.id": socket.gethostname(),
-        "session.timeout.ms": 10000,
-    }
-    # Handle docker container and script exit
-    signal.signal(signal.SIGTERM, signal_term_handler)
-    signal.signal(signal.SIGINT, signal_term_handler)
 
     # If benchmark arg is True, use streamz to compute benchmark
     if args.benchmark:
