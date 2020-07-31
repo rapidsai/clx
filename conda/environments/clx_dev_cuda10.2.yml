@@ -29,6 +29,8 @@ dependencies:
 - seqeval
 - python-whois
 - seaborn
+- requests
+- matplotlib
 - pip
 - pytest
 - jupyterlab
