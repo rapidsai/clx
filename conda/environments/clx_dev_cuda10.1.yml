@@ -30,6 +30,7 @@ dependencies:
 - python-whois
 - seaborn
 - requests
+- matplotlib
 - pip
 - pytest
 - jupyterlab

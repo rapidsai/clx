@@ -34,6 +34,7 @@ dask-worker-space/
 # Test output
 clx/tests/output
 clx/tests/.config
+rnn_classifier_2020-06-08_20_48_03.pth
 
 # Jupyter
 .ipynb_checkpoints/

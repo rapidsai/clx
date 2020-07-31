@@ -62,7 +62,9 @@ conda install -c pytorch -c gwerbin \
     "cython" \
     "pytest" \
     "s3fs" \
-    "ipython"
+    "ipython" \
+    "matplotlib" \
+    "nbconvert"
 
 # Install the master version of dask, distributed, and cudatashader
 logger "pip install git+https://github.com/dask/distributed.git --upgrade --no-deps"
@@ -73,6 +75,8 @@ logger "pip install git+https://github.com/rapidsai/cudatashader.git"
 pip install "git+https://github.com/rapidsai/cudatashader.git"
 logger "pip install mockito"
 pip install mockito
+pip install wget
+pip install pytorch-transformers
 
 conda list
 
