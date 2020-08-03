@@ -81,4 +81,4 @@ ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
 RUN chmod +x /usr/bin/tini && \
     echo "source activate clx" >> ~/.bashrc
-ENTRYPOINT ["/usr/bin/tini", "--", "/bin/bash", "$CYBERT_HOME/scripts/entry.sh"]
+ENTRYPOINT ["/usr/bin/tini", "--", "/opt/cybert/scripts/entry.sh"]

@@ -89,7 +89,7 @@ def calc_benchmark(processed_data):
         size += sz / 10
     time_diff = t2 - t1
     throughput_mbps = size / (1024.0 * time_diff) if time_diff > 0 else 0
-    avg_batch_size = size / (1024.0 * batch_count)
+    avg_batch_size = size / (1024.0 * batch_count) if batch_count > 0 else 0
     return (time_diff, throughput_mbps, avg_batch_size)
 
 
@@ -127,10 +127,7 @@ def parse_arguments():
         help="Dask scheduler address. If not provided a new dask cluster will be created",
     )
     parser.add_argument(
-        "--cuda_visible_devices",
-        nargs="+",
-        type=int,
-        help="Cuda visible devices (ex: '0 1 2')",
+        "--cuda_visible_devices", type=str, help="Cuda visible devices (ex: '0,1,2')",
     )
     parser.add_argument(
         "--max_batch_size",
@@ -171,7 +168,9 @@ if __name__ == "__main__":
         "session.timeout.ms": 10000,
     }
     print("Producer conf:", producer_conf)
-    client = create_dask_client(args.dask_scheduler, args.cuda_visible_devices)
+    cuda_visible_devices = args.cuda_visible_devices.split(",")
+    cuda_visible_devices = [int(x) for x in cuda_visible_devices]
+    client = create_dask_client(args.dask_scheduler, cuda_visible_devices)
     client.run(worker_init)
 
     # Define the streaming pipeline.
