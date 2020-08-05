@@ -54,7 +54,7 @@ docker run -it --runtime=nvidia -p 8787:8787 -v /path/to/dataset:/path/to/datase
 --data /path/to/dataset
 ```
 
-View the data processing activity on the dask dashboard by visiting `localhost:8787` or `<host>:8787` 
+View the data processing activity on the dask dashboard by visiting `localhost:8787` or `<host>:8787`
 
 View the cyBERT script output in the container logs
 
@@ -62,7 +62,21 @@ View the cyBERT script output in the container logs
 docker logs cybert-streamz
 ```
 
-Processed data will be pushed to the kafka topic named `output`. To view all processed output run: 
+Processed data will be pushed to the kafka topic named `output`. To view all processed output run:
 ```
 docker exec cybert-streamz bash -c 'source activate clx && $KAFKA_HOME/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic output --from-beginning'
 ```
+
+##### Benchmark
+
+To capture benchmarks add the benchmark flag (`--benchamrk`) to the docker run command
+
+To print benchmark to the docker logs send a SIGINT signal to the running cybert process
+```
+# To get the PID
+$ docker exec cybert-streamz ps aux | grep cybert.py | awk '{print $2}'
+# Kill process
+$ docker exec cybert-streamz kill -SIGINT <pid>
+$ docker logs cybert-streamz
+```
+
