@@ -121,19 +121,6 @@ option(BUILD_TESTS "Configure CMake to build tests" ON)
 option(BUILD_BENCHMARKS "Configure CMake to build (google) benchmarks" OFF)
 
 ###################################################################################################
-# - cudart options --------------------------------------------------------------------------------
-# cudart can be statically linked or dynamically linked. The python ecosystem wants dynamic linking
-
-option(CUDA_STATIC_RUNTIME "Statically link the CUDA runtime" OFF)
-
-if(CUDA_STATIC_RUNTIME)
-    message(STATUS "Enabling static linking of cudart")
-    set(CUDART_LIBRARY "cudart_static")
-else()
-    set(CUDART_LIBRARY "cudart")
-endif(CUDA_STATIC_RUNTIME)
-
-###################################################################################################
 # - RMM -------------------------------------------------------------------------------------------
 
 find_path(RMM_INCLUDE "rmm"
@@ -191,13 +178,6 @@ add_library(clx SHARED
   src/fullTokenizer.cu
   src/main.cu
 )
-
-###################################################################################################
-# - link libraries --------------------------------------------------------------------------------
-
-# link targets for cuDF
-target_link_libraries(clx rmm ${CUDART_LIBRARY} cuda)
-
 ###################################################################################################
 # - add gtest -------------------------------------------------------------------------------------
 
@@ -247,7 +227,7 @@ add_executable(tokenizer
   src/main.cu
 )
 
-target_link_libraries(tokenizer ${CU_TOK_LIBS} rmm ${CUDART_LIBRARY} cuda)
+target_link_libraries(tokenizer ${CU_TOK_LIBS} rmm)
 
 target_link_libraries(clx nvToolsExt rmm)
 
