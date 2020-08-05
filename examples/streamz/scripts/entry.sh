@@ -12,7 +12,7 @@ usage() {
     fi
     echo "Usage: $0 [POS]... [ARG]..."
     echo
-    echo "Example-1: bash $0 -b localhost:9092 -g streamz -i input -o output -m /path/to/model.pth -l /path/to/labels.yaml"
+    echo "Example-1: bash $0 -b localhost:9092 -g streamz -i input -o output -m /path/to/model.pth -l /path/to/labels.yaml -c 0,1,2 --benchmark"
     echo
     echo "Run cybert model using kafka"
     echo
@@ -24,7 +24,7 @@ usage() {
     echo "  -m, --model_file           Cybert model file"
     echo "  -l, --label_file           Cybert label file"
     echo "  -c, --cuda_visible_devices Cuda visible devices, ex: 0,1,2"
-    echo "  -d, --data                 Cybert data file"
+    echo "  -d, --data                 Cybert data file (optional)"
     echo "  --benchmark                Benchmark cyBERT data processing (optional)"
     echo
     echo "  -h, --help          Print this help"
@@ -53,7 +53,7 @@ while [ $# != 0 ]; do
     -l|--label_file) shift; label_file=$1 ;;
     -d|--data) shift; data=$1 ;;
     -c|--cuda_visible_devices) shift; cuda_visible_devices=$1 ;;
-    --benchmark) benchmark=true ;;
+    --benchmark) benchmark="true" ;;
     -) usage "Unknown positional: $1" ;;
     -?*) usage "Unknown positional: $1" ;;
     esac
@@ -74,12 +74,14 @@ verify_input_arg(){
 
 verify_input_arg "broker" $broker
 verify_input_arg "group_id" $group_id
-verify_input_arg "input_topic", $input_topic
-verify_input_arg "output_topic", $output_topic
-verify_input_arg "model_file", $model_file
-verify_input_arg "label_file", $label_file
-verify_input_arg "data", $data
-verify_input_arg "cuda_visible_devices", $cuda_visible_devices
+verify_input_arg "input_topic" $input_topic
+verify_input_arg "output_topic" $output_topic
+verify_input_arg "model_file" $model_file
+verify_input_arg "label_file" $label_file
+verify_input_arg "cuda_visible_devices" $cuda_visible_devices
+
+log "INFO" "data = $data"
+log "INFO" "benchmark = $benchmark"
 
 source activate clx
 
@@ -135,7 +137,7 @@ nohup jupyter notebook --port=8888 --no-browser --ip=0.0.0.0 --allow-root 2>&1 &
 # Run Cybert
 #**********************************
 log "INFO" "Preparing to run cybert"
-if [ "$benchmark" = true ] ; then
+if [ $benchmark = "true" ] ; then
   log "INFO" "python -i $CYBERT_HOME/python/cybert.py --input_topic input --output_topic output --group_id $group_id --model $model_file --label_map $label_file --dask_scheduler ${DASK_SCHEDULER} --cuda_visible_devices $cuda_visible_devices --benchmark"
   python -i $CYBERT_HOME/python/cybert.py --input_topic input --output_topic output --group_id $group_id --model $model_file --label_map $label_file --dask_scheduler ${DASK_SCHEDULER} --cuda_visible_devices $cuda_visible_devices --benchmark
 else
