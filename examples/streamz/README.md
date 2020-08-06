@@ -69,7 +69,7 @@ docker exec cybert-streamz bash -c 'source activate clx && $KAFKA_HOME/bin/kafka
 
 ##### Benchmark
 
-To capture benchmarks add the benchmark flag (`--benchamrk`) to the docker run command
+To capture benchmarks add the benchmark flag (`--benchmark`) to the docker run command
 
 To print benchmark to the docker logs send a SIGINT signal to the running cybert process
 ```
