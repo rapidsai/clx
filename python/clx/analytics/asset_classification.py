@@ -1,5 +1,6 @@
 import cudf
 from cuml.preprocessing.model_selection import train_test_split
+from cuml.preprocessing import LabelEncoder
 import torch
 import torch.optim as torch_optim
 import torch.nn.functional as F
@@ -53,9 +54,7 @@ class AssetClassification:
         X, val_X, Y, val_Y = train_test_split(train_gdf, label_col, train_size=0.9)
         val_X.index = val_Y.index
         
-        # X, test_X, Y, test_Y = train_test_split(X, Y, train_size=0.9)
         X.index = Y.index
-        # test_X.index = test_Y.index
 
         embedded_cols = {}
         for col in X.columns:
@@ -65,7 +64,6 @@ class AssetClassification:
 
         X[label_col] = Y
         val_X[label_col] = val_Y
-        #test_X[label_col] = test_Y
 
         # Embedding
         embedded_col_names = embedded_cols.keys()
@@ -116,19 +114,16 @@ class AssetClassification:
 
     def load_model(self, fname):
         self._model = torch.load(fname)
-    
-    def inference(self, model, df, label_col, batch_size):
-        test_part_dfs = self._get_partitioned_dfs(df, batch_size)
-        pred_results = []
-        true_results = []
-        for df in test_part_dfs:
-            pred_results.append(predict(model, df))
-            true_results.append(df[label_col].values_host)                           
-        pred_results = np.concatenate(pred_results).astype(np.int32)
-        true_results = np.concatenate(true_results)
-        f1_score_ = f1_score(pred_results, true_results,average='micro')
-        print('micro F1 score: %s'%(f1_score_))
-        return true_results, pred_results
+
+    def categorize_columns(self, gdf):
+        cat_gdf = gdf.copy()
+        for col in cat_gdf.columns:
+            cat_gdf[col] = cat_gdf[col].astype('str')
+            cat_gdf[col] = cat_gdf[col].fillna("NA")
+            cat_gdf[col] = LabelEncoder().fit_transform(cat_gdf[col])
+            cat_gdf[col] = cat_gdf[col].astype('int16')
+        
+        return cat_gdf
 
     def _config_optimizer(self, lr = 0.001, wd = 0.0):
         parameters = filter(lambda p: p.requires_grad, self._model.parameters())
@@ -207,4 +202,5 @@ class AssetClassification:
         if isinstance(data, (list,tuple)):
             return [to_device(x, device) for x in data]
         return data.to(device, non_blocking=True)
+
 
