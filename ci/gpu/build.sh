@@ -42,8 +42,6 @@ python --version
 # FIX Added to deal with Anancoda SSL verification issues during conda builds
 conda config --set ssl_verify False
 
-conda remove nomkl blas libblas
-
 logger "conda install required packages"
 conda install -c pytorch -c gwerbin \
     "cugraph=${MINOR_VERSION}" \
