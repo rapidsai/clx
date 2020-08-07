@@ -110,10 +110,10 @@ class AssetClassification:
         xb_cont_tensor = torch.zeros(0, 0)
         xb_cont_tensor.cuda()
 
-        df = df.to_dlpack()
-        df = from_dlpack(df).long()
+        gdf = gdf.to_dlpack()
+        gdf = from_dlpack(gdf).long()
 
-        out = self._model(df, xb_cont_tensor)
+        out = self._model(gdf, xb_cont_tensor)
         preds = torch.max(out, 1)[1].view(-1).tolist()
 
         return cudf.Series(preds)
