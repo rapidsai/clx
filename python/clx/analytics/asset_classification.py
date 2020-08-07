@@ -84,12 +84,12 @@ class AssetClassification:
             print("training loss: ", loss)
             self._val_loss(self._model, val_part_dfs, label_col)
 
-    def predict(self, df):
+    def predict(self, gdf):
         """
         Predict the class with the trained model
 
-        :param df: prediction input dataset with categorized int16 feature columns
-        :type df: cudf.DataFrame
+        :param gdf: prediction input dataset with categorized int16 feature columns
+        :type gdf: cudf.DataFrame
 
         Examples
         --------
@@ -153,6 +153,9 @@ class AssetClassification:
     def categorize_columns(self, gdf):
         """
         Categorize feature columns of input dataset and convert to numeric (int16). This is required format for train_model input.
+
+        :param gdf: dataset to be categorized
+        :type gdf: cudf.DataFrame
         """
         cat_gdf = gdf.copy()
         for col in cat_gdf.columns:
