@@ -1,4 +1,4 @@
-# An integration test & dev container which builds and installs CLX from default branch
+# An integratio:n test & dev container which builds and installs CLX from default branch
 ARG CUDA_VERSION=10.2
 ARG CUDA_SHORT_VERSION=${CUDA_VERSION}
 ARG LINUX_VERSION=ubuntu18.04
@@ -38,12 +38,15 @@ ENV CYBERT_HOME /opt/cybert
 ADD examples/streamz/scripts "$CYBERT_HOME"/scripts
 ADD examples/streamz/data "$CYBERT_HOME"/data
 ADD examples/streamz/python "$CYBERT_HOME"/python
-ADD . /clx
+ADD . /rapids/clx
+
+RUN mkdir -p /rapids/utils
+COPY ./docker/start_jupyter.sh ./docker/stop_jupyter.sh /rapids/utils/
 
 ARG CUDA_SHORT_VERSION
-RUN conda env create --name clx --file /clx/conda/environments/clx_dev_cuda${CUDA_SHORT_VERSION}.yml python=${PYTHON_VERSION}
+RUN conda env create --name rapids --file /rapids/clx/conda/environments/clx_dev_cuda${CUDA_SHORT_VERSION}.yml python=${PYTHON_VERSION}
 
-RUN source activate clx && conda install -c rapidsai -c nvidia -c pytorch -c conda-forge -c defaults \
+RUN source activate rapids && conda install -c rapidsai -c nvidia -c pytorch -c conda-forge -c defaults \
     python-confluent-kafka \
     streamz \
     dask-cuda \
@@ -63,15 +66,15 @@ RUN wget -q http://www.gtlib.gatech.edu/pub/apache/kafka/2.3.0/kafka_2.11-2.3.0.
 # libclx build/install
 ENV CC=/usr/bin/gcc-${CC}
 ENV CXX=/usr/bin/g++-${CXX}
-RUN source activate clx && \
-    mkdir -p /clx/cpp/build && \
-    cd /clx/cpp/build && \
+RUN source activate rapids && \
+    mkdir -p /rapids/clx/cpp/build && \
+    cd /rapids/clx/cpp/build && \
     cmake .. -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} && \
     make -j install
 
 # clx build/install
-RUN source activate clx && \
-    cd /clx/python && \
+RUN source activate rapids && \
+    cd /rapids/clx/python && \
     python setup.py build_ext --inplace && \
     python setup.py install
 
@@ -80,5 +83,6 @@ WORKDIR /clx
 ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
 RUN chmod +x /usr/bin/tini && \
-    echo "source activate clx" >> ~/.bashrc
-ENTRYPOINT ["/usr/bin/tini", "--", "/opt/cybert/scripts/entry.sh"]
+    echo "source activate rapids" >> ~/.bashrc
+ENTRYPOINT ["/usr/bin/tini", "--", "/rapids/clx/docker/.run_in_rapids.sh"]
+CMD [ "/bin/bash" ]

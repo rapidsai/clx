@@ -135,6 +135,7 @@ def parse_arguments():
         type=int,
         help="Max batch size to read from kafka",
     )
+    parser.add_argument("--poll_interval", type=str, help="Polling interval (ex: 60s)")
     parser.add_argument("--benchmark", help="Capture benchmark", action="store_true")
     args = parser.parse_args()
     return args
@@ -178,13 +179,14 @@ if __name__ == "__main__":
         "bootstrap.servers": args.broker,
         "group.id": args.group_id,
         "session.timeout.ms": 60000,
-        "auto.offset.reset": "earliest",
+        "enable.partition.eof": "true",
+        "auto.offset.reset": "latest",
     }
     print("Consumer conf:", consumer_conf)
     source = Stream.from_kafka_batched(
         args.input_topic,
         consumer_conf,
-        poll_interval="1s",
+        poll_interval=args.poll_interval,
         npartitions=1,
         asynchronous=True,
         dask=True,
