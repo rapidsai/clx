@@ -153,6 +153,15 @@ docker run --runtime=nvidia \
   clx:latest
 ```
 
+The container will include scripts for your convenience to start and stop JupyterLab.
+```
+# Start JupyterLab
+/rapids/utils/start_jupyter.sh
+
+# Stop JupyterLab
+/rapids/utils/stop_jupyter.sh
+```
+
 ### Docker Container with SIEM Integration
 
 If you want a CLX container with SIEM integration (including data ingest), follow the steps above to build the CLX image. Then use `docker-compose` to start multiple containers running CLX, Kafka, and Zookeeper. 

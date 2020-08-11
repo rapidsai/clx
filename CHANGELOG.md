@@ -2,6 +2,8 @@
 
 ## New Features
 - PR #170 Add CLX Code of Conduct
+- PR #176 Add Periodicity Detection Notebook
+- PR #193 AC notebook 
 
 ## Improvements
 - PR #174 Install dependencies via meta package
@@ -9,6 +11,7 @@
 - PR #181 CLX Query to support dask blazingsql
 - PR #159 Update to PyTorch 1.5
 - PR #191 Update conda upload versions for new supported CUDA/Python
+- PR #203 CLX docker and conda environment updates
 
 ## Bug Fixes
 - PR #169 Fix documentation links
@@ -20,6 +23,7 @@
 - PR #190 Fix issue with incorrect docker image being used in local build script
 - PR #192 Conda build fix
 - PR #197 Fix errors from Python 3.8 conda build and cudf update
+- P# #205 Build and notebook fixes/updates
 
 # clx 0.14.0 (Date TBD)
 

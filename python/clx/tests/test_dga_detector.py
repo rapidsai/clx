@@ -11,12 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 import cudf
 from clx.analytics.detector_dataset import DetectorDataset
 from clx.analytics.dga_detector import DGADetector
 from clx.analytics.model.rnn_classifier import RNNClassifier
 import torch
+import s3fs
+from os import path
+
+S3_BASE_PATH = "rapidsai-data/cyber/clx"
+MODEL_FILENAME = "rnn_classifier_2020-06-08_20_48_03.pth"
 
 test_dataset_len = 4
 test_batchsize = 2
@@ -32,15 +36,17 @@ test_df = cudf.DataFrame(
     }
 )
 dataset = DetectorDataset(test_df, test_batchsize)
-model_filepath = "%s/input/rnn_classifier_2020-06-08_20_48_03.pth" % os.path.dirname(
-    os.path.realpath(__file__)
-)
+
+# download model
+if not path.exists(MODEL_FILENAME):
+    fs = s3fs.S3FileSystem(anon=True)
+    fs.get(S3_BASE_PATH + "/" + MODEL_FILENAME, MODEL_FILENAME)
 
 
 def test_load_model():
     if torch.cuda.is_available():
         dd = DGADetector()
-        dd.load_model(model_filepath)
+        dd.load_model(MODEL_FILENAME)
         assert isinstance(dd.model, RNNClassifier)
 
 
@@ -48,7 +54,7 @@ def test_predict():
     if torch.cuda.is_available():
         dd = DGADetector()
         test_domains = cudf.Series(["nvidia.com", "dfsdfsdf"])
-        dd.load_model(model_filepath)
+        dd.load_model(MODEL_FILENAME)
         actual_output = dd.predict(test_domains)
         expected_output = cudf.Series([1, 0])
         assert actual_output.equals(expected_output)
