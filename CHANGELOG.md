@@ -20,6 +20,7 @@
 - PR #159 Update to PyTorch 1.5
 - PR #191 Update conda upload versions for new supported CUDA/Python
 - PR #203 CLX docker and conda environment updates
+- PR #209 GPU build and Dockerfile update
 
 ## Bug Fixes
 - PR #169 Fix documentation links
