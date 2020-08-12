@@ -44,32 +44,20 @@ conda config --set ssl_verify False
 
 logger "conda install required packages"
 conda install -c pytorch -c gwerbin \
+    "rapids-build-env=$MINOR_VERSION.*" \
+    "rapids-notebook-env=$MINOR_VERSION.*" \
     "cugraph=${MINOR_VERSION}" \
     "cuml=${MINOR_VERSION}" \
     "dask-cudf=${MINOR_VERSION}" \
     "pytorch=1.5.*" \
     "torchvision" \
-    "scikit-learn" \
-    "numpy>=1.17.3,<1.19.0" \
     "python-confluent-kafka" \
     "transformers" \
     "seqeval" \
     "python-whois" \
     "requests" \
-    "cmake" \
-    "cython" \
-    "pytest" \
-    "s3fs" \
-    "ipython" \
-    "matplotlib" \
-    "nbconvert" \
-    "faker"
+    "matplotlib"
 
-# Install the master version of dask, distributed, and cudatashader
-logger "pip install git+https://github.com/dask/distributed.git --upgrade --no-deps"
-pip install "git+https://github.com/dask/distributed.git" --upgrade --no-deps
-logger "pip install git+https://github.com/dask/dask.git --upgrade --no-deps"
-pip install "git+https://github.com/dask/dask.git" --upgrade --no-deps
 logger "pip install git+https://github.com/rapidsai/cudatashader.git"
 pip install "git+https://github.com/rapidsai/cudatashader.git"
 logger "pip install mockito"
