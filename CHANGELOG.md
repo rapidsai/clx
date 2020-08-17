@@ -7,6 +7,7 @@
 - PR #208 CLX Supervised Asset Classification
 
 ## Improvements
+- PR #202 Update cybert notebook to use cudf tokenizer
 - PR #174 Install dependencies via meta package
 - PR #175 GPU tokenizer updates
 - PR #181 CLX Query to support dask blazingsql
@@ -14,6 +15,7 @@
 - PR #191 Update conda upload versions for new supported CUDA/Python
 - PR #203 CLX docker and conda environment updates
 - PR #209 GPU build and Dockerfile update
+- PR #211 PyTorch 1.6 support
 
 ## Bug Fixes
 - PR #169 Fix documentation links
