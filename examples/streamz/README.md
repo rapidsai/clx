@@ -38,6 +38,8 @@ docker run -it --gpus '"device=0,1,2"' -p 8787:8787 -v /path/to/dataset:/path/to
 --model_file /path/to/model.pth \
 --label_file /path/to/label.txt \
 --cuda_visible_devices 0,1,2 \
+--poll_interval 1s \
+--max_batch_size 1000 \
 --data /path/to/dataset
 ```
 
@@ -51,6 +53,8 @@ docker run -it --runtime=nvidia -p 8787:8787 -v /path/to/dataset:/path/to/datase
 --model_file /path/to/model.pth \
 --label_file /path/to/label.yaml \
 --cuda_visible_devices 0,1,2 \
+--poll_interval 1s \
+--max_batch_size 1000 \
 --data /path/to/dataset
 ```
 
