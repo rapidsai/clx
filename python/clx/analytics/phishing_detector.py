@@ -213,7 +213,7 @@ class PhishingDetector:
         return preds
 
     def _get_hash_table_path(self):
-        hash_table_path = "%s/resources/bert_hash_table.txt" % os.path.dirname(
+        hash_table_path = "%s/resources/bert-base-uncased-hash.txt" % os.path.dirname(
             os.path.realpath(__file__)
         )
         return hash_table_path
