@@ -6,6 +6,7 @@
 - PR #193 AC notebook 
 
 ## Improvements
+- PR #202 Update cybert notebook to use cudf tokenizer
 - PR #174 Install dependencies via meta package
 - PR #175 GPU tokenizer updates
 - PR #181 CLX Query to support dask blazingsql
