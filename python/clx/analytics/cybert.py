@@ -1,13 +1,28 @@
+# Copyright (c) 2020, NVIDIA CORPORATION.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 import cupy
 import numpy as np
-import os
 import pandas as pd
+import os
 import torch
 import torch.nn.functional as F
 import logging
+import json
 from collections import defaultdict
 from torch.utils.dlpack import from_dlpack
 from transformers import BertForTokenClassification
+
 
 log = logging.getLogger(__name__)
 
@@ -30,7 +45,7 @@ class Cybert:
         self._hashpath = "%s/bert-base-cased-hash.txt" % resources_dir
 
     def load_model(
-        self, model_filepath, label_map_filepath, pretrained_model="bert-base-cased"
+        self, model_filepath, config_filepath, pretrained_model="bert-base-cased"
     ):
         """
         Load cybert model.
@@ -38,7 +53,7 @@ class Cybert:
         :param model_filepath: Filepath of the model (.pth or .bin) to
         be loaded
         :type model_filepath: str
-        :param label_map_filepath: Filepath of the labels (.txt) to be
+        :param label_map_filepath: Config file (.json) to be
         used
         :type label_map_filepath: str
         :param pretrained_model: Name of pretrained model to be loaded from
@@ -50,12 +65,11 @@ class Cybert:
         --------
         >>> from clx.analytics.cybert import Cybert
         >>> cyparse = Cybert()
-        >>> cyparse.load_model('/path/to/model.pth', '/path/to/labels.txt')
+        >>> cyparse.load_model('/path/to/model.pth', '/path/to/config.json')
         """
-        with open(label_map_filepath) as f:
-            for index, line in enumerate(f):
-                self._label_map[index] = line.split()[0]
-
+        with open(config_filepath) as f:
+            config = json.load(f)
+        self._label_map = {int(k): v for k, v in config['id2label'].items()}
         model_state_dict = torch.load(model_filepath)
         self._model = BertForTokenClassification.from_pretrained(
             pretrained_model,
@@ -81,7 +95,7 @@ class Cybert:
         >>> import cudf
         >>> from clx.analytics.cybert import Cybert
         >>> cyparse = Cybert()
-        >>> cyparse.load_model('/path/to/model.pth', '/path/to/labels.txt')
+        >>> cyparse.load_model('/path/to/model.pth', '/path/to/config.json')
         >>> raw_df = cudf.Series(['Log event 1', 'Log event 2'])
         >>> input_ids, attention_masks, meta_data = cyparse.preprocess(raw_df)
         """
@@ -133,7 +147,7 @@ class Cybert:
         >>> import cudf
         >>> from clx.analytics.cybert import Cybert
         >>> cyparse = Cybert()
-        >>> cyparse.load_model('/path/to/model.pth', '/path/to/labels.txt')
+        >>> cyparse.load_model('/path/to/model.pth', '/path/to/config.json')
         >>> raw_data_col = cudf.Series(['Log event 1', 'Log event 2'])
         >>> processed_df, confidence_df = cy.inference(raw_data_col)
         """
@@ -193,9 +207,12 @@ class Cybert:
                 # if not a subword use the current label, else use previous
                 new_label = label
                 new_confidence = confidence
-            token_dict[self._label_map[new_label]] = (
-                token_dict[self._label_map[new_label]] + " " + text_token
-            )
+            if self._label_map[new_label] in token_dict:
+                token_dict[self._label_map[new_label]] = (token_dict[
+                    self._label_map[new_label]] + " " + text_token
+                    )
+            else:
+                token_dict[self._label_map[new_label]] = text_token
             confidence_dict[self._label_map[label]].append(new_confidence)
         return token_dict, confidence_dict
 
