@@ -18,7 +18,7 @@ import numpy as np
 import torch
 import s3fs
 import transformers
-from clx.analytics.cybert import cybert
+from clx.analytics.cybert import Cybert
 
 S3_BASE_PATH = "models.huggingface.co/bert/raykallen/cybert_apache_parser"
 CONFIG_FILENAME = "config.json"
@@ -28,7 +28,7 @@ fs = s3fs.S3FileSystem(anon=True)
 fs.get(S3_BASE_PATH + "/" + MODEL_FILENAME, MODEL_FILENAME)
 fs.get(S3_BASE_PATH + "/" + CONFIG_FILENAME, CONFIG_FILENAME)
 
-cyparse = cybert.Cybert()
+cyparse = Cybert()
 
 input_logs = cudf.Series(['109.169.248.247 - -',
                           'POST /administrator/index.php HTTP/1.1 200 4494'])
