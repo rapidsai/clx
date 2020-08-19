@@ -9,6 +9,7 @@
 # clx 0.15.0 (Date TBD)
 
 ## New Features
+- PR #189 Add Cybert class
 - PR #170 Add CLX Code of Conduct
 - PR #176 Add Periodicity Detection Notebook
 - PR #193 AC notebook 
