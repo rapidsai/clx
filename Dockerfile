@@ -13,10 +13,14 @@ RUN apt update -y --fix-missing && \
     apt upgrade -y
 
 RUN source activate rapids && \
-    conda install -c pytorch pytorch>=1.5 torchvision scikit-learn>=0.21 ipywidgets python-confluent-kafka transformers seqeval python-whois seaborn requests matplotlib pytest jupyterlab && \
+    conda install -c pytorch "pytorch>=1.5" torchvision "scikit-learn>=0.21" ipywidgets python-confluent-kafka transformers seqeval python-whois seaborn requests matplotlib pytest jupyterlab && \
     pip install "git+https://github.com/rapidsai/cudatashader.git" && \
     pip install mockito && \
     pip install wget
+
+RUN source activate rapids \
+  && conda install -n rapids jupyterlab-nvdashboard \
+  && jupyter labextension install dask-labextension jupyterlab-nvdashboard
 
 # libclx build/install
 RUN source activate rapids && \
