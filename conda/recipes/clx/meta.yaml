@@ -32,7 +32,6 @@ requirements:
     - libclx={{ version }}
     - cugraph {{ minor_version }}.*
     - cuml {{ minor_version }}.*
-    - dask-cudf {{ minor_version }}.*
     - pytorch>=1.5
     - torchvision
     - transformers

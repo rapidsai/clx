@@ -25,6 +25,7 @@
 - PR #209 GPU build and Dockerfile update
 - PR #211 PyTorch 1.6 support
 - PR #214 Rename BERT vocab and hash file names for disambiguation
+- PR #215 Update dependencies in gpu build, conda recipe, and dockerfile
 
 ## Bug Fixes
 - PR #169 Fix documentation links

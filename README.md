@@ -11,6 +11,7 @@ The goal of CLX is to:
 1. Accelerate log parsing in a flexible, non-regex method. and
 1. Provide SIEM integration with GPU compute environments via RAPIDS and effectively extend the SIEM environment.
 
+
 ## Getting Started with Python and Notebooks
 CLX is targeted towards cybersecurity data scientists, senior security analysts, threat hunters, and forensic investigators. Data scientists can use CLX in traditional Python files and Jupyter notebooks. The notebooks folder contains example use cases and workflow instantiations. It's also easy to get started using CLX with RAPIDS with Python. The code below reads cyber alerts, aggregates them by day, and calculates the rolling z-score value across multiple days to look for outliers in volumes of alerts. Expanded code is available in the alert analysis notebook.
 
@@ -102,7 +103,6 @@ wf.run_workflow()
 For additional examples, browse our complete [API documentation](https://docs.rapids.ai/api/clx/nightly/api.html), or check out our more detailed [notebooks](https://github.com/rapidsai/clx/tree/master/notebooks).
 
 
-
 ## Getting CLX
 ### Intro
 There are 3 ways to get CLX :
@@ -117,16 +117,16 @@ There are 3 ways to get CLX :
 Prerequisites
 
 * NVIDIA Pascal™ GPU architecture or better
-* CUDA 10.0+ compatible NVIDIA driver
+* CUDA 10.1+ compatible NVIDIA driver
 * Ubuntu 16.04/18.04 or CentOS 7
 * Docker CE v18+
 * nvidia-docker v2+
 
-Pull the RAPIDS image suitable to your environment and build CLX image.
+Pull the RAPIDS image suitable to your environment and build CLX image. Please see the [stable](https://hub.docker.com/r/rapidsai/rapidsai/) or [nightly](https://hub.docker.com/r/rapidsai/rapidsai-dev-nightly) Docker repositories, choosing a tag based on the NVIDIA CUDA version you’re running.
 
 ```aidl
-docker pull rapidsai/rapidsai-dev-nightly:0.14-cuda10.1-devel-ubuntu18.04-py3.7
-docker build --build-arg image=rapidsai/rapidsai-dev-nightly:0.14-cuda10.1-devel-ubuntu18.04-py3.7 -t clx:latest .
+docker pull rapidsai/rapidsai-dev-nightly:0.15-cuda10.1-devel-ubuntu18.04-py3.7
+docker build --build-arg image=rapidsai/rapidsai-dev-nightly:0.15-cuda10.1-devel-ubuntu18.04-py3.7 -t clx:latest .
 ```
 
 ### Docker Container without SIEM Integration
@@ -170,8 +170,6 @@ If you want a CLX container with SIEM integration (including data ingest), follo
 docker-compose up
 ```
 
-
-
 <a name="conda"></a>
 
 ## Conda Install 
@@ -183,10 +181,11 @@ Install and update CLX using the conda command:
 conda install -c rapidsai-nightly -c nvidia -c pytorch -c conda-forge -c defaults clx
 ```
 
-
-
 <a name="source"></a>
 
 ## Building from Source and Contributing
 
 For contributing guildelines please reference our [guide for contributing](CONTRIBUTING.md).
+
+## Documentation
+Python API documentation can be found [here](https://docs.rapids.ai/api) or generated from [docs](docs) directory.

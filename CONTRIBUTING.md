@@ -64,12 +64,12 @@ The following instructions are tested on Linux systems.
 Compiler requirement:
 
 * `gcc`     version 5.4+
-* `nvcc`    version 10.0+
+* `nvcc`    version 10.1+
 * `cmake`   version 3.12
 
 CUDA requirement:
 
-* CUDA 10.0+
+* CUDA 10.1+
 * NVIDIA driver 396.44+
 * Pascal architecture or better
 
