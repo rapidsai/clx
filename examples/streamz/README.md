@@ -16,7 +16,7 @@ Here we share an example in which we demonstrate how to read [Windows Event Logs
 First pull the latest version of rapids suitable for your environment
 
 ```
-docker pull rapidsai/rapidsai-dev-nightly:0.15-cuda10.2-devel-ubuntu18.04-py3.7
+docker pull gpuci/miniconda-cuda:10.2-devel-ubuntu18.04
 ```
 
 Then create a new image using the Dockerfile provided. This docker image will contain all needed components including [Kafka](https://kafka.apache.org/) and [Zookeeper](https://zookeeper.apache.org/).
