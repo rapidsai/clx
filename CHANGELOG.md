@@ -42,6 +42,7 @@
 # clx 0.14.0 (Date TBD)
 
 ## New Features
+- PR #140 Added cybert class and streamz workflow
 - PR #141 CUDA BERT Tokenizer
 - PR #152 Local gpuCI build script
 - PR #133 Phishing detection using BERT
@@ -82,7 +83,7 @@
 
 ## New Features
 - PR #93 Add Bokeh visualization back to Alert Analysis notebook
- 
+
 ## Improvements
 - PR #88 Documentation updates
 - PR #85 Add codeowners
@@ -110,7 +111,7 @@
  - PR #48 Added port heuristic to detect major ports
  - PR #60 Added DGA detection notebook and DNS log parsing notebook
  - PR #76 Added update-version script
- 
+
 ## Improvements
  - PR #70 Sphinx doc formatting improvements
  - PR #58 Update docker image
