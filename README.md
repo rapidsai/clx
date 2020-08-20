@@ -106,13 +106,13 @@ For additional examples, browse our complete [API documentation](https://docs.ra
 ## Getting CLX
 ### Intro
 There are 3 ways to get CLX :
-1. [Quick Start with CLX Docker Container](#quick)
+1. [Build CLX Docker Image](#docker)
 1. [Conda Installation](#conda)
 1. [Build from Source](#source)
 
-<a name="quick"></a>
+<a name="docker"></a>
 
-## Quick Start Docker Container
+## Build CLX Docker Image
 
 Prerequisites
 
@@ -122,11 +122,11 @@ Prerequisites
 * Docker CE v18+
 * nvidia-docker v2+
 
-Pull the RAPIDS image suitable to your environment and build CLX image. Please see the [stable](https://hub.docker.com/r/rapidsai/rapidsai/) or [nightly](https://hub.docker.com/r/rapidsai/rapidsai-dev-nightly) Docker repositories, choosing a tag based on the NVIDIA CUDA version you’re running.
+Pull the RAPIDS image suitable to your environment and build CLX image. Please see the [rapidsai-dev-nightly](https://hub.docker.com/r/rapidsai/rapidsai-dev-nightly) Docker repository, choosing a tag based on the NVIDIA CUDA version you’re running.
 
 ```aidl
 docker pull rapidsai/rapidsai-dev-nightly:0.15-cuda10.1-devel-ubuntu18.04-py3.7
-docker build --build-arg image=rapidsai/rapidsai-dev-nightly:0.15-cuda10.1-devel-ubuntu18.04-py3.7 -t clx:latest .
+docker build -t clx:latest .
 ```
 
 ### Docker Container without SIEM Integration
