@@ -122,7 +122,7 @@ Prerequisites
 * Docker CE v18+
 * nvidia-docker v2+
 
-Pull the RAPIDS image suitable to your environment and build CLX image. Please see the [rapidsai-dev-nightly](https://hub.docker.com/r/rapidsai/rapidsai-dev-nightly) Docker repository, choosing a tag based on the NVIDIA CUDA version you’re running.
+Pull the RAPIDS image suitable to your environment and build CLX image. Please see the [rapidsai-dev-nightly](https://hub.docker.com/r/rapidsai/rapidsai-dev-nightly) Docker repository, choosing a tag based on the NVIDIA CUDA version you’re running. More information on getting started with RAPIDS can be found [here](https://rapids.ai/start.html).
 
 ```aidl
 docker pull rapidsai/rapidsai-dev-nightly:0.15-cuda10.1-devel-ubuntu18.04-py3.7
