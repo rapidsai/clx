@@ -167,7 +167,7 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict):
         # Add index to sort the parsed information with respect to input records order.
         cols_keep = ["idx"]
         tld_col = "tld" + str(i)
-        suffix_df = suffix_df.rename({suffix_df.columns[0]: tld_col})
+        suffix_df = suffix_df.rename(columns={suffix_df.columns[0]: tld_col})
         # Left join input_df with suffix_df on tld column for each iteration.
         merged_df = input_df.merge(suffix_df, on=tld_col, how="left")
         if i > 0:
@@ -176,13 +176,13 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict):
             joined_recs_df = merged_df[~merged_df["dummy"].isna()]
             if not joined_recs_df.empty:
                 if col_dict["hostname"]:
-                    joined_recs_df = joined_recs_df.rename({"tld0": "hostname"})
+                    joined_recs_df = joined_recs_df.rename(columns={"tld0": "hostname"})
                     cols_keep.append("hostname")
                 if col_dict["domain"]:
-                    joined_recs_df = joined_recs_df.rename({col_pos: "domain"})
+                    joined_recs_df = joined_recs_df.rename(columns={col_pos: "domain"})
                     cols_keep.append("domain")
                 if col_dict["suffix"]:
-                    joined_recs_df = joined_recs_df.rename({tld_col: "suffix"})
+                    joined_recs_df = joined_recs_df.rename(columns={tld_col: "suffix"})
                     cols_keep.append("suffix")
                 if col_dict["subdomain"]:
                     cols_keep.append("subdomain")

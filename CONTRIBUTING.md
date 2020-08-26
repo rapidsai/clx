@@ -64,12 +64,12 @@ The following instructions are tested on Linux systems.
 Compiler requirement:
 
 * `gcc`     version 5.4+
-* `nvcc`    version 10.0+
+* `nvcc`    version 10.1+
 * `cmake`   version 3.12
 
 CUDA requirement:
 
-* CUDA 10.0+
+* CUDA 10.1+
 * NVIDIA driver 396.44+
 * Pascal architecture or better
 
@@ -84,20 +84,25 @@ To install CLX from source, ensure the dependencies are met and follow the steps
 
 1) Clone the repository and submodules
 
-  ```bash
+```bash
   # Set the location to CLX in an environment variable CLX_HOME
   export CLX_HOME=$(pwd)/clx
 
   # Download the CLX repo
   git clone https://github.com/rapidsai/clx.git $CLX_HOME
-
+```
 
 2) Create the conda development environment
 
 ```bash
 # create the conda environment (assuming in base `clx` directory)
 
-conda env create --name clx_dev --file conda/environments/clx_dev.yml
+# for CUDA 10.1
+conda env create --name clx_dev --file conda/environments/clx_dev_cuda10.1.yml
+
+# for CUDA 10.2
+conda env create --name clx_dev --file conda/environments/clx_dev_cuda10.2.yml
+
 
 # activate the environment
 conda activate clx_dev
@@ -110,8 +115,11 @@ conda deactivate
 
 
 ```bash
+# for CUDA 10.1
+conda env update --name clx_dev --file conda/environments/clx_dev_cuda10.1.yml
 
-conda env update --name clx_dev --file conda/environments/clx_dev.yml
+# for CUDA 10.2
+conda env update --name clx_dev --file conda/environments/clx_dev_cuda10.2.yml
 
 conda activate clx_dev
 ```

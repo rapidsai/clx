@@ -59,7 +59,7 @@ def test_read_data_message_error(batch_size):
     # Validate dataframe output
     assert df.shape == (1, 1)
     assert df.columns == ["Raw"]
-    assert df["Raw"].tolist() == ["test message"]
+    assert df["Raw"].to_arrow().to_pylist() == ["test message"]
 
 
 @pytest.mark.parametrize("batch_size", [5])

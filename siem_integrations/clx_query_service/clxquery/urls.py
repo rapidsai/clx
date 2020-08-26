@@ -1,4 +1,4 @@
-from django.urls import path
+from django.conf.urls import re_path
 from clxquery import views
 
-urlpatterns = [path("clxquery/<str:query>", views.run_query)]
+urlpatterns = [re_path("clxquery/$", views.ExecuteClxQuery.as_view())]

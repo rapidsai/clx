@@ -1,6 +1,40 @@
+# clx 0.15.0 (26 Aug 2020)
+
+## New Features
+- PR #189 Add Cybert class
+- PR #170 Add CLX Code of Conduct
+- PR #176 Add Periodicity Detection Notebook
+- PR #193 AC notebook 
+
+## Improvements
+- PR #202 Update cybert notebook to use cudf tokenizer
+- PR #174 Install dependencies via meta package
+- PR #175 GPU tokenizer updates
+- PR #181 CLX Query to support dask blazingsql
+- PR #159 Update to PyTorch 1.5
+- PR #191 Update conda upload versions for new supported CUDA/Python
+- PR #203 CLX docker and conda environment updates
+- PR #209 GPU build and Dockerfile update
+- PR #211 PyTorch 1.6 support
+- PR #214 Rename BERT vocab and hash file names for disambiguation
+- PR #215 Update dependencies in gpu build, conda recipe, and dockerfile
+
+## Bug Fixes
+- PR #169 Fix documentation links
+- PR #171 Fix errors from nvstrings removal
+- PR #178 Update local build to use new gpuCI image
+- PR #180 Remove remaining references to nvstrings
+- PR #182 Fix errors from update to cudf's column rename method
+- PR #185 Update gpu build to use latest dask
+- PR #190 Fix issue with incorrect docker image being used in local build script
+- PR #192 Conda build fix
+- PR #197 Fix errors from Python 3.8 conda build and cudf update
+- P# #205 Build and notebook fixes/updates
+
 # clx 0.14.0 (03 Jun 2020)
 
 ## New Features
+- PR #140 Added cybert class and streamz workflow
 - PR #141 CUDA BERT Tokenizer
 - PR #152 Local gpuCI build script
 - PR #133 Phishing detection using BERT
@@ -9,6 +43,10 @@
 - PR #149 Add Versioneer
 - PR #151 README and CONTRIBUTING updates
 - PR #160 Build script updates
+- PR #167 Add git commit to conda package
+- PR #172 Add docs build script
+- PR #155 Tokenizer rmm integration
+- PR #172 Add docs build script
 
 ## Bug Fixes
 - PR #150 Fix splunk alert workflow test
@@ -38,7 +76,7 @@
 
 ## New Features
 - PR #93 Add Bokeh visualization back to Alert Analysis notebook
- 
+
 ## Improvements
 - PR #88 Documentation updates
 - PR #85 Add codeowners
@@ -67,7 +105,7 @@
  - PR #48 Added port heuristic to detect major ports
  - PR #60 Added DGA detection notebook and DNS log parsing notebook
  - PR #76 Added update-version script
- 
+
 ## Improvements
  - PR #70 Sphinx doc formatting improvements
  - PR #58 Update docker image

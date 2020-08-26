@@ -74,7 +74,7 @@ class PhishingDetector:
         >>> emails_train, emails_test, labels_train, labels_test = train_test_split(train_emails_df, 'label', train_size=0.8)
         >>> phish_detect.train_model(emails_train, labels_train)
         """
-        emails["label"] = labels.reset_index(drop=True)
+        emails["label"] = labels
         train_emails, validation_emails, train_labels, validation_labels = train_test_split(emails, 'label', train_size=0.8, random_state=2)
 
         # Tokenize training and validation
@@ -213,7 +213,7 @@ class PhishingDetector:
         return preds
 
     def _get_hash_table_path(self):
-        hash_table_path = "%s/resources/bert_hash_table.txt" % os.path.dirname(
+        hash_table_path = "%s/resources/bert-base-uncased-hash.txt" % os.path.dirname(
             os.path.realpath(__file__)
         )
         return hash_table_path

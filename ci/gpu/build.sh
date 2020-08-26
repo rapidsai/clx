@@ -43,17 +43,28 @@ python --version
 conda config --set ssl_verify False
 
 logger "conda install required packages"
-conda install \
+conda install -c pytorch -c gwerbin \
+    "rapids-build-env=$MINOR_VERSION.*" \
+    "rapids-notebook-env=$MINOR_VERSION.*" \
     "cugraph=${MINOR_VERSION}" \
-    "dask>=2.12.0" \
-    "distributed>=2.12.0" \
-    "dask-cudf=${MINOR_VERSION}"
+    "cuml=${MINOR_VERSION}" \
+    "dask-cuda=${MINOR_VERSION}" \
+    "pytorch>=1.5" \
+    "torchvision" \
+    "python-confluent-kafka" \
+    "transformers" \
+    "seqeval" \
+    "python-whois" \
+    "requests" \
+    "matplotlib"
 
-# Install master version of cudatashader
+logger "pip install git+https://github.com/rapidsai/cudatashader.git"
 pip install "git+https://github.com/rapidsai/cudatashader.git"
+logger "pip install mockito"
+pip install mockito
+pip install wget
 
 conda list
-
 
 ################################################################################
 # BUILD - Build libclx and clx from source
