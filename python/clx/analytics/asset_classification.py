@@ -175,8 +175,8 @@ class AssetClassification:
         total = 0
         sum_loss = 0
 
+        cat_set = torch.zeros(0, 0)
         xb_cont_tensor = torch.zeros(0, 0)
-        xb_cont_tensor.cuda()
 
         for df in dfs:
             batch = df.shape[0]
@@ -207,14 +207,15 @@ class AssetClassification:
         sum_loss = 0
         correct = 0
 
+        val_set = torch.zeros(0, 0)
         xb_cont_tensor = torch.zeros(0, 0)
-        xb_cont_tensor.cuda()
 
         for df in dfs:
             current_batch_size = df.shape[0]
 
-            val_set = df[cat_cols].to_dlpack()
-            val_set = from_dlpack(val_set).long()
+            if cat_cols:
+                val_set = df[cat_cols].to_dlpack()
+                val_set = from_dlpack(val_set).long()
             if cont_cols:
                 xb_cont_tensor = df[cont_cols].to_dlpack()
                 xb_cont_tensor = from_dlpack(xb_cont_tensor).long()
