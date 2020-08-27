@@ -83,4 +83,3 @@ def test_load_model(tmpdir):
         ac2 = AssetClassification()
         ac2.load_model(str(tmpdir.join("clx_ac.mdl")))
         assert isinstance(ac2._model, clx.analytics.model.tabular_model.TabularModel)
-
