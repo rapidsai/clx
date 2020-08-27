@@ -1,6 +1,15 @@
+# clx 0.16.0 (Date TBD)
+
+## New Features
+
+## Improvements
+
+## Bug Fixes
+
 # clx 0.15.0 (Date TBD)
 
 ## New Features
+- PR #189 Add Cybert class
 - PR #170 Add CLX Code of Conduct
 - PR #176 Add Periodicity Detection Notebook
 - PR #193 AC notebook
@@ -16,6 +25,8 @@
 - PR #203 CLX docker and conda environment updates
 - PR #209 GPU build and Dockerfile update
 - PR #211 PyTorch 1.6 support
+- PR #214 Rename BERT vocab and hash file names for disambiguation
+- PR #215 Update dependencies in gpu build, conda recipe, and dockerfile
 
 ## Bug Fixes
 - PR #169 Fix documentation links
@@ -32,6 +43,7 @@
 # clx 0.14.0 (Date TBD)
 
 ## New Features
+- PR #140 Added cybert class and streamz workflow
 - PR #141 CUDA BERT Tokenizer
 - PR #152 Local gpuCI build script
 - PR #133 Phishing detection using BERT
@@ -72,7 +84,7 @@
 
 ## New Features
 - PR #93 Add Bokeh visualization back to Alert Analysis notebook
- 
+
 ## Improvements
 - PR #88 Documentation updates
 - PR #85 Add codeowners
@@ -100,7 +112,7 @@
  - PR #48 Added port heuristic to detect major ports
  - PR #60 Added DGA detection notebook and DNS log parsing notebook
  - PR #76 Added update-version script
- 
+
 ## Improvements
  - PR #70 Sphinx doc formatting improvements
  - PR #58 Update docker image

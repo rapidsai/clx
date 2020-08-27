@@ -48,7 +48,6 @@ conda install -c pytorch -c gwerbin \
     "rapids-notebook-env=$MINOR_VERSION.*" \
     "cugraph=${MINOR_VERSION}" \
     "cuml=${MINOR_VERSION}" \
-    "dask-cudf=${MINOR_VERSION}" \
     "dask-cuda=${MINOR_VERSION}" \
     "pytorch>=1.5" \
     "torchvision" \
@@ -65,7 +64,6 @@ pip install "git+https://github.com/rapidsai/cudatashader.git"
 logger "pip install mockito"
 pip install mockito
 pip install wget
-pip install pytorch-transformers
 
 conda list
 

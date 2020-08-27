@@ -22,7 +22,7 @@ into three categories:
 
 ### Your first issue
 
-1. Read the project's [README.md](https://github.com/rapidsai/clx/blob/master/README.md)
+1. Read the project's [README.md](https://github.com/rapidsai/clx/blob/main/README.md)
     to learn how to setup the development environment
 2. Find an issue to work on. The best way is to look for the [good first issue](https://github.com/rapidsai/clx/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
     or [help wanted](https://github.com/rapidsai/clx/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) labels
@@ -64,12 +64,12 @@ The following instructions are tested on Linux systems.
 Compiler requirement:
 
 * `gcc`     version 5.4+
-* `nvcc`    version 10.0+
+* `nvcc`    version 10.1+
 * `cmake`   version 3.12
 
 CUDA requirement:
 
-* CUDA 10.0+
+* CUDA 10.1+
 * NVIDIA driver 396.44+
 * Pascal architecture or better
 
