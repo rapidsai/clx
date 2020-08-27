@@ -36,7 +36,7 @@ column7 = [random.randint(1, 37) for _ in range(9000)]
 column8 = [random.randint(1, 8) for _ in range(9000)]
 column9 = [random.randint(1, 4) for _ in range(9000)]
 column10 = [random.randint(1, 11) for _ in range(9000)]
-label = [random.randint(1, 6) for _ in range(9000)]
+label = [random.randint(0, 6) for _ in range(9000)]
 
 train_pd = pd.DataFrame(list(zip(column1, column2, column3, column4, column5, column6, column7, column8, column9, column10, label)), columns=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "label"])
 train_gdf = cudf.from_pandas(train_pd)
@@ -57,7 +57,7 @@ def test_train_model(tmpdir, train_gdf):
     if torch.cuda.is_available():
         assert isinstance(ac._model, clx.analytics.model.tabular_model.TabularModel)
 
-
+@pytest.mark.parametrize("train_gdf", [train_gdf])
 def test_predict(tmpdir, train_gdf):
     if torch.cuda.is_available():
         # predict
