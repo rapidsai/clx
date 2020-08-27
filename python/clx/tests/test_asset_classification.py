@@ -57,6 +57,7 @@ def test_train_model(tmpdir, train_gdf):
     if torch.cuda.is_available():
         assert isinstance(ac._model, clx.analytics.model.tabular_model.TabularModel)
 
+
 @pytest.mark.parametrize("train_gdf", [train_gdf])
 def test_predict(tmpdir, train_gdf):
     if torch.cuda.is_available():
