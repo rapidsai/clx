@@ -1,6 +1,5 @@
 import cudf
 from cuml.preprocessing.model_selection import train_test_split
-from cuml.preprocessing import LabelEncoder
 import torch
 import torch.optim as torch_optim
 import torch.nn.functional as F
@@ -17,9 +16,7 @@ class AssetClassification:
     to distinguish legitimate and DGA domain names.
     """
 
-    def __init__(self, n_cont=0, out_sz=6, layers=[200, 100], drops=[0.001, 0.01], emb_drop=0.04, is_reg=False, is_multi=True, use_bn=True):
-        self._n_cont = n_cont
-        self._out_sz = out_sz
+    def __init__(self, layers=[200, 100], drops=[0.001, 0.01], emb_drop=0.04, is_reg=False, is_multi=True, use_bn=True):
         self._layers = layers
         self._drops = drops
         self._emb_drop = emb_drop
@@ -29,9 +26,11 @@ class AssetClassification:
         self._device = None
         self._model = None
         self._optimizer = None
+        self._cat_cols = None
+        self._cont_cols = None
         self._device = torch.device('cuda')
 
-    def train_model(self, train_gdf, label_col, batch_size, epochs, lr=0.01, wd=0.0):
+    def train_model(self, train_gdf, cat_cols, cont_cols, label_col, batch_size, epochs, lr=0.01, wd=0.0):
         """
         This function is used for training fastai tabular model with a given training dataset.
 
@@ -55,16 +54,20 @@ class AssetClassification:
         >>> ac.train_model(X_train, "label", batch_size, epochs, lr=0.01, wd=0.0)
         """
 
+        self._cat_cols = cat_cols
+        self._cont_cols = cont_cols
+
+        # train/test split
         X, val_X, Y, val_Y = train_test_split(train_gdf, label_col, train_size=0.9)
         val_X.index = val_Y.index
-
         X.index = Y.index
 
         embedded_cols = {}
-        for col in X.columns:
-            categories_cnt = X[col].max() + 2
-            if categories_cnt > 1:
-                embedded_cols[col] = categories_cnt
+        for col in cat_cols:
+            if col != label_col:
+                categories_cnt = X[col].max() + 2
+                if categories_cnt > 1:
+                    embedded_cols[col] = categories_cnt
 
         X[label_col] = Y
         val_X[label_col] = val_Y
@@ -72,17 +75,20 @@ class AssetClassification:
         # Embedding
         embedding_sizes = [(n_categories, min(100, (n_categories + 1) // 2)) for _, n_categories in embedded_cols.items()]
 
+        n_cont = len(cont_cols)
+        out_sz = train_gdf[label_col].nunique()
+
         # Partition dataframes
         train_part_dfs = self._get_partitioned_dfs(X, batch_size)
         val_part_dfs = self._get_partitioned_dfs(val_X, batch_size)
 
-        self._model = TabularModel(embedding_sizes, self._n_cont, self._out_sz, self._layers, self._drops, self._emb_drop, self._is_reg, self._is_multi, self._use_bn)
+        self._model = TabularModel(embedding_sizes, n_cont, out_sz, self._layers, self._drops, self._emb_drop, self._is_reg, self._is_multi, self._use_bn)
         self._to_device(self._model, self._device)
         self._config_optimizer()
         for i in range(epochs):
-            loss = self._train(self._model, self._optimizer, train_part_dfs, label_col)
+            loss = self._train(self._model, self._optimizer, train_part_dfs, cat_cols, cont_cols, label_col)
             print("training loss: ", loss)
-            self._val_loss(self._model, val_part_dfs, label_col)
+            self._val_loss(self._model, val_part_dfs, cat_cols, cont_cols, label_col)
 
     def predict(self, gdf):
         """
@@ -107,13 +113,12 @@ class AssetClassification:
         8208    0
         Length: 8209, dtype: int64
         """
-        xb_cont_tensor = torch.zeros(0, 0)
-        xb_cont_tensor.cuda()
+        cat_set = gdf[self._cat_cols].to_dlpack()
+        cat_set = from_dlpack(cat_set).long()
+        xb_cont_tensor = gdf[self._cont_cols].to_dlpack()
+        xb_cont_tensor = from_dlpack(xb_cont_tensor).long()
 
-        gdf = gdf.to_dlpack()
-        gdf = from_dlpack(gdf).long()
-
-        out = self._model(gdf, xb_cont_tensor)
+        out = self._model(cat_set, xb_cont_tensor)
         preds = torch.max(out, 1)[1].view(-1).tolist()
 
         return cudf.Series(preds)
@@ -150,22 +155,6 @@ class AssetClassification:
         """
         self._model = torch.load(fname)
 
-    def categorize_columns(self, gdf):
-        """
-        Categorize feature columns of input dataset and convert to numeric (int16). This is required format for train_model input.
-
-        :param gdf: dataset to be categorized
-        :type gdf: cudf.DataFrame
-        """
-        cat_gdf = gdf.copy()
-        for col in cat_gdf.columns:
-            cat_gdf[col] = cat_gdf[col].astype('str')
-            cat_gdf[col] = cat_gdf[col].fillna("NA")
-            cat_gdf[col] = LabelEncoder().fit_transform(cat_gdf[col])
-            cat_gdf[col] = cat_gdf[col].astype('int16')
-
-        return cat_gdf
-
     def _config_optimizer(self, lr=0.001, wd=0.0):
         parameters = filter(lambda p: p.requires_grad, self._model.parameters())
         self._optimizer = torch_optim.Adam(parameters, lr=lr, weight_decay=wd)
@@ -181,7 +170,7 @@ class AssetClassification:
             prev_chunk_offset = curr_chunk_offset
         return partitioned_dfs
 
-    def _train(self, model, optim, dfs, label_col):
+    def _train(self, model, optim, dfs, cat_cols, cont_cols, label_col):
         self._model.train()
         total = 0
         sum_loss = 0
@@ -191,10 +180,14 @@ class AssetClassification:
 
         for df in dfs:
             batch = df.shape[0]
-            train_set = df.drop(label_col).to_dlpack()
-            train_set = from_dlpack(train_set).long()
+            if cat_cols:
+                cat_set = df[cat_cols].to_dlpack()
+                cat_set = from_dlpack(cat_set).long()
+            if cont_cols:
+                xb_cont_tensor = df[cont_cols].to_dlpack()
+                xb_cont_tensor = from_dlpack(xb_cont_tensor).long()
 
-            output = self._model(train_set, xb_cont_tensor)
+            output = self._model(cat_set, xb_cont_tensor)
             train_label = df[label_col].to_dlpack()
             train_label = from_dlpack(train_label).long()
 
@@ -208,7 +201,7 @@ class AssetClassification:
 
         return sum_loss / total
 
-    def _val_loss(self, model, dfs, label_col):
+    def _val_loss(self, model, dfs, cat_cols, cont_cols, label_col):
         self._model.eval()
         total = 0
         sum_loss = 0
@@ -220,10 +213,13 @@ class AssetClassification:
         for df in dfs:
             current_batch_size = df.shape[0]
 
-            val = df.drop(label_col).to_dlpack()
-            val = from_dlpack(val).long()
+            val_set = df[cat_cols].to_dlpack()
+            val_set = from_dlpack(val_set).long()
+            if cont_cols:
+                xb_cont_tensor = df[cont_cols].to_dlpack()
+                xb_cont_tensor = from_dlpack(xb_cont_tensor).long()
 
-            out = self._model(val, xb_cont_tensor)
+            out = self._model(val_set, xb_cont_tensor)
 
             val_label = df[label_col].to_dlpack()
             val_label = from_dlpack(val_label).long()
