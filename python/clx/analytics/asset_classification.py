@@ -14,6 +14,13 @@ class AssetClassification:
     """
     This class provides multiple functionalities such as build, train and evaluate the RNNClassifier model
     to distinguish legitimate and DGA domain names.
+
+    :param layers: linear layer follow the input layer
+    :param drops: drop out percentage
+    :param emb_drop: drop out percentage at embedding layers
+    :param is_reg: is regression
+    :param is_multi: is classification
+    :param use_bn: use batch normalization
     """
 
     def __init__(self, layers=[200, 100], drops=[0.001, 0.01], emb_drop=0.04, is_reg=False, is_multi=True, use_bn=True):
@@ -34,8 +41,12 @@ class AssetClassification:
         """
         This function is used for training fastai tabular model with a given training dataset.
 
-        :param train_gdf: training dataset with categorized int16 feature columns
+        :param train_gdf: training dataset with categorized and/or continuous feature columns
         :type train_gdf: cudf.DataFrame
+        :param cat_cols: array of categorical column names in train_gdf
+        :type label_col: array
+        :param cont_col: array of continuous column names in train_gdf
+        :type label_col: array
         :param label_col: column name of label column in train_gdf
         :type label_col: str
         :param batch_size: train_gdf will be partitioned into multiple dataframes of this size
@@ -51,7 +62,10 @@ class AssetClassification:
         --------
         >>> from clx.analytics.asset_classification import AssetClassification
         >>> ac = AssetClassification()
-        >>> ac.train_model(X_train, "label", batch_size, epochs, lr=0.01, wd=0.0)
+        >>> cat_cols = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        >>> cont_cols = ["10"]
+        >>> label_col = "label
+        >>> ac.train_model(X_train, cat_cols, cont_cols, label_col, batch_size, epochs, lr=0.01, wd=0.0)
         """
 
         self._cat_cols = cat_cols
@@ -96,10 +110,16 @@ class AssetClassification:
 
         :param gdf: prediction input dataset with categorized int16 feature columns
         :type gdf: cudf.DataFrame
+        :param cat_cols: array of categorical column names in gdf
+        :type label_col: array
+        :param cont_col: array of continuous column names in gdf
+        :type label_col: array
 
         Examples
         --------
-        >>> ac.predict(X_test).to_array()
+        >>> cat_cols = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        >>> cont_cols = ["10"]
+        >>> ac.predict(X_test, cat_cols, cont_cols).to_array()
         0       0
         1       0
         2       0
