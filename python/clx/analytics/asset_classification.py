@@ -12,8 +12,7 @@ log = logging.getLogger(__name__)
 
 class AssetClassification:
     """
-    This class provides multiple functionalities such as build, train and evaluate the RNNClassifier model
-    to distinguish legitimate and DGA domain names.
+    Supervised asset classification on tabular data containing categorical and/or continuous features.
 
     :param layers: linear layer follow the input layer
     :param drops: drop out percentage
