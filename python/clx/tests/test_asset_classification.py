@@ -64,7 +64,7 @@ def test_predict(tmpdir, train_gdf):
         # predict
         test_gdf = train_gdf.head()
         test_gdf.drop_column("label")
-        preds = ac.predict(test_gdf)
+        preds = ac.predict(test_gdf, cat_cols, cont_cols)
         assert isinstance(preds, cudf.core.series.Series)
 
 

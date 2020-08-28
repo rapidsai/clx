@@ -90,7 +90,7 @@ class AssetClassification:
             print("training loss: ", loss)
             self._val_loss(self._model, val_part_dfs, cat_cols, cont_cols, label_col)
 
-    def predict(self, gdf):
+    def predict(self, gdf, cat_cols, cont_cols):
         """
         Predict the class with the trained model
 
@@ -113,10 +113,15 @@ class AssetClassification:
         8208    0
         Length: 8209, dtype: int64
         """
-        cat_set = gdf[self._cat_cols].to_dlpack()
-        cat_set = from_dlpack(cat_set).long()
-        xb_cont_tensor = gdf[self._cont_cols].to_dlpack()
-        xb_cont_tensor = from_dlpack(xb_cont_tensor).long()
+        cat_set = torch.zeros(0, 0)
+        xb_cont_tensor = torch.zeros(0, 0)
+
+        if cat_cols:
+            cat_set = gdf[self._cat_cols].to_dlpack()
+            cat_set = from_dlpack(cat_set).long()
+        if cont_cols:
+            xb_cont_tensor = gdf[self._cont_cols].to_dlpack()
+            xb_cont_tensor = from_dlpack(xb_cont_tensor).long()
 
         out = self._model(cat_set, xb_cont_tensor)
         preds = torch.max(out, 1)[1].view(-1).tolist()
