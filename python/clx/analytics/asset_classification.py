@@ -174,7 +174,6 @@ class AssetClassification:
         --------
         >>> from clx.analytics.asset_classification import AssetClassification
         >>> ac = AssetClassification()
-        >>> ac.train_model(X_train, "label", batch_size, epochs, lr=0.01, wd=0.0)
         >>> ac.load_model("ac.mdl")
         """
         self._model = torch.load(fname)
