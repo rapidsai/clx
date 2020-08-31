@@ -140,7 +140,7 @@ class AssetClassification:
             cat_set = from_dlpack(cat_set).long()
         if cont_cols:
             xb_cont_tensor = gdf[self._cont_cols].to_dlpack()
-            xb_cont_tensor = from_dlpack(xb_cont_tensor).long()
+            xb_cont_tensor = from_dlpack(xb_cont_tensor).float()
 
         out = self._model(cat_set, xb_cont_tensor)
         preds = torch.max(out, 1)[1].view(-1).tolist()
@@ -208,7 +208,7 @@ class AssetClassification:
                 cat_set = from_dlpack(cat_set).long()
             if cont_cols:
                 xb_cont_tensor = df[cont_cols].to_dlpack()
-                xb_cont_tensor = from_dlpack(xb_cont_tensor).long()
+                xb_cont_tensor = from_dlpack(xb_cont_tensor).float()
 
             output = self._model(cat_set, xb_cont_tensor)
             train_label = df[label_col].to_dlpack()
@@ -241,7 +241,7 @@ class AssetClassification:
                 val_set = from_dlpack(val_set).long()
             if cont_cols:
                 xb_cont_tensor = df[cont_cols].to_dlpack()
-                xb_cont_tensor = from_dlpack(xb_cont_tensor).long()
+                xb_cont_tensor = from_dlpack(xb_cont_tensor).float()
 
             out = self._model(val_set, xb_cont_tensor)
 

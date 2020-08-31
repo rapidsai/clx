@@ -28,7 +28,8 @@ class TabularModel(nn.Module):
             x = torch.cat(x, 1)
             x = self.emb_drop(x)
         if self.n_cont != 0:
-            x_cont = x_cont.unsqueeze(1).float()
+            if self.n_cont == 1:
+                x_cont = x_cont.unsqueeze(1)
             x_cont = self.bn_cont(x_cont)
             x = torch.cat([x, x_cont], 1) if self.n_emb != 0 else x_cont
         x = self.layers(x)
