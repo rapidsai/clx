@@ -5,6 +5,7 @@
 ## Improvements
 
 ## Bug Fixes
+- PR #229 Fix cybert streamz script
 
 # clx 0.15.0 (Date TBD)
 
@@ -12,7 +13,7 @@
 - PR #189 Add Cybert class
 - PR #170 Add CLX Code of Conduct
 - PR #176 Add Periodicity Detection Notebook
-- PR #193 AC notebook 
+- PR #193 AC notebook
 
 ## Improvements
 - PR #202 Update cybert notebook to use cudf tokenizer
