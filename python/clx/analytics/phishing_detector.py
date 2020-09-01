@@ -1,14 +1,15 @@
 import cudf
+import cupy
 from cuml.preprocessing.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import torch
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
+from torch.utils.dlpack import from_dlpack
 import logging
 from transformers import AdamW, BertForSequenceClassification
 from tqdm import trange
 import numpy as np
 import os
-from clx.analytics import tokenizer
 
 log = logging.getLogger(__name__)
 
@@ -78,8 +79,11 @@ class PhishingDetector:
         train_emails, validation_emails, train_labels, validation_labels = train_test_split(emails, 'label', train_size=0.8, random_state=2)
 
         # Tokenize training and validation
-        train_inputs, train_masks, _ = tokenizer.tokenize_df(train_emails, self._hashpath, max_sequence_length=max_seq_len, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
-        validation_inputs, validation_masks, _ = tokenizer.tokenize_df(validation_emails, self._hashpath, max_sequence_length=max_seq_len, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+        # train_inputs, train_masks, _ = tokenizer.tokenize_df(train_emails, self._hashpath, max_sequence_length=max_seq_len, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+        # validation_inputs, validation_masks, _ = tokenizer.tokenize_df(validation_emails, self._hashpath, max_sequence_length=max_seq_len, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+
+        train_inputs, train_masks = self._bert_uncased_tokenize(train_emails.email)
+        validation_inputs, validation_masks = self._bert_uncased_tokenize(validation_emails.copy().email)
 
         # convert labels to tensors
         train_labels = torch.tensor(train_labels.to_array())
@@ -123,7 +127,9 @@ class PhishingDetector:
         >>> emails_train, emails_test, labels_train, labels_test = train_test_split(train_emails_df, 'label', train_size=0.8)
         >>> phish_detect.evaluate_model(emails_test, labels_test)
         """
-        test_inputs, test_masks, _ = tokenizer.tokenize_df(emails, self._hashpath, max_sequence_length=max_seq_len, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+        # test_inputs, test_masks, _ = tokenizer.tokenize_df(emails, self._hashpath, max_sequence_length=max_seq_len, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+
+        test_inputs, test_masks = self._bert_uncased_tokenize(emails.email)
 
         test_labels = torch.tensor(labels.to_array())
         test_data = TensorDataset(test_inputs, test_masks, test_labels)
@@ -182,7 +188,8 @@ class PhishingDetector:
         >>> phish_detect.train_model(emails_train, labels_train)
         >>> predictions = phish_detect(new_emails_df)
         """
-        predict_inputs, predict_masks, _ = tokenizer.tokenize_df(emails, self._hashpath, max_sequence_length=max_seq_len, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+        # predict_inputs, predict_masks, _ = tokenizer.tokenize_df(emails, self._hashpath, max_sequence_length=max_seq_len, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
+        predict_inputs, predict_masks = self._bert_uncased_tokenize(emails.email)
 
         predict_inputs = predict_inputs.type(torch.LongTensor)
         predict_data = TensorDataset(predict_inputs, predict_masks)
@@ -301,3 +308,21 @@ class PhishingDetector:
             true_labels.append(label_ids)
 
         return tests, true_labels
+
+    import cupy
+
+    def _bert_uncased_tokenize(self, strings):
+        """
+        converts cudf.Series of strings to two torch tensors- token ids and attention mask with padding
+        """
+        num_strings = len(strings)
+        num_bytes = strings.str.byte_count().sum()
+        token_ids, mask = strings.str.subword_tokenize(self._hashpath, 256, 256,
+                                                       max_num_strings=num_strings,
+                                                       max_num_chars=num_bytes,
+                                                       max_rows_tensor=num_strings,
+                                                       do_lower=False, do_truncate=True)[:2]
+        # convert from cupy to torch tensor using dlpack
+        input_ids = from_dlpack(token_ids.reshape(num_strings, 256).astype(cupy.float).toDlpack())
+        attention_mask = from_dlpack(mask.reshape(num_strings, 256).astype(cupy.float).toDlpack())
+        return input_ids.type(torch.long), attention_mask.type(torch.long)
