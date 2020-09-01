@@ -5,6 +5,7 @@
 ## Improvements
 
 ## Bug Fixes
+- PR #231 Fix segmentation fault in cybert notebook
 
 # clx 0.15.0 (Date TBD)
 
