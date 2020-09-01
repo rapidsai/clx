@@ -82,7 +82,7 @@ docker logs cybert-streamz
 
 Processed data will be pushed to the kafka topic named `output`. To view all processed output run:
 ```
-docker exec cybert-streamz bash -c 'source activate clx && $KAFKA_HOME/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic output --from-beginning'
+docker exec cybert-streamz bash -c 'source activate rapids && $KAFKA_HOME/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic output --from-beginning'
 ```
 
 ##### Benchmark
