@@ -3,6 +3,7 @@
 ## New Features
 
 ## Improvements
+- PR #232 Update phishing detection to use cudf subword tokenizer
 
 ## Bug Fixes
 - PR #231 Fix segmentation fault in cybert notebook
