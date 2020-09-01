@@ -15,24 +15,24 @@ import cudf
 from clx.analytics.phishing_detector import PhishingDetector
 from cuml.preprocessing.model_selection import train_test_split
 import torch
-import s3fs
 import transformers
 from os import path
-
-S3_BASE_PATH = "rapidsai-data/cyber/clx"
-EMAILS_TSV = "spam_assassin_hardham_200_20021010.tsv"
+import pandas as pd
+from faker import Faker
+import random
 
 phish_detect = PhishingDetector()
 if torch.cuda.is_available():
     phish_detect.init_model()
 
 
-def test_train_model(tmpdir):
+def test_train_model():
     if torch.cuda.is_available():
-        fname = str(tmpdir.mkdir("tmp_test_phish_detector").join(EMAILS_TSV))
-        fs = s3fs.S3FileSystem(anon=True)
-        fs.get(S3_BASE_PATH + "/" + EMAILS_TSV, fname)
-        emails_gdf = cudf.read_csv(fname, delimiter='\t', header=None, names=['label', 'email'])
+        fake = Faker()
+        email_col = [fake.text() for _ in range(200)]
+        label_col = [random.randint(0, 1) for _ in range(200)]
+        emails_pd = pd.DataFrame(list(zip(email_col, label_col)), columns=["email", "label"])
+        emails_gdf = cudf.from_pandas(emails_pd)
         X_train, X_test, y_train, y_test = train_test_split(emails_gdf, 'label', train_size=0.8, random_state=10)
         phish_detect.train_model(X_train, y_train, max_num_sentences=100000, max_num_chars=10000000, max_rows_tensor=100000, learning_rate=3e-5, max_seq_len=128, batch_size=32, epochs=1)
         assert isinstance(phish_detect._model, transformers.modeling_bert.BertForSequenceClassification)
