@@ -293,7 +293,6 @@ class PhishingDetector:
         converts cudf.Series of strings to two torch tensors- token ids and attention mask with padding
         """
         num_strings = len(strings)
-        num_bytes = strings.str.byte_count().sum()
         token_ids, mask = strings.str.subword_tokenize(self._hashpath, max_length=max_seq_len, stride=max_seq_len, do_lower=False, do_truncate=True)[:2]
 
         # convert from cupy to torch tensor using dlpack
