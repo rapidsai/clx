@@ -39,12 +39,14 @@ dd.init_model()
 
 def test_train_model():
     if torch.cuda.is_available():
+        # train model
         total_loss = dd.train_model(dataset)
         assert isinstance(total_loss, (int, float))
 
 
 def test_evaluate_model():
     if torch.cuda.is_available():
+        # evaluate model
         accuracy = dd.evaluate_model(dataset)
         assert isinstance(accuracy, (int, float))
 
@@ -52,7 +54,10 @@ def test_evaluate_model():
 def test_predict():
     if torch.cuda.is_available():
         test_domains = cudf.Series(["nvidia.com", "dfsdfsdf"])
+        # predict
         preds = dd.predict(test_domains)
+        assert len(preds) == 2
+        assert preds.dtype == int
         assert isinstance(preds, cudf.core.series.Series)
 
 
