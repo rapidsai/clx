@@ -16,11 +16,7 @@ from clx.analytics.detector_dataset import DetectorDataset
 from clx.analytics.dga_detector import DGADetector
 from clx.analytics.model.rnn_classifier import RNNClassifier
 import torch
-import s3fs
 from os import path
-
-S3_BASE_PATH = "rapidsai-data/cyber/clx"
-MODEL_FILENAME = "rnn_classifier_2020-06-08_20_48_03.pth"
 
 test_dataset_len = 4
 test_batchsize = 2
@@ -37,40 +33,42 @@ test_df = cudf.DataFrame(
 )
 dataset = DetectorDataset(test_df, test_batchsize)
 
-# download model
-if not path.exists(MODEL_FILENAME):
-    fs = s3fs.S3FileSystem(anon=True)
-    fs.get(S3_BASE_PATH + "/" + MODEL_FILENAME, MODEL_FILENAME)
-
-
-def test_load_model():
-    if torch.cuda.is_available():
-        dd = DGADetector()
-        dd.load_model(MODEL_FILENAME)
-        assert isinstance(dd.model, RNNClassifier)
-
-
-def test_predict():
-    if torch.cuda.is_available():
-        dd = DGADetector()
-        test_domains = cudf.Series(["nvidia.com", "dfsdfsdf"])
-        dd.load_model(MODEL_FILENAME)
-        actual_output = dd.predict(test_domains)
-        expected_output = cudf.Series([1, 0])
-        assert actual_output.equals(expected_output)
-
+dd = DGADetector()
+dd.init_model()
 
 def test_train_model():
     if torch.cuda.is_available():
-        dd = DGADetector()
-        dd.init_model()
         total_loss = dd.train_model(dataset)
         assert isinstance(total_loss, (int, float))
 
-
 def test_evaluate_model():
     if torch.cuda.is_available():
-        dd = DGADetector()
-        dd.init_model()
         accuracy = dd.evaluate_model(dataset)
         assert isinstance(accuracy, (int, float))
+
+def test_predict():
+    if torch.cuda.is_available():
+        test_domains = cudf.Series(["nvidia.com", "dfsdfsdf"])
+        preds = dd.predict(test_domains)
+        assert isinstance(preds, cudf.core.series.Series)
+
+def test_save_model(tmpdir):
+    if torch.cuda.is_available():
+        # save model
+        dd.save_model(str(tmpdir.join("clx_dga.mdl")))
+        assert path.exists(str(tmpdir.join("clx_dga.mdl")))
+            
+def test_load_model(tmpdir):
+    if torch.cuda.is_available():
+        # save model
+        dd.save_model(str(tmpdir.join("clx_dga.mdl")))
+        assert path.exists(str(tmpdir.join("clx_dga.mdl")))
+        # load model
+        dd2 = DGADetector()
+        dd2.init_model()
+        dd2.load_model(str(tmpdir.join("clx_dga.mdl")))
+        gpu_count = torch.cuda.device_count()
+        if gpu_count > 1:
+           assert isinstance(dd2.model.module, RNNClassifier)
+        else:
+           assert isinstance(dd2.model, RNNClassifier)
