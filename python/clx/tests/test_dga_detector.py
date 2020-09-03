@@ -36,15 +36,18 @@ dataset = DetectorDataset(test_df, test_batchsize)
 dd = DGADetector()
 dd.init_model()
 
+
 def test_train_model():
     if torch.cuda.is_available():
         total_loss = dd.train_model(dataset)
         assert isinstance(total_loss, (int, float))
 
+
 def test_evaluate_model():
     if torch.cuda.is_available():
         accuracy = dd.evaluate_model(dataset)
         assert isinstance(accuracy, (int, float))
+
 
 def test_predict():
     if torch.cuda.is_available():
@@ -52,12 +55,14 @@ def test_predict():
         preds = dd.predict(test_domains)
         assert isinstance(preds, cudf.core.series.Series)
 
+
 def test_save_model(tmpdir):
     if torch.cuda.is_available():
         # save model
         dd.save_model(str(tmpdir.join("clx_dga.mdl")))
         assert path.exists(str(tmpdir.join("clx_dga.mdl")))
-            
+
+
 def test_load_model(tmpdir):
     if torch.cuda.is_available():
         # save model
@@ -69,6 +74,6 @@ def test_load_model(tmpdir):
         dd2.load_model(str(tmpdir.join("clx_dga.mdl")))
         gpu_count = torch.cuda.device_count()
         if gpu_count > 1:
-           assert isinstance(dd2.model.module, RNNClassifier)
+            assert isinstance(dd2.model.module, RNNClassifier)
         else:
-           assert isinstance(dd2.model, RNNClassifier)
+            assert isinstance(dd2.model, RNNClassifier)
