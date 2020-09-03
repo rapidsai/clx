@@ -63,8 +63,7 @@ class AssetClassification:
         >>> ac = AssetClassification()
         >>> cat_cols = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
         >>> cont_cols = ["10"]
-        >>> label_col = "label
-        >>> ac.train_model(X_train, cat_cols, cont_cols, label_col, batch_size, epochs, lr=0.01, wd=0.0)
+        >>> ac.train_model(X_train, cat_cols, cont_cols, "label", batch_size, epochs, lr=0.01, wd=0.0)
         """
 
         self._cat_cols = cat_cols
@@ -158,7 +157,9 @@ class AssetClassification:
         --------
         >>> from clx.analytics.asset_classification import AssetClassification
         >>> ac = AssetClassification()
-        >>> ac.train_model(X_train, "label", batch_size, epochs, lr=0.01, wd=0.0)
+        >>> cat_cols = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        >>> cont_cols = ["10"]
+        >>> ac.train_model(X_train, cat_cols, cont_cols, "label", batch_size, epochs, lr=0.01, wd=0.0)
         >>> ac.save_model("ac.mdl")
         """
         torch.save(self._model, fname)
