@@ -3,6 +3,7 @@
 ## New Features
 
 ## Improvements
+- PR #233 Removed s3 dependency from dga detection unit-test
 
 ## Bug Fixes
 
