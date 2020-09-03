@@ -34,7 +34,7 @@ def test_train_model():
         emails_pd = pd.DataFrame(list(zip(email_col, label_col)), columns=["email", "label"])
         emails_gdf = cudf.from_pandas(emails_pd)
         X_train, X_test, y_train, y_test = train_test_split(emails_gdf, 'label', train_size=0.8, random_state=10)
-        phish_detect.train_model(X_train, y_train, max_num_sentences=100000, max_num_chars=10000000, max_rows_tensor=100000, learning_rate=3e-5, max_seq_len=128, batch_size=32, epochs=1)
+        phish_detect.train_model(X_train, y_train, learning_rate=3e-5, max_seq_len=128, batch_size=32, epochs=1)
         assert isinstance(phish_detect._model, transformers.modeling_bert.BertForSequenceClassification)
 
 
@@ -42,14 +42,14 @@ def test_evaluate_model():
     if torch.cuda.is_available():
         X_test = cudf.DataFrame({"email": ["email 1", "email 2"]})
         y_test = cudf.Series([0, 0])
-        accuracy = phish_detect.evaluate_model(X_test, y_test, max_num_sentences=2, max_num_chars=1000, max_rows_tensor=100, max_seq_len=128, batch_size=32)
+        accuracy = phish_detect.evaluate_model(X_test, y_test, max_seq_len=128, batch_size=32)
         assert accuracy >= 0.0 and accuracy <= 1.0
 
 
 def test_predict():
     if torch.cuda.is_available():
         X_test = cudf.DataFrame({"email": ["email 1", "email 2"]})
-        preds = phish_detect.predict(X_test, max_num_sentences=2, max_num_chars=1000, max_rows_tensor=100, max_seq_len=128, batch_size=32)
+        preds = phish_detect.predict(X_test, max_seq_len=128, batch_size=32)
         assert preds.isin([0, 1]).equals(cudf.Series([True, True]))
 
 
