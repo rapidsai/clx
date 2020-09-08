@@ -65,7 +65,7 @@ Parameters
 - `output_topic` - The name for the output topic to send the output data. Any name can be indicated here.
 - `model_file` - The path to your model file
 - `label_file` - The path to your label file
-- `cuda_visible_devices` - List of gpus use to run streamz with Dask
+- `cuda_visible_devices` - List of gpus use to run streamz with Dask. The gpus should be equal to or a subset of devices indicated within the docker run command (in the example above device list is set to `'"device=0,1,2"'`)
 - `poll_interval`* - Interval (in seconds) to poll the Kafka input topic for data
 - `max_batch_size`* - Max batch size of data (max number of logs) to ingest into streamz with each `poll_interval`
 - `data` - The input dataset to use for this streamz example
