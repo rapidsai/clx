@@ -1,3 +1,12 @@
+# clx 0.16.0 (Date TBD)
+
+## New Features
+
+## Improvements
+
+## Bug Fixes
+- PR #231 Fix segmentation fault in cybert notebook
+
 # clx 0.15.0 (26 Aug 2020)
 
 ## New Features
