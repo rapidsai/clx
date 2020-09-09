@@ -69,7 +69,7 @@ class Cybert:
         """
         with open(config_filepath) as f:
             config = json.load(f)
-        self._label_map = {int(k): v for k, v in config['id2label'].items()}
+        self._label_map = {int(k): v for k, v in config["id2label"].items()}
         model_state_dict = torch.load(model_filepath)
         self._model = BertForTokenClassification.from_pretrained(
             pretrained_model,
@@ -162,21 +162,24 @@ class Cybert:
         infer_pdf["labels"] = labels.detach().cpu().numpy().tolist()
         infer_pdf["token_ids"] = input_ids.detach().cpu().numpy().tolist()
 
+        del logits
+        del confidences
+        del labels
         parsed_df, confidence_df = self.__postprocess(infer_pdf)
         return parsed_df, confidence_df
 
     def __postprocess(self, infer_pdf):
         # cut overlapping edges
         infer_pdf["confidences"] = infer_pdf.apply(
-            lambda row: row["confidences"][row["start"]:row["stop"]], axis=1
+            lambda row: row["confidences"][row["start"] : row["stop"]], axis=1
         )
 
         infer_pdf["labels"] = infer_pdf.apply(
-            lambda row: row["labels"][row["start"]:row["stop"]], axis=1
+            lambda row: row["labels"][row["start"] : row["stop"]], axis=1
         )
 
         infer_pdf["token_ids"] = infer_pdf.apply(
-            lambda row: row["token_ids"][row["start"]:row["stop"]], axis=1
+            lambda row: row["token_ids"][row["start"] : row["stop"]], axis=1
         )
 
         # aggregated logs
@@ -208,8 +211,9 @@ class Cybert:
                 new_label = label
                 new_confidence = confidence
             if self._label_map[new_label] in token_dict:
-                token_dict[self._label_map[new_label]] = token_dict[
-                    self._label_map[new_label]] + " " + text_token
+                token_dict[self._label_map[new_label]] = (
+                    token_dict[self._label_map[new_label]] + " " + text_token
+                )
             else:
                 token_dict[self._label_map[new_label]] = text_token
             confidence_dict[self._label_map[label]].append(new_confidence)

@@ -19,12 +19,13 @@ from dask_cuda import LocalCUDACluster
 from distributed import Client
 from streamz import Stream
 import confluent_kafka as ck
-from clx.analytics.cybert import Cybert
 import socket
 import signal
 import random
 import time
+import torch
 import sys
+import gc
 
 
 def inference(messages):
@@ -41,6 +42,8 @@ def inference(messages):
         print("ERROR: Unknown type encountered in inference")
     parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
     size = len(df)
+    torch.cuda.empty_cache()
+    gc.collect()
     return (parsed_df, confidence_df, batch_start_time, size)
 
 
@@ -56,6 +59,7 @@ def sink_to_kafka(processed_data):
 
 
 def worker_init():
+    # Initialization for each dask worker
     from clx.analytics.cybert import Cybert
 
     worker = dask.distributed.get_worker()
@@ -74,6 +78,7 @@ def worker_init():
 
 
 def calc_benchmark(processed_data):
+    # Calculates benchmark for the streamz workflow
     t1 = int(round(time.time() * 1000))
     t2 = 0
     size = 0.0
@@ -94,6 +99,7 @@ def calc_benchmark(processed_data):
 
 
 def signal_term_handler(signal, frame):
+    # Receives signal and calculates benchmark if indicated in argument
     print("Exiting streamz script...")
     if args.benchmark:
         (time_diff, throughput_mbps, avg_batch_size) = calc_benchmark(output)
@@ -107,6 +113,7 @@ def signal_term_handler(signal, frame):
 
 
 def parse_arguments():
+    # Establish script arguments
     parser = argparse.ArgumentParser(
         description="Cybert using Streamz and Dask. \
                                                   Data will be read from the input kafka topic, \
