@@ -4,6 +4,7 @@
 - PR #208 CLX Supervised Asset Classification
 
 ## Improvements
+- PR #233 Removed s3 dependency from dga detection unit-test
 
 ## Bug Fixes
 - PR #231 Fix segmentation fault in cybert notebook
