@@ -131,8 +131,13 @@ log "INFO" "Dask scheduler running"
 #**********************************
 # Start Dask CUDA Worker
 #**********************************
-nohup dask-cuda-worker localhost:8786 2>&1 &
-
+IFS=',' read -ra devices <<< "$cuda_visible_devices"
+for i in "${devices[@]}"
+do
+   echo "CUDA_VISIBLE_DEVICES=$i nohup dask-cuda-worker localhost:8786 2>&1 &"
+   CUDA_VISIBLE_DEVICES=$i nohup dask-cuda-worker localhost:8786 2>&1 &
+done
+sleep 3
 #**********************************
 # Start Jupyter Notebook
 #**********************************
