@@ -33,6 +33,7 @@ dependencies:
 - matplotlib
 - pip
 - pytest
+- faker
 - jupyterlab
 - sphinx
 - sphinx_rtd_theme
