@@ -1,0 +1,13 @@
+# Copyright (c) 2020, NVIDIA CORPORATION.
+
+[flake8]
+exclude = factory.py,perfect_hash.py
+ignore =
+    # line break before binary operator
+    W503
+    # whitespace before :
+    E203
+    # line too long (82 > 79 characters)
+    E501
+    # invalid escape sequence ‘x’
+    W605

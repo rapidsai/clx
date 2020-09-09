@@ -51,6 +51,66 @@ implementation of the issue, ask them in the issue instead of the PR.
 
 ## Setting Up Your Build Environment
 
+### Code Formatting
+
+#### Python
+
+CLX uses [Black](https://black.readthedocs.io/en/stable/),
+[isort](https://readthedocs.org/projects/isort/), and
+[flake8](http://flake8.pycqa.org/en/latest/) to ensure a consistent code format
+throughout the project. `Black`, `isort`, and `flake8` can be installed with
+`conda` or `pip`:
+
+```bash
+conda install black isort flake8
+```
+
+```bash
+pip install black isort flake8
+```
+
+These tools are used to auto-format the Python code, as well as check the Cython
+code in the repository. Additionally, there is a CI check in place to enforce
+that committed code follows our standards. You can use the tools to
+automatically format your python code by running:
+
+```bash
+isort --atomic python/**/*.py
+black python
+```
+
+and then check the syntax of your Python code by running:
+
+```bash
+flake8 python
+```
+
+Additionally, many editors have plugins that will apply `isort` and `Black` as
+you edit files, as well as use `flake8` to report any style / syntax issues.
+
+#### Pre-commit hooks
+
+Optionally, you may wish to setup [pre-commit hooks](https://pre-commit.com/)
+to automatically run `isort`, `Black`, and `flake8` when you make a git commit.
+This can be done by installing `pre-commit` via `conda` or `pip`:
+
+```bash
+conda install -c conda-forge pre_commit
+```
+
+```bash
+pip install pre-commit
+```
+
+and then running:
+
+```bash
+pre-commit install
+```
+
+from the root of the CLX repository. Now `isort`, `Black`, and `flake8` will be
+run each time you commit changes.
+
 ### Build from Source
 
 The following instructions are for developers and contributors to CLX OSS development. These instructions are tested on Linux Ubuntu 16.04 & 18.04. Use these instructions to build CLX from source and contribute to its development.  Other operating systems may be compatible, but are not currently tested.
