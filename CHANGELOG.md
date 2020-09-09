@@ -5,6 +5,7 @@
 
 ## Improvements
 - PR #233 Removed s3 dependency from dga detection unit-test
+- PR #235 Pre-commit hooks for isort, black and flake8
 
 ## Bug Fixes
 - PR #231 Fix segmentation fault in cybert notebook
