@@ -30,13 +30,13 @@ Create a new container using the image above. When running this container, it wi
 
 ##### Preferred - Docker CE v19+ and nvidia-container-toolkit
 ```
-docker run -it --gpus '"device=0,1,2"' -p 8787:8787 -v /path/to/dataset:/path/to/dataset -v /path/to/model.pth:/path/to/model.pth -v /path/to/label.txt:/path/to/label.txt --name cybert-streamz -d cybert-streamz:latest \
+docker run -it --gpus '"device=0,1,2"' -p 8787:8787 -v /path/to/dataset:/path/to/dataset -v /path/to/model.pth:/path/to/model.pth -v /path/to/label.txt:/path/to/label.json --name cybert-streamz -d cybert-streamz:latest \
 --broker localhost:9092 \
 --group_id streamz \
 --input_topic input \
 --output_topic output \
 --model_file /path/to/model.pth \
---label_file /path/to/label.txt \
+--label_file /path/to/label.json \
 --cuda_visible_devices 0,1,2 \
 --poll_interval 1s \
 --max_batch_size 1000 \
@@ -45,18 +45,32 @@ docker run -it --gpus '"device=0,1,2"' -p 8787:8787 -v /path/to/dataset:/path/to
 
 ##### Legacy - Docker CE v18 and nvidia-docker2
 ```
-docker run -it --runtime=nvidia -p 8787:8787 -v /path/to/dataset:/path/to/dataset -v /path/to/model.pth:/path/to/model.pth -v /path/to/label.txt:/path/to/label.txt --name cybert-streamz -d cybert-streamz:latest \
+docker run -it --runtime=nvidia -p 8787:8787 -v /path/to/dataset:/path/to/dataset -v /path/to/model.pth:/path/to/model.pth -v /path/to/label.txt:/path/to/label.json --name cybert-streamz -d cybert-streamz:latest \
 --broker localhost:9092 \
 --group_id streamz \
 --input_topic input \
 --output_topic output \
 --model_file /path/to/model.pth \
---label_file /path/to/label.yaml \
+--label_file /path/to/label.json \
 --cuda_visible_devices 0,1,2 \
 --poll_interval 1s \
 --max_batch_size 1000 \
 --data /path/to/dataset
 ```
+
+Parameters
+- `broker`* - Host and port where kafka broker is running
+- `group_id`* - Kafka [group id](https://docs.confluent.io/current/installation/configuration/consumer-configs.html#group.id) that uniquely identifies the streamz data consumer.
+- `input_topic` - The name for the input topic to send the input dataset. Any name can be indicated here.
+- `output_topic` - The name for the output topic to send the output data. Any name can be indicated here.
+- `model_file` - The path to your model file
+- `label_file` - The path to your label file
+- `cuda_visible_devices` - List of gpus use to run streamz with Dask. The gpus should be equal to or a subset of devices indicated within the docker run command (in the example above device list is set to `'"device=0,1,2"'`)
+- `poll_interval`* - Interval (in seconds) to poll the Kafka input topic for data
+- `max_batch_size`* - Max batch size of data (max number of logs) to ingest into streamz with each `poll_interval`
+- `data` - The input dataset to use for this streamz example
+
+``*`` = More information on these parameters can be found in the streamz [documentation](https://streamz.readthedocs.io/en/latest/api.html#streamz.from_kafka_batched).
 
 View the data processing activity on the dask dashboard by visiting `localhost:8787` or `<host>:8787`
 
@@ -68,7 +82,7 @@ docker logs cybert-streamz
 
 Processed data will be pushed to the kafka topic named `output`. To view all processed output run:
 ```
-docker exec cybert-streamz bash -c 'source activate clx && $KAFKA_HOME/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic output --from-beginning'
+docker exec cybert-streamz bash -c 'source activate rapids && $KAFKA_HOME/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic output --from-beginning'
 ```
 
 ##### Benchmark

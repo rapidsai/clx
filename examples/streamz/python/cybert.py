@@ -127,7 +127,9 @@ def parse_arguments():
         help="Dask scheduler address. If not provided a new dask cluster will be created",
     )
     parser.add_argument(
-        "--cuda_visible_devices", type=str, help="Cuda visible devices (ex: '0,1,2')",
+        "--cuda_visible_devices",
+        type=str,
+        help="Cuda visible devices (ex: '0,1,2')",
     )
     parser.add_argument(
         "--max_batch_size",
@@ -180,7 +182,7 @@ if __name__ == "__main__":
         "group.id": args.group_id,
         "session.timeout.ms": 60000,
         "enable.partition.eof": "true",
-        "auto.offset.reset": "latest",
+        "auto.offset.reset": "earliest",
     }
     print("Consumer conf:", consumer_conf)
     source = Stream.from_kafka_batched(

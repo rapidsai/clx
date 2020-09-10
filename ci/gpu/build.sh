@@ -56,7 +56,8 @@ conda install -c pytorch -c gwerbin \
     "seqeval" \
     "python-whois" \
     "requests" \
-    "matplotlib"
+    "matplotlib" \
+    "faker"
 
 logger "pip install git+https://github.com/rapidsai/cudatashader.git"
 pip install "git+https://github.com/rapidsai/cudatashader.git"
