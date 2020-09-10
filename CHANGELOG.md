@@ -10,6 +10,7 @@
 ## Bug Fixes
 - PR #231 Fix segmentation fault in cybert notebook
 - PR #229 Fix cybert streamz script
+- PR #236 Fix RAPIDS logo in READMEs
 
 # clx 0.15.0 (26 Aug 2020)
 
