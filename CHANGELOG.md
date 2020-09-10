@@ -5,6 +5,7 @@
 
 ## Improvements
 - PR #233 Removed s3 dependency from dga detection unit-test
+- PR #237 Cybert streamz memory optimization
 
 ## Bug Fixes
 - PR #231 Fix segmentation fault in cybert notebook
