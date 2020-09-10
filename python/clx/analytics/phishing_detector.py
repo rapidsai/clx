@@ -77,7 +77,7 @@ class PhishingDetector:
         # validation_inputs, validation_masks, _ = tokenizer.tokenize_df(validation_emails, self._hashpath, max_sequence_length=max_seq_len, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
 
         train_inputs, train_masks = self._bert_uncased_tokenize(train_emails.email, max_seq_len)
-        validation_inputs, validation_masks = self._bert_uncased_tokenize(validation_emails.copy().email, max_seq_len)
+        validation_inputs, validation_masks = self._bert_uncased_tokenize(validation_emails.email, max_seq_len)
 
         # convert labels to tensors
         train_labels = torch.tensor(train_labels.to_array())
