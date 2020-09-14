@@ -11,18 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import json
+import logging
+import os
+from collections import defaultdict
+
 import cupy
 import numpy as np
 import pandas as pd
-import os
 import torch
-import torch.nn.functional as F
-import logging
-import json
-from collections import defaultdict
+from torch.nn import functional as F
 from torch.utils.dlpack import from_dlpack
 from transformers import BertForTokenClassification
-
 
 log = logging.getLogger(__name__)
 
@@ -69,7 +69,7 @@ class Cybert:
         """
         with open(config_filepath) as f:
             config = json.load(f)
-        self._label_map = {int(k): v for k, v in config['id2label'].items()}
+        self._label_map = {int(k): v for k, v in config["id2label"].items()}
         model_state_dict = torch.load(model_filepath)
         self._model = BertForTokenClassification.from_pretrained(
             pretrained_model,
@@ -162,6 +162,9 @@ class Cybert:
         infer_pdf["labels"] = labels.detach().cpu().numpy().tolist()
         infer_pdf["token_ids"] = input_ids.detach().cpu().numpy().tolist()
 
+        del logits
+        del confidences
+        del labels
         parsed_df, confidence_df = self.__postprocess(infer_pdf)
         return parsed_df, confidence_df
 
@@ -208,8 +211,9 @@ class Cybert:
                 new_label = label
                 new_confidence = confidence
             if self._label_map[new_label] in token_dict:
-                token_dict[self._label_map[new_label]] = token_dict[
-                    self._label_map[new_label]] + " " + text_token
+                token_dict[self._label_map[new_label]] = (
+                    token_dict[self._label_map[new_label]] + " " + text_token
+                )
             else:
                 token_dict[self._label_map[new_label]] = text_token
             confidence_dict[self._label_map[label]].append(new_confidence)
