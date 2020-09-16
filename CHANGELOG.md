@@ -5,10 +5,15 @@
 
 ## Improvements
 - PR #233 Removed s3 dependency from dga detection unit-test
+- PR #235 Pre-commit hooks for isort, black and flake8
+- PR #232 Update phishing detection to use cudf subword tokenizer
+- PR #237 Cybert streamz memory optimization
 - PR #238 Deprecate CLX subword tokenizer
 
 ## Bug Fixes
 - PR #231 Fix segmentation fault in cybert notebook
+- PR #229 Fix cybert streamz script
+- PR #236 Fix RAPIDS logo in READMEs
 
 # clx 0.15.0 (26 Aug 2020)
 
