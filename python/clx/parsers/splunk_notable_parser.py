@@ -85,5 +85,5 @@ class SplunkNotableParser(EventParser):
                     # If parsed_dataframe is empty assign tmp_df.
                     parsed_dataframe = tmp_dataframe
             # Remove ip2 and ip_len columns. Since data is captured in ip column.
-            parsed_dataframe = parsed_dataframe.drop([ip_len, ip2])
+            parsed_dataframe = parsed_dataframe.drop([ip_len, ip2], axis=1)
         return parsed_dataframe

@@ -47,10 +47,10 @@ def parse_log_file(filepath):
     header_gdf = cudf.read_csv(filepath, names=["line"], nrows=8)
     lines_gdf = header_gdf["line"].str.split()
 
-    colnames_gdf = lines_gdf.iloc[6].drop(0)
+    colnames_gdf = lines_gdf.iloc[6].drop(0, axis=1)
     column_names = colnames_gdf.to_pandas().iloc[0].tolist()
 
-    coltypes_gdf = lines_gdf.iloc[7].drop(0)
+    coltypes_gdf = lines_gdf.iloc[7].drop(0, axis=1)
     column_types = coltypes_gdf.to_pandas().iloc[0].tolist()
     column_dtypes = list(map(lambda x: type_dict.get(x, "str"), column_types))
 
