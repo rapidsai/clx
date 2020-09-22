@@ -126,19 +126,9 @@ option(BUILD_BENCHMARKS "Configure CMake to build (google) benchmarks" OFF)
 find_path(RMM_INCLUDE "rmm"
           HINTS "$ENV{RMM_ROOT}/include")
 
-find_library(RMM_LIBRARY "rmm"
-             HINTS "$ENV{RMM_ROOT}/lib" "$ENV{RMM_ROOT}/build")
-
-message(STATUS "RMM: RMM_LIBRARY set to ${RMM_LIBRARY}")
 message(STATUS "RMM: RMM_INCLUDE set to ${RMM_INCLUDE}")
 
-add_library(rmm SHARED IMPORTED ${RMM_LIBRARY})
-if(RMM_INCLUDE AND RMM_LIBRARY)
-    set_target_properties(rmm PROPERTIES IMPORTED_LOCATION ${RMM_LIBRARY})
-endif(RMM_INCLUDE AND RMM_LIBRARY)
-
 include_directories("${RMM_INCLUDE}")
-link_directories("${RMM_LIBRARY}")
 
 ###################################################################################################
 # - add google benchmark --------------------------------------------------------------------------
@@ -166,8 +156,7 @@ link_directories("${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES}" # CMAKE_CUDA_IMPLICIT
                  "${CMAKE_BINARY_DIR}"
                  "${FLATBUFFERS_LIBRARY_DIR}"
                  "${GTEST_LIBRARY_DIR}"
-                 "${GBENCH_LIBRARY_DIR}"
-                 "${RMM_LIBRARY}")
+                 "${GBENCH_LIBRARY_DIR}")
 
 ###################################################################################################
 # - library targets -------------------------------------------------------------------------------
@@ -227,9 +216,9 @@ add_executable(tokenizer
   src/main.cu
 )
 
-target_link_libraries(tokenizer ${CU_TOK_LIBS} rmm)
+target_link_libraries(tokenizer ${CU_TOK_LIBS})
 
-target_link_libraries(clx nvToolsExt rmm)
+target_link_libraries(clx nvToolsExt)
 
 target_include_directories(tokenizer
     PRIVATE

@@ -207,7 +207,7 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict):
                     # Skip for last iteration. Since there won't be any entries to process further.
                     input_df = merged_df[merged_df["dummy"].isna()]
                     # Drop unwanted columns.
-                    input_df = input_df.drop(["dummy", tld_col])
+                    input_df = input_df.drop(["dummy", tld_col], axis=1)
     # Concat all temporary output dataframes
     output_df = cudf.concat(tmp_dfs)
     return output_df
@@ -296,7 +296,7 @@ def parse_url(url_series, req_cols=None):
     # Sort index based on given input index order.
     output_df = output_df.sort_values("idx", ascending=True)
     # Drop temp columns.
-    output_df.drop("idx")
+    output_df.drop("idx", axis=1)
     # Reset the index.
     output_df = output_df.reset_index(drop=True)
     if not output_df.empty:
