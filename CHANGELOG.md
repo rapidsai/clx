@@ -8,6 +8,7 @@
 - PR #235 Pre-commit hooks for isort, black and flake8
 - PR #232 Update phishing detection to use cudf subword tokenizer
 - PR #237 Cybert streamz memory optimization
+- PR #238 Deprecate CLX subword tokenizer
 
 ## Bug Fixes
 - PR #231 Fix segmentation fault in cybert notebook
