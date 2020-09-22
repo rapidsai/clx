@@ -13,7 +13,7 @@
 - PR #231 Fix segmentation fault in cybert notebook
 - PR #229 Fix cybert streamz script
 - PR #236 Fix RAPIDS logo in READMEs
-- PR #240 Fix errors from changes to cuDF drop column
+- PR #240 Fix errors from upstream changes to cuDF DataFrame.drop and RMM
 
 # clx 0.15.0 (26 Aug 2020)
 
