@@ -296,7 +296,7 @@ def parse_url(url_series, req_cols=None):
     # Sort index based on given input index order.
     output_df = output_df.sort_values("idx", ascending=True)
     # Drop temp columns.
-    output_df.drop("idx", axis=1)
+    output_df = output_df.drop("idx", axis=1)
     # Reset the index.
     output_df = output_df.reset_index(drop=True)
     if not output_df.empty:

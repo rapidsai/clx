@@ -15,6 +15,7 @@
 - PR #229 Fix cybert streamz script
 - PR #236 Fix RAPIDS logo in READMEs
 - PR #240 Fix errors from upstream changes to cuDF DataFrame.drop and RMM
+- PR #241 Fix unit tests after cuDF update
 
 # clx 0.15.0 (26 Aug 2020)
 
