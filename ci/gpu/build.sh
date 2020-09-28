@@ -56,13 +56,15 @@ conda install -c pytorch -c gwerbin \
     "seqeval" \
     "python-whois" \
     "requests" \
-    "matplotlib"
+    "matplotlib" \
+    "faker"
 
 logger "pip install git+https://github.com/rapidsai/cudatashader.git"
 pip install "git+https://github.com/rapidsai/cudatashader.git"
 logger "pip install mockito"
 pip install mockito
 pip install wget
+pip install faker
 
 conda list
 

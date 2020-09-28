@@ -1,18 +1,29 @@
 # clx 0.16.0 (Date TBD)
 
 ## New Features
+- PR #208 CLX Supervised Asset Classification
 
 ## Improvements
+- PR #233 Removed s3 dependency from dga detection unit-test
+- PR #235 Pre-commit hooks for isort, black and flake8
+- PR #232 Update phishing detection to use cudf subword tokenizer
+- PR #237 Cybert streamz memory optimization
+- PR #238 Deprecate CLX subword tokenizer
 
 ## Bug Fixes
+- PR #231 Fix segmentation fault in cybert notebook
+- PR #229 Fix cybert streamz script
+- PR #236 Fix RAPIDS logo in READMEs
+- PR #240 Fix errors from upstream changes to cuDF DataFrame.drop and RMM
+- PR #241 Fix unit tests after cuDF update
 
-# clx 0.15.0 (Date TBD)
+# clx 0.15.0 (26 Aug 2020)
 
 ## New Features
 - PR #189 Add Cybert class
 - PR #170 Add CLX Code of Conduct
 - PR #176 Add Periodicity Detection Notebook
-- PR #193 AC notebook 
+- PR #193 AC notebook
 
 ## Improvements
 - PR #202 Update cybert notebook to use cudf tokenizer
@@ -26,6 +37,7 @@
 - PR #211 PyTorch 1.6 support
 - PR #214 Rename BERT vocab and hash file names for disambiguation
 - PR #215 Update dependencies in gpu build, conda recipe, and dockerfile
+- PR #220 README update
 
 ## Bug Fixes
 - PR #169 Fix documentation links

@@ -53,7 +53,7 @@ class DGADetector(Detector):
             domains_len = df["type"].count()
             if domains_len > 0:
                 types_tensor = self.__create_types_tensor(df["type"])
-                df = df.drop(["type", "domain"])
+                df = df.drop(["type", "domain"], axis=1)
                 input, seq_lengths = self.__create_variables(df)
                 model_result = self.model(input, seq_lengths)
                 loss = self.__get_loss(model_result, types_tensor)
@@ -91,7 +91,7 @@ class DGADetector(Detector):
         # Assigning sorted domains index to return learned labels as per the given input order.
         df.index = temp_df.index
         df["domain"] = temp_df["domain"]
-        temp_df = temp_df.drop("domain")
+        temp_df = temp_df.drop("domain", axis=1)
         input, seq_lengths = self.__create_variables(temp_df)
         del temp_df
         model_result = self.model(input, seq_lengths)
@@ -114,7 +114,7 @@ class DGADetector(Detector):
         Creates vectorized sequence for given domains and wraps around cuda for parallel processing.
         """
         seq_len_arr = df["len"].to_array()
-        df = df.drop("len")
+        df = df.drop("len", axis=1)
         seq_len_tensor = torch.LongTensor(seq_len_arr)
         seq_tensor = self.__df2tensor(df)
         # Return variables
@@ -152,7 +152,7 @@ class DGADetector(Detector):
         correct = 0
         for df in detector_dataset.partitioned_dfs:
             target = self.__create_types_tensor(df["type"])
-            df = df.drop(["type", "domain"])
+            df = df.drop(["type", "domain"], axis=1)
             input, seq_lengths = self.__create_variables(df)
             output = self.model(input, seq_lengths)
             pred = output.data.max(1, keepdim=True)[1]

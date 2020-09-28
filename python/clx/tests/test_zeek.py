@@ -35,10 +35,10 @@ def test_parse_log_file(tmpdir):
     actual["uid"] = ["CFlyqZgM1g71BYPB6", "CnKVxKIj403JsAK5k"]
     actual["id.orig_h"] = ["175.45.176.3", "175.45.176.1"]
     actual["id.orig_p"] = [7177, 24809]
-    actual["id.orig_p"] = actual["id.orig_p"].astype("int32")
+    actual["id.orig_p"] = actual["id.orig_p"].astype("int64")
     actual["id.resp_h"] = ["149.171.126.16", "149.171.126.14"]
     actual["id.resp_p"] = [80, 443]
-    actual["id.resp_p"] = actual["id.resp_p"].astype("int32")
+    actual["id.resp_p"] = actual["id.resp_p"].astype("int64")
     actual["proto"] = ["tcp", "tcp"]
     actual["service"] = ["http", "http"]
     actual["duration"] = [0.214392, 2.37679]

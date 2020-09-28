@@ -1,7 +1,24 @@
 from clx.analytics import tokenizer_wrapper
+import warnings
+
+warnings.warn(
+    "The CLX subword tokenizer will be removed in 0.17. Please use equivalent from cuDF.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 
-def tokenize_file(input_file, hash_file="default", max_sequence_length=64, stride=48, do_lower=True, do_truncate=False, max_num_sentences=100, max_num_chars=100000, max_rows_tensor=500):
+def tokenize_file(
+    input_file,
+    hash_file="default",
+    max_sequence_length=64,
+    stride=48,
+    do_lower=True,
+    do_truncate=False,
+    max_num_sentences=100,
+    max_num_chars=100000,
+    max_rows_tensor=500,
+):
     """
     Run CUDA BERT wordpiece tokenizer on file. Encodes words to token ids using vocabulary from a pretrained tokenizer.
 
@@ -35,11 +52,31 @@ def tokenize_file(input_file, hash_file="default", max_sequence_length=64, strid
     >>> from clx.analytics import tokenizer
     >>> tokens, masks, metadata = tokenizer.tokenize_file("input.txt")
     """
-    tokens, masks, metadata = tokenizer_wrapper.tokenize_file(input_file, hash_file, max_sequence_length, stride, do_lower, do_truncate, max_num_sentences, max_num_chars, max_rows_tensor)
+    tokens, masks, metadata = tokenizer_wrapper.tokenize_file(
+        input_file,
+        hash_file,
+        max_sequence_length,
+        stride,
+        do_lower,
+        do_truncate,
+        max_num_sentences,
+        max_num_chars,
+        max_rows_tensor,
+    )
     return tokens, masks, metadata
 
 
-def tokenize_df(input_df, hash_file="default", max_sequence_length=64, stride=48, do_lower=True, do_truncate=False, max_num_sentences=100, max_num_chars=100000, max_rows_tensor=500):
+def tokenize_df(
+    input_df,
+    hash_file="default",
+    max_sequence_length=64,
+    stride=48,
+    do_lower=True,
+    do_truncate=False,
+    max_num_sentences=100,
+    max_num_chars=100000,
+    max_rows_tensor=500,
+):
     """
     Run CUDA BERT wordpiece tokenizer on cuDF dataframe. Encodes words to token ids using vocabulary from a pretrained tokenizer.
 
@@ -75,5 +112,15 @@ def tokenize_df(input_df, hash_file="default", max_sequence_length=64, stride=48
     >>> df = cudf.read_csv("input.txt")
     >>> tokens, masks, metadata = tokenizer.tokenize_df(df)
     """
-    tokens, masks, metadata = tokenizer_wrapper.tokenize_df(input_df, hash_file, max_sequence_length, stride, do_lower, do_truncate, max_num_sentences, max_num_chars, max_rows_tensor)
+    tokens, masks, metadata = tokenizer_wrapper.tokenize_df(
+        input_df,
+        hash_file,
+        max_sequence_length,
+        stride,
+        do_lower,
+        do_truncate,
+        max_num_sentences,
+        max_num_chars,
+        max_rows_tensor,
+    )
     return tokens, masks, metadata

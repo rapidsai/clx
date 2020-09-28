@@ -21,8 +21,6 @@ test_input_df = cudf.DataFrame(
 )
 expected_output_df = cudf.DataFrame(
     {
-        "domain": ["studytour.com.tw", "cnn.com"],
-        "type": [1, 1],
         0: [115, 99],
         1: [116, 110],
         2: [117, 110],
@@ -39,9 +37,12 @@ expected_output_df = cudf.DataFrame(
         13: [46, 0],
         14: [116, 0],
         15: [119, 0],
-        "len": [16, 7],
-    }
+        "len": [16, 7]
+    },
+    dtype="int32"
 )
+expected_output_df["type"] = [1, 1]
+expected_output_df["domain"] = ["studytour.com.tw", "cnn.com"]
 
 
 def test_str2ascii():
