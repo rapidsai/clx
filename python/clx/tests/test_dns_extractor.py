@@ -115,22 +115,6 @@ def test2_parse_url(input_df):
                 "107-193-100-2.lightspeed.cicril.sbcglobal.net",
                 "a23-44-13-2.deploy.static.akamaitechnologies.com",
             ],
-            "subdomain": [
-                "www",
-                "",
-                "",
-                "pandas",
-                "www",
-                "",
-                "forums.news",
-                "forums.news",
-                "b",
-                "a",
-                "a",
-                "a",
-                "107-193-100-2.lightspeed.cicril",
-                "a23-44-13-2.deploy.static",
-            ],
             "domain": [
                 "google",
                 "gmail",
@@ -163,6 +147,22 @@ def test2_parse_url(input_df):
                 "net",
                 "com",
             ],
+            "subdomain": [
+                "www",
+                "",
+                "",
+                "pandas",
+                "www",
+                "",
+                "forums.news",
+                "forums.news",
+                "b",
+                "a",
+                "a",
+                "a",
+                "107-193-100-2.lightspeed.cicril",
+                "a23-44-13-2.deploy.static",
+            ]
         }
     )
     output_df = dns.parse_url(input_df["url"])

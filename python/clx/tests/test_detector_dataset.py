@@ -23,8 +23,6 @@ test_input_df = cudf.DataFrame(
 
 expected_output_df1 = cudf.DataFrame(
     {
-        "domain": ["studytour.com.tw"],
-        "type": [1],
         0: [115],
         1: [116],
         2: [117],
@@ -42,13 +40,14 @@ expected_output_df1 = cudf.DataFrame(
         14: [116],
         15: [119],
         "len": [16],
-    }
+    },
+    dtype="int32"
 )
+expected_output_df1["type"] = [1]
+expected_output_df1["domain"] = ["studytour.com.tw"]
 
 expected_output_df2 = cudf.DataFrame(
     {
-        "domain": ["cnn.com"],
-        "type": [1],
         0: [99],
         1: [110],
         2: [110],
@@ -66,8 +65,11 @@ expected_output_df2 = cudf.DataFrame(
         14: [0],
         15: [0],
         "len": [7],
-    }
+    },
+    dtype="int32"
 )
+expected_output_df2["type"] = [1]
+expected_output_df2["domain"] = ["cnn.com"]
 
 
 def test_detector_dataset():
