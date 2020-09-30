@@ -85,7 +85,7 @@ def test_predict(tmpdir, train_gdf):
         ac.train_model(train_gdf, cat_cols, cont_cols, "label", batch_size, epochs)
         # predict
         test_gdf = train_gdf.head()
-        test_gdf.drop_column("label")
+        test_gdf.drop("label", axis=1)
         preds = ac.predict(test_gdf, cat_cols, cont_cols)
         assert isinstance(preds, cudf.core.series.Series)
         assert len(preds) == len(test_gdf)

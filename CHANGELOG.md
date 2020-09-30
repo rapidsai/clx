@@ -8,12 +8,15 @@
 - PR #235 Pre-commit hooks for isort, black and flake8
 - PR #232 Update phishing detection to use cudf subword tokenizer
 - PR #237 Cybert streamz memory optimization
+- PR #238 Deprecate CLX subword tokenizer
 - PR #239 Added cybert streamz log size parameter
 
 ## Bug Fixes
 - PR #231 Fix segmentation fault in cybert notebook
 - PR #229 Fix cybert streamz script
 - PR #236 Fix RAPIDS logo in READMEs
+- PR #240 Fix errors from upstream changes to cuDF DataFrame.drop and RMM
+- PR #241 Fix unit tests after cuDF update
 
 # clx 0.15.0 (26 Aug 2020)
 
