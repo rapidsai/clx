@@ -91,4 +91,4 @@ else
     python ${WORKSPACE}/ci/utils/nbtestlog2junitxml.py nbtest.log
 fi
 
-exit "${EXITCODE}"
+return "${EXITCODE}"
