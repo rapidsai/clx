@@ -53,7 +53,7 @@ conda install -c pytorch -c gwerbin \
     "torchvision" \
     "python-confluent-kafka" \
     "transformers" \
-    "seqeval" \
+    "seqeval=0.0.12" \
     "python-whois" \
     "requests" \
     "matplotlib" \
