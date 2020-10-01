@@ -43,7 +43,7 @@ python --version
 conda config --set ssl_verify False
 
 logger "conda install required packages"
-conda install -c pytorch -c gwerbin \
+conda install -y -c pytorch -c gwerbin \
     "rapids-build-env=$MINOR_VERSION.*" \
     "rapids-notebook-env=$MINOR_VERSION.*" \
     "cugraph=${MINOR_VERSION}" \
