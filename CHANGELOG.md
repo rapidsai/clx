@@ -17,6 +17,7 @@
 - PR #240 Fix errors from upstream changes to cuDF DataFrame.drop and RMM
 - PR #241 Fix unit tests after cuDF update
 - PR #242 Pin seqeval to v0.0.12 for cybert example training notebook
+- PR #243 Fix error handling in `ci/gpu/build.sh`
 
 # clx 0.15.0 (26 Aug 2020)
 
