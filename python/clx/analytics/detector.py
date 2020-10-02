@@ -68,7 +68,7 @@ class Detector(ABC):
         else:
             rnn_model = self.model
         checkpoint = {
-            "state_dict": rnn_model,
+            "state_dict": rnn_model.state_dict(),
             "input_size": rnn_model.input_size,
             "hidden_size": rnn_model.hidden_size,
             "n_layers": rnn_model.n_layers,
@@ -103,3 +103,4 @@ class Detector(ABC):
         self.__model = model
         self.__set_parallelism()
         self.__set_optimizer()
+        
