@@ -79,7 +79,7 @@ class Detector(ABC):
     def __set_parallelism(self):
         if GPU_COUNT > 1:
             log.info("%s GPUs!" % (GPU_COUNT))
-            self.__model = nn.DistributedDataParallel(self.model)
+            self.__model = nn.DataParallel(self.model)
             self.__set_model2cuda()
         else:
             self.__set_model2cuda()
