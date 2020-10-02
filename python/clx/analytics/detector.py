@@ -2,8 +2,11 @@ import logging
 import torch
 import torch.nn as nn
 from abc import ABC, abstractmethod
+from clx.analytics.model.rnn_classifier import RNNClassifier
 
 log = logging.getLogger(__name__)
+
+GPU_COUNT = torch.cuda.device_count()
 
 
 class Detector(ABC):
@@ -43,11 +46,16 @@ class Detector(ABC):
         :param file_path: File path of a model to loaded.
         :type file_path: string
         """
-        model = torch.load(file_path)
+        model_dict = torch.load(file_path)
+        model = RNNClassifier(
+            model_dict["input_size"],
+            model_dict["hidden_size"],
+            model_dict["output_size"],
+            model_dict["n_layers"],
+        )
+        model.load_state_dict(model_dict["state_dict"])
         model.eval()
-        self.__model = model
-        self.__set_model2cuda()
-        self.__set_optimizer()
+        self.leverage_model(model)
 
     def save_model(self, file_path):
         """ This function saves model to given location.
@@ -55,13 +63,23 @@ class Detector(ABC):
         :param file_path: File path to save model.
         :type file_path: string
         """
-        torch.save(self.model, file_path)
+        if GPU_COUNT > 1:
+            rnn_model = self.model.module
+        else:
+            rnn_model = self.model
+        checkpoint = {
+            "state_dict": rnn_model,
+            "input_size": rnn_model.input_size,
+            "hidden_size": rnn_model.hidden_size,
+            "n_layers": rnn_model.n_layers,
+            "output_size": rnn_model.output_size,
+        }
+        torch.save(checkpoint, file_path)
 
     def __set_parallelism(self):
-        gpu_count = torch.cuda.device_count()
-        if gpu_count > 1:
-            log.info("%s GPUs!" % (gpu_count))
-            self.__model = nn.DataParallel(self.model)
+        if GPU_COUNT > 1:
+            log.info("%s GPUs!" % (GPU_COUNT))
+            self.__model = nn.DistributedDataParallel(self.model)
             self.__set_model2cuda()
         else:
             self.__set_model2cuda()
