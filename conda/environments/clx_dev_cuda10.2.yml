@@ -10,10 +10,10 @@ channels:
 - auto
 dependencies:
 - numpy>=1.17.3,<1.19.0
-- cugraph=0.16.*
-- cuml=0.16.*
-- cuxfilter=0.16.*
-- dask-cudf=0.16.*
+- cugraph=0.17.*
+- cuml=0.17.*
+- cuxfilter=0.17.*
+- dask-cudf=0.17.*
 - cupy>=6.6.0,<8.0.0a0,!=7.1.0
 - cmake>=3.12
 - cmake_setuptools>=0.1.3
