@@ -132,12 +132,14 @@ class Cybert:
 
         return input_ids.type(torch.long), att_mask.type(torch.long), meta_data
 
-    def inference(self, raw_data_col):
+    def inference(self, raw_data_col, batch_size=160):
         """
         Cybert inference and postprocessing on dataset
 
         :param raw_data_col: logs to be processed
         :type raw_data_col: cudf.Series
+        :param batch_size: Log data is processed in batches using a Pytorch dataloader. The batch size parameter refers to the batch size indicated in torch.utils.data.DataLoader.
+        :type batch_size: int
         :return: parsed_df
         :rtype: pandas.DataFrame
         :return: confidence_df
@@ -154,7 +156,7 @@ class Cybert:
         """
         input_ids, attention_masks, meta_data = self.preprocess(raw_data_col)
         dataset = TensorDataset(input_ids, attention_masks)
-        dataloader = DataLoader(dataset=dataset, shuffle=False, batch_size=32)
+        dataloader = DataLoader(dataset=dataset, shuffle=False, batch_size=batch_size)
         confidences_list = []
         labels_list = []
         for step, batch in enumerate(dataloader):
