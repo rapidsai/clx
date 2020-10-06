@@ -69,8 +69,4 @@ RUN source activate rapids && \
 
 WORKDIR /rapids/clx
 
-ENV TINI_VERSION v0.19.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
-RUN chmod +x /usr/bin/tini && \
-    echo "source activate rapids" >> ~/.bashrc
-ENTRYPOINT ["/usr/bin/tini", "--", "/opt/cybert/scripts/entry.sh"]
+ENTRYPOINT ["/usr/bin/tini", "--", "bash", "/opt/cybert/scripts/entry.sh"]
