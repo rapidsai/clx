@@ -25,13 +25,6 @@ RUN apt-get install -y librdkafka-dev \
         unzip && \
     apt-get clean
 
-RUN apt-get install -y librdkafka-dev \
-        dnsutils \
-        net-tools \
-        gdb \
-        valgrind && \
-    apt-get clean
-
 ENV SCALA_VERSION 2.11
 ENV KAFKA_VERSION 2.3.0
 ENV KAFKA_HOME /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"
