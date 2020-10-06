@@ -8,6 +8,7 @@ FROM rapidsai/rapidsai-dev-nightly:${RAPIDS_VERSION}-cuda${CUDA_VERSION}-devel-$
 
 # Add everything from the local build context
 ADD . /rapids/clx/
+RUN chmod -R ugo+w /rapids/clx/
 
 RUN apt update -y --fix-missing && \
     apt upgrade -y
