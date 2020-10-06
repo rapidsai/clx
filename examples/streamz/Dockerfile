@@ -34,6 +34,11 @@ RUN apt-get install -y librdkafka-dev \
 ENV SCALA_VERSION 2.11
 ENV KAFKA_VERSION 2.3.0
 ENV KAFKA_HOME /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"
+ENV CYBERT_HOME /opt/cybert
+
+ADD examples/streamz/scripts "$CYBERT_HOME"/scripts
+ADD examples/streamz/data "$CYBERT_HOME"/data
+ADD examples/streamz/python "$CYBERT_HOME"/python
 
 RUN wget -q http://www.gtlib.gatech.edu/pub/apache/kafka/2.3.0/kafka_2.11-2.3.0.tgz -O /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz && \
         tar xfz /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz -C /opt && \
@@ -69,3 +74,9 @@ RUN source activate rapids && \
     python setup.py install
 
 WORKDIR /rapids/clx
+
+ENV TINI_VERSION v0.19.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
+RUN chmod +x /usr/bin/tini && \
+    echo "source activate rapids" >> ~/.bashrc
+ENTRYPOINT ["/usr/bin/tini", "--", "/opt/cybert/scripts/entry.sh"]
