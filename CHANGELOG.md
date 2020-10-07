@@ -9,6 +9,7 @@
 - PR #232 Update phishing detection to use cudf subword tokenizer
 - PR #237 Cybert streamz memory optimization
 - PR #238 Deprecate CLX subword tokenizer
+- PR #244 Add cybert dataloader
 
 ## Bug Fixes
 - PR #231 Fix segmentation fault in cybert notebook
