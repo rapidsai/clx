@@ -13,19 +13,19 @@
 # limitations under the License.
 
 import argparse
+import gc
+import signal
+import sys
+import time
+
+import confluent_kafka as ck
 import cudf
 import dask
+import pandas as pd
+import torch
 from dask_cuda import LocalCUDACluster
 from distributed import Client
 from streamz import Stream
-import confluent_kafka as ck
-import socket
-import signal
-import random
-import time
-import torch
-import sys
-import gc
 
 
 def inference(messages):
@@ -52,8 +52,12 @@ def sink_to_kafka(processed_data):
     parsed_df = processed_data[0]
     confidence_df = processed_data[1]
     producer = ck.Producer(producer_conf)
-    producer.produce(args.output_topic, parsed_df.to_json())
-    producer.produce(args.output_topic, confidence_df.to_json())
+    confidence_df = confidence_df.add_suffix("_confidence")
+    result_df = pd.concat([parsed_df, confidence_df], axis=1)
+    json_str = result_df.to_json(orient="records", lines=True)
+    json_recs = json_str.split("\n")
+    for rec in json_recs:
+        producer.produce(args.output_topic, rec)
     producer.flush()
     return processed_data
 
@@ -134,9 +138,7 @@ def parse_arguments():
         help="Dask scheduler address. If not provided a new dask cluster will be created",
     )
     parser.add_argument(
-        "--cuda_visible_devices",
-        type=str,
-        help="Cuda visible devices (ex: '0,1,2')",
+        "--cuda_visible_devices", type=str, help="Cuda visible devices (ex: '0,1,2')",
     )
     parser.add_argument(
         "--max_batch_size",
