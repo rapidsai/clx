@@ -21,6 +21,7 @@ import numpy as np
 import pandas as pd
 import torch
 from torch.nn import functional as F
+from torch.utils.data import DataLoader, TensorDataset
 from torch.utils.dlpack import from_dlpack
 from transformers import BertForTokenClassification
 
@@ -131,12 +132,14 @@ class Cybert:
 
         return input_ids.type(torch.long), att_mask.type(torch.long), meta_data
 
-    def inference(self, raw_data_col):
+    def inference(self, raw_data_col, batch_size=160):
         """
         Cybert inference and postprocessing on dataset
 
         :param raw_data_col: logs to be processed
         :type raw_data_col: cudf.Series
+        :param batch_size: Log data is processed in batches using a Pytorch dataloader. The batch size parameter refers to the batch size indicated in torch.utils.data.DataLoader.
+        :type batch_size: int
         :return: parsed_df
         :rtype: pandas.DataFrame
         :return: confidence_df
@@ -152,19 +155,31 @@ class Cybert:
         >>> processed_df, confidence_df = cy.inference(raw_data_col)
         """
         input_ids, attention_masks, meta_data = self.preprocess(raw_data_col)
-        with torch.no_grad():
-            logits = self._model(input_ids, attention_masks)[0]
-        logits = F.softmax(logits, dim=2)
-        confidences, labels = torch.max(logits, 2)
+        dataset = TensorDataset(input_ids, attention_masks)
+        dataloader = DataLoader(dataset=dataset, shuffle=False, batch_size=batch_size)
+        confidences_list = []
+        labels_list = []
+        for step, batch in enumerate(dataloader):
+            in_ids, att_masks = batch
+            with torch.no_grad():
+                logits = self._model(in_ids, att_masks)[0]
+            logits = F.softmax(logits, dim=2)
+            confidences, labels = torch.max(logits, 2)
+            confidences_list.extend(confidences.detach().cpu().numpy().tolist())
+            labels_list.extend(labels.detach().cpu().numpy().tolist())
         infer_pdf = pd.DataFrame(meta_data).astype(int)
         infer_pdf.columns = ["doc", "start", "stop"]
-        infer_pdf["confidences"] = confidences.detach().cpu().numpy().tolist()
-        infer_pdf["labels"] = labels.detach().cpu().numpy().tolist()
+        infer_pdf["confidences"] = confidences_list
+        infer_pdf["labels"] = labels_list
         infer_pdf["token_ids"] = input_ids.detach().cpu().numpy().tolist()
 
+        del dataset
+        del dataloader
         del logits
         del confidences
         del labels
+        del confidences_list
+        del labels_list
         parsed_df, confidence_df = self.__postprocess(infer_pdf)
         return parsed_df, confidence_df
 
