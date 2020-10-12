@@ -87,7 +87,21 @@ docker exec cybert-streamz bash -c 'source activate rapids && $KAFKA_HOME/bin/ka
 
 ##### Benchmark
 
-To capture benchmarks add the benchmark flag (`--benchmark`) to the docker run command
+To capture benchmarks add the benchmark flag along with average log size (kb), for throughput (mb/s) and average batch size (mb) estimates, to the docker run command above
+```
+docker run -it --gpus '"device=0,1,2"' -p 8787:8787 -v /path/to/dataset:/path/to/dataset -v /path/to/model.pth:/path/to/model.pth -v /path/to/label.txt:/path/to/label.json --name cybert-streamz -d cybert-streamz:latest \
+--broker localhost:9092 \
+--group_id streamz \
+--input_topic input \
+--output_topic output \
+--model_file /path/to/model.pth \
+--label_file /path/to/label.json \
+--cuda_visible_devices 0,1,2 \
+--poll_interval 1s \
+--max_batch_size 1000 \
+--data /path/to/dataset \
+--benchmark 20
+```
 
 To print benchmark to the docker logs send a SIGINT signal to the running cybert process
 ```
@@ -97,4 +111,3 @@ $ docker exec cybert-streamz ps aux | grep cybert.py | awk '{print $2}'
 $ docker exec cybert-streamz kill -SIGINT <pid>
 $ docker logs cybert-streamz
 ```
-

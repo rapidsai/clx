@@ -13,19 +13,18 @@
 # limitations under the License.
 
 import argparse
+import gc
+import signal
+import sys
+import time
+
+import confluent_kafka as ck
 import cudf
 import dask
+import torch
 from dask_cuda import LocalCUDACluster
 from distributed import Client
 from streamz import Stream
-import confluent_kafka as ck
-import socket
-import signal
-import random
-import time
-import torch
-import sys
-import gc
 
 
 def inference(messages):
@@ -77,7 +76,7 @@ def worker_init():
     print("Successfully initialized dask worker " + str(worker))
 
 
-def calc_benchmark(processed_data):
+def calc_benchmark(processed_data, size_per_log):
     # Calculates benchmark for the streamz workflow
     t1 = int(round(time.time() * 1000))
     t2 = 0
@@ -85,13 +84,13 @@ def calc_benchmark(processed_data):
     batch_count = 0
     # Find min and max time while keeping track of batch count and size
     for result in processed_data:
-        (ts1, ts2, sz) = (result[2], result[3], result[4])
+        (ts1, ts2, result_size) = (result[2], result[3], result[4])
         if ts1 == 0 or ts2 == 0:
             continue
         batch_count = batch_count + 1
         t1 = min(t1, ts1)
         t2 = max(t2, ts2)
-        size += sz / 10
+        size += result_size * size_per_log
     time_diff = t2 - t1
     throughput_mbps = size / (1024.0 * time_diff) if time_diff > 0 else 0
     avg_batch_size = size / (1024.0 * batch_count) if batch_count > 0 else 0
@@ -102,7 +101,9 @@ def signal_term_handler(signal, frame):
     # Receives signal and calculates benchmark if indicated in argument
     print("Exiting streamz script...")
     if args.benchmark:
-        (time_diff, throughput_mbps, avg_batch_size) = calc_benchmark(output)
+        (time_diff, throughput_mbps, avg_batch_size) = calc_benchmark(
+            output, args.benchmark
+        )
         print("*** BENCHMARK ***")
         print(
             "Job duration: {:.3f} secs, Throughput(mb/sec):{:.3f}, Avg. Batch size(mb):{:.3f}".format(
@@ -134,9 +135,7 @@ def parse_arguments():
         help="Dask scheduler address. If not provided a new dask cluster will be created",
     )
     parser.add_argument(
-        "--cuda_visible_devices",
-        type=str,
-        help="Cuda visible devices (ex: '0,1,2')",
+        "--cuda_visible_devices", type=str, help="Cuda visible devices (ex: '0,1,2')",
     )
     parser.add_argument(
         "--max_batch_size",
@@ -145,7 +144,12 @@ def parse_arguments():
         help="Max batch size to read from kafka",
     )
     parser.add_argument("--poll_interval", type=str, help="Polling interval (ex: 60s)")
-    parser.add_argument("--benchmark", help="Capture benchmark", action="store_true")
+    parser.add_argument(
+        "--benchmark",
+        help="Captures benchmark, including throughput estimates, with provided avg log size in KB. (ex: 500 or 0.1)",
+        type=float,
+        default=1,
+    )
     args = parser.parse_args()
     return args
 
