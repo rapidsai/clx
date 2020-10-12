@@ -2,7 +2,6 @@ import logging
 import torch
 import torch.nn as nn
 from abc import ABC, abstractmethod
-from clx.analytics.model.rnn_classifier import RNNClassifier
 
 log = logging.getLogger(__name__)
 
@@ -31,7 +30,15 @@ class Detector(ABC):
     @abstractmethod
     def init_model(self, char_vocab, hidden_size, n_domain_type, n_layers):
         pass
-
+    
+    @abstractmethod
+    def load_model(self, file_path):
+        pass
+    
+    @abstractmethod
+    def save_model(self, file_path):
+        pass
+    
     @abstractmethod
     def train_model(self, epoch, train_dataset):
         pass
@@ -40,40 +47,11 @@ class Detector(ABC):
     def predict(self, epoch, train_dataset):
         pass
 
-    def load_model(self, file_path):
-        """ This function load already saved model and sets cuda parameters.
-
-        :param file_path: File path of a model to loaded.
-        :type file_path: string
-        """
-        model_dict = torch.load(file_path)
-        model = RNNClassifier(
-            model_dict["input_size"],
-            model_dict["hidden_size"],
-            model_dict["output_size"],
-            model_dict["n_layers"],
-        )
-        model.load_state_dict(model_dict["state_dict"])
+    def _load_model(self, model):
         model.eval()
         self.leverage_model(model)
 
-    def save_model(self, file_path):
-        """ This function saves model to given location.
-
-        :param file_path: File path to save model.
-        :type file_path: string
-        """
-        if GPU_COUNT > 1:
-            rnn_model = self.model.module
-        else:
-            rnn_model = self.model
-        checkpoint = {
-            "state_dict": rnn_model.state_dict(),
-            "input_size": rnn_model.input_size,
-            "hidden_size": rnn_model.hidden_size,
-            "n_layers": rnn_model.n_layers,
-            "output_size": rnn_model.output_size,
-        }
+    def _save_model(self, checkpoint, file_path):
         torch.save(checkpoint, file_path)
 
     def __set_parallelism(self):
@@ -103,3 +81,10 @@ class Detector(ABC):
         self.__model = model
         self.__set_parallelism()
         self.__set_optimizer()
+
+    def _get_unwrapped_model(self):
+        if GPU_COUNT > 1:
+            model = self.model.module
+        else:
+            model = self.model
+        return model
