@@ -103,4 +103,3 @@ class Detector(ABC):
         self.__model = model
         self.__set_parallelism()
         self.__set_optimizer()
-        
