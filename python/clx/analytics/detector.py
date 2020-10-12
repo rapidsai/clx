@@ -30,15 +30,15 @@ class Detector(ABC):
     @abstractmethod
     def init_model(self, char_vocab, hidden_size, n_domain_type, n_layers):
         pass
-    
+
     @abstractmethod
     def load_model(self, file_path):
         pass
-    
+
     @abstractmethod
     def save_model(self, file_path):
         pass
-    
+
     @abstractmethod
     def train_model(self, epoch, train_dataset):
         pass
