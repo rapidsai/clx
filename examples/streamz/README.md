@@ -37,7 +37,6 @@ docker run -it --gpus '"device=0,1,2"' -p 8787:8787 -v /path/to/dataset:/path/to
 --output_topic output \
 --model_file /path/to/model.pth \
 --label_file /path/to/label.json \
---cuda_visible_devices 0,1,2 \
 --poll_interval 1s \
 --max_batch_size 1000 \
 --data /path/to/dataset
@@ -52,7 +51,6 @@ docker run -it --runtime=nvidia -p 8787:8787 -v /path/to/dataset:/path/to/datase
 --output_topic output \
 --model_file /path/to/model.pth \
 --label_file /path/to/label.json \
---cuda_visible_devices 0,1,2 \
 --poll_interval 1s \
 --max_batch_size 1000 \
 --data /path/to/dataset
@@ -65,7 +63,6 @@ Parameters
 - `output_topic` - The name for the output topic to send the output data. Any name can be indicated here.
 - `model_file` - The path to your model file
 - `label_file` - The path to your label file
-- `cuda_visible_devices` - List of gpus use to run streamz with Dask. The gpus should be equal to or a subset of devices indicated within the docker run command (in the example above device list is set to `'"device=0,1,2"'`)
 - `poll_interval`* - Interval (in seconds) to poll the Kafka input topic for data
 - `max_batch_size`* - Max batch size of data (max number of logs) to ingest into streamz with each `poll_interval`
 - `data` - The input dataset to use for this streamz example
@@ -96,7 +93,6 @@ docker run -it --gpus '"device=0,1,2"' -p 8787:8787 -v /path/to/dataset:/path/to
 --output_topic output \
 --model_file /path/to/model.pth \
 --label_file /path/to/label.json \
---cuda_visible_devices 0,1,2 \
 --poll_interval 1s \
 --max_batch_size 1000 \
 --data /path/to/dataset \
@@ -106,7 +102,7 @@ docker run -it --gpus '"device=0,1,2"' -p 8787:8787 -v /path/to/dataset:/path/to
 To print benchmark to the docker logs send a SIGINT signal to the running cybert process
 ```
 # To get the PID
-$ docker exec cybert-streamz ps aux | grep cybert.py | awk '{print $2}'
+$ docker exec cybert-streamz ps aux | grep "cybert\.py" | awk '{print $2}'
 # Kill process
 $ docker exec cybert-streamz kill -SIGINT <pid>
 $ docker logs cybert-streamz
