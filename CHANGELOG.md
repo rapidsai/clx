@@ -19,6 +19,7 @@
 - PR #238 Deprecate CLX subword tokenizer
 - PR #239 Added cybert streamz log size parameter
 - PR #244 Add cybert dataloader
+- PR #247 Allow CuPy 8.x
 
 ## Bug Fixes
 - PR #231 Fix segmentation fault in cybert notebook
