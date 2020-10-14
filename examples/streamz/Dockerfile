@@ -4,6 +4,9 @@ ARG CUDA_VERSION=10.2
 ARG CUDA_SHORT_VERSION=${CUDA_VERSION}
 ARG LINUX_VERSION=ubuntu18.04
 ARG PYTHON_VERSION=3.7
+ARG SCALA_VERSION=2.11
+ARG KAFKA_VERSION=2.3.0
+
 FROM rapidsai/rapidsai-dev-nightly:${RAPIDS_VERSION}-cuda${CUDA_VERSION}-devel-${LINUX_VERSION}-py${PYTHON_VERSION}
 
 # Add everything from the local build context
@@ -25,14 +28,17 @@ RUN apt-get install -y librdkafka-dev \
         unzip && \
     apt-get clean
 
-ENV SCALA_VERSION 2.11
-ENV KAFKA_VERSION 2.3.0
+ENV SCALA_VERSION ${SCALA_VERSION}
+ENV KAFKA_VERSION ${KAFKA_VERSION}
 ENV KAFKA_HOME /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"
-ENV CYBERT_HOME /opt/cybert
+ENV CLX_STREAMZ_HOME /opt/clx_streamz
 
-ADD examples/streamz/scripts "$CYBERT_HOME"/scripts
-ADD examples/streamz/data "$CYBERT_HOME"/data
-ADD examples/streamz/python "$CYBERT_HOME"/python
+ADD examples/streamz/scripts "$CLX_STREAMZ_HOME"/scripts
+ADD examples/streamz/data "$CLX_STREAMZ_HOME"/data
+ADD examples/streamz/python "$CLX_STREAMZ_HOME"/python
+
+RUN mkdir -p "$CLX_STREAMZ_HOME"/ml/models \
+	&& mkdir "$CLX_STREAMZ_HOME"/ml/labels \
 
 RUN wget -q http://www.gtlib.gatech.edu/pub/apache/kafka/2.3.0/kafka_2.11-2.3.0.tgz -O /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz && \
         tar xfz /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz -C /opt && \
