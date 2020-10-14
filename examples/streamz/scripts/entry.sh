@@ -116,28 +116,6 @@ $KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $broker --topic $input_t
 log "INFO" "Sample data read into kafka topic, $input_topic"
 
 #**********************************
-# Start Dask Scheduler
-#**********************************
-#log "INFO" "Starting Dask Scheduler at localhost:8787"
-# DASK_DASHBOARD_PORT=8787
-# DASK_SCHEDULER_PORT=8786
-# CUDA_VISIBLE_DEVICES="${cuda_visible_devices}" nohup dask-scheduler --dashboard-address ${DASK_DASHBOARD_PORT} 2>&1 &
-# DASK_SCHEDULER_HOST=`hostname --ip-address`
-# DASK_SCHEDULER="${DASK_SCHEDULER_HOST}:${DASK_SCHEDULER_PORT}"
-# log "INFO" "Dask scheduler running"
-
-#**********************************
-# Start Dask CUDA Worker
-#**********************************
-# IFS=',' read -ra devices <<< "$cuda_visible_devices"
-# for i in "${devices[@]}"
-# do
-#    echo "CUDA_VISIBLE_DEVICES=$i nohup dask-cuda-worker localhost:8786 2>&1 &"
-#    CUDA_VISIBLE_DEVICES=$i nohup dask-cuda-worker localhost:8786 2>&1 &
-# done
-# sleep 3
-
-#**********************************
 # Run Cybert
 #**********************************
 log "INFO" "Preparing to run cybert"
