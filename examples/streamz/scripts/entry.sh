@@ -148,10 +148,10 @@ nohup jupyter notebook --port=8888 --no-browser --ip=0.0.0.0 --allow-root 2>&1 &
 #**********************************
 log "INFO" "Preparing to run cybert"
 if [ $benchmark = "true" ] ; then
-  log "INFO" "python -i $CYBERT_HOME/python/cybert.py --input_topic input --output_topic output --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --dask_scheduler ${DASK_SCHEDULER} --benchmark"
-  python -i $CYBERT_HOME/python/cybert.py --input_topic input --output_topic output --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --dask_scheduler ${DASK_SCHEDULER} --benchmark
+  log "INFO" "python -i $CYBERT_HOME/python/cybert.py --input_topic $input_topic --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --dask_scheduler ${DASK_SCHEDULER} --benchmark"
+  python -i $CYBERT_HOME/python/cybert.py --input_topic $input_topic --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --dask_scheduler ${DASK_SCHEDULER} --benchmark
 else
-  log "INFO" "python -i $CYBERT_HOME/python/cybert.py --input_topic input --output_topic output --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --dask_scheduler ${DASK_SCHEDULER}"
-  python -i $CYBERT_HOME/python/cybert.py --input_topic input --output_topic output --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --dask_scheduler ${DASK_SCHEDULER}
+  log "INFO" "python -i $CYBERT_HOME/python/cybert.py --input_topic $input_topic --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --dask_scheduler ${DASK_SCHEDULER}"
+  python -i $CYBERT_HOME/python/cybert.py --input_topic $input_topic --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --dask_scheduler ${DASK_SCHEDULER}
 fi
 
