@@ -109,6 +109,7 @@ log "INFO" "Kafka and zookeeper running"
 $KAFKA_HOME/bin/kafka-topics.sh --create --bootstrap-server $broker --replication-factor 1 --partitions 1 --topic $input_topic
 $KAFKA_HOME/bin/kafka-topics.sh --create --bootstrap-server $broker --replication-factor 1 --partitions 1 --topic $output_topic
 log "INFO" "Kafka topics created"
+
 #**********************************
 # Read Sample Data
 #**********************************
