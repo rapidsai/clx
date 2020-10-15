@@ -19,6 +19,7 @@
 - PR #241 Fix unit tests after cuDF update
 - PR #242 Pin seqeval to v0.0.12 for cybert example training notebook
 - PR #243 Fix error handling in `ci/gpu/build.sh`
+- PR #248 Fix to cybert streamz to handle larger output messages
 
 # clx 0.15.0 (26 Aug 2020)
 
