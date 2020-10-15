@@ -133,9 +133,9 @@ Your Quickstart Docker container includes the data and model required to run cyB
 The following command can be used to run the pipeline over two GPUs:
 ```
 docker run -it --gpus '"device=0,1"' \
--p 9888:8888 -p 9787:8787 -p 9786:8786 \
+-p 9787:8787 \
 -v /home/efajardo/dockershare:/rapids/clx/my_data \
---name clx_streamz_eli \
+--name cybert-streamz \
 -d clx-streamz:latest \
 -b localhost:9092 \
 -g streamz \
