@@ -1,3 +1,4 @@
+
 #!/bin/bash
 set +e
 
@@ -12,7 +13,7 @@ usage() {
     fi
     echo "Usage: $0 [POS]... [ARG]..."
     echo
-    echo "Example-1: bash $0 -b localhost:9092 -g streamz -i input -o output -m /path/to/model.pth -l /path/to/labels.yaml -p 1s -c 0,1,2 --max_batch_size 1000 --benchmark"
+    echo "Example-1: bash $0 -b localhost:9092 -g streamz -i input -o output -m /path/to/model.pth -l /path/to/labels.yaml -p 1s -c 0,1,2 --max_batch_size 1000 --benchmark 20.0"
     echo
     echo "Run cybert model using kafka"
     echo
@@ -27,7 +28,7 @@ usage() {
     echo "  -d, --data                 Cybert data file (optional)"
     echo "  -p, --poll_interval        Poll interval (ex:60s)"
     echo "  -s, --max_batch_size       Max batch size"
-    echo "  --benchmark                Benchmark cyBERT data processing (optional)"
+    echo "  --benchmark                Benchmark cyBERT data processing. Please enter the avg log size in kb for throughput estimate. (optional)"
     echo
     echo "  -h, --help          Print this help"
     echo
@@ -57,7 +58,7 @@ while [ $# != 0 ]; do
     -c|--cuda_visible_devices) shift; cuda_visible_devices=$1 ;;
     -p|--poll_interval) shift; poll_interval=$1;;
     -s|--max_batch_size) shift; max_batch_size=$1;;
-    --benchmark) benchmark="true" ;;
+    --benchmark) shift; benchmark=$1;;
     -) usage "Unknown positional: $1" ;;
     -?*) usage "Unknown positional: $1" ;;
     esac
@@ -138,18 +139,14 @@ do
    CUDA_VISIBLE_DEVICES=$i nohup dask-cuda-worker localhost:8786 2>&1 &
 done
 sleep 3
-#**********************************
-# Start Jupyter Notebook
-#**********************************
-nohup jupyter notebook --port=8888 --no-browser --ip=0.0.0.0 --allow-root 2>&1 &
 
 #**********************************
 # Run Cybert
 #**********************************
 log "INFO" "Preparing to run cybert"
-if [ $benchmark = "true" ] ; then
-  log "INFO" "python -i $CYBERT_HOME/python/cybert.py --input_topic $input_topic --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --dask_scheduler ${DASK_SCHEDULER} --benchmark"
-  python -i $CYBERT_HOME/python/cybert.py --input_topic $input_topic --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --dask_scheduler ${DASK_SCHEDULER} --benchmark
+if [ ! -z "$benchmark" ] ; then
+  log "INFO" "python -i $CYBERT_HOME/python/cybert.py --input_topic $input_topic --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --dask_scheduler ${DASK_SCHEDULER} --benchmark $benchmark"
+  python -i $CYBERT_HOME/python/cybert.py --input_topic $input_topc --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --dask_scheduler ${DASK_SCHEDULER} --benchmark $benchmark
 else
   log "INFO" "python -i $CYBERT_HOME/python/cybert.py --input_topic $input_topic --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --dask_scheduler ${DASK_SCHEDULER}"
   python -i $CYBERT_HOME/python/cybert.py --input_topic $input_topic --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --dask_scheduler ${DASK_SCHEDULER}
