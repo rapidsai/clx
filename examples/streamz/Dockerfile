@@ -39,8 +39,8 @@ RUN wget -q http://www.gtlib.gatech.edu/pub/apache/kafka/2.3.0/kafka_2.11-2.3.0.
         rm /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz
 
 # Download cybert apache model from huggingface for example
-RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/config.json "$CYBERT_HOME"/data/config.json
-RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/pytorch_model.bin "$CYBERT_HOME"/data/pytorch_model.bin
+RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/config.json -O "$CYBERT_HOME"/data/config.json
+RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/pytorch_model.bin -O "$CYBERT_HOME"/data/pytorch_model.bin
 
 # Zookeeper
 EXPOSE 2181
