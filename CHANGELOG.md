@@ -23,6 +23,7 @@
 - PR #242 Pin seqeval to v0.0.12 for cybert example training notebook
 - PR #243 Fix error handling in `ci/gpu/build.sh`
 - PR #256 Fix missing projects variable from docs build
+- PR #261 Fix incorrect workspace variable in docs build
 
 # clx 0.15.0 (26 Aug 2020)
 
