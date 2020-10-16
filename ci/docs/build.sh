@@ -17,6 +17,7 @@ export NIGHTLY_VERSION=${NIGHTLY_OVERRIDE:=$(echo $BRANCH_VERSION | awk -F. '{ p
 export CUDA_REL=${CUDA_VERSION%.*}
 export CUDA_SHORT=${CUDA_REL//./}
 export CLX_HOME=$WORKSPACE/clx_build
+export PROJECTS=(clx)
 
 # Switch to project root; also root of repo checkout
 cd $WORKSPACE
@@ -44,7 +45,6 @@ $CXX --version
 conda list
 
 #clx source build
-git clone --single-branch --branch branch-${BRANCH_VERSION} https://github.com/rapidsai/clx.git ${CLX_HOME}
 ${CLX_HOME}/build.sh clean libclx clx
 
 #clx Sphinx Build

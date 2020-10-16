@@ -12,6 +12,8 @@
 - PR #239 Added cybert streamz log size parameter
 - PR #244 Add cybert dataloader
 - PR #247 Allow CuPy 8.x
+- PR #246 Dockerfile updates
+- PR #262 CLX Streamz Getting Started
 - PR #253 Save clx dga model as dictionary
 
 ## Bug Fixes
@@ -22,6 +24,7 @@
 - PR #241 Fix unit tests after cuDF update
 - PR #242 Pin seqeval to v0.0.12 for cybert example training notebook
 - PR #243 Fix error handling in `ci/gpu/build.sh`
+- PR #256 Fix missing projects variable from docs build
 
 # clx 0.15.0 (26 Aug 2020)
 
