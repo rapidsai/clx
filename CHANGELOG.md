@@ -22,6 +22,7 @@
 - PR #247 Allow CuPy 8.x
 - PR #246 Dockerfile updates
 - PR #262 CLX Streamz Getting Started
+- PR #253 Save clx dga model as dictionary
 
 ## Bug Fixes
 - PR #231 Fix segmentation fault in cybert notebook
