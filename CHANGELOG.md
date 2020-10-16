@@ -13,6 +13,7 @@
 - PR #244 Add cybert dataloader
 - PR #247 Allow CuPy 8.x
 - PR #246 Dockerfile updates
+- PR #262 CLX Streamz Getting Started
 
 ## Bug Fixes
 - PR #231 Fix segmentation fault in cybert notebook
