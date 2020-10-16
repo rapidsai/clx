@@ -1,13 +1,58 @@
-# clx 0.15.0 (Date TBD)
+# clx 0.17.0 (Date TBD)
 
 ## New Features
-- PR #170 Add CLX Code of Conduct
-- PR #176 Add Periodicity Detection Notebook
 
 ## Improvements
+
+## Bug Fixes
+
+# clx 0.16.0 (Date TBD)
+
+## New Features
+- PR #208 CLX Supervised Asset Classification
+
+## Improvements
+- PR #233 Removed s3 dependency from dga detection unit-test
+- PR #235 Pre-commit hooks for isort, black and flake8
+- PR #232 Update phishing detection to use cudf subword tokenizer
+- PR #237 Cybert streamz memory optimization
+- PR #238 Deprecate CLX subword tokenizer
+- PR #239 Added cybert streamz log size parameter
+- PR #244 Add cybert dataloader
+- PR #247 Allow CuPy 8.x
+- PR #246 Dockerfile updates
+
+## Bug Fixes
+- PR #231 Fix segmentation fault in cybert notebook
+- PR #229 Fix cybert streamz script
+- PR #236 Fix RAPIDS logo in READMEs
+- PR #240 Fix errors from upstream changes to cuDF DataFrame.drop and RMM
+- PR #241 Fix unit tests after cuDF update
+- PR #242 Pin seqeval to v0.0.12 for cybert example training notebook
+- PR #243 Fix error handling in `ci/gpu/build.sh`
+- PR #256 Fix missing projects variable from docs build
+
+# clx 0.15.0 (26 Aug 2020)
+
+## New Features
+- PR #189 Add Cybert class
+- PR #170 Add CLX Code of Conduct
+- PR #176 Add Periodicity Detection Notebook
+- PR #193 AC notebook
+
+## Improvements
+- PR #202 Update cybert notebook to use cudf tokenizer
 - PR #174 Install dependencies via meta package
 - PR #175 GPU tokenizer updates
 - PR #181 CLX Query to support dask blazingsql
+- PR #159 Update to PyTorch 1.5
+- PR #191 Update conda upload versions for new supported CUDA/Python
+- PR #203 CLX docker and conda environment updates
+- PR #209 GPU build and Dockerfile update
+- PR #211 PyTorch 1.6 support
+- PR #214 Rename BERT vocab and hash file names for disambiguation
+- PR #215 Update dependencies in gpu build, conda recipe, and dockerfile
+- PR #220 README update
 
 ## Bug Fixes
 - PR #169 Fix documentation links
@@ -16,10 +61,15 @@
 - PR #180 Remove remaining references to nvstrings
 - PR #182 Fix errors from update to cudf's column rename method
 - PR #185 Update gpu build to use latest dask
+- PR #190 Fix issue with incorrect docker image being used in local build script
+- PR #192 Conda build fix
+- PR #197 Fix errors from Python 3.8 conda build and cudf update
+- P# #205 Build and notebook fixes/updates
 
 # clx 0.14.0 (Date TBD)
 
 ## New Features
+- PR #140 Added cybert class and streamz workflow
 - PR #141 CUDA BERT Tokenizer
 - PR #152 Local gpuCI build script
 - PR #133 Phishing detection using BERT
@@ -60,7 +110,7 @@
 
 ## New Features
 - PR #93 Add Bokeh visualization back to Alert Analysis notebook
- 
+
 ## Improvements
 - PR #88 Documentation updates
 - PR #85 Add codeowners
@@ -88,7 +138,7 @@
  - PR #48 Added port heuristic to detect major ports
  - PR #60 Added DGA detection notebook and DNS log parsing notebook
  - PR #76 Added update-version script
- 
+
 ## Improvements
  - PR #70 Sphinx doc formatting improvements
  - PR #58 Update docker image

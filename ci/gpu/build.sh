@@ -34,7 +34,7 @@ logger "Get env..."
 env
 
 logger "Activate conda env..."
-source activate gdf
+source activate rapids
 
 logger "Check versions..."
 python --version
@@ -43,22 +43,28 @@ python --version
 conda config --set ssl_verify False
 
 logger "conda install required packages"
-conda install \
+conda install -y -c pytorch -c gwerbin \
+    "rapids-build-env=$MINOR_VERSION.*" \
+    "rapids-notebook-env=$MINOR_VERSION.*" \
     "cugraph=${MINOR_VERSION}" \
-    "dask-cudf=${MINOR_VERSION}" \
-    "rapids-build-env=$MINOR_VERSION.*"
+    "cuml=${MINOR_VERSION}" \
+    "dask-cuda=${MINOR_VERSION}" \
+    "pytorch>=1.5" \
+    "torchvision" \
+    "python-confluent-kafka" \
+    "transformers" \
+    "seqeval=0.0.12" \
+    "python-whois" \
+    "requests" \
+    "matplotlib" \
+    "faker"
 
-# https://docs.rapids.ai/maintainers/depmgmt/ 
-# conda remove -f rapids-build-env
-# conda install "your-pkg=1.0.0"
-
-# Install the master version of dask, distributed, and cudatashader
-logger "pip install git+https://github.com/dask/distributed.git --upgrade --no-deps"
-pip install "git+https://github.com/dask/distributed.git" --upgrade --no-deps
-logger "pip install git+https://github.com/dask/dask.git --upgrade --no-deps"
-pip install "git+https://github.com/dask/dask.git" --upgrade --no-deps
-logger "pip install git+https://github.com/rapidsai/cudatashader.git --upgrade --no-deps"
+logger "pip install git+https://github.com/rapidsai/cudatashader.git"
 pip install "git+https://github.com/rapidsai/cudatashader.git"
+logger "pip install mockito"
+pip install mockito
+pip install wget
+pip install faker
 
 conda list
 
@@ -72,6 +78,9 @@ $WORKSPACE/build.sh clean libclx clx
 ################################################################################
 # TEST - Test python package
 ################################################################################
+set +e -Eo pipefail
+EXITCODE=0
+trap "EXITCODE=1" ERR
 
 if hasArg --skip-tests; then
     logger "Skipping Tests..."
@@ -81,3 +90,5 @@ else
     ${WORKSPACE}/ci/gpu/test-notebooks.sh 2>&1 | tee nbtest.log
     python ${WORKSPACE}/ci/utils/nbtestlog2junitxml.py nbtest.log
 fi
+
+return "${EXITCODE}"

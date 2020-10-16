@@ -9,14 +9,6 @@ import versioneer
 from distutils.sysconfig import get_python_lib
 
 INSTALL_REQUIRES = [
-    "confluent_kafka",
-    "transformers",
-    "seqeval[gpu]",
-    "python-whois",
-    "requests",
-    "mockito",
-    "torch==1.3.1",
-    "torchvision==0.4.2",
     "cython"
 ]
 

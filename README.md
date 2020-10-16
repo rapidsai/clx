@@ -1,6 +1,6 @@
-# <div align="left"><img src="https://rapids.ai/assets/images/rapids_logo.png" width="90px"/>&nbsp;&nbsp;Cyber Log Accelerators (CLX)</div>
+# <div align="left"><img src="img/rapids_logo.png" width="90px"/>&nbsp;&nbsp;Cyber Log Accelerators (CLX)</div>
 
-**NOTE:** For the latest stable [README.md](https://github.com/rapidsai/clx/blob/master/README.md) ensure you are on the `master` branch.
+**NOTE:** For the latest stable [README.md](https://github.com/rapidsai/clx/blob/main/README.md) ensure you are on the `main` branch.
 
 CLX ("clicks") provides a collection of [RAPIDS](https://rapids.ai/) examples for security analysts, data scientists, and engineers to quickly get started applying RAPIDS and GPU acceleration to real-world cybersecurity use cases.
 
@@ -10,6 +10,7 @@ The goal of CLX is to:
 1. Make available pre-built use cases that demonstrate CLX and RAPIDS functionality that are ready to use in a Security Operations Center (SOC),
 1. Accelerate log parsing in a flexible, non-regex method. and
 1. Provide SIEM integration with GPU compute environments via RAPIDS and effectively extend the SIEM environment.
+
 
 ## Getting Started with Python and Notebooks
 CLX is targeted towards cybersecurity data scientists, senior security analysts, threat hunters, and forensic investigators. Data scientists can use CLX in traditional Python files and Jupyter notebooks. The notebooks folder contains example use cases and workflow instantiations. It's also easy to get started using CLX with RAPIDS with Python. The code below reads cyber alerts, aggregates them by day, and calculates the rolling z-score value across multiple days to look for outliers in volumes of alerts. Expanded code is available in the alert analysis notebook.
@@ -99,34 +100,33 @@ wf = netflow_workflow.NetflowWorkflow(source=source, destination=dest, name="my-
 wf.run_workflow()
 ```
 
-For additional examples, browse our complete [API documentation](https://docs.rapids.ai/api/clx/nightly/api.html), or check out our more detailed [notebooks](https://github.com/rapidsai/clx/tree/master/notebooks).
-
+For additional examples, browse our complete [API documentation](https://docs.rapids.ai/api/clx/nightly/api.html), or check out our more detailed [notebooks](https://github.com/rapidsai/clx/tree/main/notebooks).
 
 
 ## Getting CLX
 ### Intro
 There are 3 ways to get CLX :
-1. [Quick Start with CLX Docker Container](#quick)
+1. [Build CLX Docker Image](#docker)
 1. [Conda Installation](#conda)
 1. [Build from Source](#source)
 
-<a name="quick"></a>
+<a name="docker"></a>
 
-## Quick Start Docker Container
+## Build CLX Docker Image
 
 Prerequisites
 
 * NVIDIA Pascal™ GPU architecture or better
-* CUDA 10.0+ compatible NVIDIA driver
+* CUDA 10.1+ compatible NVIDIA driver
 * Ubuntu 16.04/18.04 or CentOS 7
 * Docker CE v18+
 * nvidia-docker v2+
 
-Pull the RAPIDS image suitable to your environment and build CLX image.
+Pull the RAPIDS image suitable to your environment and build CLX image. Please see the [rapidsai-dev-nightly](https://hub.docker.com/r/rapidsai/rapidsai-dev-nightly) Docker repository, choosing a tag based on the NVIDIA CUDA version you’re running. More information on getting started with RAPIDS can be found [here](https://rapids.ai/start.html).
 
 ```aidl
-docker pull rapidsai/rapidsai-dev-nightly:0.14-cuda10.1-devel-ubuntu18.04-py3.7
-docker build --build-arg image=rapidsai/rapidsai-dev-nightly:0.14-cuda10.1-devel-ubuntu18.04-py3.7 -t clx:latest .
+docker pull rapidsai/rapidsai-dev-nightly:0.15-cuda10.1-devel-ubuntu18.04-py3.7
+docker build -t clx:latest .
 ```
 
 ### Docker Container without SIEM Integration
@@ -153,6 +153,15 @@ docker run --runtime=nvidia \
   clx:latest
 ```
 
+The container will include scripts for your convenience to start and stop JupyterLab.
+```
+# Start JupyterLab
+/rapids/utils/start_jupyter.sh
+
+# Stop JupyterLab
+/rapids/utils/stop_jupyter.sh
+```
+
 ### Docker Container with SIEM Integration
 
 If you want a CLX container with SIEM integration (including data ingest), follow the steps above to build the CLX image. Then use `docker-compose` to start multiple containers running CLX, Kafka, and Zookeeper. 
@@ -160,8 +169,6 @@ If you want a CLX container with SIEM integration (including data ingest), follo
 ```aidl
 docker-compose up
 ```
-
-
 
 <a name="conda"></a>
 
@@ -174,10 +181,11 @@ Install and update CLX using the conda command:
 conda install -c rapidsai-nightly -c nvidia -c pytorch -c conda-forge -c defaults clx
 ```
 
-
-
 <a name="source"></a>
 
 ## Building from Source and Contributing
 
 For contributing guildelines please reference our [guide for contributing](CONTRIBUTING.md).
+
+## Documentation
+Python API documentation can be found [here](https://docs.rapids.ai/api) or generated from [docs](docs) directory.

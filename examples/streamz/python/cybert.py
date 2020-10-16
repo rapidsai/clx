@@ -13,60 +13,210 @@
 # limitations under the License.
 
 import argparse
+import gc
+import signal
+import sys
+import time
+
+import confluent_kafka as ck
 import cudf
 import dask
-import json
 import torch
-import torch.nn.functional as F
 from dask_cuda import LocalCUDACluster
 from distributed import Client
-from pytorch_pretrained_bert import BertConfig, BertForTokenClassification, BertTokenizer
 from streamz import Stream
-from confluent_kafka import Producer
-import socket
 
-# TODO: Takes the RAW Windows Event logs from Kafka and runs NER predictions against each message.
-def predict_batch(messages):
-    return messages
 
-# TODO: Takes the prediction results and creates a cuDF from them.
-def wel_parsing(predictions):
-    return predictions
+def inference(messages):
+    # Messages will be received and run through cyBERT inferencing
+    worker = dask.distributed.get_worker()
+    batch_start_time = int(round(time.time()))
+    size = 0
+    df = cudf.DataFrame()
+    if type(messages) == str:
+        df["stream"] = [messages.decode("utf-8")]
+    elif type(messages) == list and len(messages) > 0:
+        df["stream"] = [msg.decode("utf-8") for msg in messages]
+    else:
+        print("ERROR: Unknown type encountered in inference")
+    parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
+    size = len(df)
+    torch.cuda.empty_cache()
+    gc.collect()
+    return (parsed_df, confidence_df, batch_start_time, size)
 
-# TODO: Monitor for thresholds and trigger alert by letting those messages pass through here
-def threshold_alert(event_logs):
-    return event_logs
 
-def sink_to_kafka(event_logs):
-    conf = {"bootstrap.servers": args.broker,
-        "client.id": socket.gethostname(),
-        "session.timeout.ms": 10000}
-    producer = Producer(conf)
-    for event in event_logs:
-        producer.produce(args.output_topic, event)
-    producer.poll(1)
+def sink_to_kafka(processed_data):
+    # Parsed data and confidence scores will be published to provided kafka producer
+    parsed_df = processed_data[0]
+    confidence_df = processed_data[1]
+    producer = ck.Producer(producer_conf)
+    producer.produce(args.output_topic, parsed_df.to_json())
+    producer.produce(args.output_topic, confidence_df.to_json())
+    producer.flush()
+    return processed_data
+
 
 def worker_init():
-    import clx
+    # Initialization for each dask worker
+    from clx.analytics.cybert import Cybert
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Cybert using Streamz and Dask. Data will be read from the input kafka topic, processed using cybert, and output printed.")
-    parser.add_argument("--broker", default="localhost:9092", help="Kafka broker")
-    parser.add_argument("--input_topic", default="input", help="Input kafka topic")
-    parser.add_argument("--output_topic", default="output", help="Output kafka topic")
-    parser.add_argument("--group_id", default="streamz", help="Kafka group ID")
+    worker = dask.distributed.get_worker()
+    cy = Cybert()
+    print(
+        "Initializing Dask worker: "
+        + str(worker)
+        + " with cybert model. Model File: "
+        + str(args.model)
+        + " Label Map: "
+        + str(args.label_map)
+    )
+    cy.load_model(args.model, args.label_map)
+    worker.data["cybert"] = cy
+    print("Successfully initialized dask worker " + str(worker))
+
+
+def calc_benchmark(processed_data, size_per_log):
+    # Calculates benchmark for the streamz workflow
+    t1 = int(round(time.time() * 1000))
+    t2 = 0
+    size = 0.0
+    batch_count = 0
+    # Find min and max time while keeping track of batch count and size
+    for result in processed_data:
+        (ts1, ts2, result_size) = (result[2], result[3], result[4])
+        if ts1 == 0 or ts2 == 0:
+            continue
+        batch_count = batch_count + 1
+        t1 = min(t1, ts1)
+        t2 = max(t2, ts2)
+        size += result_size * size_per_log
+    time_diff = t2 - t1
+    throughput_mbps = size / (1024.0 * time_diff) if time_diff > 0 else 0
+    avg_batch_size = size / (1024.0 * batch_count) if batch_count > 0 else 0
+    return (time_diff, throughput_mbps, avg_batch_size)
+
+
+def signal_term_handler(signal, frame):
+    # Receives signal and calculates benchmark if indicated in argument
+    print("Exiting streamz script...")
+    if args.benchmark:
+        (time_diff, throughput_mbps, avg_batch_size) = calc_benchmark(
+            output, args.benchmark
+        )
+        print("*** BENCHMARK ***")
+        print(
+            "Job duration: {:.3f} secs, Throughput(mb/sec):{:.3f}, Avg. Batch size(mb):{:.3f}".format(
+                time_diff, throughput_mbps, avg_batch_size
+            )
+        )
+    sys.exit(0)
+
+
+def parse_arguments():
+    # Establish script arguments
+    parser = argparse.ArgumentParser(
+        description="Cybert using Streamz and Dask. \
+                                                  Data will be read from the input kafka topic, \
+                                                  processed using cybert, and output printed."
+    )
+    parser.add_argument("-b", "--broker", default="localhost:9092", help="Kafka broker")
+    parser.add_argument(
+        "-i", "--input_topic", default="input", help="Input kafka topic"
+    )
+    parser.add_argument(
+        "-o", "--output_topic", default="output", help="Output kafka topic"
+    )
+    parser.add_argument("-g", "--group_id", default="streamz", help="Kafka group ID")
+    parser.add_argument("-m", "--model", help="Model filepath")
+    parser.add_argument("-l", "--label_map", help="Label map filepath")
+    parser.add_argument(
+        "--dask_scheduler",
+        help="Dask scheduler address. If not provided a new dask cluster will be created",
+    )
+    parser.add_argument(
+        "--cuda_visible_devices", type=str, help="Cuda visible devices (ex: '0,1,2')",
+    )
+    parser.add_argument(
+        "--max_batch_size",
+        default=1000,
+        type=int,
+        help="Max batch size to read from kafka",
+    )
+    parser.add_argument("--poll_interval", type=str, help="Polling interval (ex: 60s)")
+    parser.add_argument(
+        "--benchmark",
+        help="Captures benchmark, including throughput estimates, with provided avg log size in KB. (ex: 500 or 0.1)",
+        type=float,
+        default=1,
+    )
     args = parser.parse_args()
-    cluster = LocalCUDACluster()
-    client = Client(cluster)
+    return args
+
+
+def create_dask_client(dask_scheduler, cuda_visible_devices=[0]):
+    # If a dask scheduler is provided create client using that address
+    # otherwise create a new dask cluster
+    if dask_scheduler is not None:
+        print("Dask scheduler:", dask_scheduler)
+        client = Client(dask_scheduler)
+    else:
+        n_workers = len(cuda_visible_devices)
+        cluster = LocalCUDACluster(
+            CUDA_VISIBLE_DEVICES=cuda_visible_devices, n_workers=n_workers
+        )
+        client = Client(cluster)
     print(client)
+    return client
+
+
+if __name__ == "__main__":
+    # Parse arguments
+    args = parse_arguments()
+    # Handle script exit
+    signal.signal(signal.SIGTERM, signal_term_handler)
+    signal.signal(signal.SIGINT, signal_term_handler)
+    # Kafka producer configuration for processed output data
+    producer_conf = {
+        "bootstrap.servers": args.broker,
+        "session.timeout.ms": 10000,
+    }
+    print("Producer conf:", producer_conf)
+    cuda_visible_devices = args.cuda_visible_devices.split(",")
+    cuda_visible_devices = [int(x) for x in cuda_visible_devices]
+    client = create_dask_client(args.dask_scheduler, cuda_visible_devices)
     client.run(worker_init)
+
     # Define the streaming pipeline.
-    consumer_conf = {'bootstrap.servers': args.broker,
-                 'group.id': args.group_id, 'session.timeout.ms': 60000}
-    source = Stream.from_kafka_batched(args.input_topic, consumer_conf, poll_interval='1s',
-                                    npartitions=1, asynchronous=True, dask=False)
-    inference = source.map(predict_batch)
-    wel_parsing = inference.map(wel_parsing)
-    alerts = wel_parsing.map(threshold_alert).map(sink_to_kafka)
-    # Start the stream.
+    consumer_conf = {
+        "bootstrap.servers": args.broker,
+        "group.id": args.group_id,
+        "session.timeout.ms": 60000,
+        "enable.partition.eof": "true",
+        "auto.offset.reset": "earliest",
+    }
+    print("Consumer conf:", consumer_conf)
+    source = Stream.from_kafka_batched(
+        args.input_topic,
+        consumer_conf,
+        poll_interval=args.poll_interval,
+        npartitions=1,
+        asynchronous=True,
+        dask=True,
+        max_batch_size=args.max_batch_size,
+    )
+
+    # If benchmark arg is True, use streamz to compute benchmark
+    if args.benchmark:
+        print("Benchmark will be calculated")
+        output = (
+            source.map(inference)
+            .map(lambda x: (x[0], x[1], x[2], int(round(time.time())), x[3]))
+            .map(sink_to_kafka)
+            .gather()
+            .sink_to_list()
+        )
+    else:
+        output = source.map(inference).map(sink_to_kafka).gather()
+
     source.start()

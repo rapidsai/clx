@@ -1,22 +1,28 @@
-# An integration test & dev container based on rapids-dev-nightly with CLX installed from current branch
-ARG RAPIDS_VERSION=0.15
+# An integration test & dev container which builds and installs CLX from default branch
+ARG RAPIDS_VERSION=0.17
 ARG CUDA_VERSION=10.1
+ARG CUDA_SHORT_VERSION=${CUDA_VERSION}
 ARG LINUX_VERSION=ubuntu18.04
 ARG PYTHON_VERSION=3.7
-
 FROM rapidsai/rapidsai-dev-nightly:${RAPIDS_VERSION}-cuda${CUDA_VERSION}-devel-${LINUX_VERSION}-py${PYTHON_VERSION}
 
+# Add everything from the local build context
 ADD . /rapids/clx/
-
-SHELL ["/bin/bash", "-c"]
+RUN chmod -R ugo+w /rapids/clx/
 
 RUN apt update -y --fix-missing && \
     apt upgrade -y && \
-    apt install -y vim
+    apt install -y krb5-user
+
+RUN source activate rapids && \
+    conda install -c pytorch "pytorch>=1.5" torchvision "cudf_kafka=${RAPIDS_VERSION}" "custreamz=${RAPIDS_VERSION}" "scikit-learn>=0.21" ipywidgets python-confluent-kafka transformers "seqeval=0.0.12" python-whois seaborn requests matplotlib pytest jupyterlab && \
+    pip install "git+https://github.com/rapidsai/cudatashader.git" && \
+    pip install mockito && \
+    pip install wget
 
 RUN source activate rapids \
-    && conda install datashader>=0.10.* panel=0.6.* geopandas>=0.6.* pyppeteer s3fs ipywidgets \
-    && pip install "git+https://github.com/rapidsai/cudatashader.git"
+  && conda install -n rapids jupyterlab-nvdashboard \
+  && jupyter labextension install dask-labextension jupyterlab-nvdashboard
 
 # libclx build/install
 RUN source activate rapids && \
@@ -31,4 +37,4 @@ RUN source activate rapids && \
     python setup.py build_ext --inplace && \
     python setup.py install
 
-WORKDIR /rapids
+WORKDIR /rapids/clx
