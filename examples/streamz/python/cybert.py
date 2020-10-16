@@ -17,7 +17,7 @@ import gc
 import signal
 import sys
 import time
-
+import pandas as pd
 import confluent_kafka as ck
 import cudf
 import dask
@@ -40,19 +40,22 @@ def inference(messages):
     else:
         print("ERROR: Unknown type encountered in inference")
     parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
-    size = len(df)
+    result_size = df.shape[0]
     torch.cuda.empty_cache()
     gc.collect()
-    return (parsed_df, confidence_df, batch_start_time, size)
+    confidence_df = confidence_df.add_suffix('_conf')
+    parsed_df = pd.concat([parsed_df, confidence_df], axis=1)
+    return (batch_start_time, result_size, parsed_df)
 
 
 def sink_to_kafka(processed_data):
     # Parsed data and confidence scores will be published to provided kafka producer
-    parsed_df = processed_data[0]
-    confidence_df = processed_data[1]
+    parsed_df = processed_data[3]
     producer = ck.Producer(producer_conf)
-    producer.produce(args.output_topic, parsed_df.to_json())
-    producer.produce(args.output_topic, confidence_df.to_json())
+    json_str = parsed_df.to_json(orient='records', lines=True)
+    json_recs = json_str.split('\n')
+    for json_rec in json_recs:
+        producer.produce(args.output_topic, json_rec)
     producer.flush()
     return processed_data
 
@@ -74,43 +77,6 @@ def worker_init():
     cy.load_model(args.model, args.label_map)
     worker.data["cybert"] = cy
     print("Successfully initialized dask worker " + str(worker))
-
-
-def calc_benchmark(processed_data, size_per_log):
-    # Calculates benchmark for the streamz workflow
-    t1 = int(round(time.time() * 1000))
-    t2 = 0
-    size = 0.0
-    batch_count = 0
-    # Find min and max time while keeping track of batch count and size
-    for result in processed_data:
-        (ts1, ts2, result_size) = (result[2], result[3], result[4])
-        if ts1 == 0 or ts2 == 0:
-            continue
-        batch_count = batch_count + 1
-        t1 = min(t1, ts1)
-        t2 = max(t2, ts2)
-        size += result_size * size_per_log
-    time_diff = t2 - t1
-    throughput_mbps = size / (1024.0 * time_diff) if time_diff > 0 else 0
-    avg_batch_size = size / (1024.0 * batch_count) if batch_count > 0 else 0
-    return (time_diff, throughput_mbps, avg_batch_size)
-
-
-def signal_term_handler(signal, frame):
-    # Receives signal and calculates benchmark if indicated in argument
-    print("Exiting streamz script...")
-    if args.benchmark:
-        (time_diff, throughput_mbps, avg_batch_size) = calc_benchmark(
-            output, args.benchmark
-        )
-        print("*** BENCHMARK ***")
-        print(
-            "Job duration: {:.3f} secs, Throughput(mb/sec):{:.3f}, Avg. Batch size(mb):{:.3f}".format(
-                time_diff, throughput_mbps, avg_batch_size
-            )
-        )
-    sys.exit(0)
 
 
 def parse_arguments():
@@ -135,9 +101,6 @@ def parse_arguments():
         help="Dask scheduler address. If not provided a new dask cluster will be created",
     )
     parser.add_argument(
-        "--cuda_visible_devices", type=str, help="Cuda visible devices (ex: '0,1,2')",
-    )
-    parser.add_argument(
         "--max_batch_size",
         default=1000,
         type=int,
@@ -154,22 +117,6 @@ def parse_arguments():
     return args
 
 
-def create_dask_client(dask_scheduler, cuda_visible_devices=[0]):
-    # If a dask scheduler is provided create client using that address
-    # otherwise create a new dask cluster
-    if dask_scheduler is not None:
-        print("Dask scheduler:", dask_scheduler)
-        client = Client(dask_scheduler)
-    else:
-        n_workers = len(cuda_visible_devices)
-        cluster = LocalCUDACluster(
-            CUDA_VISIBLE_DEVICES=cuda_visible_devices, n_workers=n_workers
-        )
-        client = Client(cluster)
-    print(client)
-    return client
-
-
 if __name__ == "__main__":
     # Parse arguments
     args = parse_arguments()
@@ -182,9 +129,7 @@ if __name__ == "__main__":
         "session.timeout.ms": 10000,
     }
     print("Producer conf:", producer_conf)
-    cuda_visible_devices = args.cuda_visible_devices.split(",")
-    cuda_visible_devices = [int(x) for x in cuda_visible_devices]
-    client = create_dask_client(args.dask_scheduler, cuda_visible_devices)
+    client = create_dask_client(args.dask_scheduler)
     client.run(worker_init)
 
     # Define the streaming pipeline.
@@ -211,7 +156,7 @@ if __name__ == "__main__":
         print("Benchmark will be calculated")
         output = (
             source.map(inference)
-            .map(lambda x: (x[0], x[1], x[2], int(round(time.time())), x[3]))
+            .map(lambda x: (x[0], int(round(time.time())), x[1], x[2]))
             .map(sink_to_kafka)
             .gather()
             .sink_to_list()

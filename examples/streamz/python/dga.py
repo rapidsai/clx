@@ -1,0 +1,177 @@
+# Copyright (c) 2020, NVIDIA CORPORATION.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import gc
+import sys
+import time
+import cudf
+import dask
+import torch
+import signal
+import random
+import argparse
+from streamz import Stream
+from commons import utils
+import confluent_kafka as ck
+from distributed import Client
+from dask_cuda import LocalCUDACluster
+
+def inference(messages_df):
+    # Messages will be received and run through cyBERT inferencing
+    worker = dask.distributed.get_worker()
+    batch_start_time = int(round(time.time()))
+    size = 0
+    dd = worker.data["dga_detector"]
+    preds = dd.predict(messages_df['domain'])
+    messages_df['preds'] = preds
+    result_size = messages_df.shape[0]
+    print('dataframe size: %s' %(size))
+    torch.cuda.empty_cache()
+    gc.collect()
+    return (batch_start_time, result_size, messages_df,)
+
+def sink_to_kafka(processed_data):
+    # Prediction data will be published to provided kafka producer
+    worker = dask.distributed.get_worker()
+    producer = worker.data["producer"]
+    messages_df = processed_data[3]
+    json_str = messages_df.to_json(orient='records', lines=True)
+    json_recs = json_str.split('\n')
+    for rec in json_recs:
+        producer.produce(args.output_topic, rec)
+    producer.flush()
+    return processed_data
+
+
+def worker_init():
+    # Initialization for each dask worker
+    from clx.analytics.dga_detector import DGADetector
+
+    worker = dask.distributed.get_worker()
+    dd = DGADetector()
+    producer = ck.Producer(producer_conf)
+    print(
+        "Initializing Dask worker: "
+        + str(worker)
+        + " with dga model. Model File: "
+        + str(args.model)
+    )
+    dd.load_model(args.model)
+    worker.data["dga_detector"] = dd
+    worker.data["producer"] = producer
+    print("Successfully initialized dask worker " + str(worker))
+
+def signal_term_handler(signal, frame):
+    # Receives signal and calculates benchmark if indicated in argument
+    print("Exiting streamz script...")
+    if args.benchmark:
+        (time_diff, throughput_mbps, avg_batch_size) = calc_benchmark(output)
+        print("*** BENCHMARK ***")
+        print(
+            "Job duration: {:.3f} secs, Throughput(mb/sec):{:.3f}, Avg. Batch size(mb):{:.3f}".format(
+                time_diff, throughput_mbps, avg_batch_size
+            )
+        )
+    client.close()
+    sys.exit(0)
+
+def get_kafka_conf():
+    # Kafka producer configuration for processed output data
+    producer_conf = {
+        "bootstrap.servers": args.broker,
+        "session.timeout.ms": "10000",
+        #"queue.buffering.max.messages": "250000",
+        #"linger.ms": "100"
+    }
+    consumer_conf = {
+        "bootstrap.servers": args.broker,
+        "group.id": args.group_id,
+        "session.timeout.ms": "60000",
+        "enable.partition.eof": "true",
+        "auto.offset.reset": "earliest",
+    }
+    return consumer_conf, producer_conf
+    
+
+def parse_arguments():
+    # Establish script arguments
+    parser = argparse.ArgumentParser(
+        description="DGA using Streamz and Dask. \
+                                                  Data will be read from the input kafka topic, \
+                                                  processed using dd, and output to kafka topic."
+    )
+    parser.add_argument("-b", "--broker", default="localhost:9092", help="Kafka broker")
+    parser.add_argument(
+        "-i", "--input_topic", default="input", help="Input kafka topic"
+    )
+    parser.add_argument(
+        "-o", "--output_topic", default="output", help="Output kafka topic"
+    )
+    parser.add_argument("-g", "--group_id", default="streamz", help="Kafka group ID")
+    parser.add_argument("-m", "--model", help="Model filepath")
+    parser.add_argument(
+        "--dask_scheduler",
+        help="Dask scheduler address. If not provided a new dask cluster will be created",
+    )
+    parser.add_argument(
+        "--max_batch_size",
+        default=1000,
+        type=int,
+        help="Max batch size to read from kafka",
+    )
+    parser.add_argument("--poll_interval", type=str, help="Polling interval (ex: 60s)")
+    parser.add_argument("--benchmark", help="Capture benchmark", action="store_true")
+    args = parser.parse_args()
+    return args
+   
+if __name__ == "__main__":
+    # Parse arguments
+    args = parse_arguments()
+    # Handle script exit
+    signal.signal(signal.SIGTERM, utils.signal_term_handler)
+    signal.signal(signal.SIGINT, utils.signal_term_handler)
+    
+    consumer_conf, producer_conf = get_kafka_conf()
+    print("Producer conf:", producer_conf)
+    client = utils.create_dask_client(args.dask_scheduler)
+    client.run(worker_init)
+
+    # Define the streaming pipeline.
+    
+    print("Consumer conf:", consumer_conf)
+    source = Stream.from_kafka_batched(
+        args.input_topic,
+        consumer_conf,
+        poll_interval=args.poll_interval,
+        npartitions=6,
+        asynchronous=True,
+        dask=True,
+        engine="cudf",
+        max_batch_size=args.max_batch_size,
+    )
+
+    # If benchmark arg is True, use streamz to compute benchmark
+    if args.benchmark:
+        print("Benchmark will be calculated")
+        output = (
+            source.map(inference)
+            .map(lambda x: (x[0], int(round(time.time())), x[1], x[2]))
+            .map(sink_to_kafka)
+            .gather()
+            .sink_to_list()
+        )
+    else:
+        output = source.map(inference).map(sink_to_kafka).gather()
+    
+    source.start()
