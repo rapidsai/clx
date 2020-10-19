@@ -22,21 +22,18 @@ import signal
 import random
 import argparse
 from streamz import Stream
-from commons import utils
 import confluent_kafka as ck
-from distributed import Client
-from dask_cuda import LocalCUDACluster
+from clx_streamz_tools import utils
 
 def inference(messages_df):
-    # Messages will be received and run through cyBERT inferencing
+    # Messages will be received and run through DGA inferencing
     worker = dask.distributed.get_worker()
     batch_start_time = int(round(time.time()))
-    size = 0
     dd = worker.data["dga_detector"]
     preds = dd.predict(messages_df['domain'])
     messages_df['preds'] = preds
     result_size = messages_df.shape[0]
-    print('dataframe size: %s' %(size))
+    print('dataframe size: %s' %(result_size))
     torch.cuda.empty_cache()
     gc.collect()
     return (batch_start_time, result_size, messages_df,)
@@ -44,17 +41,18 @@ def inference(messages_df):
 def sink_to_kafka(processed_data):
     # Prediction data will be published to provided kafka producer
     messages_df = processed_data[3]
-    kafka_sink(producer_conf, parsed_df)
+    utils.kafka_sink(producer_conf, args.output_topic, messages_df)
     return processed_data
 
 
 def worker_init():
     # Initialization for each dask worker
     from clx.analytics.dga_detector import DGADetector
-
+    #from commons import utils
+    #import imp
+    #utils = imp.load_source('utils', 'commons/utils.py')
     worker = dask.distributed.get_worker()
     dd = DGADetector()
-    producer = ck.Producer(producer_conf)
     print(
         "Initializing Dask worker: "
         + str(worker)
@@ -65,37 +63,21 @@ def worker_init():
     worker.data["dga_detector"] = dd
     print("Successfully initialized dask worker " + str(worker))
 
+
 def signal_term_handler(signal, frame):
     # Receives signal and calculates benchmark if indicated in argument
     print("Exiting streamz script...")
     if args.benchmark:
-        (time_diff, throughput_mbps, avg_batch_size) = calc_benchmark(output)
+        (time_diff, throughput_mbps, avg_batch_size) = utils.calc_benchmark(
+            output, args.benchmark
+        )
         print("*** BENCHMARK ***")
         print(
             "Job duration: {:.3f} secs, Throughput(mb/sec):{:.3f}, Avg. Batch size(mb):{:.3f}".format(
                 time_diff, throughput_mbps, avg_batch_size
             )
         )
-    client.close()
     sys.exit(0)
-
-def get_kafka_conf():
-    # Kafka producer configuration for processed output data
-    producer_conf = {
-        "bootstrap.servers": args.broker,
-        "session.timeout.ms": "10000",
-        #"queue.buffering.max.messages": "250000",
-        #"linger.ms": "100"
-    }
-    consumer_conf = {
-        "bootstrap.servers": args.broker,
-        "group.id": args.group_id,
-        "session.timeout.ms": "60000",
-        "enable.partition.eof": "true",
-        "auto.offset.reset": "earliest",
-    }
-    return consumer_conf, producer_conf
-
    
 if __name__ == "__main__":
     # Parse arguments
@@ -121,22 +103,20 @@ if __name__ == "__main__":
         "enable.partition.eof": "true",
         "auto.offset.reset": "earliest",
     }
-    
     print("Consumer conf:", consumer_conf)
     print("Producer conf:", producer_conf)
-
+    
     # Define the streaming pipeline.
     source = Stream.from_kafka_batched(
         args.input_topic,
         consumer_conf,
         poll_interval=args.poll_interval,
-        npartitions=6,
+        npartitions=1,
         asynchronous=True,
         dask=True,
         engine="cudf",
         max_batch_size=args.max_batch_size,
     )
-
     # If benchmark arg is True, use streamz to compute benchmark
     if args.benchmark:
         print("Benchmark will be calculated")
@@ -151,3 +131,4 @@ if __name__ == "__main__":
         output = source.map(inference).map(sink_to_kafka).gather()
     
     source.start()
+    

@@ -58,7 +58,21 @@ def sink_to_kafka(processed_data):
     utils.kafka_sink(producer_conf, parsed_df)
     return processed_data
 
-
+def signal_term_handler(signal, frame):
+    # Receives signal and calculates benchmark if indicated in argument
+    print("Exiting streamz script...")
+    if args.benchmark:
+        (time_diff, throughput_mbps, avg_batch_size) = utils.calc_benchmark(
+            output, args.benchmark
+        )
+        print("*** BENCHMARK ***")
+        print(
+            "Job duration: {:.3f} secs, Throughput(mb/sec):{:.3f}, Avg. Batch size(mb):{:.3f}".format(
+                time_diff, throughput_mbps, avg_batch_size
+            )
+        )
+    sys.exit(0)
+    
 def worker_init():
     # Initialization for each dask worker
     from clx.analytics.cybert import Cybert

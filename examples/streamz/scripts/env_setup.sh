@@ -59,3 +59,8 @@ do
    CUDA_VISIBLE_DEVICES=$i nohup dask-cuda-worker localhost:8786 2>&1 &
 done
 sleep 3
+
+#**********************************
+# Start Jupyter Notebook
+#**********************************
+nohup jupyter notebook --port=8888 --no-browser --ip=0.0.0.0 --allow-root 2>&1 &

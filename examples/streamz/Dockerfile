@@ -71,4 +71,9 @@ RUN source activate rapids && \
     python setup.py build_ext --inplace && \
     python setup.py install
 
+# clx_streamz_tools build/install
+RUN source activate rapids && \
+	cd "$CLX_STREAMZ_HOME"/python && \
+	python setup.py install
+	
 WORKDIR /rapids/clx
