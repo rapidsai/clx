@@ -31,23 +31,6 @@ def create_dask_client(dask_scheduler):
     print(client)
     return client
 
-
-def signal_term_handler(signal, frame):
-    # Receives signal and calculates benchmark if indicated in argument
-    print("Exiting streamz script...")
-    if args.benchmark:
-        (time_diff, throughput_mbps, avg_batch_size) = calc_benchmark(
-            output, args.benchmark
-        )
-        print("*** BENCHMARK ***")
-        print(
-            "Job duration: {:.3f} secs, Throughput(mb/sec):{:.3f}, Avg. Batch size(mb):{:.3f}".format(
-                time_diff, throughput_mbps, avg_batch_size
-            )
-        )
-    sys.exit(0)
-
-
 def sink_to_kafka(producer_conf, parsed_df):
     producer = ck.Producer(producer_conf)
     json_str = parsed_df.to_json(orient='records', lines=True)

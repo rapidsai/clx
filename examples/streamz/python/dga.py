@@ -19,8 +19,6 @@ import cudf
 import dask
 import torch
 import signal
-import random
-import argparse
 from streamz import Stream
 import confluent_kafka as ck
 from clx_streamz_tools import utils
@@ -48,9 +46,7 @@ def sink_to_kafka(processed_data):
 def worker_init():
     # Initialization for each dask worker
     from clx.analytics.dga_detector import DGADetector
-    #from commons import utils
-    #import imp
-    #utils = imp.load_source('utils', 'commons/utils.py')
+    
     worker = dask.distributed.get_worker()
     dd = DGADetector()
     print(

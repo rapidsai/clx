@@ -35,16 +35,17 @@ ADD examples/streamz/scripts "$CLX_STREAMZ_HOME"/scripts
 ADD examples/streamz/data "$CLX_STREAMZ_HOME"/data
 ADD examples/streamz/python "$CLX_STREAMZ_HOME"/python
 
-RUN mkdir -p "$CLX_STREAMZ_HOME"/ml/models \
-	&& mkdir "$CLX_STREAMZ_HOME"/ml/labels
+RUN mkdir -p "$CLX_STREAMZ_HOME"/ml/models && \
+	mkdir "$CLX_STREAMZ_HOME"/ml/labels && \
+	mkdir "$CLX_STREAMZ_HOME"/ml/config
 
 RUN wget -q http://www.gtlib.gatech.edu/pub/apache/kafka/2.3.0/kafka_2.11-2.3.0.tgz -O /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz && \
         tar xfz /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz -C /opt && \
         rm /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz
 
 # Download cybert apache model from huggingface for example
-RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/config.json -O "$CYBERT_HOME"/data/config.json
-RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/pytorch_model.bin -O "$CYBERT_HOME"/data/pytorch_model.bin
+RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/config.json -O "$CLX_STREAMZ_HOME"/ml/config/config.json
+RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/pytorch_model.bin -O "$CLX_STREAMZ_HOME"/ml/models/pytorch_model.bin
 
 # Zookeeper
 EXPOSE 2181
@@ -58,9 +59,9 @@ RUN source activate rapids && \
     pip install mockito && \
     pip install wget
 
-RUN source activate rapids \
-  && conda install -n rapids jupyterlab-nvdashboard \
-  && jupyter labextension install dask-labextension jupyterlab-nvdashboard
+RUN source activate rapids && \
+  	conda install -n rapids jupyterlab-nvdashboard && \
+  	jupyter labextension install dask-labextension jupyterlab-nvdashboard
 
 # libclx build/install
 RUN source activate rapids && \
@@ -75,7 +76,7 @@ RUN source activate rapids && \
     python setup.py build_ext --inplace && \
     python setup.py install
 
-# clx_streamz_tools build/install
+# clx_streamz_tools install
 RUN source activate rapids && \
 	cd "$CLX_STREAMZ_HOME"/python && \
 	python setup.py install

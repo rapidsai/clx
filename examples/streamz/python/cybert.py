@@ -12,21 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import argparse
 import gc
 import signal
 import sys
 import time
-import pandas as pd
 import cudf
 import dask
 import torch
-from commons import utils
+import pandas as pd
 import confluent_kafka as ck
 from streamz import Stream
-from distributed import Client
-from dask_cuda import LocalCUDACluster
-
+from clx_streamz_tools import utils
 
 def inference(messages):
     # Messages will be received and run through cyBERT inferencing
@@ -45,17 +41,15 @@ def inference(messages):
     confidence_df = confidence_df.add_suffix('_confidence')
     parsed_df = pd.concat([parsed_df, confidence_df], axis=1)
     result_size = parsed_df.shape[0]
-    
     torch.cuda.empty_cache()
     gc.collect()
-    
     return (batch_start_time, result_size, parsed_df)
 
 
 def sink_to_kafka(processed_data):
     # Parsed data and confidence scores will be published to provided kafka producer
     parsed_df = processed_data[3]
-    utils.kafka_sink(producer_conf, parsed_df)
+    utils.kafka_sink(producer_conf, args.output_topic, parsed_df)
     return processed_data
 
 def signal_term_handler(signal, frame):
@@ -107,8 +101,6 @@ if __name__ == "__main__":
     producer_conf = {
         "bootstrap.servers": args.broker,
         "session.timeout.ms": "10000",
-        #"queue.buffering.max.messages": "250000",
-        #"linger.ms": "100"
     }
     consumer_conf = {
         "bootstrap.servers": args.broker,
