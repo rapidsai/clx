@@ -31,6 +31,38 @@ class DGADetector(Detector):
             model = RNNClassifier(char_vocab, hidden_size, n_domain_type, n_layers)
             self.leverage_model(model)
 
+    def load_model(self, file_path):
+        """ This function load already saved model and sets cuda parameters.
+
+        :param file_path: File path of a model to loaded.
+        :type file_path: string
+        """
+        model_dict = torch.load(file_path)
+        model = RNNClassifier(
+            model_dict["input_size"],
+            model_dict["hidden_size"],
+            model_dict["output_size"],
+            model_dict["n_layers"],
+        )
+        model.load_state_dict(model_dict["state_dict"])
+        super()._load_model(model)
+
+    def save_model(self, file_path):
+        """ This function saves model to given location.
+
+        :param file_path: File path to save model.
+        :type file_path: string
+        """
+        model = self._get_unwrapped_model()
+        checkpoint = {
+            "state_dict": model.state_dict(),
+            "input_size": model.input_size,
+            "hidden_size": model.hidden_size,
+            "n_layers": model.n_layers,
+            "output_size": model.output_size,
+        }
+        super()._save_model(checkpoint, file_path)
+
     def train_model(self, detector_dataset):
         """This function is used for training RNNClassifier model with a given training dataset. It returns total loss to determine model prediction accuracy.
         :param detector_dataset: Instance holds preprocessed data
