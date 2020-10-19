@@ -14,6 +14,7 @@
 
 import sys
 import time
+import argparse
 import confluent_kafka as ck
 from distributed import Client
 from dask_cuda import LocalCUDACluster
