@@ -43,14 +43,8 @@ def inference(messages_df):
 
 def sink_to_kafka(processed_data):
     # Prediction data will be published to provided kafka producer
-    worker = dask.distributed.get_worker()
-    producer = worker.data["producer"]
     messages_df = processed_data[3]
-    json_str = messages_df.to_json(orient='records', lines=True)
-    json_recs = json_str.split('\n')
-    for rec in json_recs:
-        producer.produce(args.output_topic, rec)
-    producer.flush()
+    kafka_sink(producer_conf, parsed_df)
     return processed_data
 
 
@@ -69,7 +63,6 @@ def worker_init():
     )
     dd.load_model(args.model)
     worker.data["dga_detector"] = dd
-    worker.data["producer"] = producer
     print("Successfully initialized dask worker " + str(worker))
 
 def signal_term_handler(signal, frame):
@@ -102,54 +95,37 @@ def get_kafka_conf():
         "auto.offset.reset": "earliest",
     }
     return consumer_conf, producer_conf
-    
 
-def parse_arguments():
-    # Establish script arguments
-    parser = argparse.ArgumentParser(
-        description="DGA using Streamz and Dask. \
-                                                  Data will be read from the input kafka topic, \
-                                                  processed using dd, and output to kafka topic."
-    )
-    parser.add_argument("-b", "--broker", default="localhost:9092", help="Kafka broker")
-    parser.add_argument(
-        "-i", "--input_topic", default="input", help="Input kafka topic"
-    )
-    parser.add_argument(
-        "-o", "--output_topic", default="output", help="Output kafka topic"
-    )
-    parser.add_argument("-g", "--group_id", default="streamz", help="Kafka group ID")
-    parser.add_argument("-m", "--model", help="Model filepath")
-    parser.add_argument(
-        "--dask_scheduler",
-        help="Dask scheduler address. If not provided a new dask cluster will be created",
-    )
-    parser.add_argument(
-        "--max_batch_size",
-        default=1000,
-        type=int,
-        help="Max batch size to read from kafka",
-    )
-    parser.add_argument("--poll_interval", type=str, help="Polling interval (ex: 60s)")
-    parser.add_argument("--benchmark", help="Capture benchmark", action="store_true")
-    args = parser.parse_args()
-    return args
    
 if __name__ == "__main__":
     # Parse arguments
-    args = parse_arguments()
-    # Handle script exit
-    signal.signal(signal.SIGTERM, utils.signal_term_handler)
-    signal.signal(signal.SIGINT, utils.signal_term_handler)
+    args = utils.parse_arguments()
     
-    consumer_conf, producer_conf = get_kafka_conf()
-    print("Producer conf:", producer_conf)
+    # Handle script exit
+    signal.signal(signal.SIGTERM, signal_term_handler)
+    signal.signal(signal.SIGINT, signal_term_handler)
+    
     client = utils.create_dask_client(args.dask_scheduler)
     client.run(worker_init)
-
-    # Define the streaming pipeline.
+    
+    producer_conf = {
+        "bootstrap.servers": args.broker,
+        "session.timeout.ms": "10000",
+        #"queue.buffering.max.messages": "250000",
+        #"linger.ms": "100"
+    }
+    consumer_conf = {
+        "bootstrap.servers": args.broker,
+        "group.id": args.group_id,
+        "session.timeout.ms": "60000",
+        "enable.partition.eof": "true",
+        "auto.offset.reset": "earliest",
+    }
     
     print("Consumer conf:", consumer_conf)
+    print("Producer conf:", producer_conf)
+
+    # Define the streaming pipeline.
     source = Stream.from_kafka_batched(
         args.input_topic,
         consumer_conf,

@@ -18,13 +18,14 @@ import signal
 import sys
 import time
 import pandas as pd
-import confluent_kafka as ck
 import cudf
 import dask
 import torch
-from dask_cuda import LocalCUDACluster
-from distributed import Client
+from commons import utils
+import confluent_kafka as ck
 from streamz import Stream
+from distributed import Client
+from dask_cuda import LocalCUDACluster
 
 
 def inference(messages):
@@ -39,24 +40,22 @@ def inference(messages):
         df["stream"] = [msg.decode("utf-8") for msg in messages]
     else:
         print("ERROR: Unknown type encountered in inference")
+    
     parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
-    result_size = df.shape[0]
+    confidence_df = confidence_df.add_suffix('_confidence')
+    parsed_df = pd.concat([parsed_df, confidence_df], axis=1)
+    result_size = parsed_df.shape[0]
+    
     torch.cuda.empty_cache()
     gc.collect()
-    confidence_df = confidence_df.add_suffix('_conf')
-    parsed_df = pd.concat([parsed_df, confidence_df], axis=1)
+    
     return (batch_start_time, result_size, parsed_df)
 
 
 def sink_to_kafka(processed_data):
     # Parsed data and confidence scores will be published to provided kafka producer
     parsed_df = processed_data[3]
-    producer = ck.Producer(producer_conf)
-    json_str = parsed_df.to_json(orient='records', lines=True)
-    json_recs = json_str.split('\n')
-    for json_rec in json_recs:
-        producer.produce(args.output_topic, json_rec)
-    producer.flush()
+    utils.kafka_sink(producer_conf, parsed_df)
     return processed_data
 
 
@@ -79,68 +78,34 @@ def worker_init():
     print("Successfully initialized dask worker " + str(worker))
 
 
-def parse_arguments():
-    # Establish script arguments
-    parser = argparse.ArgumentParser(
-        description="Cybert using Streamz and Dask. \
-                                                  Data will be read from the input kafka topic, \
-                                                  processed using cybert, and output printed."
-    )
-    parser.add_argument("-b", "--broker", default="localhost:9092", help="Kafka broker")
-    parser.add_argument(
-        "-i", "--input_topic", default="input", help="Input kafka topic"
-    )
-    parser.add_argument(
-        "-o", "--output_topic", default="output", help="Output kafka topic"
-    )
-    parser.add_argument("-g", "--group_id", default="streamz", help="Kafka group ID")
-    parser.add_argument("-m", "--model", help="Model filepath")
-    parser.add_argument("-l", "--label_map", help="Label map filepath")
-    parser.add_argument(
-        "--dask_scheduler",
-        help="Dask scheduler address. If not provided a new dask cluster will be created",
-    )
-    parser.add_argument(
-        "--max_batch_size",
-        default=1000,
-        type=int,
-        help="Max batch size to read from kafka",
-    )
-    parser.add_argument("--poll_interval", type=str, help="Polling interval (ex: 60s)")
-    parser.add_argument(
-        "--benchmark",
-        help="Captures benchmark, including throughput estimates, with provided avg log size in KB. (ex: 500 or 0.1)",
-        type=float,
-        default=1,
-    )
-    args = parser.parse_args()
-    return args
-
-
 if __name__ == "__main__":
     # Parse arguments
-    args = parse_arguments()
+    args = utils.parse_arguments()
+    
     # Handle script exit
     signal.signal(signal.SIGTERM, signal_term_handler)
     signal.signal(signal.SIGINT, signal_term_handler)
-    # Kafka producer configuration for processed output data
+    
+    client = utils.create_dask_client(args.dask_scheduler)
+    client.run(worker_init)
+    
     producer_conf = {
         "bootstrap.servers": args.broker,
-        "session.timeout.ms": 10000,
+        "session.timeout.ms": "10000",
+        #"queue.buffering.max.messages": "250000",
+        #"linger.ms": "100"
     }
-    print("Producer conf:", producer_conf)
-    client = create_dask_client(args.dask_scheduler)
-    client.run(worker_init)
-
-    # Define the streaming pipeline.
     consumer_conf = {
         "bootstrap.servers": args.broker,
         "group.id": args.group_id,
-        "session.timeout.ms": 60000,
+        "session.timeout.ms": "60000",
         "enable.partition.eof": "true",
         "auto.offset.reset": "earliest",
     }
+    
+    print("Producer conf:", producer_conf)
     print("Consumer conf:", consumer_conf)
+    
     source = Stream.from_kafka_batched(
         args.input_topic,
         consumer_conf,

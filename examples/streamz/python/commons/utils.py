@@ -14,6 +14,7 @@
 
 import sys
 import time
+import confluent_kafka as ck
 from distributed import Client
 from dask_cuda import LocalCUDACluster
 
@@ -30,6 +31,7 @@ def create_dask_client(dask_scheduler):
     print(client)
     return client
 
+
 def signal_term_handler(signal, frame):
     # Receives signal and calculates benchmark if indicated in argument
     print("Exiting streamz script...")
@@ -44,7 +46,17 @@ def signal_term_handler(signal, frame):
             )
         )
     sys.exit(0)
-    
+
+
+def sink_to_kafka(producer_conf, parsed_df):
+    producer = ck.Producer(producer_conf)
+    json_str = parsed_df.to_json(orient='records', lines=True)
+    json_recs = json_str.split('\n')
+    for json_rec in json_recs:
+        producer.produce(args.output_topic, json_rec)
+    producer.flush()
+
+
 def calc_benchmark(processed_data, size_per_log):
     # Calculates benchmark for the streamz workflow
     t1 = int(round(time.time() * 1000))
@@ -64,3 +76,40 @@ def calc_benchmark(processed_data, size_per_log):
     throughput_mbps = size / (1024.0 * time_diff) if time_diff > 0 else 0
     avg_batch_size = size / (1024.0 * batch_count) if batch_count > 0 else 0
     return (time_diff, throughput_mbps, avg_batch_size)
+
+def parse_arguments():
+    # Establish script arguments
+    parser = argparse.ArgumentParser(
+        description="Cybert using Streamz and Dask. \
+                                                  Data will be read from the input kafka topic, \
+                                                  processed using cybert, and output printed."
+    )
+    parser.add_argument("-b", "--broker", default="localhost:9092", help="Kafka broker")
+    parser.add_argument(
+        "-i", "--input_topic", default="input", help="Input kafka topic"
+    )
+    parser.add_argument(
+        "-o", "--output_topic", default="output", help="Output kafka topic"
+    )
+    parser.add_argument("-g", "--group_id", default="streamz", help="Kafka group ID")
+    parser.add_argument("-m", "--model", help="Model filepath")
+    parser.add_argument("-l", "--label_map", help="Label map filepath")
+    parser.add_argument(
+        "--dask_scheduler",
+        help="Dask scheduler address. If not provided a new dask cluster will be created",
+    )
+    parser.add_argument(
+        "--max_batch_size",
+        default=1000,
+        type=int,
+        help="Max batch size to read from kafka",
+    )
+    parser.add_argument("--poll_interval", type=str, help="Polling interval (ex: 60s)")
+    parser.add_argument(
+        "--benchmark",
+        help="Captures benchmark, including throughput estimates, with provided avg log size in KB. (ex: 500 or 0.1)",
+        type=float,
+        default=1,
+    )
+    args = parser.parse_args()
+    return args
