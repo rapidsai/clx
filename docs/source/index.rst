@@ -14,6 +14,7 @@ Welcome to clx's documentation!
    10min-clx.ipynb
    intro-clx-workflow.ipynb
    intro-clx-dga.ipynb
+   intro-clx-streamz.ipynb
 
 
 
