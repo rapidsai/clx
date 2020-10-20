@@ -32,12 +32,12 @@ def create_dask_client(dask_scheduler):
     print(client)
     return client
 
-def sink_to_kafka(producer_conf, parsed_df):
+def kafka_sink(producer_conf, output_topic, parsed_df):
     producer = ck.Producer(producer_conf)
     json_str = parsed_df.to_json(orient='records', lines=True)
     json_recs = json_str.split('\n')
     for json_rec in json_recs:
-        producer.produce(args.output_topic, json_rec)
+        producer.produce(output_topic, json_rec)
     producer.flush()
 
 
