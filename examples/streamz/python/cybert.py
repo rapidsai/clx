@@ -20,15 +20,14 @@ import cudf
 import dask
 import torch
 import pandas as pd
-import confluent_kafka as ck
 from streamz import Stream
 from clx_streamz_tools import utils
+
 
 def inference(messages):
     # Messages will be received and run through cyBERT inferencing
     worker = dask.distributed.get_worker()
     batch_start_time = int(round(time.time()))
-    size = 0
     df = cudf.DataFrame()
     if type(messages) == str:
         df["stream"] = [messages.decode("utf-8")]
@@ -36,9 +35,9 @@ def inference(messages):
         df["stream"] = [msg.decode("utf-8") for msg in messages]
     else:
         print("ERROR: Unknown type encountered in inference")
-    
+
     parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
-    confidence_df = confidence_df.add_suffix('_confidence')
+    confidence_df = confidence_df.add_suffix("_confidence")
     parsed_df = pd.concat([parsed_df, confidence_df], axis=1)
     result_size = parsed_df.shape[0]
     torch.cuda.empty_cache()
@@ -51,6 +50,7 @@ def sink_to_kafka(processed_data):
     parsed_df = processed_data[3]
     utils.kafka_sink(producer_conf, args.output_topic, parsed_df)
     return processed_data
+
 
 def signal_term_handler(signal, frame):
     # Receives signal and calculates benchmark if indicated in argument
@@ -66,8 +66,8 @@ def signal_term_handler(signal, frame):
             )
         )
     sys.exit(0)
-    
-    
+
+
 def worker_init():
     # Initialization for each dask worker
     from clx.analytics.cybert import Cybert
@@ -90,18 +90,15 @@ def worker_init():
 if __name__ == "__main__":
     # Parse arguments
     args = utils.parse_arguments()
-    
+
     # Handle script exit
     signal.signal(signal.SIGTERM, signal_term_handler)
     signal.signal(signal.SIGINT, signal_term_handler)
-    
+
     client = utils.create_dask_client(args.dask_scheduler)
     client.run(worker_init)
-    
-    producer_conf = {
-        "bootstrap.servers": args.broker,
-        "session.timeout.ms": "10000",
-    }
+
+    producer_conf = {"bootstrap.servers": args.broker, "session.timeout.ms": "10000"}
     consumer_conf = {
         "bootstrap.servers": args.broker,
         "group.id": args.group_id,
@@ -109,10 +106,10 @@ if __name__ == "__main__":
         "enable.partition.eof": "true",
         "auto.offset.reset": "earliest",
     }
-    
+
     print("Producer conf:", producer_conf)
     print("Consumer conf:", consumer_conf)
-    
+
     source = Stream.from_kafka_batched(
         args.input_topic,
         consumer_conf,

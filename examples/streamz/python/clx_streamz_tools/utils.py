@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
 import time
 import argparse
 import confluent_kafka as ck
@@ -32,10 +31,11 @@ def create_dask_client(dask_scheduler):
     print(client)
     return client
 
+
 def kafka_sink(producer_conf, output_topic, parsed_df):
     producer = ck.Producer(producer_conf)
-    json_str = parsed_df.to_json(orient='records', lines=True)
-    json_recs = json_str.split('\n')
+    json_str = parsed_df.to_json(orient="records", lines=True)
+    json_recs = json_str.split("\n")
     for json_rec in json_recs:
         producer.produce(output_topic, json_rec)
     producer.flush()
@@ -60,6 +60,7 @@ def calc_benchmark(processed_data, size_per_log):
     throughput_mbps = size / (1024.0 * time_diff) if time_diff > 0 else 0
     avg_batch_size = size / (1024.0 * batch_count) if batch_count > 0 else 0
     return (time_diff, throughput_mbps, avg_batch_size)
+
 
 def parse_arguments():
     # Establish script arguments

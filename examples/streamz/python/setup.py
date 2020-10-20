@@ -1,5 +1,5 @@
 # Copyright (c) 2020, NVIDIA CORPORATION.
-from setuptools import find_packages, setup
+from setuptools import setup
 
 setup(
     name="clx_streamz_tools",

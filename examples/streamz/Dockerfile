@@ -36,15 +36,14 @@ ADD examples/streamz/data "$CLX_STREAMZ_HOME"/data
 ADD examples/streamz/python "$CLX_STREAMZ_HOME"/python
 
 RUN mkdir -p "$CLX_STREAMZ_HOME"/ml/models && \
-	mkdir "$CLX_STREAMZ_HOME"/ml/labels && \
-	mkdir "$CLX_STREAMZ_HOME"/ml/config
+	mkdir "$CLX_STREAMZ_HOME"/ml/labels
 
 RUN wget -q http://www.gtlib.gatech.edu/pub/apache/kafka/2.3.0/kafka_2.11-2.3.0.tgz -O /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz && \
         tar xfz /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz -C /opt && \
         rm /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz
 
 # Download cybert apache model from huggingface for example
-RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/config.json -O "$CLX_STREAMZ_HOME"/ml/config/config.json
+RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/config.json -O "$CLX_STREAMZ_HOME"/ml/labels/config.json
 RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/pytorch_model.bin -O "$CLX_STREAMZ_HOME"/ml/models/pytorch_model.bin
 
 # Zookeeper

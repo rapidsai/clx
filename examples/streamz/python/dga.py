@@ -15,26 +15,26 @@
 import gc
 import sys
 import time
-import cudf
 import dask
 import torch
 import signal
 from streamz import Stream
-import confluent_kafka as ck
 from clx_streamz_tools import utils
+
 
 def inference(messages_df):
     # Messages will be received and run through DGA inferencing
     worker = dask.distributed.get_worker()
     batch_start_time = int(round(time.time()))
     dd = worker.data["dga_detector"]
-    preds = dd.predict(messages_df['domain'])
-    messages_df['preds'] = preds
+    preds = dd.predict(messages_df["domain"])
+    messages_df["preds"] = preds
     result_size = messages_df.shape[0]
-    print('dataframe size: %s' %(result_size))
+    print("dataframe size: %s" % (result_size))
     torch.cuda.empty_cache()
     gc.collect()
-    return (batch_start_time, result_size, messages_df,)
+    return (batch_start_time, result_size, messages_df)
+
 
 def sink_to_kafka(processed_data):
     # Prediction data will be published to provided kafka producer
@@ -46,7 +46,7 @@ def sink_to_kafka(processed_data):
 def worker_init():
     # Initialization for each dask worker
     from clx.analytics.dga_detector import DGADetector
-    
+
     worker = dask.distributed.get_worker()
     dd = DGADetector()
     print(
@@ -74,23 +74,24 @@ def signal_term_handler(signal, frame):
             )
         )
     sys.exit(0)
-   
+
+
 if __name__ == "__main__":
     # Parse arguments
     args = utils.parse_arguments()
-    
+
     # Handle script exit
     signal.signal(signal.SIGTERM, signal_term_handler)
     signal.signal(signal.SIGINT, signal_term_handler)
-    
+
     client = utils.create_dask_client(args.dask_scheduler)
     client.run(worker_init)
-    
+
     producer_conf = {
         "bootstrap.servers": args.broker,
         "session.timeout.ms": "10000",
-        #"queue.buffering.max.messages": "250000",
-        #"linger.ms": "100"
+        # "queue.buffering.max.messages": "250000",
+        # "linger.ms": "100"
     }
     consumer_conf = {
         "bootstrap.servers": args.broker,
@@ -101,7 +102,7 @@ if __name__ == "__main__":
     }
     print("Consumer conf:", consumer_conf)
     print("Producer conf:", producer_conf)
-    
+
     # Define the streaming pipeline.
     source = Stream.from_kafka_batched(
         args.input_topic,
@@ -125,6 +126,5 @@ if __name__ == "__main__":
         )
     else:
         output = source.map(inference).map(sink_to_kafka).gather()
-    
+
     source.start()
-    
