@@ -5,6 +5,7 @@
 ## Improvements
 
 ## Bug Fixes
+- PR #269 Add cybert class to docs build
 
 # clx 0.16.0 (Date TBD)
 
