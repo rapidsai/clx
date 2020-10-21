@@ -10,6 +10,8 @@ log(){
   fi
 }
 
+source activate rapids
+
 # kakfa broker
 BROKER="localhost:9092"
 
@@ -59,3 +61,5 @@ do
    CUDA_VISIBLE_DEVICES=$i nohup dask-cuda-worker localhost:8786 2>&1 &
 done
 sleep 3
+
+exec "$@";
