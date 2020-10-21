@@ -81,3 +81,5 @@ RUN source activate rapids && \
 	python setup.py install
 	
 WORKDIR /rapids/clx
+
+ENTRYPOINT ["/usr/bin/tini", "--", "bash", "/opt/clx_streamz/scripts/entry.sh"]

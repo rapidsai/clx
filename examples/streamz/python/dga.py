@@ -104,6 +104,7 @@ if __name__ == "__main__":
     print("Producer conf:", producer_conf)
 
     # Define the streaming pipeline.
+    # note: currently cudf engine supports only flatten json message format.
     source = Stream.from_kafka_batched(
         args.input_topic,
         consumer_conf,
