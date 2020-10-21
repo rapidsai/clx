@@ -103,7 +103,7 @@ def major_ports(addr_col, port_col, min_conns=1, eph_min=10000):
     if min_conns > 1:
         gdf = gdf[gdf.conns >= min_conns]
 
-    gdf = gdf.drop(['avg'])
+    gdf = gdf.drop(['avg'], axis=1)
 
     resources = Resources.get_instance()
     iana_lookup_df = resources.iana_lookup_df

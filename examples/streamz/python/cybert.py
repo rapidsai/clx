@@ -13,18 +13,18 @@
 # limitations under the License.
 
 import argparse
+import gc
+import signal
+import sys
+import time
+
+import confluent_kafka as ck
 import cudf
 import dask
+import torch
 from dask_cuda import LocalCUDACluster
 from distributed import Client
 from streamz import Stream
-import confluent_kafka as ck
-from clx.analytics.cybert import Cybert
-import socket
-import signal
-import random
-import time
-import sys
 
 
 def inference(messages):
@@ -41,6 +41,8 @@ def inference(messages):
         print("ERROR: Unknown type encountered in inference")
     parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
     size = len(df)
+    torch.cuda.empty_cache()
+    gc.collect()
     return (parsed_df, confidence_df, batch_start_time, size)
 
 
@@ -56,6 +58,7 @@ def sink_to_kafka(processed_data):
 
 
 def worker_init():
+    # Initialization for each dask worker
     from clx.analytics.cybert import Cybert
 
     worker = dask.distributed.get_worker()
@@ -73,20 +76,21 @@ def worker_init():
     print("Successfully initialized dask worker " + str(worker))
 
 
-def calc_benchmark(processed_data):
+def calc_benchmark(processed_data, size_per_log):
+    # Calculates benchmark for the streamz workflow
     t1 = int(round(time.time() * 1000))
     t2 = 0
     size = 0.0
     batch_count = 0
     # Find min and max time while keeping track of batch count and size
     for result in processed_data:
-        (ts1, ts2, sz) = (result[2], result[3], result[4])
+        (ts1, ts2, result_size) = (result[2], result[3], result[4])
         if ts1 == 0 or ts2 == 0:
             continue
         batch_count = batch_count + 1
         t1 = min(t1, ts1)
         t2 = max(t2, ts2)
-        size += sz / 10
+        size += result_size * size_per_log
     time_diff = t2 - t1
     throughput_mbps = size / (1024.0 * time_diff) if time_diff > 0 else 0
     avg_batch_size = size / (1024.0 * batch_count) if batch_count > 0 else 0
@@ -94,9 +98,12 @@ def calc_benchmark(processed_data):
 
 
 def signal_term_handler(signal, frame):
+    # Receives signal and calculates benchmark if indicated in argument
     print("Exiting streamz script...")
     if args.benchmark:
-        (time_diff, throughput_mbps, avg_batch_size) = calc_benchmark(output)
+        (time_diff, throughput_mbps, avg_batch_size) = calc_benchmark(
+            output, args.benchmark
+        )
         print("*** BENCHMARK ***")
         print(
             "Job duration: {:.3f} secs, Throughput(mb/sec):{:.3f}, Avg. Batch size(mb):{:.3f}".format(
@@ -107,6 +114,7 @@ def signal_term_handler(signal, frame):
 
 
 def parse_arguments():
+    # Establish script arguments
     parser = argparse.ArgumentParser(
         description="Cybert using Streamz and Dask. \
                                                   Data will be read from the input kafka topic, \
@@ -127,32 +135,24 @@ def parse_arguments():
         help="Dask scheduler address. If not provided a new dask cluster will be created",
     )
     parser.add_argument(
-        "--cuda_visible_devices", type=str, help="Cuda visible devices (ex: '0,1,2')",
-    )
-    parser.add_argument(
         "--max_batch_size",
         default=1000,
         type=int,
         help="Max batch size to read from kafka",
     )
     parser.add_argument("--poll_interval", type=str, help="Polling interval (ex: 60s)")
-    parser.add_argument("--benchmark", help="Capture benchmark", action="store_true")
+    parser.add_argument(
+        "--benchmark",
+        help="Captures benchmark, including throughput estimates, with provided avg log size in KB. (ex: 500 or 0.1)",
+        type=float
+    )
     args = parser.parse_args()
     return args
 
 
-def create_dask_client(dask_scheduler, cuda_visible_devices=[0]):
-    # If a dask scheduler is provided create client using that address
-    # otherwise create a new dask cluster
-    if dask_scheduler is not None:
-        print("Dask scheduler:", dask_scheduler)
-        client = Client(dask_scheduler)
-    else:
-        n_workers = len(cuda_visible_devices)
-        cluster = LocalCUDACluster(
-            CUDA_VISIBLE_DEVICES=cuda_visible_devices, n_workers=n_workers
-        )
-        client = Client(cluster)
+def create_dask_client():
+    cluster = LocalCUDACluster()
+    client = Client(cluster)
     print(client)
     return client
 
@@ -169,9 +169,7 @@ if __name__ == "__main__":
         "session.timeout.ms": 10000,
     }
     print("Producer conf:", producer_conf)
-    cuda_visible_devices = args.cuda_visible_devices.split(",")
-    cuda_visible_devices = [int(x) for x in cuda_visible_devices]
-    client = create_dask_client(args.dask_scheduler, cuda_visible_devices)
+    client = create_dask_client()
     client.run(worker_init)
 
     # Define the streaming pipeline.
@@ -180,7 +178,7 @@ if __name__ == "__main__":
         "group.id": args.group_id,
         "session.timeout.ms": 60000,
         "enable.partition.eof": "true",
-        "auto.offset.reset": "latest",
+        "auto.offset.reset": "earliest",
     }
     print("Consumer conf:", consumer_conf)
     source = Stream.from_kafka_batched(

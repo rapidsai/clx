@@ -9,6 +9,9 @@ IP
 
 Analytics
 ---------
+.. autoclass:: clx.analytics.asset_classification.AssetClassification
+    :members:
+
 .. autoclass:: clx.analytics.dga_detector.DGADetector
     :members:
 

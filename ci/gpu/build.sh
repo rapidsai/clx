@@ -34,7 +34,7 @@ logger "Get env..."
 env
 
 logger "Activate conda env..."
-source activate gdf
+source activate rapids
 
 logger "Check versions..."
 python --version
@@ -43,7 +43,7 @@ python --version
 conda config --set ssl_verify False
 
 logger "conda install required packages"
-conda install -c pytorch -c gwerbin \
+conda install -y -c pytorch -c gwerbin \
     "rapids-build-env=$MINOR_VERSION.*" \
     "rapids-notebook-env=$MINOR_VERSION.*" \
     "cugraph=${MINOR_VERSION}" \
@@ -53,16 +53,18 @@ conda install -c pytorch -c gwerbin \
     "torchvision" \
     "python-confluent-kafka" \
     "transformers" \
-    "seqeval" \
+    "seqeval=0.0.12" \
     "python-whois" \
     "requests" \
-    "matplotlib"
+    "matplotlib" \
+    "faker"
 
 logger "pip install git+https://github.com/rapidsai/cudatashader.git"
 pip install "git+https://github.com/rapidsai/cudatashader.git"
 logger "pip install mockito"
 pip install mockito
 pip install wget
+pip install faker
 
 conda list
 
@@ -76,6 +78,9 @@ $WORKSPACE/build.sh clean libclx clx
 ################################################################################
 # TEST - Test python package
 ################################################################################
+set +e -Eo pipefail
+EXITCODE=0
+trap "EXITCODE=1" ERR
 
 if hasArg --skip-tests; then
     logger "Skipping Tests..."
@@ -85,3 +90,5 @@ else
     ${WORKSPACE}/ci/gpu/test-notebooks.sh 2>&1 | tee nbtest.log
     python ${WORKSPACE}/ci/utils/nbtestlog2junitxml.py nbtest.log
 fi
+
+return "${EXITCODE}"

@@ -1,4 +1,4 @@
-# <div align="left"><img src="https://rapids.ai/assets/images/rapids_logo.png" width="90px"/>&nbsp;CLX SIEM Integration</div>
+# <div align="left"><img src="../img/rapids_logo.png" width="90px"/>&nbsp;CLX SIEM Integration</div>
 
 **NOTE:** For the latest stable [README.md](https://github.com/rapidsai/clx/blob/main/README.md) ensure you are on the `main` branch.
 
