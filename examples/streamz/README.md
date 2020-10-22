@@ -130,7 +130,7 @@ python -i $CLX_STREAMZ_HOME/python/cybert.py --broker localhost:9092 --input_top
 
 ## Run DGA Streamz Example
 
-Your Quickstart Docker container also includes the data and model required to run DGA stream processing on a sample domains.
+Your Quickstart Docker container includes the data and model required to run DGA stream processing on a sample domains.
 
 ```
 bash $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh -i dga_input -o dga_output -d $CLX_STREAMZ_HOME/data/dga_input.jsonlines
