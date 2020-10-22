@@ -1,6 +1,6 @@
 # Getting Started with CLX and Streamz
 
-This is a guide on how [CLX](https://github.com/rapidsai/clx) and [Streamz](https://streamz.readthedocs.io/en/latest/) can be used to build a streaming inference pipeline. We will use CLX's cyBERT for inference.
+This is a guide on how [CLX](https://github.com/rapidsai/clx) and [Streamz](https://streamz.readthedocs.io/en/latest/) can be used to build a streaming inference pipeline.
 
 Streamz has the ability to read from [Kafka](https://kafka.apache.org/) directly into [Dask](https://dask.org/) allowing for computation on a multi-core or cluster environment. This approach is best used for instances in which you hope to increase processing speeds with streaming data.
 
@@ -22,9 +22,9 @@ Run the following to build the image:
 docker build -f examples/streamz/Dockerfile -t clx-streamz:latest .
 `
 
-## Running CLX-Streamz Pipelines
+## Running CLX_Streamz Pipelines
 
-A docker container is created using the image above. The 'docker run' format to build your container is shown below. Note: volumne binding to the container is an optional argument.
+A docker container is created using the image above. The 'docker run' format to build your container is shown below. Note: volume binding to the container is an optional argument.
 
 **Preferred - Docker CE v19+ and nvidia-container-toolkit**
 
@@ -125,16 +125,16 @@ Your Quickstart Docker container includes the data and model required to run cyB
 bash $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh -i cybert_input -o cybert_output -d $CLX_STREAMZ_HOME/data/apache_raw_sample_1k.txt
 ```
 ```
-python -i $CLX_STREAMZ_HOME/python/cybert.py --broker localhost:9092 --input_topic cybert_input --output_topic cybert_output --group_id streamz --model $CLX_STREAMZ_HOME/ml/models/pytorch_model.bin --label_map $CLX_STREAMZ_HOME/ml/labels/config.json --poll_interval 1s --max_batch_size 500 --dask_scheduler localhost:8786 --benchmark 10
+python -i $CLX_STREAMZ_HOME/python/cybert.py --broker localhost:9092 --input_topic cybert_input --output_topic cybert_output --group_id streamz --model $CLX_STREAMZ_HOME/ml/models/cybert_pytorch_model.bin --label_map $CLX_STREAMZ_HOME/ml/labels/cybert_config.json --poll_interval 1s --max_batch_size 500 --dask_scheduler localhost:8786 --benchmark 10
 ```
 
 ## Run DGA Streamz Example
 
-Your Quickstart Docker container includes the data and model required to run DGA stream processing on a sample domains.
+Your Quickstart Docker container includes the data and model required to run DGA detection stream processing on a sample domains.
 
 ```
-bash $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh -i dga_input -o dga_output -d $CLX_STREAMZ_HOME/data/dga_input.jsonlines
+bash $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh -i dga_detection_input -o dga_detection_output -d $CLX_STREAMZ_HOME/data/dga_detection_input.jsonlines
 ```
 ```
-python -i $CLX_STREAMZ_HOME/python/dga.py --broker localhost:9092 --input_topic dga_input --output_topic dga_output --group_id streamz --model $CLX_STREAMZ_HOME/ml/models/dga_pytorch_model.bin --label_map $CLX_STREAMZ_HOME/ml/labels/config.json --poll_interval 1s --max_batch_size 500 --dask_scheduler localhost:8786 --benchmark 10
+python -i $CLX_STREAMZ_HOME/python/dga_detection.py --broker localhost:9092 --input_topic dga_detection_input --output_topic dga_detection_output --group_id streamz --model $CLX_STREAMZ_HOME/ml/models/dga_detection_pytorch_model.bin --poll_interval 1s --max_batch_size 500 --dask_scheduler localhost:8786 --benchmark 10
 ```
