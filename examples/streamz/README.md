@@ -78,9 +78,9 @@ A selection of workflows such as cyBERT and DGA detection inferencing are implem
       -b,  --broker             Kafka broker. Default value is localhost:9092
       -i,  --input_topic	    Input kafka topic
       -o,  --output_topic	    Output kafka topic
-      -d,  --data_path	        Input data filepath
+      -d,  --data_path	    Input data filepath
     
-      -h, --help		        Print this help
+      -h, --help		    Print this help
     ```
     
 2. Run the workflow in python interactive mode
