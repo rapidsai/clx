@@ -12,19 +12,19 @@ usage() {
     fi
     echo "Usage: $0 [POS]... [ARG]..."
     echo
-    echo "Example-1: bash $0 -b localhost:9092 -i cybert_input -o output_topic -d /data/path/to/publish/input_topic"
-    echo "Example-2: bash $0 -i cybert_input -o output_topic -d /data/path/to/publish/input_topic"
-    echo "Example-2: bash $0 -i cybert_input -o output_topic"
+    echo "Example-1: bash $0 -b localhost:9092 -i cybert_input -o cybert_output -d /opt/clx_streamz/data/cybert_input.csv"
+    echo "Example-2: bash $0 -i cybert_input -o cybert_output -d /opt/clx_streamz/data/cybert_input.csv"
+    echo "Example-2: bash $0 -i cybert_input -o cybert_ouput"
     echo
-    echo "This script configures the kafka topic, such as creating and loading data."
+    echo "This script configures the kafka topic, such as creating and loading data or just the topic creation."
     echo
     echo Positional:
-    echo "  -b,  --broker           Kafka broker"
+    echo "  -b,  --broker             Kafka broker. Default value is localhost:9092"
     echo "  -i,  --input_topic	    Input kafka topic"
-    echo "  -o,  --output_topic		Output kafka topic"
-    echo "  -d,  --data_path		Sample input data file path"
+    echo "  -o,  --output_topic	    Output kafka topic"
+    echo "  -d,  --data_path	    Input data filepath"
    	echo
-    echo "  -h, --help		        Print this help"
+    echo "  -h, --help		    Print this help"
     echo
     exit $exitcode
 }
@@ -87,5 +87,5 @@ log "INFO" "Created '$input_topic' and '$output_topic kafka topics"
 if [ -f "$data_path" ]; then
 	$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $broker --topic $input_topic < $data_path
 	echo ""
-	log "INFO" "Sample data at location '$data_path' is published to '$input_topic kafka' topic"
+	log "INFO" "Sample data at location '$data_path' is published to '$input_topic' kafka topic"
 fi

@@ -65,9 +65,9 @@ def calc_benchmark(processed_data, size_per_log):
 def parse_arguments():
     # Establish script arguments
     parser = argparse.ArgumentParser(
-        description="Cybert using Streamz and Dask. \
-                                                  Data will be read from the input kafka topic, \
-                                                  processed using cybert, and output printed."
+        description="Streamz and Dask. \
+                     Data will be read from the input kafka topic, \
+                     processed using clx streamz workflows."
     )
     parser.add_argument("-b", "--broker", default="localhost:9092", help="Kafka broker")
     parser.add_argument(
