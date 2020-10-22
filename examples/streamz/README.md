@@ -4,7 +4,7 @@ This is a guide on how [CLX](https://github.com/rapidsai/clx) and [Streamz](http
 
 Streamz has the ability to read from [Kafka](https://kafka.apache.org/) directly into [Dask](https://dask.org/) allowing for computation on a multi-core or cluster environment. This approach is best used for instances in which you hope to increase processing speeds with streaming data.
 
-A selection of workflows such as cyBERT and DGA detection inferencing are implemented in clx streamz. Here we share an example in which we demonstrate how to read Apache log data from Kafka, perform log parsing using CLX cyBERT and publish result data back to Kafka.
+A selection of workflows such as cyBERT and DGA detection inferencing are implemented in clx streamz. Here we share an example in which we demonstrate how to read Apache log data from Kafka, perform log parsing using CLX cyBERT and publish result data back to Kafka. Similarly, also for DGA detection.
 
 ## Build Quickstart Docker Image
 For convenience, you can build a Docker image that will include a working environment that's ready for running your pipeline. This image will contain all needed components including [Kafka](https://kafka.apache.org/) and [Zookeeper](https://zookeeper.apache.org/).
@@ -58,12 +58,13 @@ The Dockerfile contains an ENTRYPOINT which calls [entry.sh](https://github.com/
 3. Start Dask Scheduler on `localhost:8786`
 4. Start Dask CUDA Worker (one worker per GPU)
 
-**Steps to run cyBERT workflow are followed below**
+**Steps to run workflow are followed below**
 
 1. Access docker container
    ```
    docker exec -it clx_streamz bash
    ```
+   
 2. Create kafka topics for the clx_streamz workflows that we want to run and publish input data. 
 
     ```
@@ -87,12 +88,13 @@ The Dockerfile contains an ENTRYPOINT which calls [entry.sh](https://github.com/
       -h, --help		        Print this help
     ```
     ```
-    bash $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh -b localhost:9092 -i cybert_input -o cybert_output -d /opt/clx_streamz/data/cybert_input.csv
+    bash $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh -b localhost:9092 -i <input_topic> -o <output_topic> -d <data_filepath>
     ```
     
-2. Start workflow with required arugments
+3. Start workflow with required arugments
+    
     ```
-    python -i $CLX_STREAMZ_HOME/python/cybert.py --broker <host:port> --input_topic <input_topic> --output_topic <output_topic> --group_id <kafka_consumer_group_id> --model <model filepath> --label_map <labels filepath> --poll_interval <poll_interval> --max_batch_size <max_batch_size> --dask_scheduler <hostname:port>
+    python -i $CLX_STREAMZ_HOME/python/<workflow_script> --broker <host:port> --input_topic <input_topic> --output_topic <output_topic> --group_id <kafka_consumer_group_id> --model <model filepath> --label_map <labels filepath> --poll_interval <poll_interval> --max_batch_size <max_batch_size> --dask_scheduler <hostname:port>
     ```
     **Parameters:**
     - `broker`* - Host and port where kafka broker is running. 
@@ -113,14 +115,14 @@ View the data processing activity on the dask dashboard by visiting http://local
 Jupyterlab can be accessed by visiting http://localhost:8888 or `<host>:8888`
 
 Processed data will be pushed to the give kafka output topic. To view all processed output run:
+
 ```
 docker exec clx_streamz bash -c 'source activate rapids && $KAFKA_HOME/bin/kafka-console-consumer.sh --bootstrap-server <broker> --topic <output_topic> --from-beginning'
 ```
 
+Your Quickstart Docker container includes the data and models required to run cyBERT and DGA detection stream processing workflows.
+
 ## Run cyBERT Streamz Example on Apache Logs
-
-Your Quickstart Docker container includes the data and model required to run cyBERT stream processing on a sample of Apache logs.
-
 ```
 bash $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh -i cybert_input -o cybert_output -d $CLX_STREAMZ_HOME/data/apache_raw_sample_1k.txt
 ```
@@ -128,9 +130,7 @@ bash $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh -i cybert_input -o cybert_ou
 python -i $CLX_STREAMZ_HOME/python/cybert.py --broker localhost:9092 --input_topic cybert_input --output_topic cybert_output --group_id streamz --model $CLX_STREAMZ_HOME/ml/models/cybert_pytorch_model.bin --label_map $CLX_STREAMZ_HOME/ml/labels/cybert_config.json --poll_interval 1s --max_batch_size 500 --dask_scheduler localhost:8786 --benchmark 10
 ```
 
-## Run DGA Streamz Example
-
-Your Quickstart Docker container includes the data and model required to run DGA detection stream processing on a sample domains.
+## Run DGA Streamz Example on Sample Domains
 
 ```
 bash $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh -i dga_detection_input -o dga_detection_output -d $CLX_STREAMZ_HOME/data/dga_detection_input.jsonlines

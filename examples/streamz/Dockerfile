@@ -47,7 +47,7 @@ RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_
 RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/pytorch_model.bin -O "$CLX_STREAMZ_HOME"/ml/models/cybert_pytorch_model.bin
 
 # Download dga detection model
-RUN wget -q https://rapidsai-data.s3.amazonaws.com/cyber/clx/rnn_classifier_2020-06-08_20_48_03.pth -O "$CLX_STREAMZ_HOME"/ml/models/dga_detection_pytorch_model.bin
+#RUN wget -q https://rapidsai-data.s3.amazonaws.com/cyber/clx/dga_detection_pytorch_model.bin -O "$CLX_STREAMZ_HOME"/ml/models/dga_detection_pytorch_model.bin
 
 # Zookeeper
 EXPOSE 2181
