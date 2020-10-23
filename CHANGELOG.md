@@ -3,6 +3,7 @@
 ## New Features
 
 ## Improvements
+- PR #272 CLX Streamz generic structure
 
 ## Bug Fixes
 
