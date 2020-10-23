@@ -30,26 +30,24 @@ A docker container is created using the image above. The 'docker run' format to 
 
 ```
 docker run -it \
---gpus '"device=0,1,3"' \
--p 8787:8787 \
--p 8888:8888 \
--v <your_models_and_labels_directory_path>:<your_containers_directory_path> \
---name clx_streamz \
--d clx-streamz:latest \
-/bin/bash
+    -p 8787:8787 \
+    -p 8888:8888 \
+    -v <your_models_and_labels_directory_path>:<your_containers_directory_path> \
+    --gpus '"device=0,1,3"' \
+    --name clx_streamz \
+    -d clx-streamz:latest
 ```
 
 **Legacy - Docker CE v18 and nvidia-docker2**
 
 ```
 docker run -it \
---runtime=nvidia \
--p 8787:8787 \
--p 8888:8888 \
--v <your_models_and_labels_directory_path>:<your_containers_directory_path> \
---name clx_streamz
--d cybert-streamz:latest \
-/bin/bash
+    -p 8787:8787 \
+    -p 8888:8888 \
+    -v <your_models_and_labels_directory_path>:<your_containers_directory_path> \
+    --runtime=nvidia \
+    --name clx_streamz \
+    -d cybert-streamz:latest
 ```
 
 The Dockerfile contains an ENTRYPOINT which calls [entry.sh](https://github.com/rapidsai/clx/blob/branch-0.17/examples/streamz/scripts/entry.sh) to:
@@ -88,13 +86,26 @@ The Dockerfile contains an ENTRYPOINT which calls [entry.sh](https://github.com/
       -h, --help		        Print this help
     ```
     ```
-    bash $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh -b localhost:9092 -i <input_topic> -o <output_topic> -d <data_filepath>
+    bash $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh \
+        -b localhost:9092 \
+        -i <input_topic> \
+        -o <output_topic> \
+        -d <data_filepath>
     ```
     
 3. Start workflow with required arugments
     
     ```
-    python -i $CLX_STREAMZ_HOME/python/<workflow_script> --broker <host:port> --input_topic <input_topic> --output_topic <output_topic> --group_id <kafka_consumer_group_id> --model <model filepath> --label_map <labels filepath> --poll_interval <poll_interval> --max_batch_size <max_batch_size> --dask_scheduler <hostname:port>
+    python -i $CLX_STREAMZ_HOME/python/<workflow_script> \
+        --broker <host:port> \
+        --input_topic <input_topic> \
+        --output_topic <output_topic> \
+        --group_id <kafka_consumer_group_id> \
+        --model <model filepath> \
+        --label_map <labels filepath> \
+        --poll_interval <poll_interval> \
+        --max_batch_size <max_batch_size> \
+        --dask_scheduler <hostname:port>
     ```
     **Parameters:**
     - `broker`* - Host and port where kafka broker is running. 
@@ -112,7 +123,6 @@ The Dockerfile contains an ENTRYPOINT which calls [entry.sh](https://github.com/
 
 
 View the data processing activity on the dask dashboard by visiting http://localhost:8787 or `<host>:8787`
-Jupyterlab can be accessed by visiting http://localhost:8888 or `<host>:8888`
 
 Processed data will be pushed to the give kafka output topic. To view all processed output run:
 
@@ -124,17 +134,42 @@ Your Quickstart Docker container includes the data and models required to run cy
 
 ## Run cyBERT Streamz Example on Apache Logs
 ```
-bash $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh -i cybert_input -o cybert_output -d $CLX_STREAMZ_HOME/data/apache_raw_sample_1k.txt
+bash $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh \
+    -i cybert_input \
+    -o cybert_output \
+    -d $CLX_STREAMZ_HOME/data/apache_raw_sample_1k.txt
 ```
 ```
-python -i $CLX_STREAMZ_HOME/python/cybert.py --broker localhost:9092 --input_topic cybert_input --output_topic cybert_output --group_id streamz --model $CLX_STREAMZ_HOME/ml/models/cybert_pytorch_model.bin --label_map $CLX_STREAMZ_HOME/ml/labels/cybert_config.json --poll_interval 1s --max_batch_size 500 --dask_scheduler localhost:8786 --benchmark 10
+python -i $CLX_STREAMZ_HOME/python/cybert.py \
+    --broker localhost:9092 \
+    --input_topic cybert_input \
+    --output_topic cybert_output \
+    --group_id streamz \
+    --model $CLX_STREAMZ_HOME/ml/models/cybert_pytorch_model.bin \
+    --label_map $CLX_STREAMZ_HOME/ml/labels/cybert_config.json \
+    --poll_interval 1s \
+    --max_batch_size 500 \
+    --dask_scheduler localhost:8786 \
+    --benchmark 10
 ```
 
 ## Run DGA Streamz Example on Sample Domains
 
 ```
-bash $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh -i dga_detection_input -o dga_detection_output -d $CLX_STREAMZ_HOME/data/dga_detection_input.jsonlines
+bash $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh \
+    -i dga_detection_input \
+    -o dga_detection_output \
+    -d $CLX_STREAMZ_HOME/data/dga_detection_input.jsonlines
 ```
 ```
-python -i $CLX_STREAMZ_HOME/python/dga_detection.py --broker localhost:9092 --input_topic dga_detection_input --output_topic dga_detection_output --group_id streamz --model $CLX_STREAMZ_HOME/ml/models/dga_detection_pytorch_model.bin --poll_interval 1s --max_batch_size 500 --dask_scheduler localhost:8786 --benchmark 10
+python -i $CLX_STREAMZ_HOME/python/dga_detection.py \
+    --broker localhost:9092 \
+    --input_topic dga_detection_input \
+    --output_topic dga_detection_output \
+    --group_id streamz \
+    --model $CLX_STREAMZ_HOME/ml/models/dga_detection_pytorch_model.bin \
+    --poll_interval 1s \
+    --max_batch_size 500 \
+    --dask_scheduler localhost:8786 \
+    --benchmark 10
 ```

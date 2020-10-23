@@ -1,3 +1,5 @@
+# Copyright (c) 2020, NVIDIA CORPORATION.
+
 # An integration test & dev container which builds and installs CLX from default branch
 ARG RAPIDS_VERSION=0.16
 ARG CUDA_VERSION=10.2
@@ -86,3 +88,5 @@ RUN source activate rapids && \
 WORKDIR /rapids/clx
 
 ENTRYPOINT ["/usr/bin/tini", "--", "bash", "/opt/clx_streamz/scripts/entry.sh"]
+
+CMD [ "/bin/bash" ]
