@@ -19,6 +19,7 @@ import dask
 import torch
 import signal
 from streamz import Stream
+from tornado import ioloop
 from clx_streamz_tools import utils
 
 
@@ -76,10 +77,38 @@ def signal_term_handler(signal, frame):
     sys.exit(0)
 
 
+def start_stream():
+    # Define the streaming pipeline.
+    # note: currently cudf engine supports only flatten json message format.
+    source = Stream.from_kafka_batched(
+        args.input_topic,
+        consumer_conf,
+        poll_interval=args.poll_interval,
+        npartitions=1,
+        asynchronous=True,
+        dask=True,
+        engine="cudf",
+        max_batch_size=args.max_batch_size,
+    )
+    global output
+    # If benchmark arg is True, use streamz to compute benchmark
+    if args.benchmark:
+        print("Benchmark will be calculated")
+        output = (
+            source.map(inference)
+            .map(lambda x: (x[0], int(round(time.time())), x[1], x[2]))
+            .map(sink_to_kafka)
+            .gather()
+            .sink_to_list()
+        )
+    else:
+        output = source.map(inference).map(sink_to_kafka).gather()
+
+    source.start()
+
 if __name__ == "__main__":
     # Parse arguments
     args = utils.parse_arguments()
-
     # Handle script exit
     signal.signal(signal.SIGTERM, signal_term_handler)
     signal.signal(signal.SIGINT, signal_term_handler)
@@ -102,30 +131,12 @@ if __name__ == "__main__":
     }
     print("Consumer conf:", consumer_conf)
     print("Producer conf:", producer_conf)
-
-    # Define the streaming pipeline.
-    # note: currently cudf engine supports only flatten json message format.
-    source = Stream.from_kafka_batched(
-        args.input_topic,
-        consumer_conf,
-        poll_interval=args.poll_interval,
-        npartitions=1,
-        asynchronous=True,
-        dask=True,
-        engine="cudf",
-        max_batch_size=args.max_batch_size,
-    )
-    # If benchmark arg is True, use streamz to compute benchmark
-    if args.benchmark:
-        print("Benchmark will be calculated")
-        output = (
-            source.map(inference)
-            .map(lambda x: (x[0], int(round(time.time())), x[1], x[2]))
-            .map(sink_to_kafka)
-            .gather()
-            .sink_to_list()
-        )
-    else:
-        output = source.map(inference).map(sink_to_kafka).gather()
-
-    source.start()
+    
+    loop = ioloop.IOLoop.current()
+    loop.add_callback(start_stream)
+    
+    try:
+        loop.start()
+    except KeyboardInterrupt:
+        loop.stop()
+        

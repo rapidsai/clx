@@ -96,7 +96,7 @@ The Dockerfile contains an ENTRYPOINT which calls [entry.sh](https://github.com/
 3. Start workflow with required arugments
     
     ```
-    python -i $CLX_STREAMZ_HOME/python/<workflow_script> \
+    python $CLX_STREAMZ_HOME/python/<workflow_script> \
         --broker <host:port> \
         --input_topic <input_topic> \
         --output_topic <output_topic> \
@@ -140,7 +140,7 @@ bash $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh \
     -d $CLX_STREAMZ_HOME/data/apache_raw_sample_1k.txt
 ```
 ```
-python -i $CLX_STREAMZ_HOME/python/cybert.py \
+python $CLX_STREAMZ_HOME/python/cybert.py \
     --broker localhost:9092 \
     --input_topic cybert_input \
     --output_topic cybert_output \
@@ -162,7 +162,7 @@ bash $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh \
     -d $CLX_STREAMZ_HOME/data/dga_detection_input.jsonlines
 ```
 ```
-python -i $CLX_STREAMZ_HOME/python/dga_detection.py \
+python $CLX_STREAMZ_HOME/python/dga_detection.py \
     --broker localhost:9092 \
     --input_topic dga_detection_input \
     --output_topic dga_detection_output \
