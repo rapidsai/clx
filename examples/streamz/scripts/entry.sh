@@ -24,7 +24,6 @@ usage() {
     echo "  -o, --output_topic         Kafka output topic"
     echo "  -m, --model_file           Cybert model file"
     echo "  -l, --label_file           Cybert label file"
-    echo "  -c, --cuda_visible_devices Cuda visible devices, ex: 0,1,2"
     echo "  -d, --data                 Cybert data file (optional)"
     echo "  -p, --poll_interval        Poll interval (ex:60s)"
     echo "  -s, --max_batch_size       Max batch size"
@@ -55,7 +54,6 @@ while [ $# != 0 ]; do
     -m|--model_file) shift; model_file=$1 ;;
     -l|--label_file) shift; label_file=$1 ;;
     -d|--data) shift; data=$1 ;;
-    -c|--cuda_visible_devices) shift; cuda_visible_devices=$1 ;;
     -p|--poll_interval) shift; poll_interval=$1;;
     -s|--max_batch_size) shift; max_batch_size=$1;;
     --benchmark) shift; benchmark=$1;;
@@ -83,7 +81,6 @@ verify_input_arg "input_topic" $input_topic
 verify_input_arg "output_topic" $output_topic
 verify_input_arg "model_file" $model_file
 verify_input_arg "label_file" $label_file
-verify_input_arg "cuda_visible_devices" $cuda_visible_devices
 verify_input_arg "poll_interval" $poll_interval
 verify_input_arg "max_batch_size" $max_batch_size
 log "INFO" "data = $data"
@@ -112,6 +109,7 @@ log "INFO" "Kafka and zookeeper running"
 $KAFKA_HOME/bin/kafka-topics.sh --create --bootstrap-server $broker --replication-factor 1 --partitions 1 --topic $input_topic
 $KAFKA_HOME/bin/kafka-topics.sh --create --bootstrap-server $broker --replication-factor 1 --partitions 1 --topic $output_topic
 log "INFO" "Kafka topics created"
+
 #**********************************
 # Read Sample Data
 #**********************************
@@ -119,36 +117,14 @@ $KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $broker --topic $input_t
 log "INFO" "Sample data read into kafka topic, $input_topic"
 
 #**********************************
-# Start Dask Scheduler
-#**********************************
-#log "INFO" "Starting Dask Scheduler at localhost:8787"
-DASK_DASHBOARD_PORT=8787
-DASK_SCHEDULER_PORT=8786
-CUDA_VISIBLE_DEVICES="${cuda_visible_devices}" nohup dask-scheduler --dashboard-address ${DASK_DASHBOARD_PORT} 2>&1 &
-DASK_SCHEDULER_HOST=`hostname --ip-address`
-DASK_SCHEDULER="${DASK_SCHEDULER_HOST}:${DASK_SCHEDULER_PORT}"
-log "INFO" "Dask scheduler running"
-
-#**********************************
-# Start Dask CUDA Worker
-#**********************************
-IFS=',' read -ra devices <<< "$cuda_visible_devices"
-for i in "${devices[@]}"
-do
-   echo "CUDA_VISIBLE_DEVICES=$i nohup dask-cuda-worker localhost:8786 2>&1 &"
-   CUDA_VISIBLE_DEVICES=$i nohup dask-cuda-worker localhost:8786 2>&1 &
-done
-sleep 3
-
-#**********************************
 # Run Cybert
 #**********************************
 log "INFO" "Preparing to run cybert"
 if [ ! -z "$benchmark" ] ; then
-  log "INFO" "python -i $CYBERT_HOME/python/cybert.py --input_topic $input_topic --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --dask_scheduler ${DASK_SCHEDULER} --benchmark $benchmark"
-  python -i $CYBERT_HOME/python/cybert.py --input_topic $input_topc --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --dask_scheduler ${DASK_SCHEDULER} --benchmark $benchmark
+  log "INFO" "python -i $CYBERT_HOME/python/cybert.py --input_topic $input_topic --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --benchmark $benchmark"
+  python -i $CYBERT_HOME/python/cybert.py --input_topic $input_topic --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file --poll_interval $poll_interval --max_batch_size $max_batch_size --benchmark $benchmark
 else
-  log "INFO" "python -i $CYBERT_HOME/python/cybert.py --input_topic $input_topic --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --dask_scheduler ${DASK_SCHEDULER}"
-  python -i $CYBERT_HOME/python/cybert.py --input_topic $input_topic --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size --dask_scheduler ${DASK_SCHEDULER}
+  log "INFO" "python -i $CYBERT_HOME/python/cybert.py --input_topic $input_topic --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file --cuda_visible_devices $cuda_visible_devices --poll_interval $poll_interval --max_batch_size $max_batch_size"
+  python -i $CYBERT_HOME/python/cybert.py --input_topic $input_topic --output_topic $output_topic --group_id $group_id --model $model_file --label_map $label_file --poll_interval $poll_interval --max_batch_size $max_batch_size
 fi
 

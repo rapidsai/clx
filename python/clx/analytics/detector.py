@@ -5,6 +5,8 @@ from abc import ABC, abstractmethod
 
 log = logging.getLogger(__name__)
 
+GPU_COUNT = torch.cuda.device_count()
+
 
 class Detector(ABC):
     def __init__(self, lr=0.001):
@@ -30,6 +32,14 @@ class Detector(ABC):
         pass
 
     @abstractmethod
+    def load_model(self, file_path):
+        pass
+
+    @abstractmethod
+    def save_model(self, file_path):
+        pass
+
+    @abstractmethod
     def train_model(self, epoch, train_dataset):
         pass
 
@@ -37,30 +47,16 @@ class Detector(ABC):
     def predict(self, epoch, train_dataset):
         pass
 
-    def load_model(self, file_path):
-        """ This function load already saved model and sets cuda parameters.
-
-        :param file_path: File path of a model to loaded.
-        :type file_path: string
-        """
-        model = torch.load(file_path)
+    def _load_model(self, model):
         model.eval()
-        self.__model = model
-        self.__set_model2cuda()
-        self.__set_optimizer()
+        self.leverage_model(model)
 
-    def save_model(self, file_path):
-        """ This function saves model to given location.
-
-        :param file_path: File path to save model.
-        :type file_path: string
-        """
-        torch.save(self.model, file_path)
+    def _save_model(self, checkpoint, file_path):
+        torch.save(checkpoint, file_path)
 
     def __set_parallelism(self):
-        gpu_count = torch.cuda.device_count()
-        if gpu_count > 1:
-            log.info("%s GPUs!" % (gpu_count))
+        if GPU_COUNT > 1:
+            log.info("%s GPUs!" % (GPU_COUNT))
             self.__model = nn.DataParallel(self.model)
             self.__set_model2cuda()
         else:
@@ -85,3 +81,10 @@ class Detector(ABC):
         self.__model = model
         self.__set_parallelism()
         self.__set_optimizer()
+
+    def _get_unwrapped_model(self):
+        if GPU_COUNT > 1:
+            model = self.model.module
+        else:
+            model = self.model
+        return model

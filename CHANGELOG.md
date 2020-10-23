@@ -1,3 +1,12 @@
+# clx 0.17.0 (Date TBD)
+
+## New Features
+
+## Improvements
+- PR #248 Fix to cybert streamz to handle larger output messages
+
+## Bug Fixes
+
 # clx 0.16.0 (Date TBD)
 
 ## New Features
@@ -13,6 +22,8 @@
 - PR #244 Add cybert dataloader
 - PR #247 Allow CuPy 8.x
 - PR #246 Dockerfile updates
+- PR #262 CLX Streamz Getting Started
+- PR #253 Save clx dga model as dictionary
 
 ## Bug Fixes
 - PR #231 Fix segmentation fault in cybert notebook
@@ -23,7 +34,7 @@
 - PR #242 Pin seqeval to v0.0.12 for cybert example training notebook
 - PR #243 Fix error handling in `ci/gpu/build.sh`
 - PR #256 Fix missing projects variable from docs build
-- PR #248 Fix to cybert streamz to handle larger output messages
+- PR #261 Fix incorrect workspace variable in docs build
 
 # clx 0.15.0 (26 Aug 2020)
 
