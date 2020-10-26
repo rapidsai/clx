@@ -27,7 +27,7 @@ from transformers import (
     BertForTokenClassification,
     DistilBertForTokenClassification,
     ElectraForTokenClassification
-    )
+)
 
 log = logging.getLogger(__name__)
 
