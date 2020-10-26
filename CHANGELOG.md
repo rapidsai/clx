@@ -13,6 +13,7 @@
 - PR #244 Add cybert dataloader
 - PR #247 Allow CuPy 8.x
 - PR #246 Dockerfile updates
+- PR #276 Project Flash and gpuCI Scripts Update
 
 ## Bug Fixes
 - PR #231 Fix segmentation fault in cybert notebook
