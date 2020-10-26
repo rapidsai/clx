@@ -55,6 +55,10 @@ gpuci_conda_retry install -y -c pytorch -c gwerbin \
     "matplotlib" \
     "faker"
 
+# https://docs.rapids.ai/maintainers/depmgmt/
+# gpuci_conda_retry remove --force rapids-build-env rapids-notebook-env
+# gpuci_conda_retry install -y "your-pkg=1.0.0"
+
 gpuci_logger "Install cudatashader"
 pip install "git+https://github.com/rapidsai/cudatashader.git"
 pip install mockito

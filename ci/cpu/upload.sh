@@ -38,14 +38,14 @@ export CLX_FILE=`conda build conda/recipes/clx --python=$PYTHON --output`
 
 gpuci_logger "Starting conda uploads"
 
-if [ "$BUILD_LIBCLX" == "1" && "$UPLOAD_LIBCLX" == "1" ]; then
+if [[ "$BUILD_LIBCLX" == "1" && "$UPLOAD_LIBCLX" == "1" ]]; then
   test -e ${LIBCLX_FILE}
   echo "Upload libclx"
   echo ${LIBCLX_FILE}
   gpuci_retry anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-rapidsai} ${LABEL_OPTION} --skip-existing ${LIBCLX_FILE}
 fi
 
-if [ "$BUILD_CLX" == "1" && "$UPLOAD_CLX" == "1" ]; then
+if [[ "$BUILD_CLX" == "1" && "$UPLOAD_CLX" == "1" ]]; then
   test -e ${CLX_FILE}
   echo "Upload clx"
   echo ${CLX_FILE}
