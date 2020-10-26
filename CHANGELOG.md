@@ -3,6 +3,7 @@
 ## New Features
 
 ## Improvements
+- PR #248 Fix to cybert streamz to handle larger output messages
 
 ## Bug Fixes
 - PR #269 Add cybert class to docs build
