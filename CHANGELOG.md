@@ -1,6 +1,7 @@
 # clx 0.17.0 (Date TBD)
 
 ## New Features
+- PR #273 FIL streamz notebook
 
 ## Improvements
 
