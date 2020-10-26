@@ -23,31 +23,37 @@ cd $PROJECT_WORKSPACE
 export GIT_DESCRIBE_TAG=`git describe --tags`
 export MINOR_VERSION=`echo $GIT_DESCRIBE_TAG | grep -o -E '([0-9]+\.[0-9]+)'`
 
-logger "Check environment..."
+gpuci_logger "Check environment"
 env
 
-logger "Check GPU usage..."
+gpuci_logger "Check GPU usage"
 nvidia-smi
 
-logger "Activate conda env..."
-source activate rapids
-conda install --freeze-installed -c rapidsai-nightly -c rapidsai -c nvidia -c pytorch -c conda-forge \
+gpuci_logger "Activate conda env"
+. /opt/conda/etc/profile.d/conda.sh
+conda activate rapids
+
+gpuci_conda_retry install --freeze-installed -c rapidsai-nightly -c rapidsai -c nvidia -c pytorch -c conda-forge \
     pytorch torchvision requests yaml python-confluent-kafka python-whois markdown beautifulsoup4 jq
     
 pip install mockito
 pip install cupy-cuda${CUDA_SHORT}
 
-logger "Check versions..."
+gpuci_logger "Check versions"
 python --version
 $CC --version
 $CXX --version
-conda list
+
+gpuci_logger "Show conda info"
+conda info
+conda config --show-sources
+conda list --show-channel-urls
 
 #clx source build
 ${PROJECT_WORKSPACE}/build.sh clean libclx clx
 
 #clx Sphinx Build
-logger "Build clx docs..."
+gpuci_logger "Build clx docs"
 cd ${PROJECT_WORKSPACE}/docs
 make html
 
