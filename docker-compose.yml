@@ -2,11 +2,12 @@ version: '3'
 services:
   #JupyterLab will be available at port 9888
   clx:
+    runtime: nvidia
     build: .
     ports:
       - "9888:8888"
-      - "8787:8787"
-      - "8686:8686"
+      - "9787:8787"
+      - "9686:8686"
     stdin_open: true
     tty: true
   #Zookeeper will be available at `zookeeper:2181`
