@@ -8,7 +8,7 @@
 ## Bug Fixes
 - PR #269 Add cybert class to docs build
 
-# clx 0.16.0 (Date TBD)
+# clx 0.16.0 (21 Oct 2020)
 
 ## New Features
 - PR #208 CLX Supervised Asset Classification
