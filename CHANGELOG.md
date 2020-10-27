@@ -1,6 +1,7 @@
 # clx 0.17.0 (Date TBD)
 
 ## New Features
+- PR #277 cyBERT class to support DistilBERT and ELECTRA
 
 ## Improvements
 - PR #248 Fix to cybert streamz to handle larger output messages
