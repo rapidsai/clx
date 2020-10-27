@@ -217,6 +217,8 @@ class Cybert:
         )
         parsed_df = pd.DataFrame(parsed_dfs[0].tolist())
         confidence_df = pd.DataFrame(parsed_dfs[1].tolist())
+        if "X" in confidence_df.columns:
+            confidence_df = confidence_df.drop(["X"], axis=1)
         confidence_df = confidence_df.applymap(np.mean)
 
         # decode cleanup
