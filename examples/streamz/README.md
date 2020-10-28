@@ -80,10 +80,10 @@ The Dockerfile contains an ENTRYPOINT which calls [entrypoint.sh](https://github
     Positional:
       -b,  --broker             Kafka broker. Default value is localhost:9092
       -i,  --input_topic	    Input kafka topic
-      -o,  --output_topic	    Output kafka topic
-      -d,  --data_path	        Input data filepath
+      -o,  --output_topic       Output kafka topic
+      -d,  --data_path          Input data filepath
     
-      -h, --help		        Print this help
+      -h, --help                Print this help
     ```
     ```
     bash $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh \
