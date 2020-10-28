@@ -50,7 +50,7 @@ docker run -it \
     -d cybert-streamz:latest
 ```
 
-The Dockerfile contains an ENTRYPOINT which calls [entry.sh](https://github.com/rapidsai/clx/blob/branch-0.17/examples/streamz/scripts/entry.sh) to:
+The Dockerfile contains an ENTRYPOINT which calls [entrypoint.sh](https://github.com/rapidsai/clx/blob/branch-0.17/examples/streamz/scripts/entrypoint.sh) to:
 1. Configure and install Kafka
 2. Run Kafka broker on `localhost:9092` and Zookeeper on `localhost:2181`
 3. Start Dask Scheduler on `localhost:8786`
