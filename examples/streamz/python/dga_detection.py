@@ -39,7 +39,7 @@ def inference(messages_df):
 
 def sink_to_kafka(processed_data):
     # Prediction data will be published to provided kafka producer
-    messages_df = processed_data[3]
+    messages_df = processed_data[len(processed_data)-1]
     utils.kafka_sink(producer_conf, args.output_topic, messages_df)
     return processed_data
 

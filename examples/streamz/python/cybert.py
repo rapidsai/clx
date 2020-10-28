@@ -48,7 +48,7 @@ def inference(messages):
 
 def sink_to_kafka(processed_data):
     # Parsed data and confidence scores will be published to provided kafka producer
-    parsed_df = processed_data[3]
+    parsed_df = processed_data[len(processed_data)-1]
     utils.kafka_sink(producer_conf, args.output_topic, parsed_df)
     return processed_data
 

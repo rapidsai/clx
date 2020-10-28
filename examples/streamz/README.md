@@ -32,7 +32,7 @@ A docker container is created using the image above. The 'docker run' format to 
 docker run -it \
     -p 8787:8787 \
     -p 8888:8888 \
-    -v <your_models_and_labels_directory_path>:<your_containers_directory_path> \
+    -v <your_volume_binding_host_directory_path>:<your_volume_binding_container_directory_path> \
     --gpus '"device=0,1,3"' \
     --name clx_streamz \
     -d clx-streamz:latest
@@ -44,7 +44,7 @@ docker run -it \
 docker run -it \
     -p 8787:8787 \
     -p 8888:8888 \
-    -v <your_models_and_labels_directory_path>:<your_containers_directory_path> \
+     -v <your_volume_binding_host_directory_path>:<your_volume_binding_container_directory_path> \
     --runtime=nvidia \
     --name clx_streamz \
     -d cybert-streamz:latest
@@ -105,7 +105,8 @@ The Dockerfile contains an ENTRYPOINT which calls [entry.sh](https://github.com/
         --label_map <labels filepath> \
         --poll_interval <poll_interval> \
         --max_batch_size <max_batch_size> \
-        --dask_scheduler <hostname:port>
+        --dask_scheduler <hostname:port> \
+        --benchmark <avg log size>
     ```
     **Parameters:**
     - `broker`* - Host and port where kafka broker is running. 

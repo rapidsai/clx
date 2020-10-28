@@ -49,8 +49,8 @@ RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_
 RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/pytorch_model.bin -O "$CLX_STREAMZ_HOME"/ml/models/cybert_pytorch_model.bin
 
 # Download dga detection model
-#RUN wget -q https://rapidsai-data.s3.amazonaws.com/cyber/clx/dga_detection_pytorch_model.bin -O "$CLX_STREAMZ_HOME"/ml/models/dga_detection_pytorch_model.bin
-
+RUN wget -q https://rapidsai-data.s3.amazonaws.com/cyber/clx/dga_detection_pytorch_model.bin -O "$CLX_STREAMZ_HOME"/ml/models/dga_detection_pytorch_model.bin
+RUN wget -q https://rapidsai-data.s3.amazonaws.com/cyber/clx/dga_detection_input.jsonlines -O "$CLX_STREAMZ_HOME"/data/dga_detection_input.jsonlines
 # Zookeeper
 EXPOSE 2181
 
@@ -87,6 +87,6 @@ RUN source activate rapids && \
 	
 WORKDIR /rapids/clx
 
-ENTRYPOINT ["/usr/bin/tini", "--", "bash", "/opt/clx_streamz/scripts/entry.sh"]
+ENTRYPOINT ["/usr/bin/tini", "--", "bash", "/opt/clx_streamz/scripts/entrypoint.sh"]
 
 CMD [ "/bin/bash" ]

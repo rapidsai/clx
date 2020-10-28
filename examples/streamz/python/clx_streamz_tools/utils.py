@@ -94,7 +94,6 @@ def parse_arguments():
         "--benchmark",
         help="Captures benchmark, including throughput estimates, with provided avg log size in KB. (ex: 500 or 0.1)",
         type=float,
-        default=1,
     )
     args = parser.parse_args()
     return args
