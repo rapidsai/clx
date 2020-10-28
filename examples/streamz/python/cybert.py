@@ -18,6 +18,7 @@ import sys
 import time
 import cudf
 import dask
+import pandas as pd
 import torch
 import pandas as pd
 from streamz import Stream
@@ -43,12 +44,12 @@ def inference(messages):
     result_size = parsed_df.shape[0]
     torch.cuda.empty_cache()
     gc.collect()
-    return (batch_start_time, result_size, parsed_df)
+    return (parsed_df, batch_start_time, result_size)
 
 
 def sink_to_kafka(processed_data):
     # Parsed data and confidence scores will be published to provided kafka producer
-    parsed_df = processed_data[len(processed_data)-1]
+    parsed_df = processed_data[0]
     utils.kafka_sink(producer_conf, args.output_topic, parsed_df)
     return processed_data
 
@@ -104,7 +105,7 @@ def start_stream():
         print("Benchmark will be calculated")
         output = (
             source.map(inference)
-            .map(lambda x: (x[0], int(round(time.time())), x[1], x[2]))
+            .map(lambda x: (x[0], x[1], int(round(time.time())), x[2]))
             .map(sink_to_kafka)
             .gather()
             .sink_to_list()

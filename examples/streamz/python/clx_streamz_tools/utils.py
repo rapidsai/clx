@@ -49,7 +49,7 @@ def calc_benchmark(processed_data, size_per_log):
     batch_count = 0
     # Find min and max time while keeping track of batch count and size
     for result in processed_data:
-        (ts1, ts2, result_size) = (result[0], result[1], result[2])
+        (ts1, ts2, result_size) = (result[1], result[2], result[3])
         if ts1 == 0 or ts2 == 0:
             continue
         batch_count = batch_count + 1

@@ -34,12 +34,12 @@ def inference(messages_df):
     print("dataframe size: %s" % (result_size))
     torch.cuda.empty_cache()
     gc.collect()
-    return (batch_start_time, result_size, messages_df)
+    return (messages_df, batch_start_time, result_size)
 
 
 def sink_to_kafka(processed_data):
     # Prediction data will be published to provided kafka producer
-    messages_df = processed_data[len(processed_data)-1]
+    messages_df = processed_data[0]
     utils.kafka_sink(producer_conf, args.output_topic, messages_df)
     return processed_data
 
@@ -96,7 +96,7 @@ def start_stream():
         print("Benchmark will be calculated")
         output = (
             source.map(inference)
-            .map(lambda x: (x[0], int(round(time.time())), x[1], x[2]))
+            .map(lambda x: (x[0], x[1], int(round(time.time())), x[2]))
             .map(sink_to_kafka)
             .gather()
             .sink_to_list()
