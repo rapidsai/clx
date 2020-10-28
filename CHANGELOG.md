@@ -4,6 +4,7 @@
 - PR #277 cyBERT class to support DistilBERT and ELECTRA
 
 ## Improvements
+- PR #263 Pin cmake policies to cmake 3.17 version
 - PR #248 Fix to cybert streamz to handle larger output messages
 
 ## Bug Fixes
