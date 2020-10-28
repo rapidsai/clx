@@ -15,7 +15,7 @@
 
 ## New Features
 - PR #208 CLX Supervised Asset Classification
-
+- PR #265 Add FFT notebook
 ## Improvements
 - PR #233 Removed s3 dependency from dga detection unit-test
 - PR #235 Pre-commit hooks for isort, black and flake8
