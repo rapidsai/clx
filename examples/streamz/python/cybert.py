@@ -21,6 +21,7 @@ import time
 import confluent_kafka as ck
 import cudf
 import dask
+import pandas as pd
 import torch
 from dask_cuda import LocalCUDACluster
 from distributed import Client
@@ -51,8 +52,12 @@ def sink_to_kafka(processed_data):
     parsed_df = processed_data[0]
     confidence_df = processed_data[1]
     producer = ck.Producer(producer_conf)
-    producer.produce(args.output_topic, parsed_df.to_json())
-    producer.produce(args.output_topic, confidence_df.to_json())
+    confidence_df = confidence_df.add_suffix("_confidence")
+    result_df = pd.concat([parsed_df, confidence_df], axis=1)
+    json_str = result_df.to_json(orient="records", lines=True)
+    json_recs = json_str.split("\n")
+    for rec in json_recs:
+        producer.produce(args.output_topic, rec)
     producer.flush()
     return processed_data
 
@@ -144,7 +149,7 @@ def parse_arguments():
     parser.add_argument(
         "--benchmark",
         help="Captures benchmark, including throughput estimates, with provided avg log size in KB. (ex: 500 or 0.1)",
-        type=float
+        type=float,
     )
     args = parser.parse_args()
     return args

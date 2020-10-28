@@ -1,12 +1,17 @@
 # clx 0.17.0 (Date TBD)
 
 ## New Features
+- PR #277 cyBERT class to support DistilBERT and ELECTRA
 
 ## Improvements
+- PR #263 Pin cmake policies to cmake 3.17 version
+- PR #248 Fix to cybert streamz to handle larger output messages
 
 ## Bug Fixes
+- PR #269 Add cybert class to docs build
+- PR #271 Alert Analysis notebook fix
 
-# clx 0.16.0 (Date TBD)
+# clx 0.16.0 (21 Oct 2020)
 
 ## New Features
 - PR #208 CLX Supervised Asset Classification
