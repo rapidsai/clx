@@ -47,7 +47,7 @@ docker run -it \
      -v <your_volume_binding_host_directory_path>:<your_volume_binding_container_directory_path> \
     --runtime=nvidia \
     --name clx_streamz \
-    -d cybert-streamz:latest
+    -d clx-streamz:latest
 ```
 
 The Dockerfile contains an ENTRYPOINT which calls [entrypoint.sh](https://github.com/rapidsai/clx/blob/branch-0.17/examples/streamz/scripts/entrypoint.sh) to:
