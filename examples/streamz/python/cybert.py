@@ -18,13 +18,14 @@ import sys
 import time
 import cudf
 import dask
-import pandas as pd
 import torch
+import logging
 import pandas as pd
 from streamz import Stream
 from tornado import ioloop
 from clx_streamz_tools import utils
 
+logger = logging.getLogger("distributed.worker")
 
 def inference(messages):
     # Messages will be received and run through cyBERT inferencing
@@ -36,12 +37,14 @@ def inference(messages):
     elif type(messages) == list and len(messages) > 0:
         df["stream"] = [msg.decode("utf-8") for msg in messages]
     else:
-        print("ERROR: Unknown type encountered in inference")
-
+        logger.error("Unknown type encountered in inference")
+    
+    result_size = df.shape[0]
+    logger.info("Processing batch size: " + str(result_size))
+    
     parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
     confidence_df = confidence_df.add_suffix("_confidence")
     parsed_df = pd.concat([parsed_df, confidence_df], axis=1)
-    result_size = parsed_df.shape[0]
     torch.cuda.empty_cache()
     gc.collect()
     return (parsed_df, batch_start_time, result_size)
@@ -56,13 +59,13 @@ def sink_to_kafka(processed_data):
 
 def signal_term_handler(signal, frame):
     # Receives signal and calculates benchmark if indicated in argument
-    print("Exiting streamz script...")
+    logger.info("Exiting streamz script...")
     if args.benchmark:
         (time_diff, throughput_mbps, avg_batch_size) = utils.calc_benchmark(
             output, args.benchmark
         )
-        print("*** BENCHMARK ***")
-        print(
+        logger.info("*** BENCHMARK ***")
+        logger.info(
             "Job duration: {:.3f} secs, Throughput(mb/sec):{:.3f}, Avg. Batch size(mb):{:.3f}".format(
                 time_diff, throughput_mbps, avg_batch_size
             )
@@ -76,7 +79,7 @@ def worker_init():
 
     worker = dask.distributed.get_worker()
     cy = Cybert()
-    print(
+    logger.info(
         "Initializing Dask worker: "
         + str(worker)
         + " with cybert model. Model File: "
@@ -86,7 +89,7 @@ def worker_init():
     )
     cy.load_model(args.model, args.label_map)
     worker.data["cybert"] = cy
-    print("Successfully initialized dask worker " + str(worker))
+    logger.info("Successfully initialized dask worker " + str(worker))
 
 
 def start_stream():
@@ -94,6 +97,7 @@ def start_stream():
         args.input_topic,
         consumer_conf,
         poll_interval=args.poll_interval,
+        # npartitions value varies based on kafka topic partitions configuration.
         npartitions=1,
         asynchronous=True,
         dask=True,
@@ -102,7 +106,7 @@ def start_stream():
     global output
     # If benchmark arg is True, use streamz to compute benchmark
     if args.benchmark:
-        print("Benchmark will be calculated")
+        logger.info("Benchmark will be calculated")
         output = (
             source.map(inference)
             .map(lambda x: (x[0], x[1], int(round(time.time())), x[2]))
@@ -135,8 +139,8 @@ if __name__ == "__main__":
         "auto.offset.reset": "earliest",
     }
 
-    print("Producer conf:", producer_conf)
-    print("Consumer conf:", consumer_conf)
+    logger.info("Producer conf: " + str(producer_conf))
+    logger.info("Consumer conf: " + str(consumer_conf))
     
     loop = ioloop.IOLoop.current()
     loop.add_callback(start_stream)

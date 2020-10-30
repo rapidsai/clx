@@ -14,21 +14,24 @@
 
 import time
 import argparse
+import logging
 import confluent_kafka as ck
 from distributed import Client
 from dask_cuda import LocalCUDACluster
 
+logger = logging.getLogger("distributed.worker")
 
 def create_dask_client(dask_scheduler):
     # If a dask scheduler is provided create client using that address
     # otherwise create a new dask cluster
     if dask_scheduler is not None:
-        print("Dask scheduler:", dask_scheduler)
+        logger.info("Dask scheduler: " + dask_scheduler)
         client = Client(dask_scheduler)
     else:
+        logging.info("Creating local cuda cluster as no dask scheduler is provided.")
         cluster = LocalCUDACluster()
         client = Client(cluster)
-    print(client)
+    logger.info(str(client))
     return client
 
 

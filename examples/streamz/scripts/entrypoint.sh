@@ -49,6 +49,21 @@ log "INFO" "Kafka broker is running on $BROKER"
 log "INFO" "Zookeeper is running on localhost:2181"
 
 #**********************************
+# Create topics and publish data
+#**********************************
+log "INFO" "Loading cybert input data to 'cybert_input' topic"
+. $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh \
+       -i cybert_input \
+       -o cybert_output \
+       -d $CLX_STREAMZ_HOME/data/apache_raw_sample_1k.txt
+
+log "INFO" "Loading dga detection input data to 'dga_detection_input' topic"
+. $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh \
+       -i dga_detection_input \
+       -o dga_detection_output \
+       -d $CLX_STREAMZ_HOME/data/dga_detection_input.jsonlines
+       
+#**********************************
 # Get available cuda devices
 #**********************************
 cuda_visible_devices_arr=( $(nvidia-smi| cut -d ' ' -f 4| awk '$1 ~ /^[0-9]$/') )
@@ -58,7 +73,8 @@ log "INFO" "cuda_visible_devices list $cuda_visible_devices"
 #**********************************
 # Start Dask Scheduler
 #**********************************
-log "INFO" "Starting Dask Scheduler at localhost:8787"
+log "INFO" "Starting Dask Scheduler at localhost:8786"
+log "INFO" "Starting Dask Dashboard at localhost:8787"
 DASK_DASHBOARD_PORT=8787
 DASK_SCHEDULER_PORT=8786
 CUDA_VISIBLE_DEVICES="${cuda_visible_devices}" nohup dask-scheduler --dashboard-address ${DASK_DASHBOARD_PORT} 2>&1 &

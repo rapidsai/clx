@@ -48,6 +48,8 @@ function sed_runner() {
 
 # Dockerfile update
 sed_runner 's/RAPIDS_VERSION=0.*/RAPIDS_VERSION='"${NEXT_SHORT_TAG}"'/g' Dockerfile
+# Streamz Dockerfile update
+sed_runner 's/RAPIDS_VERSION=0.*/RAPIDS_VERSION='"${NEXT_SHORT_TAG}"'/g' examples/streamz/Dockerfile
 
 # Sphinx Update
 sed_runner 's/version = *.*/version = '"'${NEXT_SHORT_TAG}'"'/g' docs/source/conf.py

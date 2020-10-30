@@ -1,7 +1,7 @@
 # Copyright (c) 2020, NVIDIA CORPORATION.
 
 # An integration test & dev container which builds and installs CLX from default branch
-ARG RAPIDS_VERSION=0.16
+ARG RAPIDS_VERSION=0.17
 ARG CUDA_VERSION=10.2
 ARG CUDA_SHORT_VERSION=${CUDA_VERSION}
 ARG LINUX_VERSION=ubuntu18.04
@@ -28,8 +28,8 @@ RUN apt-get install -y librdkafka-dev \
         unzip && \
     apt-get clean
 
-ENV SCALA_VERSION 2.11
-ENV KAFKA_VERSION 2.3.0
+ENV SCALA_VERSION 2.13
+ENV KAFKA_VERSION 2.5.1
 ENV KAFKA_HOME /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"
 ENV CLX_STREAMZ_HOME /opt/clx_streamz
 
@@ -40,7 +40,7 @@ ADD examples/streamz/python "$CLX_STREAMZ_HOME"/python
 RUN mkdir -p "$CLX_STREAMZ_HOME"/ml/models && \
 	mkdir "$CLX_STREAMZ_HOME"/ml/labels
 
-RUN wget -q http://www.gtlib.gatech.edu/pub/apache/kafka/2.3.0/kafka_2.11-2.3.0.tgz -O /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz && \
+RUN wget -q https://downloads.apache.org/kafka/2.5.1/kafka_2.13-2.5.1.tgz -O /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz && \
         tar xfz /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz -C /opt && \
         rm /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz
 
@@ -48,9 +48,10 @@ RUN wget -q http://www.gtlib.gatech.edu/pub/apache/kafka/2.3.0/kafka_2.11-2.3.0.
 RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/config.json -O "$CLX_STREAMZ_HOME"/ml/labels/cybert_config.json
 RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/pytorch_model.bin -O "$CLX_STREAMZ_HOME"/ml/models/cybert_pytorch_model.bin
 
-# Download dga detection model
+# Download dga detection model and sample input data
 RUN wget -q https://rapidsai-data.s3.amazonaws.com/cyber/clx/dga_detection_pytorch_model.bin -O "$CLX_STREAMZ_HOME"/ml/models/dga_detection_pytorch_model.bin
 RUN wget -q https://rapidsai-data.s3.amazonaws.com/cyber/clx/dga_detection_input.jsonlines -O "$CLX_STREAMZ_HOME"/data/dga_detection_input.jsonlines
+
 # Zookeeper
 EXPOSE 2181
 
