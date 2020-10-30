@@ -47,7 +47,7 @@ docker run -it \
      -v <your_volume_binding_host_directory_path>:<your_volume_binding_container_directory_path> \
     --runtime=nvidia \
     --name clx_streamz \
-    -d cybert-streamz:latest
+    -d clx-streamz:latest
 ```
 
 The Dockerfile contains an ENTRYPOINT which calls [entrypoint.sh](https://github.com/rapidsai/clx/blob/branch-0.17/examples/streamz/scripts/entrypoint.sh) to:
@@ -147,10 +147,10 @@ $ less cybert_workflow.log
     Positional:
       -b,  --broker             Kafka broker. Default value is localhost:9092
       -i,  --input_topic	    Input kafka topic
-      -o,  --output_topic	    Output kafka topic
-      -d,  --data_path	        Input data filepath
+      -o,  --output_topic       Output kafka topic
+      -d,  --data_path          Input data filepath
     
-      -h, --help		        Print this help
+      -h, --help                Print this help
     ```
     ```
     docker exec clx_streamz /bin/bash -c 'source activate rapids \
