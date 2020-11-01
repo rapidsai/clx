@@ -22,7 +22,7 @@ Run the following to build the image:
 docker build -f examples/streamz/Dockerfile -t clx-streamz:latest .
 `
 
-## Running CLX_Streamz Pipelines
+## Create Docker Container
 
 A docker container is created using the image above. The 'docker run' format to build your container is shown below. Note: volume binding to the container is an optional argument.
 
@@ -127,31 +127,10 @@ $ docker exec clx_streamz kill -SIGINT <pid>
 $ less cybert_workflow.log
 ```
 
-**Steps to run workflows with user specific data**
+## Steps to run workflow with custom arguments
 
-1. Create kafka topics for the clx_streamz workflows that we want to run and publish input data. 
+1. Create kafka topics for the clx_streamz workflows that you want to run and publish input data.
 
-    ```
-    docker exec clx_streamz /bin/bash -c 'source activate rapids \
-        && $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh --help'
-    ```
-    ```
-    Usage: kafka_topic_setup.sh [POS]... [ARG]...
-
-    Example-1: bash kafka_topic_setup.sh -b localhost:9092 -i cybert_input -o cybert_output -d /opt/clx_streamz/data/cybert_input.csv
-    Example-2: bash kafka_topic_setup.sh -i cybert_input -o cybert_output -d /opt/clx_streamz/data/cybert_input.csv
-    Example-2: bash kafka_topic_setup.sh -i cybert_input -o cybert_ouput
-    
-    This script configures the kafka topic, such as creating and loading data or just the topic creation.
-    
-    Positional:
-      -b,  --broker             Kafka broker. Default value is localhost:9092
-      -i,  --input_topic	    Input kafka topic
-      -o,  --output_topic	    Output kafka topic
-      -d,  --data_path	        Input data filepath
-    
-      -h, --help		        Print this help
-    ```
     ```
     docker exec clx_streamz /bin/bash -c 'source activate rapids \
         && $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh \
@@ -161,7 +140,7 @@ $ less cybert_workflow.log
         -d <data_filepath>'
     ```
     
-2. Start workflow with user specifc arugments Ex: models, labels...
+2. Start workflow 
     
     ```
     docker exec clx_streamz bash -c 'source activate rapids \
