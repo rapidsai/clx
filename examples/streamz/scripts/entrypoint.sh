@@ -66,7 +66,7 @@ log "INFO" "Loading dga detection input data to 'dga_detection_input' topic"
 #**********************************
 # Get available cuda devices
 #**********************************
-cuda_visible_devices_arr=( $(nvidia-smi| cut -d ' ' -f 4| awk '$1 ~ /^[0-9]$/') )
+cuda_visible_devices_arr=( $(nvidia-smi | sed 1d| cut -d ' ' -f 4| awk '$1 ~ /^[0-9]$/') )
 cuda_visible_devices=$(IFS=,; echo "${cuda_visible_devices_arr[*]}")
 log "INFO" "cuda_visible_devices list $cuda_visible_devices"
 

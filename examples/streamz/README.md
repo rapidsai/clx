@@ -33,7 +33,7 @@ docker run -it \
     -p 9787:8787 \
     -p 9888:8888 \
     -v <your_volume_binding_host_directory_path>:<your_volume_binding_container_directory_path> \
-    --gpus '"device=0,1,3"' \
+    --gpus '"device=0,1,2"' \
     --name clx_streamz \
     -d clx-streamz:latest
 ```
@@ -102,6 +102,7 @@ View the data processing activity on the dask dashboard by visiting http://local
 
 ## Capturing Benchmarks
 To capture benchmarks add the benchmark flag along with average log size (kb), for throughput (mb/s) and average batch size (mb) estimates, to the docker run command above. In this case, we are benchmarking the cyBERT workflow with the commands below. Similarly, we can also do it for the DGA detection workflow.
+
 ```
 docker exec clx_streamz bash -c 'source activate rapids \
     && python $CLX_STREAMZ_HOME/python/cybert.py \
@@ -115,7 +116,7 @@ docker exec clx_streamz bash -c 'source activate rapids \
     --max_batch_size 500 \
     --dask_scheduler localhost:8786 \
     --benchmark 20' \
-    > cybert_workflow.log 2>&1
+    > cybert_workflow.log 2>&1 &
 ```
 
 To print benchmark, send a SIGINT signal to the running cybert process.
@@ -127,7 +128,7 @@ $ docker exec clx_streamz kill -SIGINT <pid>
 $ less cybert_workflow.log
 ```
 
-## Steps to run workflow with custom arguments
+## Steps to Run Workflow with Custom Arguments
 
 1. Create kafka topics for the clx_streamz workflows that you want to run and publish input data.
 
