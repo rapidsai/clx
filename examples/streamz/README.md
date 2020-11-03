@@ -54,8 +54,6 @@ The Dockerfile contains an ENTRYPOINT which calls [entrypoint.sh](https://github
 1. Configure and install Kafka
 2. Run Kafka broker on `localhost:9092` and Zookeeper on `localhost:2181`
 3. Creates (cyBERT and DGA detection) specific input and output kafka topics and publishes sample input data 
-4. Start Dask Scheduler on `localhost:8786`
-5. Start Dask CUDA Worker (one worker per GPU)
 
 Your Quickstart Docker container includes the data and models required to run cyBERT and DGA detection stream processing workflows.
 
@@ -70,8 +68,7 @@ docker exec clx_streamz bash -c 'source activate rapids \
     --model $CLX_STREAMZ_HOME/ml/models/cybert_pytorch_model.bin \
     --label_map $CLX_STREAMZ_HOME/ml/labels/cybert_config.json \
     --poll_interval 1s \
-    --max_batch_size 500 \
-    --dask_scheduler localhost:8786'
+    --max_batch_size 500'
 ```
 
 ## Run DGA Streamz Example on Sample Domains
@@ -84,8 +81,7 @@ docker exec clx_streamz bash -c 'source activate rapids \
     --group_id streamz \
     --model $CLX_STREAMZ_HOME/ml/models/dga_detection_pytorch_model.bin \
     --poll_interval 1s \
-    --max_batch_size 500 \
-    --dask_scheduler localhost:8786'
+    --max_batch_size 500'
 ```
 
 Processed data will be pushed to the given kafka output topic. To view all processed output run:
@@ -114,7 +110,6 @@ docker exec clx_streamz bash -c 'source activate rapids \
     --label_map $CLX_STREAMZ_HOME/ml/labels/cybert_config.json \
     --poll_interval 1s \
     --max_batch_size 500 \
-    --dask_scheduler localhost:8786 \
     --benchmark 20' \
     > cybert_workflow.log 2>&1 &
 ```
@@ -154,7 +149,6 @@ $ less cybert_workflow.log
         --label_map <labels filepath> \
         --poll_interval <poll_interval> \
         --max_batch_size <max_batch_size> \
-        --dask_scheduler <hostname:port> \
         --benchmark <avg log size>'
     ```
     **Parameters:**
@@ -165,8 +159,7 @@ $ less cybert_workflow.log
     - `model_file` - The path to your model file
     - `label_file` - The path to your label file
     - `poll_interval`* - Interval (in seconds) to poll the Kafka input topic for data (Ex: 60s)
-    - `max_batch_size`* - Max batch size of data (max number of logs) to ingest into streamz with each `poll_interval` 
-    - `dask_scheduler` - Dask scheduler address. If not provided a new local dask cuda cluster will be created.
+    - `max_batch_size`* - Max batch size of data (max number of logs) to ingest into streamz with each `poll_interval`
     - `benchmark` - To capture benchmarks add the benchmark flag along with average log size (kb), for throughput (mb/s) and average batch size (mb) estimates.
 
     ``*`` = More information on these parameters can be found in the streamz [documentation](https://streamz.readthedocs.io/en/latest/api.html#streamz.from_kafka_batched).

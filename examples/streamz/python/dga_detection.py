@@ -18,19 +18,16 @@ import time
 import dask
 import torch
 import signal
-import logging
 from streamz import Stream
 from tornado import ioloop
 from clx_streamz_tools import utils
-
-logger = logging.getLogger("distributed.worker")
 
 def inference(messages_df):
     # Messages will be received and run through DGA inferencing
     worker = dask.distributed.get_worker()
     batch_start_time = int(round(time.time()))
     result_size = messages_df.shape[0]
-    logger.info("Processing batch size: " + str(result_size))
+    print("Processing batch size: " + str(result_size))
     dd = worker.data["dga_detector"]
     preds = dd.predict(messages_df["domain"])
     messages_df["preds"] = preds
@@ -52,7 +49,7 @@ def worker_init():
 
     worker = dask.distributed.get_worker()
     dd = DGADetector()
-    logger.info(
+    print(
         "Initializing Dask worker: "
         + str(worker)
         + " with dga model. Model File: "
@@ -60,18 +57,18 @@ def worker_init():
     )
     dd.load_model(args.model)
     worker.data["dga_detector"] = dd
-    logger.info("Successfully initialized dask worker " + str(worker))
+    print("Successfully initialized dask worker " + str(worker))
 
 
 def signal_term_handler(signal, frame):
     # Receives signal and calculates benchmark if indicated in argument
-    logger.info("Exiting streamz script...")
+    print("Exiting streamz script...")
     if args.benchmark:
         (time_diff, throughput_mbps, avg_batch_size) = utils.calc_benchmark(
             output, args.benchmark
         )
-        logger.info("*** BENCHMARK ***")
-        logger.info(
+        print("*** BENCHMARK ***")
+        print(
             "Job duration: {:.3f} secs, Throughput(mb/sec):{:.3f}, Avg. Batch size(mb):{:.3f}".format(
                 time_diff, throughput_mbps, avg_batch_size
             )
@@ -96,7 +93,7 @@ def start_stream():
     global output
     # If benchmark arg is True, use streamz to compute benchmark
     if args.benchmark:
-        logger.info("Benchmark will be calculated")
+        print("Benchmark will be calculated")
         output = (
             source.map(inference)
             .map(lambda x: (x[0], x[1], int(round(time.time())), x[2]))
@@ -116,7 +113,7 @@ if __name__ == "__main__":
     signal.signal(signal.SIGTERM, signal_term_handler)
     signal.signal(signal.SIGINT, signal_term_handler)
 
-    client = utils.create_dask_client(args.dask_scheduler)
+    client = utils.create_dask_client()
     client.run(worker_init)
 
     producer_conf = {
@@ -132,8 +129,8 @@ if __name__ == "__main__":
         "enable.partition.eof": "true",
         "auto.offset.reset": "earliest",
     }
-    logger.info("Producer conf: " + str(producer_conf))
-    logger.info("Consumer conf: " + str(consumer_conf))
+    print("Producer conf: " + str(producer_conf))
+    print("Consumer conf: " + str(consumer_conf))
     
     loop = ioloop.IOLoop.current()
     loop.add_callback(start_stream)
