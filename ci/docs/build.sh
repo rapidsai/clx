@@ -34,7 +34,7 @@ gpuci_logger "Activate conda env"
 conda activate rapids
 
 gpuci_conda_retry install --freeze-installed -c rapidsai-nightly -c rapidsai -c nvidia -c pytorch -c conda-forge \
-    pytorch torchvision requests yaml python-confluent-kafka python-whois markdown beautifulsoup4 jq
+    pytorch torchvision requests yaml python-confluent-kafka python-whois
     
 pip install mockito
 pip install cupy-cuda${CUDA_SHORT}
