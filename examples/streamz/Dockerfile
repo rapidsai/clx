@@ -34,11 +34,11 @@ ENV KAFKA_HOME /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"
 ENV CLX_STREAMZ_HOME /opt/clx_streamz
 
 ADD examples/streamz/scripts "$CLX_STREAMZ_HOME"/scripts
-ADD examples/streamz/data "$CLX_STREAMZ_HOME"/data
 ADD examples/streamz/python "$CLX_STREAMZ_HOME"/python
 
 RUN mkdir -p "$CLX_STREAMZ_HOME"/ml/models && \
-	mkdir "$CLX_STREAMZ_HOME"/ml/labels
+	mkdir "$CLX_STREAMZ_HOME"/ml/labels && \
+	mkdir "$CLX_STREAMZ_HOME"/data
 
 RUN wget -q https://downloads.apache.org/kafka/2.5.1/kafka_2.13-2.5.1.tgz -O /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz && \
         tar xfz /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz -C /opt && \
@@ -48,9 +48,12 @@ RUN wget -q https://downloads.apache.org/kafka/2.5.1/kafka_2.13-2.5.1.tgz -O /tm
 RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/config.json -O "$CLX_STREAMZ_HOME"/ml/labels/cybert_config.json
 RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/pytorch_model.bin -O "$CLX_STREAMZ_HOME"/ml/models/cybert_pytorch_model.bin
 
+# Download apache logs
+RUN wget -q https://rapidsai-data.s3.us-east-2.amazonaws.com/cyber/clx/apache_raw_sample_1k.txt -O "$CLX_STREAMZ_HOME"/data/apache_raw_sample_1k.txt
+
 # Download dga detection model and sample input data
-RUN wget -q https://rapidsai-data.s3.amazonaws.com/cyber/clx/dga_detection_pytorch_model.bin -O "$CLX_STREAMZ_HOME"/ml/models/dga_detection_pytorch_model.bin
-RUN wget -q https://rapidsai-data.s3.amazonaws.com/cyber/clx/dga_detection_input.jsonlines -O "$CLX_STREAMZ_HOME"/data/dga_detection_input.jsonlines
+RUN wget -q https://rapidsai-data.s3.us-east-2.amazonaws.com/cyber/clx/dga_detection_pytorch_model.bin -O "$CLX_STREAMZ_HOME"/ml/models/dga_detection_pytorch_model.bin
+RUN wget -q https://rapidsai-data.s3.us-east-2.amazonaws.com/cyber/clx/dga_detection_input.jsonlines -O "$CLX_STREAMZ_HOME"/data/dga_detection_input.jsonlines
 
 # Zookeeper
 EXPOSE 2181
