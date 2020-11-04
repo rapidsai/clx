@@ -1,8 +1,22 @@
-# clx 0.16.0 (Date TBD)
+# clx 0.17.0 (Date TBD)
+
+## New Features
+- PR #277 cyBERT class to support DistilBERT and ELECTRA
+
+## Improvements
+- PR #263 Pin cmake policies to cmake 3.17 version
+- PR #248 Fix to cybert streamz to handle larger output messages
+- PR #276 Project Flash and gpuCI Scripts Update
+
+## Bug Fixes
+- PR #269 Add cybert class to docs build
+- PR #271 Alert Analysis notebook fix
+
+# clx 0.16.0 (21 Oct 2020)
 
 ## New Features
 - PR #208 CLX Supervised Asset Classification
-
+- PR #265 Add FFT notebook
 ## Improvements
 - PR #233 Removed s3 dependency from dga detection unit-test
 - PR #235 Pre-commit hooks for isort, black and flake8
@@ -13,7 +27,8 @@
 - PR #244 Add cybert dataloader
 - PR #247 Allow CuPy 8.x
 - PR #246 Dockerfile updates
-- PR #276 Project Flash and gpuCI Scripts Update
+- PR #262 CLX Streamz Getting Started
+- PR #253 Save clx dga model as dictionary
 
 ## Bug Fixes
 - PR #231 Fix segmentation fault in cybert notebook
