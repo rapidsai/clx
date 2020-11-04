@@ -94,7 +94,7 @@ docker exec clx_streamz bash -c 'source activate rapids \
        --from-beginning'
 ```
 
-View the data processing activity on the dask dashboard by visiting http://localhost:8787 or `<host>:8787`
+View the data processing activity on the dask dashboard by visiting http://localhost:9787 or `<host>:9787`
 
 ## Capturing Benchmarks
 To capture benchmarks add the benchmark flag along with average log size (kb), for throughput (mb/s) and average batch size (mb) estimates, to the docker run command above. In this case, we are benchmarking the cyBERT workflow with the commands below. Similarly, we can also do it for the DGA detection workflow.
