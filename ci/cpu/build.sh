@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Copyright (c) 2019, NVIDIA CORPORATION.
+# Copyright (c) 2020, NVIDIA CORPORATION.
 ################################################################################
-# rapidscyber cpu build
+# CLX cpu build
 ################################################################################
 set -e
 
@@ -10,9 +10,8 @@ function logger() {
   echo -e "\n>>>> $@\n"
 }
 
-# Set path and build parallel level
+# Set path
 export PATH=/conda/bin:/usr/local/cuda/bin:$PATH
-export PARALLEL_LEVEL=4
 
 # Set home to the job's workspace
 export HOME=$WORKSPACE
@@ -37,29 +36,21 @@ source activate gdf
 
 logger "Check versions..."
 python --version
-gcc --version
-g++ --version
 conda list
 
 # FIX Added to deal with Anancoda SSL verification issues during conda builds
 conda config --set ssl_verify False
 
 ###############################################################################
-# BUILD - Conda package builds (conda deps: libclx <- clx)
+# BUILD - Conda package build
 ################################################################################
-
-logger "Build conda pkg for libclx..."
-source ci/cpu/libclx/build_libclx.sh
 
 logger "Build conda pkg for clx..."
 source ci/cpu/clx/build_clx.sh
 
 ################################################################################
-# UPLOAD - Conda packages
+# UPLOAD - Conda package
 ################################################################################
-
-logger "Upload libclx conda pkg..."
-source ci/cpu/libclx/upload-anaconda.sh
 
 logger "Upload clx conda pkg..."
 source ci/cpu/clx/upload-anaconda.sh

@@ -69,11 +69,11 @@ pip install faker
 conda list
 
 ################################################################################
-# BUILD - Build libclx and clx from source
+# BUILD - Build clx from source
 ################################################################################
 
-logger "Build libclx and clx..."
-$WORKSPACE/build.sh clean libclx clx
+logger "Build clx..."
+$WORKSPACE/build.sh clean clx
 
 ################################################################################
 # TEST - Test python package
