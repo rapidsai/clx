@@ -6,6 +6,7 @@
 ## Improvements
 - PR #263 Pin cmake policies to cmake 3.17 version
 - PR #248 Fix to cybert streamz to handle larger output messages
+- PR #283 Remove CLX subword tokenizer
 
 ## Bug Fixes
 - PR #269 Add cybert class to docs build
