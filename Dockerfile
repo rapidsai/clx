@@ -24,17 +24,9 @@ RUN source activate rapids \
   && conda install -n rapids jupyterlab-nvdashboard \
   && jupyter labextension install dask-labextension jupyterlab-nvdashboard
 
-# libclx build/install
-RUN source activate rapids && \
-    mkdir -p /rapids/clx/cpp/build && \
-    cd /rapids/clx/cpp/build && \
-    cmake .. -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} && \
-    make -j install
-
 # clx build/install
 RUN source activate rapids && \
     cd /rapids/clx/python && \
-    python setup.py build_ext --inplace && \
     python setup.py install
 
 WORKDIR /rapids/clx

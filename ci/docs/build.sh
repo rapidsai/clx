@@ -39,12 +39,10 @@ pip install cupy-cuda${CUDA_SHORT}
 
 logger "Check versions..."
 python --version
-$CC --version
-$CXX --version
 conda list
 
 #clx source build
-${PROJECT_WORKSPACE}/build.sh clean libclx clx
+${PROJECT_WORKSPACE}/build.sh clx
 
 #clx Sphinx Build
 logger "Build clx docs..."

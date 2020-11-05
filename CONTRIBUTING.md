@@ -111,21 +111,15 @@ pre-commit install
 from the root of the CLX repository. Now `isort`, `Black`, and `flake8` will be
 run each time you commit changes.
 
+## Script to build CLX from source
+
 ### Build from Source
 
 The following instructions are for developers and contributors to CLX OSS development. These instructions are tested on Linux Ubuntu 16.04 & 18.04. Use these instructions to build CLX from source and contribute to its development.  Other operating systems may be compatible, but are not currently tested.
 
-The CLX package include both a C/C++ CUDA portion and a python portion.  Both libraries need to be installed in order CLX to operate correctly.
-
 The following instructions are tested on Linux systems.
 
 #### Prerequisites
-
-Compiler requirement:
-
-* `gcc`     version 5.4+
-* `nvcc`    version 10.1+
-* `cmake`   version 3.12
 
 CUDA requirement:
 
@@ -135,14 +129,9 @@ CUDA requirement:
 
 You can obtain CUDA from [https://developer.nvidia.com/cuda-downloads](https://developer.nvidia.com/cuda-downloads).
 
-Since `cmake` will download and build Apache Arrow you may need to install Boost C++ (version 1.58+) before running
-`cmake`:
-
-#### Build and Install the C/C++ CUDA components
-
 To install CLX from source, ensure the dependencies are met and follow the steps below:
 
-1) Clone the repository and submodules
+Clone the repository and submodules:
 
 ```bash
   # Set the location to CLX in an environment variable CLX_HOME
@@ -152,7 +141,7 @@ To install CLX from source, ensure the dependencies are met and follow the steps
   git clone https://github.com/rapidsai/clx.git $CLX_HOME
 ```
 
-2) Create the conda development environment
+Create the conda development environment:
 
 ```bash
 # create the conda environment (assuming in base `clx` directory)
@@ -171,8 +160,7 @@ conda activate clx_dev
 conda deactivate
 ```
 
-  - The environment can be updated as development includes/changes the dependencies. To do so, run:
-
+The environment can be updated as development includes/changes the dependencies. To do so, run:
 
 ```bash
 # for CUDA 10.1
@@ -184,62 +172,12 @@ conda env update --name clx_dev --file conda/environments/clx_dev_cuda10.2.yml
 conda activate clx_dev
 ```
 
-3) Build and install `libclx`. CMake depends on the `nvcc` executable being on your path or defined in `$CUDACXX`.
-
-  This project uses cmake for building the C/C++ library.
-
-  ```bash
-  # Set the location to CLX in an environment variable CLX_HOME
-  export CLX_HOME=$(pwd)/clx
-
-  cd $CLX_HOME
-  cd cpp                                        # enter cpp directory
-  mkdir build                                   # create build directory
-  cd build                                      # enter the build directory
-  cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
-
-  # now build the code
-  make -j                                       # "-j" starts multiple threads
-  make install                                  # install the libraries
-  ```
-
-As a convenience, a `build.sh` script is provided in `$CLX_HOME`. To execute the same build commands above, run the script as shown below.  Note that the libraries will be installed to the location set in `$PREFIX` if set (i.e. `export PREFIX=/install/path`), otherwise to `$CONDA_PREFIX`.
-```bash
-$ cd $CLX_HOME
-$ ./build.sh libclx  # build the CLX libraries and install them to
-                         # $PREFIX if set, otherwise $CONDA_PREFIX
-```
-
-#### Building and installing the Python package
-
-5. Install the Python package to your Python path:
+Build the `clx` python package:
 
 ```bash
-cd $CLX_HOME
-cd python
-python setup.py build_ext --inplace
-python setup.py install    # install CLX python bindings
+$ cd $CLX_HOME/python
+$ python setup.py install
 ```
-
-Like the `libclx` build step above, `build.sh` can also be used to build the `clx` python package, as shown below:
-```bash
-$ cd $CLX_HOME
-$ ./build.sh clx  # build the clx python bindings and install them
-                      # to $PREFIX if set, otherwise $CONDA_PREFIX
-```
-
-Note: other `build.sh` options include:
-```bash
-$ cd $CLX_HOME
-$ ./build.sh clean                        # remove any prior build artifacts and configuration (start over)
-$ ./build.sh libclx -v                # compile and install libclx with verbose output
-$ ./build.sh libclx -g                # compile and install libclx for debug
-$ PARALLEL_LEVEL=4 ./build.sh libclx  # compile and install libclx limiting parallel build jobs to 4 (make -j4)
-$ ./build.sh libclx -n                # compile libclx but do not install
-```
-
-
-Note: This conda installation only applies to Linux and Python versions 3.6/3.7.
 
 ## Creating documentation
 
