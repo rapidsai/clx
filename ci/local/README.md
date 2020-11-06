@@ -30,7 +30,8 @@ For a full list of available gpuCI docker images, visit our [DockerHub](https://
 Style Check:
 ```bash
 $ bash ci/local/build.sh -r ~/rapids/clx -s
-$ source activate gdf    #Activate gpuCI conda environment
+$ . /opt/conda/etc/profile.d/conda.sh   #Activate gpuCI conda environment
+$ conda activate rapids   
 $ cd rapids
 $ flake8 python
 ```

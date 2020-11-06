@@ -3,8 +3,8 @@ set -e
 NUMARGS=$#
 ARGS=$*
 
-# Logger function for build status output
-function logger() {
+# gpuci_logger function for build status output
+function gpuci_logger() {
   echo -e "\n>>>> $@\n"
 }
 
@@ -14,7 +14,7 @@ function hasArg {
 }
 
 # Set path and build parallel level
-export PATH=/conda/bin:/usr/local/cuda/bin:$PATH
+export PATH=/opt/conda/bin:/usr/local/cuda/bin:$PATH
 export CUDA_REL=${CUDA_VERSION%.*}
 export CUDA_SHORT=${CUDA_REL//./}
 
@@ -30,20 +30,21 @@ export MINOR_VERSION=`echo $GIT_DESCRIBE_TAG | grep -o -E '([0-9]+\.[0-9]+)'`
 # SETUP - Check environment
 ################################################################################
 
-logger "Get env..."
+gpuci_logger "Get env"
 env
 
-logger "Activate conda env..."
-source activate rapids
+gpuci_logger "Activate conda env"
+. /opt/conda/etc/profile.d/conda.sh
+conda activate rapids
 
-logger "Check versions..."
+gpuci_logger "Check versions"
 python --version
 
 # FIX Added to deal with Anancoda SSL verification issues during conda builds
 conda config --set ssl_verify False
 
-logger "conda install required packages"
-conda install -y -c pytorch -c gwerbin \
+gpuci_logger "conda install required packages"
+gpuci_conda_retry install -y -c pytorch -c gwerbin \
     "rapids-build-env=$MINOR_VERSION.*" \
     "rapids-notebook-env=$MINOR_VERSION.*" \
     "cugraph=${MINOR_VERSION}" \
@@ -59,20 +60,22 @@ conda install -y -c pytorch -c gwerbin \
     "matplotlib" \
     "faker"
 
-logger "pip install git+https://github.com/rapidsai/cudatashader.git"
+gpuci_logger "pip install git+https://github.com/rapidsai/cudatashader.git"
 pip install "git+https://github.com/rapidsai/cudatashader.git"
-logger "pip install mockito"
+gpuci_logger "pip install mockito"
 pip install mockito
 pip install wget
 pip install faker
 
-conda list
+conda info
+conda config --show-sources
+conda list --show-channel-urls
 
 ################################################################################
 # BUILD - Build libclx and clx from source
 ################################################################################
 
-logger "Build libclx and clx..."
+gpuci_logger "Build libclx and clx"
 $WORKSPACE/build.sh clean libclx clx
 
 ################################################################################
@@ -83,7 +86,7 @@ EXITCODE=0
 trap "EXITCODE=1" ERR
 
 if hasArg --skip-tests; then
-    logger "Skipping Tests..."
+    gpuci_logger "Skipping Tests"
 else
     cd ${WORKSPACE}/python
     py.test --ignore=ci --cache-clear --junitxml=${WORKSPACE}/junit-clx.xml -v

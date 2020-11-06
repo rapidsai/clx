@@ -13,4 +13,4 @@ RUN source activate rapids \
     && python setup.py install
 
 WORKDIR /clx
-CMD source activate rapids && python run_integration_test.py
+CMD . /opt/conda/etc/profile.d/conda.sh && conda activate rapids && python run_integration_test.py

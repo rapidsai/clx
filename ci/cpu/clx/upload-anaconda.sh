@@ -2,7 +2,7 @@
 
 set -e
 
-export UPLOADFILE=`conda build conda/recipes/clx --python=$PYTHON --output`
+export UPLOADFILE=`gpuci_conda_retry build conda/recipes/clx --python=$PYTHON --output`
 CUDA_REL=${CUDA_VERSION%.*}
 
 

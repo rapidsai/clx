@@ -7,7 +7,7 @@ set -e
 if [ "$UPLOAD_LIBCLX" == "1" ]; then
   CUDA_REL=${CUDA_VERSION%.*}
 
-  export UPLOADFILE=`conda build conda/recipes/libclx --output`
+  export UPLOADFILE=`gpuci_conda_retry build conda/recipes/libclx --output`
 
 
   LABEL_OPTION="--label main"
