@@ -4,7 +4,7 @@ This is a guide on how [CLX](https://github.com/rapidsai/clx) and [Streamz](http
 
 Streamz has the ability to read from [Kafka](https://kafka.apache.org/) directly into [Dask](https://dask.org/) allowing for computation on a multi-core or cluster environment. This approach is best used for instances in which you hope to increase processing speeds with streaming data.
 
-A selection of workflows such as cyBERT and DGA detection inferencing are implemented in clx streamz. Here we share an example in which we demonstrate how to read Apache log data from Kafka, perform log parsing using CLX cyBERT and publish result data back to Kafka. Similarly, also for DGA detection.
+A selection of workflows such as cyBERT and DGA detection inferencing are implemented in CLX streamz. Here we share an example in which we demonstrate how to read Apache log data from Kafka, perform log parsing using CLX cyBERT and publish result data back to Kafka. Similarly, also for DGA detection.
 
 ## Build Quickstart Docker Image
 For convenience, you can build a Docker image that will include a working environment that's ready for running your pipeline. This image will contain all needed components including [Kafka](https://kafka.apache.org/) and [Zookeeper](https://zookeeper.apache.org/).
@@ -24,7 +24,7 @@ docker build -f examples/streamz/Dockerfile -t clx-streamz:latest .
 
 ## Create Docker Container
 
-A docker container is created using the image above. The 'docker run' format to build your container is shown below. Note: volume binding to the container is an optional argument.
+A Docker container is created using the image above. The 'docker run' format to build your container is shown below. Note: volume binding to the container is an optional argument.
 
 **Preferred - Docker CE v19+ and nvidia-container-toolkit**
 
@@ -97,7 +97,7 @@ docker exec clx_streamz bash -c 'source activate rapids \
 View the data processing activity on the dask dashboard by visiting http://localhost:9787 or `<host>:9787`
 
 ## Capturing Benchmarks
-To capture benchmarks add the benchmark flag along with average log size (kb), for throughput (mb/s) and average batch size (mb) estimates, to the docker run command above. In this case, we are benchmarking the cyBERT workflow with the commands below. Similarly, we can also do it for the DGA detection workflow.
+To capture benchmarks add the benchmark flag along with average log size (kb), for throughput (mb/s) and average batch size (mb) estimates, to the Docker run command above. In this case, we are benchmarking the cyBERT workflow with the commands below. Similarly, we can also do it for the DGA detection workflow.
 
 ```
 docker exec clx_streamz bash -c 'source activate rapids \
