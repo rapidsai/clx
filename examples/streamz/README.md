@@ -55,7 +55,9 @@ The Dockerfile contains an ENTRYPOINT which calls [entrypoint.sh](https://github
 2. Run Kafka broker on `localhost:9092` and Zookeeper on `localhost:2181`
 3. Creates (cyBERT and DGA detection) specific input and output kafka topics and publishes sample input data 
 
-Your Quickstart Docker container includes the data and models required to run cyBERT and DGA detection stream processing workflows.
+Your Quickstart Docker container includes the data and models required to run cyBERT and DGA detection stream processing workflows. 
+
+Note: We can run multiple workflows in parallel on the same container.
 
 ## Run cyBERT Streamz Example on Apache Logs
 ```
