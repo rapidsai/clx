@@ -6,6 +6,7 @@
 ## Improvements
 - PR #263 Pin cmake policies to cmake 3.17 version
 - PR #248 Fix to cybert streamz to handle larger output messages
+- PR #283 Remove CLX subword tokenizer
 
 ## Bug Fixes
 - PR #269 Add cybert class to docs build
@@ -15,7 +16,7 @@
 
 ## New Features
 - PR #208 CLX Supervised Asset Classification
-
+- PR #265 Add FFT notebook
 ## Improvements
 - PR #233 Removed s3 dependency from dga detection unit-test
 - PR #235 Pre-commit hooks for isort, black and flake8
