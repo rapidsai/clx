@@ -24,7 +24,7 @@ docker build -f examples/streamz/Dockerfile -t clx-streamz:latest .
 
 ## Create Docker Container
 
-A Docker container is created using the image above. The 'docker run' format to build your container is shown below. Note: volume binding to the container is an optional argument.
+A Docker container is created using the image above. The 'docker run' format to build your container is shown below.  Note: volume binding to the container is an optional argument.
 
 **Preferred - Docker CE v19+ and nvidia-container-toolkit**
 
@@ -55,9 +55,7 @@ The Dockerfile contains an ENTRYPOINT which calls [entrypoint.sh](https://github
 2. Run Kafka broker on `localhost:9092` and Zookeeper on `localhost:2181`
 3. Creates (cyBERT and DGA detection) specific input and output kafka topics and publishes sample input data 
 
-Your Quickstart Docker container includes the data and models required to run cyBERT and DGA detection stream processing workflows. 
-
-Note: We can run multiple workflows in parallel on the same container.
+Your Quickstart Docker container includes the data and models required to run cyBERT and DGA detection stream processing workflows. Note: we can run multiple workflows on the same container in parallel.
 
 ## Run cyBERT Streamz Example on Apache Logs
 ```
