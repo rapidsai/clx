@@ -44,10 +44,10 @@ def filter_periodogram(prdg, p_value):
 
 def to_time_domain(prdg):
     """
-    Convert periodogram to signal in time domain.
+    Convert the signal back to time domain.
 
-    :param periodogram: periodogram (frequency domain)
-    :type signal: cupy.core.core.ndarray
+    :param prdg: periodogram (frequency domain)
+    :type prdg: cupy.core.core.ndarray
     :return: CuPy array representing reconstructed signal
     :rtype: cupy.core.core.ndarray
     """
