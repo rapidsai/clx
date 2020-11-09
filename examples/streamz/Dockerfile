@@ -25,8 +25,8 @@ RUN apt-get install -y librdkafka-dev \
         unzip && \
     apt-get clean
 
-ENV SCALA_VERSION 2.11
-ENV KAFKA_VERSION 2.3.0
+ENV SCALA_VERSION 2.13
+ENV KAFKA_VERSION 2.5.1
 ENV KAFKA_HOME /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"
 ENV CYBERT_HOME /opt/cybert
 
@@ -34,7 +34,7 @@ ADD examples/streamz/scripts "$CYBERT_HOME"/scripts
 ADD examples/streamz/data "$CYBERT_HOME"/data
 ADD examples/streamz/python "$CYBERT_HOME"/python
 
-RUN wget -q http://www.gtlib.gatech.edu/pub/apache/kafka/2.3.0/kafka_2.11-2.3.0.tgz -O /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz && \
+RUN wget -q https://downloads.apache.org/kafka/2.5.1/kafka_2.13-2.5.1.tgz -O /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz && \
         tar xfz /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz -C /opt && \
         rm /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz
 
@@ -58,17 +58,9 @@ RUN source activate rapids \
   && conda install -n rapids jupyterlab-nvdashboard \
   && jupyter labextension install dask-labextension jupyterlab-nvdashboard
 
-# libclx build/install
-RUN source activate rapids && \
-    mkdir -p /rapids/clx/cpp/build && \
-    cd /rapids/clx/cpp/build && \
-    cmake .. -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} && \
-    make -j install
-
 # clx build/install
 RUN source activate rapids && \
     cd /rapids/clx/python && \
-    python setup.py build_ext --inplace && \
     python setup.py install
 
 WORKDIR /rapids/clx
