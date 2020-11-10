@@ -62,7 +62,7 @@ EXPOSE 2181
 EXPOSE 9092
 
 RUN source activate rapids && \
-    conda install -c pytorch "pytorch>=1.5" torchvision "cudf_kafka=${RAPIDS_VERSION}" "custreamz=${RAPIDS_VERSION}" "scikit-learn>=0.21" ipywidgets python-confluent-kafka transformers "seqeval=0.0.12" python-whois seaborn requests matplotlib pytest jupyterlab "openjdk=8.0.152" dask-cuda && \
+    conda install -c pytorch "pytorch>=1.7" torchvision "cudf_kafka=${RAPIDS_VERSION}" "custreamz=${RAPIDS_VERSION}" "scikit-learn>=0.21" ipywidgets python-confluent-kafka transformers "seqeval=0.0.12" python-whois seaborn requests matplotlib pytest jupyterlab "openjdk=8.0.152" dask-cuda && \
     pip install "git+https://github.com/rapidsai/cudatashader.git" && \
     pip install mockito && \
     pip install wget
@@ -71,17 +71,9 @@ RUN source activate rapids && \
   	conda install -n rapids jupyterlab-nvdashboard && \
   	jupyter labextension install dask-labextension jupyterlab-nvdashboard
 
-# libclx build/install
-RUN source activate rapids && \
-    mkdir -p /rapids/clx/cpp/build && \
-    cd /rapids/clx/cpp/build && \
-    cmake .. -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} && \
-    make -j install
-
 # clx build/install
 RUN source activate rapids && \
     cd /rapids/clx/python && \
-    python setup.py build_ext --inplace && \
     python setup.py install
 
 # clx_streamz_tools install
