@@ -8,6 +8,7 @@
 - PR #263 Pin cmake policies to cmake 3.17 version
 - PR #272 CLX Streamz generic structure
 - PR #283 Remove CLX subword tokenizer
+- PR #286 Update to PyTorch 1.7 for CUDA 11 support
 
 ## Bug Fixes
 - PR #269 Add cybert class to docs build
