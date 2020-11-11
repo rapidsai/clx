@@ -17,31 +17,47 @@ import sys
 import time
 import dask
 import torch
+import cudf
 import signal
 from streamz import Stream
 from tornado import ioloop
 from clx_streamz_tools import utils
+from clx.dns import dns_extractor as dns    
+from confluent_kafka.serialization import StringDeserializer
 
-def inference(messages_df):
+def inference(messages):
     # Messages will be received and run through DGA inferencing
     worker = dask.distributed.get_worker()
     batch_start_time = int(round(time.time()))
-    result_size = messages_df.shape[0]
-    print("Processing batch size: " + str(result_size))
+    gdf = cudf.DataFrame()
+    print(gdf['messages']) 
+    if type(messages) == str:
+        gdf["stream"] = [messages.decode("utf-8")]
+    elif type(messages) == list and len(messages) > 0:
+        gdf["stream"] = [msg.decode("utf-8") for msg in messages]
+    else:
+        print("ERROR: Unknown type encountered in inference")
+        
+    result_size = gdf.shape[0]
+    gdf['url'] = gdf.stream.str.extract('"dns":.*."url": "([a-zA-Z\.\-\:\/\-0-9]+)')
+    dns_extracted_gdf = dns.parse_url(gdf['url'], req_cols={"domain", "suffix"})
+    domain_series = dns_extracted_gdf['domain']+'.'+dns_extracted_gdf['suffix']
+
     dd = worker.data["dga_detector"]
-    preds = dd.predict(messages_df["domain"])
-    messages_df["preds"] = preds
+    preds = dd.predict(domain_series)
+    gdf["preds"] = preds
     torch.cuda.empty_cache()
     gc.collect()
-    return (messages_df, batch_start_time, result_size)
+    return (gdf, batch_start_time, result_size)
 
 
 def sink_to_kafka(processed_data):
     # Prediction data will be published to provided kafka producer
+    batch_start_time = time.time()
     messages_df = processed_data[0]
     utils.kafka_sink(producer_conf, args.output_topic, messages_df)
-    return processed_data
-
+    batch_end_time = time.time()
+    print("Time taken to convert gdf to pandas and publish to kafka batch size %s : %s secs" %(messages_df.shape[0], (batch_end_time - batch_start_time)))
 
 def worker_init():
     # Initialization for each dask worker
@@ -84,12 +100,12 @@ def start_stream():
         consumer_conf,
         poll_interval=args.poll_interval,
         # npartitions value varies based on kafka topic partitions configuration.
-        npartitions=1,
+        npartitions=6,
         asynchronous=True,
         dask=True,
-        engine="cudf",
         max_batch_size=args.max_batch_size,
     )
+    
     global output
     # If benchmark arg is True, use streamz to compute benchmark
     if args.benchmark:
@@ -122,12 +138,17 @@ if __name__ == "__main__":
         # "queue.buffering.max.messages": "250000",
         # "linger.ms": "100"
     }
+
+    string_deserializer = StringDeserializer(codec='utf_8')
+
     consumer_conf = {
         "bootstrap.servers": args.broker,
         "group.id": args.group_id,
         "session.timeout.ms": "60000",
         "enable.partition.eof": "true",
         "auto.offset.reset": "earliest",
+        "key.deserializer": string_deserializer,
+        "value.deserializer": string_deserializer,
     }
     print("Producer conf: " + str(producer_conf))
     print("Consumer conf: " + str(consumer_conf))
@@ -139,4 +160,3 @@ if __name__ == "__main__":
         loop.start()
     except KeyboardInterrupt:
         loop.stop()
-        

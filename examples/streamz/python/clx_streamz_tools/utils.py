@@ -35,7 +35,6 @@ def kafka_sink(producer_conf, output_topic, parsed_df):
         producer.produce(output_topic, json_rec)
     producer.flush()
 
-
 def calc_benchmark(processed_data, size_per_log):
     # Calculates benchmark for the streamz workflow
     t1 = int(round(time.time() * 1000))

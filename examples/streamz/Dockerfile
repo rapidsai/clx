@@ -67,10 +67,6 @@ RUN source activate rapids && \
     pip install mockito && \
     pip install wget
 
-RUN source activate rapids && \
-  	conda install -n rapids jupyterlab-nvdashboard && \
-  	jupyter labextension install dask-labextension jupyterlab-nvdashboard
-
 # clx build/install
 RUN source activate rapids && \
     cd /rapids/clx/python && \
