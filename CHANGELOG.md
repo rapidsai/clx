@@ -2,6 +2,7 @@
 
 ## New Features
 - PR #277 cyBERT class to support DistilBERT and ELECTRA
+- PR #281 CLX module for periodicity detection
 
 ## Improvements
 - PR #263 Pin cmake policies to cmake 3.17 version
