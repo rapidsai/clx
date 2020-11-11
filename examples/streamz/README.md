@@ -65,8 +65,8 @@ docker exec clx_streamz bash -c 'source activate rapids \
     --input_topic cybert_input \
     --output_topic cybert_output \
     --group_id streamz \
-    --model $CLX_STREAMZ_HOME/ml/models/cybert_pytorch_model.bin \
-    --label_map $CLX_STREAMZ_HOME/ml/labels/cybert_config.json \
+    --model $CLX_STREAMZ_HOME/ml/models/cybert/pytorch_model.bin \
+    --label_map $CLX_STREAMZ_HOME/ml/models/cybert/config.json \
     --poll_interval 1s \
     --max_batch_size 500'
 ```
@@ -79,7 +79,7 @@ docker exec clx_streamz bash -c 'source activate rapids \
     --input_topic dga_detection_input \
     --output_topic dga_detection_output \
     --group_id streamz \
-    --model $CLX_STREAMZ_HOME/ml/models/dga_detection_pytorch_model.bin \
+    --model $CLX_STREAMZ_HOME/ml/models/dga/pytorch_model.bin \
     --poll_interval 1s \
     --max_batch_size 500'
 ```
@@ -106,8 +106,8 @@ docker exec clx_streamz bash -c 'source activate rapids \
     --input_topic cybert_input \
     --output_topic cybert_output \
     --group_id streamz \
-    --model $CLX_STREAMZ_HOME/ml/models/cybert_pytorch_model.bin \
-    --label_map $CLX_STREAMZ_HOME/ml/labels/cybert_config.json \
+    --model $CLX_STREAMZ_HOME/ml/models/cybert/pytorch_model.bin \
+    --label_map $CLX_STREAMZ_HOME/ml/models/cybert/config.json \
     --poll_interval 1s \
     --max_batch_size 500 \
     --benchmark 20' \
