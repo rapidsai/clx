@@ -9,6 +9,7 @@
 - PR #248 Fix to cybert streamz to handle larger output messages
 - PR #283 Remove CLX subword tokenizer
 - PR #286 Update to PyTorch 1.7 for CUDA 11 support
+- PR #287 Dockerfile updates
 
 ## Bug Fixes
 - PR #269 Add cybert class to docs build
