@@ -3,11 +3,6 @@ set -e
 NUMARGS=$#
 ARGS=$*
 
-# gpuci_logger function for build status output
-function gpuci_logger() {
-  echo -e "\n>>>> $@\n"
-}
-
 # Arg parsing function
 function hasArg {
     (( ${NUMARGS} != 0 )) && (echo " ${ARGS} " | grep -q " $1 ")
