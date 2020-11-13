@@ -29,8 +29,8 @@ fi
 
 gpuci_logger "Get conda file output locations"
 
-export CLX_FILE=`gpuci_conda_retry build conda/recipes/clx --python=$PYTHON --output`
-export LIBCLX_FILE=`gpuci_conda_retry build conda/recipes/libclx --output`
+export CLX_FILE=`conda build conda/recipes/clx --python=$PYTHON --output`
+export LIBCLX_FILE=`conda build conda/recipes/libclx --output`
 
 ################################################################################
 # UPLOAD - Conda packages
@@ -41,12 +41,12 @@ if [ "$UPLOAD_CLX" == "1" ]; then
   test -e ${CLX_FILE}
   echo "Upload libcudf"
   echo ${CLX_FILE}
-  gpuci_retry anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-rapidsai} ${LABEL_OPTION} --skip-existing ${CLX_FILE}
+  gpuci_conda_retry anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-rapidsai} ${LABEL_OPTION} --skip-existing ${CLX_FILE}
 fi
 
 if [ "$UPLOAD_LIBCLX" == "1" ]; then
   test -e ${LIBCLX_FILE}
   echo "Upload libcudf"
   echo ${LIBCLX_FILE}
-  gpuci_retry anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-rapidsai} ${LABEL_OPTION} --skip-existing ${LIBCLX_FILE}
+  gpuci_conda_retry anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-rapidsai} ${LABEL_OPTION} --skip-existing ${LIBCLX_FILE}
 fi
