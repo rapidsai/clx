@@ -67,11 +67,13 @@ conda config --show-sources
 conda list --show-channel-urls
 
 ################################################################################
-# BUILD - Build libclx and clx from source
+# BUILD - Build clx from source
 ################################################################################
 
-gpuci_logger "Build libclx and clx"
-$WORKSPACE/build.sh clean libclx clx
+gpuci_logger "Build libclx"
+$WORKSPACE/build.sh clean libclx
+logger "Build clx..."
+$WORKSPACE/build.sh clean clx
 
 ################################################################################
 # TEST - Test python package

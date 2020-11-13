@@ -134,7 +134,6 @@ The following command can be used to run the pipeline over two GPUs:
 ```
 docker run -it --gpus '"device=0,1"' \
 -p 9787:8787 \
--v /home/efajardo/dockershare:/rapids/clx/my_data \
 --name cybert-streamz \
 -d clx-streamz:latest \
 -b localhost:9092 \
