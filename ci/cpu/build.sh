@@ -33,17 +33,19 @@ export GPUCI_CONDA_RETRY_SLEEP=30
 # SETUP - Check environment
 ################################################################################
 
-gpuci_logger "Get env"
+gpuci_logger "Check environment variables"
 env
 
 gpuci_logger "Activate conda env"
 . /opt/conda/etc/profile.d/conda.sh
 conda activate rapids
 
-gpuci_logger "Check versions"
+gpuci_logger "Check compiler versions"
 python --version
 $CC --version
 $CXX --version
+
+gpuci_logger "Check conda environment"
 conda info
 conda config --show-sources
 conda list --show-channel-urls
@@ -56,17 +58,14 @@ conda config --set ssl_verify False
 ################################################################################
 
 gpuci_logger "Build conda pkg for libclx"
-source ci/cpu/libclx/build_libclx.sh
+gpuci_conda_retry build conda/recipes/libclx
 
 gpuci_logger "Build conda pkg for clx"
-source ci/cpu/clx/build_clx.sh
+gpuci_conda_retry build -c pytorch -c nvidia -c conda-forge -c defaults conda/recipes/clx --python=$PYTHON
 
 ################################################################################
 # UPLOAD - Conda packages
 ################################################################################
 
-gpuci_logger "Upload libclx conda pkg"
-source ci/cpu/libclx/upload-anaconda.sh
-
-gpuci_logger "Upload clx conda pkg"
-source ci/cpu/clx/upload-anaconda.sh
+gpuci_logger "Upload conda pkgs"
+source ci/cpu/upload.sh
