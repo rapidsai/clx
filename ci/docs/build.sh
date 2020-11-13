@@ -40,15 +40,11 @@ pip install cupy-cuda${CUDA_SHORT}
 
 gpuci_logger "Check versions"
 python --version
-<<<<<<< HEAD
 $CC --version
 $CXX --version
 conda info
 conda config --show-sources
 conda list --show-channel-urls
-=======
-conda list
->>>>>>> origin/branch-0.17
 
 #clx source build
 ${PROJECT_WORKSPACE}/build.sh clx
