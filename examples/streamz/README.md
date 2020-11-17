@@ -1,13 +1,13 @@
 # Getting Started with CLX and Streamz
 
-This is a guide on how [CLX](https://github.com/rapidsai/clx) and [Streamz](https://streamz.readthedocs.io/en/latest/) can be used to build a streaming inference pipeline. We will use CLX's cyBERT for inference.
+This is a guide on how [CLX](https://github.com/rapidsai/clx) and [Streamz](https://streamz.readthedocs.io/en/latest/) can be used to build a streaming inference pipeline.
 
 Streamz has the ability to read from [Kafka](https://kafka.apache.org/) directly into [Dask](https://dask.org/) allowing for computation on a multi-core or cluster environment. This approach is best used for instances in which you hope to increase processing speeds with streaming data.
 
-Here we share an example in which we demonstrate how to read Apache log data from Kafka, perform log parsing using CLX cyBERT and publish result data back to Kafka.
+A selection of workflows such as cyBERT and DGA detection inferencing are implemented in CLX streamz. Here we share an example in which we demonstrate how to read Apache log data from Kafka, perform log parsing using CLX cyBERT and publish result data back to Kafka. Similarly, also for DGA detection.
 
 ## Build Quickstart Docker Image
-For convenience, you can build a Docker image that will include a working environment that's ready for running your pipeline. This image will contain all needed components including [Kafka](https://kafka.apache.org/) and [Zookeeper](https://zookeeper.apache.org/). An example pipeline is also included on the container to demonstrate using cyBERT and Streamz to parse a sample of Apache logs.
+For convenience, you can build a Docker image that will include a working environment that's ready for running your pipeline. This image will contain all needed components including [Kafka](https://kafka.apache.org/) and [Zookeeper](https://zookeeper.apache.org/).
 
 Prerequisites:
 * NVIDIA Pascal™ GPU architecture or better
@@ -22,127 +22,144 @@ Run the following to build the image:
 docker build -f examples/streamz/Dockerfile -t clx-streamz:latest .
 `
 
-## Running cyBERT Inference Pipeline
+## Create Docker Container
 
-For simplicity, our inference pipeline is started when the Docker container is created using the above image. The following shows the format of the `docker run` to create your container.
+A Docker container is created using the image above. The 'docker run' format to build your container is shown below.  Note: volume binding to the container is an optional argument.
 
 **Preferred - Docker CE v19+ and nvidia-container-toolkit**
+
 ```
-docker run -it
---gpus '"device=0,1,2"' \
--p 8787:8787 \
---name cybert-streamz
--d cybert-streamz:latest \
---broker localhost:9092 \
---group_id streamz \
---input_topic input \
---output_topic output \
---model_file /path/to/model.pth \
---label_file /path/to/label.json \
---poll_interval 1s \
---max_batch_size 1000 \
---data /path/to/dataset
+docker run -it \
+    -p 9787:8787 \
+    -p 9888:8888 \
+    -v <your_volume_binding_host_directory_path>:<your_volume_binding_container_directory_path> \
+    --gpus '"device=0,1,2"' \
+    --name clx_streamz \
+    -d clx-streamz:latest
 ```
 
 **Legacy - Docker CE v18 and nvidia-docker2**
+
 ```
 docker run -it \
---runtime=nvidia \
--p 8787:8787 \
---name cybert-streamz
--d cybert-streamz:latest \
---broker localhost:9092 \
---group_id streamz \
---input_topic input \
---output_topic output \
---model_file /path/to/model.pth \
---label_file /path/to/label.json \
---poll_interval 1s \
---max_batch_size 1000 \
---data /path/to/dataset
+    -p 9787:8787 \
+    -p 9888:8888 \
+     -v <your_volume_binding_host_directory_path>:<your_volume_binding_container_directory_path> \
+    --runtime=nvidia \
+    --name clx_streamz \
+    -d cybert-streamz:latest
 ```
 
-**Parameters:**
-- `broker`* - Host and port where kafka broker is running
-- `group_id`* - Kafka [group id](https://docs.confluent.io/current/installation/configuration/consumer-configs.html#group.id) that uniquely identifies the streamz data consumer.
-- `input_topic` - The name for the input topic to send the input dataset. Any name can be indicated here.
-- `output_topic` - The name for the output topic to send the output data. Any name can be indicated here.
-- `model_file` - The path to your model file
-- `label_file` - The path to your label file
-- `poll_interval`* - Interval (in seconds) to poll the Kafka input topic for data
-- `max_batch_size`* - Max batch size of data (max number of logs) to ingest into streamz with each `poll_interval`
-- `data` - The input dataset to use for this streamz example. This is a filepath to text file containing lines of text to be processed for inference (i.e. log file)
+The Dockerfile contains an ENTRYPOINT which calls [entrypoint.sh](https://github.com/rapidsai/clx/blob/branch-0.17/examples/streamz/scripts/entrypoint.sh) to:
+1. Configure and install Kafka
+2. Run Kafka broker on `localhost:9092` and Zookeeper on `localhost:2181`
+3. Creates (cyBERT and DGA detection) specific input and output kafka topics and publishes sample input data 
 
-``*`` = More information on these parameters can be found in the streamz [documentation](https://streamz.readthedocs.io/en/latest/api.html#streamz.from_kafka_batched).
-
-
-The Dockerfile contains an ENTRYPOINT which calls [entry.sh](https://github.com/rapidsai/clx/blob/branch-0.16/examples/streamz/scripts/entry.sh) to:
-1. Download, install and configure Kafka
-2. Run Kafka and Zookeeper
-3. Create input and output Kafka topics
-4. Read input data into input Kafka topic
-5. Start cyBERT distributed inference using Dask (one worker per GPU)
-
-
-View the data processing activity on the dask dashboard by visiting http://localhost:8787 or `<host>:8787`
-
-View the cyBERT script output in the container logs
-
-```
-docker logs --follow cybert-streamz
-```
-
-Processed data will be pushed to the kafka topic named `output`. To view all processed output run:
-```
-docker exec cybert-streamz bash -c 'source activate rapids && $KAFKA_HOME/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic output --from-beginning'
-```
-
-## Capturing Benchmarks
-
-To capture benchmarks add the benchmark flag along with average log size (kb), for throughput (mb/s) and average batch size (mb) estimates, to the docker run command above
-```
-docker run -it 
---gpus '"device=0,1,2"' \
--p 8787:8787 \
---name cybert-streamz -d cybert-streamz:latest \
---broker localhost:9092 \
---group_id streamz \
---input_topic input \
---output_topic output \
---model_file /path/to/model.pth \
---label_file /path/to/label.json \
---poll_interval 1s \
---max_batch_size 1000 \
---data /path/to/dataset \
---benchmark 20
-```
-
-To print benchmark to the docker logs send a SIGINT signal to the running cybert process
-```
-# To get the PID
-$ docker exec cybert-streamz ps aux | grep "cybert\.py" | awk '{print $2}'
-# Kill process
-$ docker exec cybert-streamz kill -SIGINT <pid>
-$ docker logs cybert-streamz
-```
+Your Quickstart Docker container includes the data and models required to run cyBERT and DGA detection stream processing workflows. Note: we can run multiple workflows on the same container in parallel.
 
 ## Run cyBERT Streamz Example on Apache Logs
-
-Your Quickstart Docker container includes the data and model required to run cyBERT stream processing on a sample of Apache logs.
-
-The following command can be used to run the pipeline over two GPUs:
 ```
-docker run -it --gpus '"device=0,1"' \
--p 9787:8787 \
---name cybert-streamz \
--d clx-streamz:latest \
--b localhost:9092 \
--g streamz \
--i input \
--o output \
--d /opt/cybert/data/apache_raw_sample_1k.txt \
--m /opt/cybert/data/pytorch_model.bin \
--l /opt/cybert/data/config.json \
--p 1s \
---max_batch_size 500
+docker exec clx_streamz bash -c 'source activate rapids \
+    && python $CLX_STREAMZ_HOME/python/cybert.py \
+    --broker localhost:9092 \
+    --input_topic cybert_input \
+    --output_topic cybert_output \
+    --group_id streamz \
+    --model $CLX_STREAMZ_HOME/ml/models/cybert/pytorch_model.bin \
+    --label_map $CLX_STREAMZ_HOME/ml/models/cybert/config.json \
+    --poll_interval 1s \
+    --max_batch_size 500'
 ```
+
+## Run DGA Streamz Example on Sample Domains
+```
+docker exec clx_streamz bash -c 'source activate rapids \
+    && python $CLX_STREAMZ_HOME/python/dga_detection.py \
+    --broker localhost:9092 \
+    --input_topic dga_detection_input \
+    --output_topic dga_detection_output \
+    --group_id streamz \
+    --model $CLX_STREAMZ_HOME/ml/models/dga/pytorch_model.bin \
+    --poll_interval 1s \
+    --max_batch_size 500'
+```
+
+Processed data will be pushed to the given kafka output topic. To view all processed output run:
+
+```
+docker exec clx_streamz bash -c 'source activate rapids \
+       && $KAFKA_HOME/bin/kafka-console-consumer.sh \
+       --bootstrap-server <broker> \
+       --topic <output_topic> \
+       --from-beginning'
+```
+
+View the data processing activity on the dask dashboard by visiting http://localhost:9787 or `<host>:9787`
+
+## Capturing Benchmarks
+To capture benchmarks add the benchmark flag along with average log size (kb), for throughput (mb/s) and average batch size (mb) estimates, to the Docker run command above. In this case, we are benchmarking the cyBERT workflow with the commands below. Similarly, we can also do it for the DGA detection workflow.
+
+```
+docker exec clx_streamz bash -c 'source activate rapids \
+    && python $CLX_STREAMZ_HOME/python/cybert.py \
+    --broker localhost:9092 \
+    --input_topic cybert_input \
+    --output_topic cybert_output \
+    --group_id streamz \
+    --model $CLX_STREAMZ_HOME/ml/models/cybert/pytorch_model.bin \
+    --label_map $CLX_STREAMZ_HOME/ml/models/cybert/config.json \
+    --poll_interval 1s \
+    --max_batch_size 500 \
+    --benchmark 20' \
+    > cybert_workflow.log 2>&1 &
+```
+
+To print benchmark, send a SIGINT signal to the running cybert process.
+```
+# To get the PID
+$ docker exec clx_streamz ps aux | grep "cybert\.py" | awk '{print $2}'
+# Kill process
+$ docker exec clx_streamz kill -SIGINT <pid>
+$ less cybert_workflow.log
+```
+
+## Steps to Run Workflow with Custom Arguments
+
+1. Create kafka topics for the clx_streamz workflows that you want to run and publish input data.
+
+    ```
+    docker exec clx_streamz /bin/bash -c 'source activate rapids \
+        && $CLX_STREAMZ_HOME/scripts/kafka_topic_setup.sh \
+        -b localhost:9092 \
+        -i <input_topic> \
+        -o <output_topic> \
+        -d <data_filepath>'
+    ```
+    
+2. Start workflow 
+    
+    ```
+    docker exec clx_streamz bash -c 'source activate rapids \
+        && python $CLX_STREAMZ_HOME/python/<workflow_script> \
+        --broker <host:port> \
+        --input_topic <input_topic> \
+        --output_topic <output_topic> \
+        --group_id <kafka_consumer_group_id> \
+        --model <model filepath> \
+        --label_map <labels filepath> \
+        --poll_interval <poll_interval> \
+        --max_batch_size <max_batch_size> \
+        --benchmark <avg log size>'
+    ```
+    **Parameters:**
+    - `broker`* - Host and port where kafka broker is running. 
+    - `group_id`* - Kafka [group id](https://docs.confluent.io/current/installation/configuration/consumer-configs.html#group.id) that uniquely identifies the streamz data consumer.
+    - `input_topic` - The name for the input topic to consumer data.
+    - `output_topic` - The name for the output topic to send the output data.
+    - `model_file` - The path to your model file
+    - `label_file` - The path to your label file
+    - `poll_interval`* - Interval (in seconds) to poll the Kafka input topic for data (Ex: 60s)
+    - `max_batch_size`* - Max batch size of data (max number of logs) to ingest into streamz with each `poll_interval`
+    - `benchmark` - To capture benchmarks add the benchmark flag along with average log size (kb), for throughput (mb/s) and average batch size (mb) estimates.
+
+    ``*`` = More information on these parameters can be found in the streamz [documentation](https://streamz.readthedocs.io/en/latest/api.html#streamz.from_kafka_batched).
