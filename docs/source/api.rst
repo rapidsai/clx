@@ -27,7 +27,7 @@ Analytics
 .. automodule:: clx.analytics.stats
     :members:
 
-.. automodule:: clx.analytics.tokenizer
+.. automodule:: clx.analytics.periodicity_detection
     :members:
 
 DNS Extractor
