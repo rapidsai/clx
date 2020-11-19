@@ -221,7 +221,7 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict):
                   # Drop unwanted columns.
                   input_df = input_df.drop(["dummy", tld_col], axis=1)
                 # Handles scenario when some records with last tld column matches to suffix list but not all.
-                if i == col_len:
+                else:
                     unknown_suffix_df = _handle_unknown_suffix(merged_df, col_dict)
                     tmp_dfs.append(unknown_suffix_df)
             # Handles scenario when all records with last tld column doesn't match to suffix list.

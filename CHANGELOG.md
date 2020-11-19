@@ -15,6 +15,7 @@
 ## Bug Fixes
 - PR #269 Add cybert class to docs build
 - PR #271 Alert Analysis notebook fix
+- PR #291 DNS Extractor fix
 
 # clx 0.16.0 (21 Oct 2020)
 
