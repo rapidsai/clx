@@ -67,7 +67,7 @@ def test_evaluate_model():
 def test_predict():
     if torch.cuda.is_available():
         X_test = cudf.Series(["email 1", "email 2"])
-        preds = phish_detect.predict(X_test, max_seq_len=128, batch_size=32)
+        preds = phish_detect.predict(X_test, max_seq_len=128)
         assert preds[0].isin([False, True]).equals(cudf.Series([True, True]))
 
 

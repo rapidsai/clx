@@ -5,10 +5,12 @@ import cudf
 import cupy
 import numpy as np
 import torch
+import torch.nn as nn
+import gc
 from cuml.preprocessing.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler, TensorDataset
-from torch.utils.dlpack import from_dlpack
+from torch.utils.dlpack import from_dlpack, to_dlpack
 from tqdm import trange
 from transformers import AdamW, BertForSequenceClassification
 
@@ -42,13 +44,16 @@ class PhishingDetector:
 
         >>> phish_detect.init_model(model_path)
         """
-        if self._model is None:
-            self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
         self._model = BertForSequenceClassification.from_pretrained(
             model_or_path, num_labels=2
         )
-        self._model.cuda()
+        if torch.cuda.is_available():
+            self._device = torch.device("cuda")
+            self._model.cuda()
+            # self._model = nn.DataParallel(self._model)
+        else:
+            self._device = torch.device("cpu")
+        
 
     def train_model(
         self,
@@ -89,10 +94,6 @@ class PhishingDetector:
             validation_labels,
         ) = train_test_split(emails, "label", train_size=0.8, random_state=2)
 
-        # Tokenize training and validation
-        # train_inputs, train_masks, _ = tokenizer.tokenize_df(train_emails, self._hashpath, max_sequence_length=max_seq_len, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
-        # validation_inputs, validation_masks, _ = tokenizer.tokenize_df(validation_emails, self._hashpath, max_sequence_length=max_seq_len, max_num_sentences=max_num_sentences, max_num_chars=max_num_chars, max_rows_tensor=max_rows_tensor, do_truncate=True)
-
         train_inputs, train_masks = self._bert_uncased_tokenize(
             train_emails.email, max_seq_len
         )
@@ -124,6 +125,10 @@ class PhishingDetector:
         self._model = self._train(
             train_dataloader, validation_dataloader, self._model, epochs
         )
+
+        # self._model = self._train(
+        #     train_inputs, train_masks, train_labels, validation_inputs, validation_masks, validation_labels, self._model, epochs
+        # )
 
     def evaluate_model(self, emails, labels, max_seq_len=128, batch_size=32):
         """
@@ -179,7 +184,7 @@ class PhishingDetector:
         """
         self._model.save_pretrained(save_to_path)
 
-    def predict(self, emails, max_seq_len=128, batch_size=32, threshold=0.5):
+    def predict(self, emails, max_seq_len=128, threshold=0.5):
         """
         Predict the class with the trained model
 
@@ -201,36 +206,22 @@ class PhishingDetector:
         >>> phish_detect.train_model(emails_train, labels_train)
         >>> predictions = phish_detect.predict(new_emails, threshold=0.8)
         """
+        dp_model = nn.DataParallel(self._model)
         predict_inputs, predict_masks = self._bert_uncased_tokenize(emails, max_seq_len)
+        predict_inputs = predict_inputs.type(torch.LongTensor).to(self._device)
+        predict_masks = predict_masks.to(self._device)
+        with torch.no_grad():
+            logits = dp_model(
+                predict_inputs, token_type_ids=None, attention_mask=predict_masks
+            )[0]
+            probs = torch.sigmoid(logits[:, 1])
+            preds = probs.ge(threshold)
+        
+        probs = cudf.io.from_dlpack(to_dlpack(probs))
+        preds = cudf.io.from_dlpack(to_dlpack(preds))
 
-        predict_inputs = predict_inputs.type(torch.LongTensor)
-        predict_data = TensorDataset(predict_inputs, predict_masks)
-        predict_sampler = SequentialSampler(predict_data)
-        predict_dataloader = DataLoader(
-            predict_data, sampler=predict_sampler, batch_size=batch_size
-        )
-
-        self._model.eval()
-
-        probs = []
-        for batch in predict_dataloader:
-
-            batch = tuple(t.to(self._device) for t in batch)
-
-            b_input_ids, b_input_mask = batch
-
-            with torch.no_grad():
-                logits = self._model(
-                    b_input_ids, token_type_ids=None, attention_mask=b_input_mask
-                )[0]
-                probs_batch = torch.sigmoid(logits[:, 1])
-                probs.append(probs_batch)
-
-        probs = torch.cat(probs)
-        preds = probs.ge(threshold)
-
-        preds = cudf.Series(preds.cpu().numpy())
-        probs = cudf.Series(probs.cpu().numpy())
+        torch.cuda.empty_cache()
+        gc.collect()
 
         return preds, probs
 
@@ -288,7 +279,7 @@ class PhishingDetector:
                     0
                 ]  # forwardpass
 
-                train_loss_set.append(loss.item())
+                # train_loss_set.append(loss.item())
 
                 loss.backward()
                 self._optimizer.step()  # update parameters
