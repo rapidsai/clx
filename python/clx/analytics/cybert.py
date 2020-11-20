@@ -59,7 +59,7 @@ class Cybert:
                 self._vocab_lookup[index] = line.split()[0]
         self._hashpath = "%s/bert-base-cased-hash.txt" % resources_dir
 
-    def load_model(self, model_filepath, config_filepath):
+    def load_model(self, model_filepath):
         """
         Load cybert model.
 
@@ -76,16 +76,17 @@ class Cybert:
         >>> cyparse = Cybert()
         >>> cyparse.load_model('/path/to/model.pth', '/path/to/config.json')
         """
+        config_filepath = model_filepath + "/config.json"
         with open(config_filepath) as f:
             config = json.load(f)
         model_arch = config["architectures"][0]
         self._label_map = {int(k): v for k, v in config["id2label"].items()}
-        model_state_dict = torch.load(model_filepath)
-        self._model = ARCH_MAPPING[model_arch].from_pretrained(
-            MODEL_MAPPING[model_arch],
-            state_dict=model_state_dict,
-            num_labels=len(self._label_map),
-        )
+        archive_file = os.path.join(pretrained_model_name_or_path, 'pytorch_model.bin')
+        
+        if path.exists(archive_file):
+            self._model = ARCH_MAPPING[model_arch].from_pretrained(model_filepath)
+        else:
+            self._model = ARCH_MAPPING[model_arch].from_pretrained(MODEL_MAPPING[model_arch])
         self._model.cuda()
         self._model.eval()
 
