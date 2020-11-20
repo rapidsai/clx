@@ -66,7 +66,7 @@ class Cybert:
         :param model_dir: Directory of the model (.pth or .bin) to
         be loaded
         :type model_dir: str
-        :param label_map_filepath: Config file (.json) to be
+        :param config_filepath: Config file (.json) to be
         used
         :type config_filepath: str
 
@@ -76,11 +76,11 @@ class Cybert:
         >>> cyparse = Cybert()
         >>> cyparse.load_model('/path/to/model.bin', '/path/to/config.json')
         """
-        with open(label_map_filepath) as f:
+        with open(config_filepath) as f:
             config = json.load(f)
         model_arch = config["architectures"][0]
         self._label_map = {int(k): v for k, v in config["id2label"].items()}
-        self._model = ARCH_MAPPING[model_arch].from_pretrained(model_filepath, config=label_map_filepath)
+        self._model = ARCH_MAPPING[model_arch].from_pretrained(model_filepath, config=config_filepath)
         self._model.cuda()
         self._model.eval()
 
