@@ -53,7 +53,6 @@ class PhishingDetector:
             # self._model = nn.DataParallel(self._model)
         else:
             self._device = torch.device("cpu")
-        
 
     def train_model(
         self,
@@ -216,7 +215,7 @@ class PhishingDetector:
             )[0]
             probs = torch.sigmoid(logits[:, 1])
             preds = probs.ge(threshold)
-        
+
         probs = cudf.io.from_dlpack(to_dlpack(probs))
         preds = cudf.io.from_dlpack(to_dlpack(preds))
 
@@ -256,8 +255,6 @@ class PhishingDetector:
         return np.sum(pred_flat == labels_flat) / len(labels_flat)
 
     def _train(self, train_dataloader, validation_dataloader, model, epochs):
-        train_loss_set = []  # Store loss and accuracy
-
         for _ in trange(epochs, desc="Epoch"):
             model.train()  # Enable training mode
             tr_loss = 0  # Tracking variables
