@@ -12,6 +12,7 @@
 - PR #286 Update to PyTorch 1.7 for CUDA 11 support
 - PR #287 Dockerfile updates
 - PR #292 Phishing detection updates and workflow
+- PR #288 Update network mapping notebooks to download from S3
 
 ## Bug Fixes
 - PR #269 Add cybert class to docs build
