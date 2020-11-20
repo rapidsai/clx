@@ -144,17 +144,21 @@ def generate_tld_cols(hostname_split_df, hostnames, col_len):
 
 
 def _handle_unknown_suffix(merged_df, col_dict):
+
     unknown_suffix_df = merged_df[merged_df["dummy"].isna()]
-    unknown_suffix_df = unknown_suffix_df.rename(columns={"tld0": "hostname"})
-    unknown_suffix_df = unknown_suffix_df[["idx", "hostname"]]
+    if col_dict["hostname"]:
+        unknown_suffix_df = unknown_suffix_df[["idx", "tld0"]]
+        unknown_suffix_df = unknown_suffix_df.rename(columns={"tld0": "hostname"})
+    else:
+        unknown_suffix_df = unknown_suffix_df[["idx"]]
+    
     if col_dict["domain"]:
         unknown_suffix_df["domain"] = ""
-    if not col_dict["hostname"]:
-        unknown_suffix_df = unknown_suffix_df.drop("hostname", axis=1)
     if col_dict["subdomain"]:
         unknown_suffix_df["subdomain"] = ""
     if col_dict["suffix"]:
         unknown_suffix_df["suffix"] = ""
+        
     return unknown_suffix_df
 
 
