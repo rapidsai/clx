@@ -74,7 +74,7 @@ class Cybert:
         >>> cyparse = Cybert()
         >>> cyparse.load_model('/path/to/model.pth', '/path/to/config.json')
         """
-        
+
         with open(config_filepath) as f:
             config = json.load(f)
         model_arch = config["architectures"][0]
