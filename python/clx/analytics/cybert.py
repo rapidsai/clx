@@ -58,35 +58,29 @@ class Cybert:
             for index, line in enumerate(f):
                 self._vocab_lookup[index] = line.split()[0]
         self._hashpath = "%s/bert-base-cased-hash.txt" % resources_dir
-
-    def load_model(self, model_filepath):
+        
+    def load_model(self, model_filepath, config_filepath):
         """
         Load cybert model.
 
-        :param model_filepath: Filepath of the model (.pth or .bin) to
+        :param model_dir: Directory of the model (.pth or .bin) to
         be loaded
-        :type model_filepath: str
+        :type model_dir: str
         :param label_map_filepath: Config file (.json) to be
         used
-        :type label_map_filepath: str
+        :type config_filepath: str
 
         Examples
         --------
         >>> from clx.analytics.cybert import Cybert
         >>> cyparse = Cybert()
-        >>> cyparse.load_model('/path/to/model.pth', '/path/to/config.json')
+        >>> cyparse.load_model('/path/to/model.bin', '/path/to/config.json')
         """
-        config_filepath = model_filepath + "/config.json"
-        with open(config_filepath) as f:
+        with open(label_map_filepath) as f:
             config = json.load(f)
         model_arch = config["architectures"][0]
         self._label_map = {int(k): v for k, v in config["id2label"].items()}
-        archive_file = os.path.join(pretrained_model_name_or_path, 'pytorch_model.bin')
-        
-        if path.exists(archive_file):
-            self._model = ARCH_MAPPING[model_arch].from_pretrained(model_filepath)
-        else:
-            self._model = ARCH_MAPPING[model_arch].from_pretrained(MODEL_MAPPING[model_arch])
+        self._model = ARCH_MAPPING[model_arch].from_pretrained(model_filepath, config=label_map_filepath)
         self._model.cuda()
         self._model.eval()
 
