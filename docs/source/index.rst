@@ -16,8 +16,6 @@ Welcome to clx's documentation!
    intro-clx-dga.ipynb
    intro-clx-streamz.ipynb
 
-
-
 Indices and tables
 ==================
 
