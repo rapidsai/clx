@@ -17,6 +17,7 @@
 - PR #269 Add cybert class to docs build
 - PR #271 Alert Analysis notebook fix
 - PR #294 API doc fixes
+- PR #295 Docs build script fix
 
 # clx 0.16.0 (21 Oct 2020)
 
