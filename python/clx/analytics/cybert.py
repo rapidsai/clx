@@ -58,11 +58,11 @@ class Cybert:
             for index, line in enumerate(f):
                 self._vocab_lookup[index] = line.split()[0]
         self._hashpath = "%s/bert-base-cased-hash.txt" % resources_dir
-        
+         
     def load_model(self, model_filepath, config_filepath):
         """
         Load cybert model.
-
+        
         :param model_filepath: Filepath of the model (.pth or .bin) to be loaded
         :type model_filepath: str
         :param config_filepath: Config file (.json) to be used
@@ -79,7 +79,10 @@ class Cybert:
             config = json.load(f)
         model_arch = config["architectures"][0]
         self._label_map = {int(k): v for k, v in config["id2label"].items()}
-        self._model = ARCH_MAPPING[model_arch].from_pretrained(model_filepath, config=config_filepath)
+        self._model = ARCH_MAPPING[model_arch].from_pretrained(
+            model_filepath,
+            config=config_filepath,
+        )
         self._model.cuda()
         self._model.eval()
 
