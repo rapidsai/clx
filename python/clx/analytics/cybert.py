@@ -63,11 +63,9 @@ class Cybert:
         """
         Load cybert model.
 
-        :param model_dir: Directory of the model (.pth or .bin) to
-        be loaded
-        :type model_dir: str
-        :param config_filepath: Config file (.json) to be
-        used
+        :param model_filepath: Filepath of the model (.pth or .bin) to be loaded
+        :type model_filepath: str
+        :param config_filepath: Config file (.json) to be used
         :type config_filepath: str
 
         Examples
@@ -76,6 +74,7 @@ class Cybert:
         >>> cyparse = Cybert()
         >>> cyparse.load_model('/path/to/model.bin', '/path/to/config.json')
         """
+
         with open(config_filepath) as f:
             config = json.load(f)
         model_arch = config["architectures"][0]
