@@ -143,6 +143,23 @@ def generate_tld_cols(hostname_split_df, hostnames, col_len):
     return hostname_split_df
 
 
+def _handle_unknown_suffix(unknown_suffix_df, col_dict):
+    if col_dict["hostname"]:
+        unknown_suffix_df = unknown_suffix_df[["idx", "tld0"]]
+        unknown_suffix_df = unknown_suffix_df.rename(columns={"tld0": "hostname"})
+    else:
+        unknown_suffix_df = unknown_suffix_df[["idx"]]
+
+    if col_dict["subdomain"]:
+        unknown_suffix_df["subdomain"] = ""
+    if col_dict["domain"]:
+        unknown_suffix_df["domain"] = ""
+    if col_dict["suffix"]:
+        unknown_suffix_df["suffix"] = ""
+
+    return unknown_suffix_df
+
+
 def _extract_tld(input_df, suffix_df, col_len, col_dict):
     """
     Examples
@@ -178,12 +195,6 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict):
                 if col_dict["hostname"]:
                     joined_recs_df = joined_recs_df.rename(columns={"tld0": "hostname"})
                     cols_keep.append("hostname")
-                if col_dict["domain"]:
-                    joined_recs_df = joined_recs_df.rename(columns={col_pos: "domain"})
-                    cols_keep.append("domain")
-                if col_dict["suffix"]:
-                    joined_recs_df = joined_recs_df.rename(columns={tld_col: "suffix"})
-                    cols_keep.append("suffix")
                 if col_dict["subdomain"]:
                     cols_keep.append("subdomain")
                     joined_recs_df["subdomain"] = ""
@@ -197,6 +208,12 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict):
                             .str.replace(".^", "")
                             .str.lstrip(".")
                         )
+                if col_dict["domain"]:
+                    joined_recs_df = joined_recs_df.rename(columns={col_pos: "domain"})
+                    cols_keep.append("domain")
+                if col_dict["suffix"]:
+                    joined_recs_df = joined_recs_df.rename(columns={tld_col: "suffix"})
+                    cols_keep.append("suffix")
                 joined_recs_df = joined_recs_df[cols_keep]
                 # Concat current iteration result to previous iteration result.
                 tmp_dfs.append(joined_recs_df)
@@ -204,10 +221,20 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict):
                 del joined_recs_df
                 # Assigning unprocessed records to input_df for next stage of processing.
                 if i < col_len:
-                    # Skip for last iteration. Since there won't be any entries to process further.
                     input_df = merged_df[merged_df["dummy"].isna()]
                     # Drop unwanted columns.
                     input_df = input_df.drop(["dummy", tld_col], axis=1)
+                # Handles scenario when some records with last tld column matches to suffix list but not all.
+                else:
+                    merged_df = merged_df[merged_df["dummy"].isna()]
+                    unknown_suffix_df = _handle_unknown_suffix(merged_df, col_dict)
+                    tmp_dfs.append(unknown_suffix_df)
+            # Handles scenario when all records with last tld column doesn't match to suffix list.
+            elif i == col_len and not merged_df.empty:
+                unknown_suffix_df = _handle_unknown_suffix(merged_df, col_dict)
+                tmp_dfs.append(unknown_suffix_df)
+            else:
+                continue
     # Concat all temporary output dataframes
     output_df = cudf.concat(tmp_dfs)
     return output_df
