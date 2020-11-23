@@ -58,11 +58,11 @@ class Cybert:
             for index, line in enumerate(f):
                 self._vocab_lookup[index] = line.split()[0]
         self._hashpath = "%s/bert-base-cased-hash.txt" % resources_dir
-         
+
     def load_model(self, model_filepath, config_filepath):
         """
         Load cybert model.
-        
+
         :param model_filepath: Filepath of the model (.pth or .bin) to be loaded
         :type model_filepath: str
         :param config_filepath: Config file (.json) to be used
