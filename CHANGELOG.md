@@ -20,6 +20,7 @@
 - PR #291 DNS Extractor fix
 - PR #294 API doc fixes
 - PR #295 Docs build script fix
+- PR #298 Zeek parser fix
 
 # clx 0.16.0 (21 Oct 2020)
 
