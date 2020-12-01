@@ -63,28 +63,25 @@ class Cybert:
         """
         Load cybert model.
 
-        :param model_filepath: Filepath of the model (.pth or .bin) to
-        be loaded
+        :param model_filepath: Filepath of the model (.pth or .bin) to be loaded
         :type model_filepath: str
-        :param label_map_filepath: Config file (.json) to be
-        used
-        :type label_map_filepath: str
+        :param config_filepath: Config file (.json) to be used
+        :type config_filepath: str
 
         Examples
         --------
         >>> from clx.analytics.cybert import Cybert
         >>> cyparse = Cybert()
-        >>> cyparse.load_model('/path/to/model.pth', '/path/to/config.json')
+        >>> cyparse.load_model('/path/to/model.bin', '/path/to/config.json')
         """
+
         with open(config_filepath) as f:
             config = json.load(f)
         model_arch = config["architectures"][0]
         self._label_map = {int(k): v for k, v in config["id2label"].items()}
-        model_state_dict = torch.load(model_filepath)
         self._model = ARCH_MAPPING[model_arch].from_pretrained(
-            MODEL_MAPPING[model_arch],
-            state_dict=model_state_dict,
-            num_labels=len(self._label_map),
+            model_filepath,
+            config=config_filepath,
         )
         self._model.cuda()
         self._model.eval()

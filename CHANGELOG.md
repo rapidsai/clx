@@ -13,10 +13,15 @@
 - PR #287 Dockerfile updates
 - PR #292 Phishing detection updates and workflow
 - PR #288 Update network mapping notebooks to download from S3
+- PR #296 cyBERT load model function update
 
 ## Bug Fixes
 - PR #269 Add cybert class to docs build
 - PR #271 Alert Analysis notebook fix
+- PR #291 DNS Extractor fix
+- PR #294 API doc fixes
+- PR #295 Docs build script fix
+- PR #298 Zeek parser fix
 
 # clx 0.16.0 (21 Oct 2020)
 
