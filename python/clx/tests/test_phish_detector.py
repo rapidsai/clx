@@ -49,7 +49,7 @@ def test_train_model():
             epochs=1,
         )
         assert isinstance(
-            phish_detect._model,
+            phish_detect._model.module,
             transformers.modeling_bert.BertForSequenceClassification,
         )
 
