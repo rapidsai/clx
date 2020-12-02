@@ -40,7 +40,7 @@ class DetectorDataset(object):
         :type batch_size: int
         """
         dataset_len = df["domain"].count()
-        df = du.str2ascii(df, dataset_len)
+        df = du.str2ascii(df, dataset_len).reset_index(drop=True)
         prev_chunk_offset = 0
         partitioned_dfs = []
         while prev_chunk_offset < dataset_len:
