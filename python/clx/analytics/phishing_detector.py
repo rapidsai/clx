@@ -106,7 +106,7 @@ class PhishingDetector:
             tr_loss = 0  # Tracking variables
             nb_tr_examples, nb_tr_steps = 0, 0
 
-            # for step, batch in enumerate(train_dataloader):
+            # iterate through partitioned training dataset
             for b_df in train_dataset:
                 b_input_ids, b_input_mask = self._bert_uncased_tokenize(
                     b_df.email, max_seq_len
@@ -135,7 +135,7 @@ class PhishingDetector:
         eval_accuracy = 0
         nb_eval_steps = 0
 
-        # for batch in validation_dataloader:
+        # iterate through partitioned validation dataset
         for b_df in validation_dataset:
             b_input_ids, b_input_mask = self._bert_uncased_tokenize(
                 b_df.email, max_seq_len
@@ -148,8 +148,9 @@ class PhishingDetector:
                 )[
                     0
                 ]  # Forward pass, calculate logit predictions
-            logits = logits.detach().cpu().numpy()
-            label_ids = b_labels.to("cpu").numpy()
+            logits = cupy.fromDlpack(to_dlpack(logits))
+            label_ids = cupy.fromDlpack(to_dlpack(b_labels))
+
             temp_eval_accuracy = self._flatten_accuracy(logits, label_ids)
 
             eval_accuracy += temp_eval_accuracy
@@ -278,9 +279,9 @@ class PhishingDetector:
         self._optimizer = AdamW(optimizer_grouped_parameters, learning_rate)
 
     def _flatten_accuracy(self, preds, labels):
-        pred_flat = np.argmax(preds, axis=1).flatten()
+        pred_flat = cupy.argmax(preds, axis=1).flatten()
         labels_flat = labels.flatten()
-        return np.sum(pred_flat == labels_flat) / len(labels_flat)
+        return cupy.sum(pred_flat == labels_flat) / len(labels_flat)
 
     def _evaluate_testset(self, test_dataloader):
 

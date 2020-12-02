@@ -15,7 +15,6 @@ import random
 from os import path
 
 import cudf
-import pandas as pd
 import torch
 import transformers
 from cuml.preprocessing.model_selection import train_test_split
@@ -33,10 +32,7 @@ def test_train_model():
         fake = Faker()
         email_col = [fake.text() for _ in range(200)]
         label_col = [random.randint(0, 1) for _ in range(200)]
-        emails_pd = pd.DataFrame(
-            list(zip(email_col, label_col)), columns=["email", "label"]
-        )
-        emails_gdf = cudf.from_pandas(emails_pd)
+        emails_gdf = cudf.DataFrame(list(zip(email_col, label_col)), columns=["email", "label"])
         X_train, X_test, y_train, y_test = train_test_split(
             emails_gdf, "label", train_size=0.8, random_state=10
         )
