@@ -32,7 +32,7 @@ nvidia-smi
 logger "Activate conda env..."
 source activate rapids
 conda install --freeze-installed -c rapidsai-nightly -c rapidsai -c nvidia -c pytorch -c conda-forge \
-    "pytorch>=1.7" torchvision transformers requests yaml python-confluent-kafka python-whois markdown beautifulsoup4 jq
+    "pytorch>=1.7" torchvision "transformers=3.5.*" requests yaml python-confluent-kafka python-whois markdown beautifulsoup4 jq
     
 pip install mockito
 pip install cupy-cuda${CUDA_SHORT}
