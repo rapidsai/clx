@@ -22,7 +22,7 @@ dependencies:
 - s3fs
 - ipywidgets
 - python-confluent-kafka
-- transformers
+- transformers=3.5.*
 - seqeval
 - python-whois
 - seaborn
