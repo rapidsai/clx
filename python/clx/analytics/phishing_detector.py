@@ -100,9 +100,9 @@ class PhishingDetector:
         validation_dataset = self._get_partitioned_dfs(validation_emails, batch_size)
 
         self._config_optimizer(learning_rate)
+        self._model.train()  # Enable training mode
 
         for _ in trange(epochs, desc="Epoch"):
-            self._model.train()  # Enable training mode
             tr_loss = 0  # Tracking variables
             nb_tr_examples, nb_tr_steps = 0, 0
 
@@ -122,9 +122,9 @@ class PhishingDetector:
                     0
                 ]  # forwardpass
 
-                loss.backward()
+                loss.sum().backward()
                 self._optimizer.step()  # update parameters
-                tr_loss += loss.item()  # get a numeric value
+                tr_loss += loss.sum().item()  # get a numeric value
                 nb_tr_examples += b_input_ids.size(0)
                 nb_tr_steps += 1
 
