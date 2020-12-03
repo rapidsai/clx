@@ -31,7 +31,7 @@ requirements:
     - cuml {{ minor_version }}.*
     - pytorch>=1.7
     - torchvision
-    - transformers
+    - transformers 3.5.*
 
 about:
   home: http://rapids.ai/
