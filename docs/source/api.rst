@@ -24,6 +24,9 @@ Analytics
 .. autoclass:: clx.analytics.model.rnn_classifier.RNNClassifier
     :members:
 
+.. autoclass:: clx.analytics.sequence_classifier.SequenceClassifier
+    :members:
+
 .. automodule:: clx.analytics.stats
     :members:
 

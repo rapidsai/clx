@@ -28,21 +28,21 @@ class SequenceClassifier:
         self._optimizer = None
         self._hashpath = self._get_hash_table_path()
 
-    def init_model(self, model_or_path="bert-base-uncased"):
+    def init_model(self, model_or_path):
         """
-        Load a pretrained BERT model. Default is bert-base-uncased.
+        Load model from huggingface or locally saved model.
 
-        :param model_or_path: directory path to model, default is bert-base-uncased
-        :type input_file: str
+        :param model_or_path: huggingface pretrained model name or directory path to model
+        :type model_or_path: str
 
         Examples
         --------
-        >>> from clx.analytics.phishing_detector import PhishingDetector
-        >>> phish_detect = PhishingDetector()
+        >>> from clx.analytics.sequence_classifier import SequenceClassifier
+        >>> sc = SequenceClassifier()
 
-        >>> phish_detect.init_model()  # bert-base-uncased
+        >>> sc.init_model("bert-base-uncased")  # huggingface pre-trained model
 
-        >>> phish_detect.init_model(model_path)
+        >>> sc.init_model(model_path) # locally saved model
         """
         self._model = AutoModelForSequenceClassification.from_pretrained(model_or_path)
 
@@ -55,7 +55,7 @@ class SequenceClassifier:
 
     def train_model(
         self,
-        emails,
+        train_data,
         labels,
         learning_rate=3e-5,
         max_seq_len=128,
@@ -65,9 +65,9 @@ class SequenceClassifier:
         """
         Train the classifier
 
-        :param emails: dataframe where each row contains one column holding email text
-        :type emails: cudf.DataFrame
-        :param labels: series holding labels for each row in email dataframe
+        :param train_data: text data for training
+        :type train_data: cudf.Series
+        :param labels: labels for each element in train_data
         :type labels: cudf.Series
         :param learning_rate: learning rate
         :type learning_rate: float
@@ -82,21 +82,23 @@ class SequenceClassifier:
         --------
         >>> from cuml.preprocessing.model_selection import train_test_split
         >>> emails_train, emails_test, labels_train, labels_test = train_test_split(train_emails_df, 'label', train_size=0.8)
-        >>> phish_detect.train_model(emails_train, labels_train)
+        >>> sc.train_model(emails_train, labels_train)
         """
-        emails["label"] = labels
+        train_gdf = cudf.DataFrame()
+        train_gdf["text"] = train_data
+        train_gdf["label"] = labels
         (
-            train_emails,
-            validation_emails,
+            train_data,
+            validation_data,
             train_labels,
             validation_labels,
-        ) = train_test_split(emails, "label", train_size=0.8, random_state=2)
+        ) = train_test_split(train_gdf, "label", train_size=0.8, random_state=2)
 
-        train_emails["label"] = train_labels
-        validation_emails["label"] = validation_labels
+        train_data["label"] = train_labels
+        validation_data["label"] = validation_labels
 
-        train_dataset = self._get_partitioned_dfs(train_emails, batch_size)
-        validation_dataset = self._get_partitioned_dfs(validation_emails, batch_size)
+        train_dataset = self._get_partitioned_dfs(train_data, batch_size)
+        validation_dataset = self._get_partitioned_dfs(validation_data, batch_size)
 
         self._config_optimizer(learning_rate)
         self._model.train()  # Enable training mode
@@ -109,7 +111,7 @@ class SequenceClassifier:
             # iterate through partitioned training dataset
             for b_df in train_dataset:
                 b_input_ids, b_input_mask = self._bert_uncased_tokenize(
-                    b_df.email, max_seq_len
+                    b_df.text, max_seq_len
                 )
                 b_labels = torch.tensor(b_df["label"].to_array()).to(self._device)
                 self._optimizer.zero_grad()  # Clear out the gradients
@@ -138,7 +140,7 @@ class SequenceClassifier:
         # iterate through partitioned validation dataset
         for b_df in validation_dataset:
             b_input_ids, b_input_mask = self._bert_uncased_tokenize(
-                b_df.email, max_seq_len
+                b_df.text, max_seq_len
             )
             b_labels = torch.tensor(b_df["label"].to_array()).to(self._device)
 
@@ -158,13 +160,13 @@ class SequenceClassifier:
 
         print("Validation Accuracy: {}".format(eval_accuracy / nb_eval_steps))
 
-    def evaluate_model(self, emails, labels, max_seq_len=128, batch_size=32):
+    def evaluate_model(self, test_data, labels, max_seq_len=128, batch_size=32):
         """
-        Evaluate trained BERT model
+        Evaluate trained model
 
-        :param emails: dataframe where each row contains one column holding email text
-        :type emails: cudf.Dataframe
-        :param labels: series holding labels for each row in email dataframe
+        :param test_data: test data to evaluate model
+        :type test_data: cudf.Series
+        :param labels: labels for each element in test_data
         :type labels: cudf.Series
         :param max_seq_len: Limits the length of the sequence returned by tokenizer. If tokenized sentence is shorter than max_seq_len, output will be padded with 0s. If the tokenized sentence is longer than max_seq_len it will be truncated to max_seq_len.
         :type max_seq_len: int
@@ -175,9 +177,9 @@ class SequenceClassifier:
         --------
         >>> from cuml.preprocessing.model_selection import train_test_split
         >>> emails_train, emails_test, labels_train, labels_test = train_test_split(train_emails_df, 'label', train_size=0.8)
-        >>> phish_detect.evaluate_model(emails_test, labels_test)
+        >>> sc.evaluate_model(emails_test, labels_test)
         """
-        test_inputs, test_masks = self._bert_uncased_tokenize(emails.email, max_seq_len)
+        test_inputs, test_masks = self._bert_uncased_tokenize(test_data, max_seq_len)
 
         test_labels = torch.tensor(labels.to_array())
         test_data = TensorDataset(test_inputs, test_masks, test_labels)
@@ -207,35 +209,35 @@ class SequenceClassifier:
         --------
         >>> from cuml.preprocessing.model_selection import train_test_split
         >>> emails_train, emails_test, labels_train, labels_test = train_test_split(train_emails_df, 'label', train_size=0.8)
-        >>> phish_detect.train_model(emails_train, labels_train)
-        >>> phish_detect.save_model()
+        >>> sc.train_model(emails_train, labels_train)
+        >>> sc.save_model()
         """
 
         self._model.module.save_pretrained(save_to_path)
 
-    def predict(self, emails, max_seq_len=128, threshold=0.5):
+    def predict(self, input_data, max_seq_len=128, threshold=0.5):
         """
         Predict the class with the trained model
 
-        :param emails: series where each element is text from single email
-        :type emails: cudf.Series
+        :param input_data: input text data for prediction
+        :type input_data: cudf.Series
         :param max_seq_len: Limits the length of the sequence returned by tokenizer. If tokenized sentence is shorter than max_seq_len, output will be padded with 0s. If the tokenized sentence is longer than max_seq_len it will be truncated to max_seq_len.
         :type max_seq_len: int
         :param batch_size: batch size
         :type batch_size: int
         :param threshold: results with probabilities higher than this will be labeled as positive
         :type threshold: float
-        :return: predictions: predicted labels (False or True) for each email
+        :return: predictions: predicted labels (0 or 1) for each element in input_data
         :rtype: cudf.Series
 
         Examples
         --------
         >>> from cuml.preprocessing.model_selection import train_test_split
         >>> emails_train, emails_test, labels_train, labels_test = train_test_split(train_emails_df, 'label', train_size=0.8)
-        >>> phish_detect.train_model(emails_train, labels_train)
-        >>> predictions = phish_detect.predict(new_emails, threshold=0.8)
+        >>> sc.train_model(emails_train, labels_train)
+        >>> predictions = sc.predict(emails_test, threshold=0.8)
         """
-        predict_inputs, predict_masks = self._bert_uncased_tokenize(emails, max_seq_len)
+        predict_inputs, predict_masks = self._bert_uncased_tokenize(input_data, max_seq_len)
         predict_inputs = predict_inputs.type(torch.LongTensor).to(self._device)
         predict_masks = predict_masks.to(self._device)
         with torch.no_grad():
