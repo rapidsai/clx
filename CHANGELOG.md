@@ -10,6 +10,7 @@
 
 ## New Features
 - PR #277 cyBERT class to support DistilBERT and ELECTRA
+- PR #273 FIL streamz notebook
 - PR #281 CLX module for periodicity detection
 
 ## Improvements
