@@ -215,7 +215,7 @@ class SequenceClassifier:
 
         self._model.module.save_pretrained(save_to_path)
 
-    def predict(self, input_data, max_seq_len=128, threshold=0.5):
+    def predict(self, input_data, max_seq_len=128, batch_size=32, threshold=0.5):
         """
         Predict the class with the trained model
 
@@ -227,8 +227,8 @@ class SequenceClassifier:
         :type batch_size: int
         :param threshold: results with probabilities higher than this will be labeled as positive
         :type threshold: float
-        :return: predictions: predicted labels (0 or 1) for each element in input_data
-        :rtype: cudf.Series
+        :return: predictions, probabilities: predictions are labels (0 or 1) based on minimum threshold
+        :rtype: cudf.Series, cudf.Series
 
         Examples
         --------
@@ -240,15 +240,28 @@ class SequenceClassifier:
         predict_inputs, predict_masks = self._bert_uncased_tokenize(input_data, max_seq_len)
         predict_inputs = predict_inputs.type(torch.LongTensor).to(self._device)
         predict_masks = predict_masks.to(self._device)
-        with torch.no_grad():
-            logits = self._model(
-                predict_inputs, token_type_ids=None, attention_mask=predict_masks
-            )[0]
-            probs = torch.sigmoid(logits[:, 1])
-            preds = probs.ge(threshold)
 
-        probs = cudf.io.from_dlpack(to_dlpack(probs))
-        preds = cudf.io.from_dlpack(to_dlpack(preds))
+        predict_inputs = predict_inputs.type(torch.LongTensor)
+        predict_data = TensorDataset(predict_inputs, predict_masks)
+        predict_sampler = SequentialSampler(predict_data)
+        predict_dataloader = DataLoader(predict_data, sampler=predict_sampler, batch_size=batch_size)
+
+        preds = cudf.Series()
+        probs = cudf.Series()
+        for batch in predict_dataloader:
+            batch = tuple(t.to(self._device) for t in batch)
+            b_input_ids, b_input_masks = batch
+            with torch.no_grad():
+                logits = self._model(
+                    b_input_ids, token_type_ids=None, attention_mask=b_input_masks
+                )[0]
+                b_probs = torch.sigmoid(logits[:, 1])
+                b_preds = b_probs.ge(threshold)
+
+            b_probs = cudf.io.from_dlpack(to_dlpack(b_probs))
+            b_preds = cudf.io.from_dlpack(to_dlpack(b_preds))
+            preds = preds.append(b_preds)
+            probs = probs.append(b_probs)
 
         torch.cuda.empty_cache()
         gc.collect()
