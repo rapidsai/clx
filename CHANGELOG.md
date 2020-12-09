@@ -1,8 +1,42 @@
-# clx 0.16.0 (Date TBD)
+# clx 0.18.0 (Date TBD)
+
+## New Features
+
+## Improvements
+
+## Bug Fixes
+
+# clx 0.17.0 (Date TBD)
+
+## New Features
+- PR #277 cyBERT class to support DistilBERT and ELECTRA
+- PR #273 FIL streamz notebook
+- PR #281 CLX module for periodicity detection
+
+## Improvements
+- PR #248 Fix to cybert streamz to handle larger output messages
+- PR #263 Pin cmake policies to cmake 3.17 version
+- PR #272 CLX Streamz generic structure
+- PR #283 Remove CLX subword tokenizer
+- PR #286 Update to PyTorch 1.7 for CUDA 11 support
+- PR #287 Dockerfile updates
+- PR #292 Phishing detection updates and workflow
+- PR #288 Update network mapping notebooks to download from S3
+- PR #296 cyBERT load model function update
+
+## Bug Fixes
+- PR #269 Add cybert class to docs build
+- PR #271 Alert Analysis notebook fix
+- PR #291 DNS Extractor fix
+- PR #294 API doc fixes
+- PR #295 Docs build script fix
+- PR #298 Zeek parser fix
+
+# clx 0.16.0 (21 Oct 2020)
 
 ## New Features
 - PR #208 CLX Supervised Asset Classification
-
+- PR #265 Add FFT notebook
 ## Improvements
 - PR #233 Removed s3 dependency from dga detection unit-test
 - PR #235 Pre-commit hooks for isort, black and flake8
@@ -14,6 +48,7 @@
 - PR #247 Allow CuPy 8.x
 - PR #246 Dockerfile updates
 - PR #262 CLX Streamz Getting Started
+- PR #253 Save clx dga model as dictionary
 
 ## Bug Fixes
 - PR #231 Fix segmentation fault in cybert notebook
@@ -24,6 +59,7 @@
 - PR #242 Pin seqeval to v0.0.12 for cybert example training notebook
 - PR #243 Fix error handling in `ci/gpu/build.sh`
 - PR #256 Fix missing projects variable from docs build
+- PR #261 Fix incorrect workspace variable in docs build
 
 # clx 0.15.0 (26 Aug 2020)
 
