@@ -9,7 +9,7 @@ import torch.nn as nn
 import gc
 from cuml.preprocessing.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from torch.utils.data import DataLoader, SequentialSampler, TensorDataset
+from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 from torch.utils.dlpack import from_dlpack, to_dlpack
 from tqdm import trange
 from transformers import AutoModelForSequenceClassification, AdamW
@@ -94,71 +94,26 @@ class SequenceClassifier:
             validation_labels,
         ) = train_test_split(train_gdf, "label", train_size=0.8, random_state=2)
 
-        train_data["label"] = train_labels
-        validation_data["label"] = validation_labels
+        train_inputs, train_masks = self._bert_uncased_tokenize(train_data["text"], max_seq_len)
+        validation_inputs, validation_masks = self._bert_uncased_tokenize(validation_data["text"], max_seq_len)
 
-        train_dataset = self._get_partitioned_dfs(train_data, batch_size)
-        validation_dataset = self._get_partitioned_dfs(validation_data, batch_size)
+        # convert labels to tensors
+        train_labels = torch.tensor(train_labels.to_array())
+        validation_labels = torch.tensor(validation_labels.to_array())
+
+        # create dataloaders
+        train_dataset = TensorDataset(train_inputs, train_masks, train_labels)
+        train_sampler = RandomSampler(train_dataset)
+        train_dataloader = DataLoader(train_dataset, sampler=train_sampler, batch_size=batch_size)
+
+        validation_dataset = TensorDataset(validation_inputs, validation_masks, validation_labels)
+        validation_sampler = SequentialSampler(validation_dataset)
+        validation_dataloader = DataLoader(validation_dataset, sampler=validation_sampler, batch_size=batch_size)
 
         self._config_optimizer(learning_rate)
-        self._model.train()  # Enable training mode
 
-        for _ in trange(epochs, desc="Epoch"):
+        self._model = self._train(train_dataloader, validation_dataloader, self._model, epochs)
 
-            tr_loss = 0  # Tracking variables
-            nb_tr_examples, nb_tr_steps = 0, 0
-
-            # iterate through partitioned training dataset
-            for b_df in train_dataset:
-                b_input_ids, b_input_mask = self._bert_uncased_tokenize(
-                    b_df.text, max_seq_len
-                )
-                b_labels = torch.tensor(b_df["label"].to_array()).to(self._device)
-                self._optimizer.zero_grad()  # Clear out the gradients
-                loss = self._model(
-                    b_input_ids,
-                    token_type_ids=None,
-                    attention_mask=b_input_mask,
-                    labels=b_labels,
-                )[
-                    0
-                ]  # forwardpass
-
-                loss.sum().backward()
-                self._optimizer.step()  # update parameters
-                tr_loss += loss.sum().item()  # get a numeric value
-                nb_tr_examples += b_input_ids.size(0)
-                nb_tr_steps += 1
-
-            print("Train loss: {}".format(tr_loss / nb_tr_steps))
-
-        self._model.eval()  # Put model in evaluation mode to evaluate loss on the validation set
-
-        eval_accuracy = 0
-        nb_eval_steps = 0
-
-        # iterate through partitioned validation dataset
-        for b_df in validation_dataset:
-            b_input_ids, b_input_mask = self._bert_uncased_tokenize(
-                b_df.text, max_seq_len
-            )
-            b_labels = torch.tensor(b_df["label"].to_array()).to(self._device)
-
-            with torch.no_grad():  # Telling the model not to compute or store gradients, saving memory and speeding up validation
-                logits = self._model(
-                    b_input_ids, token_type_ids=None, attention_mask=b_input_mask
-                )[
-                    0
-                ]  # Forward pass, calculate logit predictions
-            logits = cupy.fromDlpack(to_dlpack(logits))
-            label_ids = cupy.fromDlpack(to_dlpack(b_labels))
-
-            temp_eval_accuracy = self._flatten_accuracy(logits, label_ids)
-
-            eval_accuracy += temp_eval_accuracy
-            nb_eval_steps += 1
-
-        print("Validation Accuracy: {}".format(eval_accuracy / nb_eval_steps))
         torch.cuda.empty_cache()
         gc.collect()
 
@@ -350,6 +305,50 @@ class SequenceClassifier:
             mask.reshape(num_strings, max_seq_len).astype(cupy.float).toDlpack()
         )
         return input_ids.type(torch.long), attention_mask.type(torch.long)
+
+    def _train(self, train_dataloader, validation_dataloader, model, epochs):
+        model.train()  # Enable training mode
+        for _ in trange(epochs, desc="Epoch"):
+            tr_loss = 0   # Tracking variables
+            nb_tr_examples, nb_tr_steps = 0, 0
+            for step, batch in enumerate(train_dataloader):
+                batch = tuple(t.to(self._device) for t in batch)  # Add batch to GPU
+                b_input_ids, b_input_mask, b_labels = batch  # Unpack the inputs from dataloader
+                self._optimizer.zero_grad()  # Clear out the gradients
+                loss = model(b_input_ids, token_type_ids=None, attention_mask=b_input_mask, labels=b_labels)[0]  # forwardpass
+
+                loss.sum().backward()
+                self._optimizer.step()  # update parameters
+                tr_loss += loss.sum().item()  # get a numeric value
+                nb_tr_examples += b_input_ids.size(0)
+                nb_tr_steps += 1
+
+            print("Train loss: {}".format(tr_loss / nb_tr_steps))
+
+            model.eval()  # Put model in evaluation mode to evaluate loss on the validation set
+
+            eval_accuracy = 0
+            nb_eval_steps = 0
+
+            for batch in validation_dataloader:
+                batch = tuple(t.to(self._device) for t in batch)
+
+                b_input_ids, b_input_mask, b_labels = batch
+
+                with torch.no_grad():  # Telling the model not to compute or store gradients, saving memory and speeding up validation
+                    logits = model(b_input_ids, token_type_ids=None, attention_mask=b_input_mask)[0]  # Forward pass, calculate logit predictions
+                logits = cupy.fromDlpack(to_dlpack(logits))
+                label_ids = cupy.fromDlpack(to_dlpack(b_labels))
+                # logits = logits.detach().cpu().numpy()
+                # label_ids = b_labels.to('cpu').numpy()
+                temp_eval_accuracy = self._flatten_accuracy(logits, label_ids)
+
+                eval_accuracy += temp_eval_accuracy
+                nb_eval_steps += 1
+
+            print("Validation Accuracy: {}".format(eval_accuracy / nb_eval_steps))
+
+        return model
 
     def _get_partitioned_dfs(self, df, batch_size):
         dataset_len = df.shape[0]
