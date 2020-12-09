@@ -159,6 +159,8 @@ class SequenceClassifier:
             nb_eval_steps += 1
 
         print("Validation Accuracy: {}".format(eval_accuracy / nb_eval_steps))
+        torch.cuda.empty_cache()
+        gc.collect()
 
     def evaluate_model(self, test_data, labels, max_seq_len=128, batch_size=32):
         """
@@ -195,6 +197,9 @@ class SequenceClassifier:
         flat_true_labels = [item for sublist in true_labels for item in sublist]
 
         accuracy = accuracy_score(flat_true_labels, flat_tests)
+
+        torch.cuda.empty_cache()
+        gc.collect()
 
         return accuracy
 
