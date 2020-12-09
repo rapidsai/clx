@@ -26,7 +26,7 @@ from clx_streamz_tools import utils
 from clx.dns import dns_extractor as dns
 
 
-def inference(gdf):
+def inference(messages_df):
     # Messages will be received and run through DGA inferencing
     worker = dask.distributed.get_worker()
     batch_start_time = int(round(time.time()))

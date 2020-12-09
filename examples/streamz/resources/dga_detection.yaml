@@ -1,6 +1,6 @@
 kafka_conf:
-   input_topic: dga_input
-   output_topic: dga_output
+   input_topic: dga_detection_input
+   output_topic: dga_detection_output
    n_partitions: 1
    producer_conf:
      bootstrap.servers: localhost:9092

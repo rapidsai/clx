@@ -99,9 +99,10 @@ def init_dask_workers(worker, model_name, model_obj, config):
     sink = config['sink']
     if sink == SINK_KAFKA:
         import confluent_kafka as ck
-
-        print("Producer conf: " + str(kafka_conf["producer_conf"]))
-        producer = ck.Producer(kafka_conf["producer_conf"])
+        
+        producer_conf = config['kafka_conf']["producer_conf"]
+        print("Producer conf: " + str(producer_conf))
+        producer = ck.Producer(producer_conf)
         worker.data["sink"] = producer
     elif sink == SINK_ES:
         from elasticsearch import Elasticsearch
