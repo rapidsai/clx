@@ -132,7 +132,7 @@ if __name__ == "__main__":
         "filesystem": sink_to_fs,
     }
     # create output directory if not exists when sink is set to file system
-    utils.create_dir(config['output_dir'])
+    utils.create_dir(config['sink'], config['output_dir'])
 
     # Handle script exit
     signal.signal(signal.SIGTERM, signal_term_handler)

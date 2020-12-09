@@ -29,8 +29,8 @@ elasticsearch_conf:
    #cafile: <your/pem/filepath/CA.pem>
    #username: <your username>
    #password: <your password>
-   index: dns-logs
-sink: filesystem
+   index: cybert
+sink: kafka
 # below properties are used when sink is set to filesystem
 col_delimiter: ','
 file_extension: '.csv'

@@ -90,7 +90,7 @@ def load_yaml(yaml_file):
     """Returns a dictionary of a configuration contained in the given yaml file"""
     with open(yaml_file) as yaml_file:
         config_dict = yaml.safe_load(yaml_file)
-    config['sink'] = config["sink"].lower()
+    config_dict['sink'] = config_dict["sink"].lower()
     return config_dict
 
 def init_dask_workers(worker, model_name, model_obj, config):
@@ -133,10 +133,10 @@ def init_dask_workers(worker, model_name, model_obj, config):
     print("Successfully initialized dask worker " + str(worker))
     return worker
 
-def create_dir(path):
-    if config["sink"] == SINK_FS and not os.path.exists(config["output_dir"]):
-        print("Creating output directory '{}'".format(config["output_dir"]))
-        os.makedirs(config["output_dir"])
+def create_dir(sink, dir_path):
+    if sink == SINK_FS and not os.path.exists(dir_path):
+        print("Creating directory '{}'".format(dir_path))
+        os.makedirs(dir_path)
 
 def parse_arguments():
     # Establish script arguments
