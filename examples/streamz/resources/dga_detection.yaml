@@ -1,0 +1,37 @@
+kafka_conf:
+   input_topic: dga_input
+   output_topic: dga_output
+   n_partitions: 1
+   producer_conf:
+     bootstrap.servers: localhost:9092
+     session.timeout.ms: '10000'
+     #queue.buffering.max.messages: '250000'
+     #linger.ms: '100'
+     #security.protocol: SASL_SSL
+     #sasl.mechanism: PLAIN
+     #ssl.ca.location: <your/pem/filepath/CA.pem>
+     #sasl.username: <your username>
+     #sasl.password: <your password>
+   consumer_conf:
+     bootstrap.servers: localhost:9092
+     group.id: streamz
+     session.timeout.ms: '60000'
+     enable.partition.eof: 'true'
+     auto.offset.reset: earliest
+     #security.protocol: SASL_SSL
+     #sasl.mechanism: PLAIN
+     #ssl.ca.location: <your/pem/filepath/CA.pem>
+     #sasl.username: <your username>
+     #sasl.password: <your password>
+elasticsearch_conf:
+   url: https://{}:{}@test.nvidia.com:{}/
+   port: 9200
+   #cafile: <your/pem/filepath/CA.pem>
+   #username: <your username>
+   #password: <your password>
+   index: dns-logs
+sink: filesystem
+# below properties are used when sink is set to filesystem
+col_delimiter: ','
+file_extension: '.csv'
+output_dir: '/output/dir/path'

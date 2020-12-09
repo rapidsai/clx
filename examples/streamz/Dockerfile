@@ -35,6 +35,7 @@ ENV CLX_STREAMZ_HOME /opt/clx_streamz
 
 ADD examples/streamz/scripts "$CLX_STREAMZ_HOME"/scripts
 ADD examples/streamz/python "$CLX_STREAMZ_HOME"/python
+ADD examples/streamz/resources "$CLX_STREAMZ_HOME"/resources
 
 RUN mkdir -p "$CLX_STREAMZ_HOME"/ml/models/cybert && \
 	mkdir "$CLX_STREAMZ_HOME"/ml/models/dga && \

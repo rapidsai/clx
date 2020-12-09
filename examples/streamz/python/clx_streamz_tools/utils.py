@@ -12,12 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+import json
 import time
+import yaml
+import dask
 import argparse
-import confluent_kafka as ck
+from datetime import datetime
+from collections import deque
 from distributed import Client
+from elasticsearch import helpers
 from dask_cuda import LocalCUDACluster
 
+SINK_KAFKA = "kafka"
+SINK_FS = "filesystem"
+SINK_ES = "elasticsearch"
+TIME_FORMAT = "%Y-%m-%d_%H-%M-%S-%f"
 
 def create_dask_client():
     print("Creating local cuda cluster as no dask scheduler is provided.")
@@ -27,13 +37,33 @@ def create_dask_client():
     return client
 
 
-def kafka_sink(producer_conf, output_topic, parsed_df):
-    producer = ck.Producer(producer_conf)
+def kafka_sink(output_topic, parsed_df):
+    worker = dask.distributed.get_worker()
+    producer = worker.data["sink"]
     json_str = parsed_df.to_json(orient="records", lines=True)
     json_recs = json_str.split("\n")
     for json_rec in json_recs:
         producer.produce(output_topic, json_rec)
     producer.flush()
+
+
+def fs_sink(config, parsed_df):
+    filename = datetime.now().strftime(TIME_FORMAT) + config["file_extension"]
+    filepath = os.path.join(config["output_dir"], filename)
+    parsed_df.to_csv(filepath, sep=config["col_delimiter"], index=False)
+
+
+def es_sink(config, parsed_df):
+    worker = dask.distributed.get_worker()
+    es_client = worker.data["sink"]
+    parsed_df["_index"] = config["index"]
+    json_str = parsed_df.to_json(orient="records")
+    docs = json.loads(json_str)
+    pb = helpers.parallel_bulk(
+        es_client, docs, chunk_size=10000, thread_count=10, queue_size=10
+    )
+    deque(pb, maxlen=0)
+
 
 def calc_benchmark(processed_data, size_per_log):
     # Calculates benchmark for the streamz workflow
@@ -56,6 +86,58 @@ def calc_benchmark(processed_data, size_per_log):
     return (time_diff, throughput_mbps, avg_batch_size)
 
 
+def load_yaml(yaml_file):
+    """Returns a dictionary of a configuration contained in the given yaml file"""
+    with open(yaml_file) as yaml_file:
+        config_dict = yaml.safe_load(yaml_file)
+    config['sink'] = config["sink"].lower()
+    return config_dict
+
+def init_dask_workers(worker, model_name, model_obj, config):
+    worker.data[model_name] = model_obj
+    
+    sink = config['sink']
+    if sink == SINK_KAFKA:
+        import confluent_kafka as ck
+
+        print("Producer conf: " + str(kafka_conf["producer_conf"]))
+        producer = ck.Producer(kafka_conf["producer_conf"])
+        worker.data["sink"] = producer
+    elif sink == SINK_ES:
+        from elasticsearch import Elasticsearch
+
+        es_conf = config["elasticsearch_conf"]
+        es_client = Elasticsearch(
+            [
+                es_conf["url"].format(
+                    es_conf["username"], es_conf["password"], es_conf["port"]
+                )
+            ],
+            use_ssl=True,
+            verify_certs=True,
+            ca_certs=es_conf["ca_file"],
+        )
+        worker.data["sink"] = es_client
+    elif sink == SINK_FS:
+        print(
+            "Streaming process will write the output to location '{}'".format(
+                config["output_dir"]
+            )
+        )
+    else:
+        print(
+            "No valid sink provided in the configuration file. Please provide kafka/elasticsearch/filsesystem"
+        )
+        sys.exit(-1)
+
+    print("Successfully initialized dask worker " + str(worker))
+    return worker
+
+def create_dir(path):
+    if config["sink"] == SINK_FS and not os.path.exists(config["output_dir"]):
+        print("Creating output directory '{}'".format(config["output_dir"]))
+        os.makedirs(config["output_dir"])
+
 def parse_arguments():
     # Establish script arguments
     parser = argparse.ArgumentParser(
@@ -63,13 +145,7 @@ def parse_arguments():
                      Data will be read from the input kafka topic, \
                      processed using clx streamz workflows."
     )
-    parser.add_argument("-b", "--broker", default="localhost:9092", help="Kafka broker")
-    parser.add_argument(
-        "-i", "--input_topic", default="input", help="Input kafka topic"
-    )
-    parser.add_argument(
-        "-o", "--output_topic", default="output", help="Output kafka topic"
-    )
+    parser.add_argument("-c", "--conf", help="Source and Sink configuration filepath")
     parser.add_argument("-g", "--group_id", default="streamz", help="Kafka group ID")
     parser.add_argument("-m", "--model", help="Model filepath")
     parser.add_argument("-l", "--label_map", help="Label map filepath")
