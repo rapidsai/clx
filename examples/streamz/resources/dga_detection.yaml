@@ -30,6 +30,7 @@ elasticsearch_conf:
    #username: <your username>
    #password: <your password>
    index: dga
+# other available sinks are "elasticsearch", "filesystem"
 sink: kafka
 # below properties are used when sink is set to filesystem
 col_delimiter: ','

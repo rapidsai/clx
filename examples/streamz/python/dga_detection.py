@@ -37,7 +37,7 @@ def inference(messages_df):
     messages_df["preds"] = preds
     torch.cuda.empty_cache()
     gc.collect()
-    return (gdf, batch_start_time, result_size)
+    return (messages_df, batch_start_time, result_size)
 
 
 def sink_to_kafka(processed_data):

@@ -108,16 +108,22 @@ def init_dask_workers(worker, model_name, model_obj, config):
         from elasticsearch import Elasticsearch
 
         es_conf = config["elasticsearch_conf"]
-        es_client = Elasticsearch(
-            [
-                es_conf["url"].format(
-                    es_conf["username"], es_conf["password"], es_conf["port"]
-                )
-            ],
-            use_ssl=True,
-            verify_certs=True,
-            ca_certs=es_conf["ca_file"],
-        )
+        if 'username' in es_conf:
+            es_client = Elasticsearch(
+                [
+                    es_conf["url"].format(
+                        es_conf["username"], es_conf["password"], es_conf["port"]
+                    )
+                ],
+                use_ssl=True,
+                verify_certs=True,
+                ca_certs=es_conf["ca_file"],
+            )
+        else:
+            es_client = Elasticsearch(
+             [{"host": config["elasticsearch_conf"]["url"]}],
+             port=config["elasticsearch_conf"]["port"],
+         )
         worker.data["sink"] = es_client
     elif sink == SINK_FS:
         print(
