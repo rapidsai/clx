@@ -120,8 +120,6 @@ class Cybert:
             self._hashpath,
             128,
             116,
-            max_num_strings=len(raw_data_col),
-            max_num_chars=max_num_chars,
             max_rows_tensor=max_rows_tensor,
             do_lower=False,
             do_truncate=False,
