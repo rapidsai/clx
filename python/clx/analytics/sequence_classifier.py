@@ -349,14 +349,3 @@ class SequenceClassifier:
             print("Validation Accuracy: {}".format(eval_accuracy / nb_eval_steps))
 
         return model
-
-    def _get_partitioned_dfs(self, df, batch_size):
-        dataset_len = df.shape[0]
-        prev_chunk_offset = 0
-        partitioned_dfs = []
-        while prev_chunk_offset < dataset_len:
-            curr_chunk_offset = prev_chunk_offset + batch_size
-            chunk = df.iloc[prev_chunk_offset:curr_chunk_offset:1]
-            partitioned_dfs.append(chunk)
-            prev_chunk_offset = curr_chunk_offset
-        return partitioned_dfs
