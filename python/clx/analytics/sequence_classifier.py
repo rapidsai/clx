@@ -59,7 +59,7 @@ class SequenceClassifier:
         labels,
         learning_rate=3e-5,
         max_seq_len=128,
-        batch_size=128,
+        batch_size=32,
         epochs=5,
     ):
         """
