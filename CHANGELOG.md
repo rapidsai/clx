@@ -1,4 +1,4 @@
-# clx 0.17.0 (Date TBD)
+# clx 0.17.0 (10 Dec 2020)
 
 ## New Features
 - PR #277 cyBERT class to support DistilBERT and ELECTRA
