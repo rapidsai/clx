@@ -16,7 +16,7 @@ import sys
 import time
 import dask
 import signal
-import utils
+from clx_streamz_tools import utils
 from streamz import Stream
 from tornado import ioloop
 from abc import ABC, abstractmethod
@@ -87,11 +87,11 @@ class StreamzWorkflow(ABC):
         # Define the streaming pipeline.
         if self.config["cudf_engine"]:
             source = Stream.from_kafka_batched(
-                kafka_conf["input_topic"],
-                kafka_conf["consumer_conf"],
+                self.kafka_conf["input_topic"],
+                self.kafka_conf["consumer_conf"],
                 poll_interval=self.args.poll_interval,
                 # npartitions value varies based on kafka topic partitions configuration.
-                npartitions=kafka_conf["n_partitions"],
+                npartitions=self.kafka_conf["n_partitions"],
                 asynchronous=True,
                 dask=True,
                 engine="cudf",
@@ -99,11 +99,11 @@ class StreamzWorkflow(ABC):
             )
         else:
             source = Stream.from_kafka_batched(
-                kafka_conf["input_topic"],
-                kafka_conf["consumer_conf"],
+                self.kafka_conf["input_topic"],
+                self.kafka_conf["consumer_conf"],
                 poll_interval=self.args.poll_interval,
                 # npartitions value varies based on kafka topic partitions configuration.
-                npartitions=kafka_conf["n_partitions"],
+                npartitions=self.kafka_conf["n_partitions"],
                 asynchronous=True,
                 dask=True,
                 max_batch_size=self.args.max_batch_size,
@@ -137,7 +137,7 @@ class StreamzWorkflow(ABC):
         client = utils.create_dask_client()
         client.run(self.worker_init)
 
-        print("Consumer conf: " + str(kafka_conf["consumer_conf"]))
+        print("Consumer conf: " + str(self.kafka_conf["consumer_conf"]))
 
         loop = ioloop.IOLoop.current()
         loop.add_callback(self._start_stream)
