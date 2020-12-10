@@ -16,9 +16,9 @@ import sys
 import time
 import dask
 import signal
+import utils
 from streamz import Stream
 from tornado import ioloop
-from clx_streamz_tools import utils
 from abc import ABC, abstractmethod
 
 

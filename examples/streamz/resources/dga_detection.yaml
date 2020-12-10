@@ -1,4 +1,4 @@
-# Currently supports only for flatten json data
+# currently supports only for flatten json input data
 cudf_engine: true
 kafka_conf:
    input_topic: dga_detection_input

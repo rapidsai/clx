@@ -17,11 +17,11 @@ import torch
 import time
 import dask
 import cudf
-from streamz_workflow import StreamzWorkflow
 from clx_streamz_tools import utils
+from clx_streamz_tools import streamz_workflow
 
 
-class CybertWorkflow(StreamzWorkflow):
+class CybertWorkflow(streamz_workflow.StreamzWorkflow):
     def inference(self, messages):
         # Messages will be received and run through cyBERT inferencing
         worker = dask.distributed.get_worker()

@@ -16,11 +16,10 @@ import gc
 import torch
 import time
 import dask
-from streamz_workflow import StreamzWorkflow
 from clx_streamz_tools import utils
+from clx_streamz_tools import streamz_workflow
 
-
-class DGADetectionWorkflow(StreamzWorkflow):
+class DGADetectionWorkflow(streamz_workflow.StreamzWorkflow):
     def inference(self, messages_df):
         # Messages will be received and run through DGA inferencing
         worker = dask.distributed.get_worker()
