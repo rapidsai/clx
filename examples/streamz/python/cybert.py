@@ -48,9 +48,20 @@ def inference(messages):
 
 
 def sink_to_kafka(processed_data):
-    # Parsed data and confidence scores will be published to provided kafka producer
-    parsed_df = processed_data[0]
-    utils.kafka_sink(producer_conf, args.output_topic, parsed_df)
+    # Prediction data will be published to provided Kafka producer
+    utils.kafka_sink(kafka_conf["output_topic"], processed_data[0])
+    return processed_data
+
+
+def sink_to_es(processed_data):
+    # Prediction data will be published to ElasticSearch cluster
+    utils.es_sink(config["elasticsearch_conf"], processed_data[0])
+    return processed_data
+
+
+def sink_to_fs(processed_data):
+    # Prediction data will be written to disk
+    utils.fs_sink(config, processed_data[0])
     return processed_data
 
 
@@ -85,21 +96,22 @@ def worker_init():
         + str(args.label_map)
     )
     cy.load_model(args.model, args.label_map)
-    worker.data["cybert"] = cy
-    print("Successfully initialized dask worker " + str(worker))
+    worker = utils.init_dask_workers(worker, "cybert", cy, config)
 
 
 def start_stream():
+    # Define the streaming pipeline.
     source = Stream.from_kafka_batched(
-        args.input_topic,
-        consumer_conf,
+        kafka_conf["input_topic"],
+        kafka_conf["consumer_conf"],
         poll_interval=args.poll_interval,
         # npartitions value varies based on kafka topic partitions configuration.
-        npartitions=1,
+        npartitions=kafka_conf["n_partitions"],
         asynchronous=True,
         dask=True,
         max_batch_size=args.max_batch_size,
     )
+    sink = config["sink"]
     global output
     # If benchmark arg is True, use streamz to compute benchmark
     if args.benchmark:
@@ -107,18 +119,27 @@ def start_stream():
         output = (
             source.map(inference)
             .map(lambda x: (x[0], x[1], int(round(time.time())), x[2]))
-            .map(sink_to_kafka)
+            .map(sink_dict[sink])
             .gather()
             .sink_to_list()
         )
     else:
-        output = source.map(inference).map(sink_to_kafka).gather()
+        output = source.map(inference).map(sink_dict[sink]).gather()
 
     source.start()
     
 if __name__ == "__main__":
     # Parse arguments
     args = utils.parse_arguments()
+    config = utils.load_yaml(args.conf)
+    kafka_conf = config["kafka_conf"]
+    sink_dict = {
+        "kafka": sink_to_kafka,
+        "elasticsearch": sink_to_es,
+        "filesystem": sink_to_fs,
+    }
+    # create output directory if not exists when sink is set to file system
+    utils.create_dir(config['sink'], config['output_dir'])
 
     # Handle script exit
     signal.signal(signal.SIGTERM, signal_term_handler)
@@ -127,22 +148,20 @@ if __name__ == "__main__":
     client = utils.create_dask_client()
     client.run(worker_init)
 
-    producer_conf = {"bootstrap.servers": args.broker, "session.timeout.ms": "10000"}
-    consumer_conf = {
-        "bootstrap.servers": args.broker,
-        "group.id": args.group_id,
-        "session.timeout.ms": "60000",
-        "enable.partition.eof": "true",
-        "auto.offset.reset": "earliest",
-    }
+    print("Consumer conf: " + str(kafka_conf["consumer_conf"]))
 
-    print("Producer conf: " + str(producer_conf))
-    print("Consumer conf: " + str(consumer_conf))
-    
     loop = ioloop.IOLoop.current()
     loop.add_callback(start_stream)
-    
+
     try:
         loop.start()
     except KeyboardInterrupt:
+        worker = dask.distributed.get_worker()
+        sink = worker.data["sink"]
+        if config["sink"] == utils.SINK_KAFKA:
+            sink.close()
+        elif config["sink"] == utils.SINK_ES:
+            sink.transport.close()
+        else:
+            pass
         loop.stop()
