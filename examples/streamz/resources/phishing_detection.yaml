@@ -1,4 +1,4 @@
-# currently supports only for flatten json input data
+#cudf_engine currently supports only on flatten json input data
 cudf_engine: false
 kafka_conf:
    input_topic: phishing_detection_input
