@@ -13,155 +13,54 @@
 # limitations under the License.
 
 import gc
-import signal
-import sys
-import time
-import cudf
-import dask
 import torch
-import pandas as pd
-from streamz import Stream
-from tornado import ioloop
+import time
+import dask
+import cudf
+from streamz_workflow import StreamzWorkflow
 from clx_streamz_tools import utils
 
 
-def inference(messages):
-    # Messages will be received and run through cyBERT inferencing
-    worker = dask.distributed.get_worker()
-    batch_start_time = int(round(time.time()))
-    df = cudf.DataFrame()
-    if type(messages) == str:
-        df["stream"] = [messages.decode("utf-8")]
-    elif type(messages) == list and len(messages) > 0:
-        df["stream"] = [msg.decode("utf-8") for msg in messages]
-    else:
-        print("ERROR: Unknown type encountered in inference")
-    
-    result_size = df.shape[0]
-    print("Processing batch size: " + str(result_size))
-    parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
-    confidence_df = confidence_df.add_suffix("_confidence")
-    parsed_df = pd.concat([parsed_df, confidence_df], axis=1)
-    torch.cuda.empty_cache()
-    gc.collect()
-    return (parsed_df, batch_start_time, result_size)
-
-
-def sink_to_kafka(processed_data):
-    # Prediction data will be published to provided Kafka producer
-    utils.kafka_sink(kafka_conf["output_topic"], processed_data[0])
-    return processed_data
-
-
-def sink_to_es(processed_data):
-    # Prediction data will be published to ElasticSearch cluster
-    utils.es_sink(config["elasticsearch_conf"], processed_data[0])
-    return processed_data
-
-
-def sink_to_fs(processed_data):
-    # Prediction data will be written to disk
-    utils.fs_sink(config, processed_data[0])
-    return processed_data
-
-
-def signal_term_handler(signal, frame):
-    # Receives signal and calculates benchmark if indicated in argument
-    print("Exiting streamz script...")
-    if args.benchmark:
-        (time_diff, throughput_mbps, avg_batch_size) = utils.calc_benchmark(
-            output, args.benchmark
-        )
-        print("*** BENCHMARK ***")
-        print(
-            "Job duration: {:.3f} secs, Throughput(mb/sec):{:.3f}, Avg. Batch size(mb):{:.3f}".format(
-                time_diff, throughput_mbps, avg_batch_size
-            )
-        )
-    sys.exit(0)
-
-
-def worker_init():
-    # Initialization for each dask worker
-    from clx.analytics.cybert import Cybert
-
-    worker = dask.distributed.get_worker()
-    cy = Cybert()
-    print(
-        "Initializing Dask worker: "
-        + str(worker)
-        + " with cybert model. Model File: "
-        + str(args.model)
-        + " Label Map: "
-        + str(args.label_map)
-    )
-    cy.load_model(args.model, args.label_map)
-    worker = utils.init_dask_workers(worker, "cybert", cy, config)
-
-
-def start_stream():
-    # Define the streaming pipeline.
-    source = Stream.from_kafka_batched(
-        kafka_conf["input_topic"],
-        kafka_conf["consumer_conf"],
-        poll_interval=args.poll_interval,
-        # npartitions value varies based on kafka topic partitions configuration.
-        npartitions=kafka_conf["n_partitions"],
-        asynchronous=True,
-        dask=True,
-        max_batch_size=args.max_batch_size,
-    )
-    sink = config["sink"]
-    global output
-    # If benchmark arg is True, use streamz to compute benchmark
-    if args.benchmark:
-        print("Benchmark will be calculated")
-        output = (
-            source.map(inference)
-            .map(lambda x: (x[0], x[1], int(round(time.time())), x[2]))
-            .map(sink_dict[sink])
-            .gather()
-            .sink_to_list()
-        )
-    else:
-        output = source.map(inference).map(sink_dict[sink]).gather()
-
-    source.start()
-    
-if __name__ == "__main__":
-    # Parse arguments
-    args = utils.parse_arguments()
-    config = utils.load_yaml(args.conf)
-    kafka_conf = config["kafka_conf"]
-    sink_dict = {
-        "kafka": sink_to_kafka,
-        "elasticsearch": sink_to_es,
-        "filesystem": sink_to_fs,
-    }
-    # create output directory if not exists when sink is set to file system
-    utils.create_dir(config['sink'], config['output_dir'])
-
-    # Handle script exit
-    signal.signal(signal.SIGTERM, signal_term_handler)
-    signal.signal(signal.SIGINT, signal_term_handler)
-
-    client = utils.create_dask_client()
-    client.run(worker_init)
-
-    print("Consumer conf: " + str(kafka_conf["consumer_conf"]))
-
-    loop = ioloop.IOLoop.current()
-    loop.add_callback(start_stream)
-
-    try:
-        loop.start()
-    except KeyboardInterrupt:
+class CybertWorkflow(StreamzWorkflow):
+    def inference(self, messages):
+        # Messages will be received and run through cyBERT inferencing
         worker = dask.distributed.get_worker()
-        sink = worker.data["sink"]
-        if config["sink"] == utils.SINK_KAFKA:
-            sink.close()
-        elif config["sink"] == utils.SINK_ES:
-            sink.transport.close()
+        batch_start_time = int(round(time.time()))
+        df = cudf.DataFrame()
+        if type(messages) == str:
+            df["stream"] = [messages.decode("utf-8")]
+        elif type(messages) == list and len(messages) > 0:
+            df["stream"] = [msg.decode("utf-8") for msg in messages]
         else:
-            pass
-        loop.stop()
+            print("ERROR: Unknown type encountered in inference")
+
+        result_size = df.shape[0]
+        print("Processing batch size: " + str(result_size))
+        parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
+        confidence_df = confidence_df.add_suffix("_confidence")
+        parsed_df = pd.concat([parsed_df, confidence_df], axis=1)
+        torch.cuda.empty_cache()
+        gc.collect()
+        return (parsed_df, batch_start_time, result_size)
+
+    def worker_init(self):
+        # Initialization for each dask worker
+        from clx.analytics.cybert import Cybert
+
+        worker = dask.distributed.get_worker()
+        cy = Cybert()
+        print(
+            "Initializing Dask worker: "
+            + str(worker)
+            + " with cybert model. Model File: "
+            + str(self.args.model)
+            + " Label Map: "
+            + str(self.args.label_map)
+        )
+        cy.load_model(self.args.model, self.args.label_map)
+        worker = utils.init_dask_workers(worker, "cybert", cy, self.config)
+
+
+if __name__ == "__main__":
+    cybert = CybertWorkflow()
+    cybert.start()

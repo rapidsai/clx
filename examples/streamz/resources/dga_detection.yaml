@@ -1,3 +1,5 @@
+# Currently supports only for flatten json data
+cudf_engine: true
 kafka_conf:
    input_topic: dga_detection_input
    output_topic: dga_detection_output
@@ -24,8 +26,9 @@ kafka_conf:
      #sasl.username: <your username>
      #sasl.password: <your password>
 elasticsearch_conf:
-   url: https://{}:{}@test.nvidia.com:{}/
+   url: localhost #https://{}:{}@test.nvidia.com:{}/
    port: 9200
+  #below properties are required if elasticsearch cluster is SSL enabled
    #cafile: <your/pem/filepath/CA.pem>
    #username: <your username>
    #password: <your password>
@@ -35,4 +38,4 @@ sink: kafka
 # below properties are used when sink is set to filesystem
 col_delimiter: ','
 file_extension: '.csv'
-output_dir: '/output/dir/path'
+output_dir: '/your/output/newdir/path'

@@ -29,6 +29,7 @@ SINK_FS = "filesystem"
 SINK_ES = "elasticsearch"
 TIME_FORMAT = "%Y-%m-%d_%H-%M-%S-%f"
 
+
 def create_dask_client():
     print("Creating local cuda cluster as no dask scheduler is provided.")
     cluster = LocalCUDACluster()
@@ -90,17 +91,18 @@ def load_yaml(yaml_file):
     """Returns a dictionary of a configuration contained in the given yaml file"""
     with open(yaml_file) as yaml_file:
         config_dict = yaml.safe_load(yaml_file)
-    config_dict['sink'] = config_dict["sink"].lower()
+    config_dict["sink"] = config_dict["sink"].lower()
     return config_dict
+
 
 def init_dask_workers(worker, model_name, model_obj, config):
     worker.data[model_name] = model_obj
-    
-    sink = config['sink']
+
+    sink = config["sink"]
     if sink == SINK_KAFKA:
         import confluent_kafka as ck
-        
-        producer_conf = config['kafka_conf']["producer_conf"]
+
+        producer_conf = config["kafka_conf"]["producer_conf"]
         print("Producer conf: " + str(producer_conf))
         producer = ck.Producer(producer_conf)
         worker.data["sink"] = producer
@@ -108,7 +110,7 @@ def init_dask_workers(worker, model_name, model_obj, config):
         from elasticsearch import Elasticsearch
 
         es_conf = config["elasticsearch_conf"]
-        if 'username' in es_conf:
+        if "username" in es_conf and "password" in es_conf:
             es_client = Elasticsearch(
                 [
                     es_conf["url"].format(
@@ -121,9 +123,9 @@ def init_dask_workers(worker, model_name, model_obj, config):
             )
         else:
             es_client = Elasticsearch(
-             [{"host": config["elasticsearch_conf"]["url"]}],
-             port=config["elasticsearch_conf"]["port"],
-         )
+                [{"host": config["elasticsearch_conf"]["url"]}],
+                port=config["elasticsearch_conf"]["port"],
+            )
         worker.data["sink"] = es_client
     elif sink == SINK_FS:
         print(
@@ -140,10 +142,12 @@ def init_dask_workers(worker, model_name, model_obj, config):
     print("Successfully initialized dask worker " + str(worker))
     return worker
 
+
 def create_dir(sink, dir_path):
     if sink == SINK_FS and not os.path.exists(dir_path):
         print("Creating directory '{}'".format(dir_path))
         os.makedirs(dir_path)
+
 
 def parse_arguments():
     # Establish script arguments
@@ -152,8 +156,10 @@ def parse_arguments():
                      Data will be read from the input kafka topic, \
                      processed using clx streamz workflows."
     )
-    parser.add_argument("-c", "--conf", help="Source and Sink configuration filepath")
-    parser.add_argument("-g", "--group_id", default="streamz", help="Kafka group ID")
+    required_args = parser.add_argument_group("Required Arguments")
+    required_args.add_argument(
+        "-c", "--conf", help="Source and Sink configuration filepath"
+    )
     parser.add_argument("-m", "--model", help="Model filepath")
     parser.add_argument("-l", "--label_map", help="Label map filepath")
     parser.add_argument(
@@ -162,7 +168,9 @@ def parse_arguments():
         type=int,
         help="Max batch size to read from kafka",
     )
-    parser.add_argument("--poll_interval", type=str, help="Polling interval (ex: 60s)")
+    required_args.add_argument(
+        "--poll_interval", type=str, help="Polling interval (ex: 60s)"
+    )
     parser.add_argument(
         "--benchmark",
         help="Captures benchmark, including throughput estimates, with provided avg log size in KB. (ex: 500 or 0.1)",
