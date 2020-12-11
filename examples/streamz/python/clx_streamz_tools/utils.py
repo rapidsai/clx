@@ -156,7 +156,7 @@ def parse_arguments():
                      Data will be read from the input kafka topic, \
                      processed using clx streamz workflows."
     )
-    required_args = parser.add_argument_group("Required Arguments")
+    required_args = parser.add_argument_group("required arguments")
     required_args.add_argument(
         "-c", "--conf", help="Source and Sink configuration filepath"
     )
