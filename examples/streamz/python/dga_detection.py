@@ -47,7 +47,9 @@ class DGADetectionWorkflow(streamz_workflow.StreamzWorkflow):
             + str(self.args.model)
         )
         dd.load_model(self.args.model)
-        worker = utils.init_dask_workers(worker, "dga_detector", dd, self.config)
+        # this dict can be used for adding more objects to distributed dask worker
+        obj_dict = {"dga_detector": dd}
+        worker = utils.init_dask_workers(worker, self.config, obj_dict)
 
 
 if __name__ == "__main__":

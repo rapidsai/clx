@@ -27,10 +27,16 @@ from dask_cuda import LocalCUDACluster
 SINK_KAFKA = "kafka"
 SINK_FS = "filesystem"
 SINK_ES = "elasticsearch"
+
 TIME_FORMAT = "%Y-%m-%d_%H-%M-%S-%f"
 
 
 def create_dask_client():
+    """
+    Creates dask client
+    :return: LocalCUDACluster: Dask client
+    :rtype: object
+    """
     print("Creating local cuda cluster as no dask scheduler is provided.")
     cluster = LocalCUDACluster()
     client = Client(cluster)
@@ -39,6 +45,13 @@ def create_dask_client():
 
 
 def kafka_sink(output_topic, parsed_df):
+    """
+    Writes cudf to Kafka topic.
+    :param output_topic: Kafka topic name
+    :type output_topic: str
+    :param parsed_df: Parsed/Processed data
+    :type parsed_df: cudf
+    """
     worker = dask.distributed.get_worker()
     producer = worker.data["sink"]
     json_str = parsed_df.to_json(orient="records", lines=True)
@@ -49,12 +62,26 @@ def kafka_sink(output_topic, parsed_df):
 
 
 def fs_sink(config, parsed_df):
+    """
+    Writes cudf to Filesystem.
+    :param config: Configuration which contains file format details
+    :type output_topic: dict
+    :param parsed_df: Parsed/Processed data
+    :type parsed_df: cudf
+    """
     filename = datetime.now().strftime(TIME_FORMAT) + config["file_extension"]
     filepath = os.path.join(config["output_dir"], filename)
     parsed_df.to_csv(filepath, sep=config["col_delimiter"], index=False)
 
 
 def es_sink(config, parsed_df):
+    """
+    Writes cudf to Elasticsearch.
+    :param config: Configuration which contains Elasticsearch cluster details
+    :type config: dict
+    :param parsed_df: Parsed/Processed data
+    :type parsed_df: cudf
+    """
     worker = dask.distributed.get_worker()
     es_client = worker.data["sink"]
     parsed_df["_index"] = config["index"]
@@ -67,7 +94,15 @@ def es_sink(config, parsed_df):
 
 
 def calc_benchmark(processed_data, size_per_log):
-    # Calculates benchmark for the streamz workflow
+    """
+    Calculates benchmark for the streamz workflow
+    :param processed_data: cudf dataframe
+    :type processed_data: cudf
+    :param size_per_log: 
+    :type size_per_log: double
+    :return: (time_diff, throughput_mbps, avg_batch_size): Benchmark output
+    :rtype: (double, double, double)
+    """
     t1 = int(round(time.time() * 1000))
     t2 = 0
     size = 0.0
@@ -88,15 +123,34 @@ def calc_benchmark(processed_data, size_per_log):
 
 
 def load_yaml(yaml_file):
-    """Returns a dictionary of a configuration contained in the given yaml file"""
+    """
+    Returns a dictionary of a configuration contained in the given yaml file
+    :param yaml_file: YAML configuration filepath
+    :type yaml_file: str
+    :return: config_dict: Configuration dictionary
+    :rtype: dict
+    """
     with open(yaml_file) as yaml_file:
         config_dict = yaml.safe_load(yaml_file)
     config_dict["sink"] = config_dict["sink"].lower()
     return config_dict
 
 
-def init_dask_workers(worker, model_name, model_obj, config):
-    worker.data[model_name] = model_obj
+def init_dask_workers(worker, config, obj_dict=None):
+    """
+    Initalize for all dask workers
+    :param worker: Dask worker
+    :type worker: object
+    :param config: Configuration which contains source and sink details
+    :type config: dict
+    :param obj_dict: Objects that are required to be present on every dask worker
+    :type obj_dict: dict
+    :return: worker: Dask worker
+    :rtype: object
+    """
+    if obj_dict is not None:
+        for key in obj_dict.keys():
+            worker.data[key] = obj_dict[key]
 
     sink = config["sink"]
     if sink == SINK_KAFKA:
@@ -144,13 +198,21 @@ def init_dask_workers(worker, model_name, model_obj, config):
 
 
 def create_dir(sink, dir_path):
+    """
+    :param sink: Sink type mentioned in the configuration file
+    :type sink: str
+    :param dir_path: Directory that needs to be created
+    :type dir_path: str
+    """
     if sink == SINK_FS and not os.path.exists(dir_path):
         print("Creating directory '{}'".format(dir_path))
         os.makedirs(dir_path)
 
 
 def parse_arguments():
-    # Establish script arguments
+    """
+    Parse script arguments
+    """
     parser = argparse.ArgumentParser(
         description="Streamz and Dask. \
                      Data will be read from the input kafka topic, \

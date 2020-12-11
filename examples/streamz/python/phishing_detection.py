@@ -55,9 +55,9 @@ class PhisingDetectionWorkflow(streamz_workflow.StreamzWorkflow):
             + str(self.args.model)
         )
         phish_detect.init_model(self.args.model)
-        worker = utils.init_dask_workers(
-            worker, "phish_detect", phish_detect, self.config
-        )
+        # this dict can be used for adding more objects to distributed dask worker
+        obj_dict = {"phish_detect": phish_detect}
+        worker = utils.init_dask_workers(worker, self.config, obj_dict)
 
 
 if __name__ == "__main__":

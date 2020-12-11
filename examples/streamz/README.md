@@ -148,3 +148,33 @@ $ less cybert_workflow.log
     - `benchmark` - To capture benchmarks add the benchmark flag along with average log size (kb), for throughput (mb/s) and average batch size (mb) estimates.
 
     ``*`` = More information on these parameters can be found in the streamz [documentation](https://streamz.readthedocs.io/en/latest/api.html#streamz.from_kafka_batched).
+    
+**Configuration File Properties**
+- `cudf_engine` - This value determines whether to use cudf engine while consuming messages using streamz API
+- `kafka_conf`
+   - `input_topic` - Consumer Kafka topic name
+   - `output_topic` - Publisher Kafka topic name
+   - `n_partitions` - Number of partitions in the consumer Kafka topic
+    - `producer_conf` - User can specify any valid Kafka producer configuration within this block
+      - `bootstrap.servers` - Kafka brokers Ex: localhost:9092, localhost2:9092
+      - `session.timeout.ms` - Message publishing timout
+      - `queue.buffering.max.messages` - Max number of messages that can hold in the queue
+      - `...`
+   - `consumer_conf` - User can specify any valid Kafka consumer configuration within this block
+      - `bootstrap.servers` - Kafka brokers Ex: localhost:9092, localhost2:9092
+      - `group.id` - Kafka consumer group id
+      - `session.timeout.ms` - Message consuming timout
+      - `...`
+- `elasticsearch_conf` - Elasticsearch sink configuration
+   - `url` - Elasticsearch service url
+   - `port` - Elasticsearch service port
+   - `cafile` - Path to pem file
+   - `username` - Username
+   - `password` - Password
+   - `index` - Name to index the documents
+- `sink` - Sink to write processed data Ex: "kafka" or "elasticsearch" or "filesystem"
+**Note: Below properties are used only when sink is set to "filesystem"**
+- `col_delimiter` - Column delimiter Ex: ","
+- `file_extension` - File extension Ex: ".csv"
+- `output_dir` - Output filepath
+```

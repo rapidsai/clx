@@ -127,6 +127,9 @@ class StreamzWorkflow(ABC):
         source.start()
 
     def start(self):
+        """
+        Configure the workflow settings and starts streaming messages
+        """
         # create output directory if not exists when sink is set to file system
         utils.create_dir(self.config["sink"], self.config["output_dir"])
 

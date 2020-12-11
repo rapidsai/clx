@@ -59,7 +59,9 @@ class CybertWorkflow(streamz_workflow.StreamzWorkflow):
             + str(self.args.label_map)
         )
         cy.load_model(self.args.model, self.args.label_map)
-        worker = utils.init_dask_workers(worker, "cybert", cy, self.config)
+        # this dict can be used for adding more objects to distributed dask worker
+        obj_dict = {"cybert": cy}
+        worker = utils.init_dask_workers(worker, self.config, obj_dict)
 
 
 if __name__ == "__main__":
