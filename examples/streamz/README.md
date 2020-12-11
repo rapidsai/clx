@@ -173,6 +173,7 @@ $ less cybert_workflow.log
    - `password` - Password
    - `index` - Name to index the documents
 - `sink` - Sink to write processed data Ex: "kafka" or "elasticsearch" or "filesystem"
+
 **Note: Below properties are used only when sink is set to "filesystem"**
 - `col_delimiter` - Column delimiter Ex: ","
 - `file_extension` - File extension Ex: ".csv"
