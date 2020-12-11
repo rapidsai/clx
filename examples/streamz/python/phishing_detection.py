@@ -39,12 +39,11 @@ def inference(messages):
     
     result_size = df.shape[0]
     print("Processing batch size: " + str(result_size))
-    parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
-    confidence_df = confidence_df.add_suffix("_confidence")
-    parsed_df = pd.concat([parsed_df, confidence_df], axis=1)
+    pred, prob = worker.data["phish_detect"].predict(df["stream"])
+    results_gdf = cudf.DataFrame({"pred": pred, "prob": prob})
     torch.cuda.empty_cache()
     gc.collect()
-    return (parsed_df, batch_start_time, result_size)
+    return (results_gdf, batch_start_time, result_size)
 
 
 def sink_to_kafka(processed_data):
@@ -72,20 +71,18 @@ def signal_term_handler(signal, frame):
 
 def worker_init():
     # Initialization for each dask worker
-    from clx.analytics.cybert import Cybert
+    from clx.analytics.phishing_detector import PhishingDetector
 
     worker = dask.distributed.get_worker()
-    cy = Cybert()
+    phish_detect = PhishingDetector()
     print(
         "Initializing Dask worker: "
         + str(worker)
-        + " with cybert model. Model File: "
+        + " with phishing detection model. Model File: "
         + str(args.model)
-        + " Label Map: "
-        + str(args.label_map)
     )
-    cy.load_model(args.model, args.label_map)
-    worker.data["cybert"] = cy
+    phish_detect.init_model(args.model)
+    worker.data["phish_detect"] = phish_detect
     print("Successfully initialized dask worker " + str(worker))
 
 

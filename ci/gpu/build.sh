@@ -49,10 +49,10 @@ conda install -y -c pytorch -c gwerbin \
     "cugraph=${MINOR_VERSION}" \
     "cuml=${MINOR_VERSION}" \
     "dask-cuda=${MINOR_VERSION}" \
-    "pytorch>=1.5" \
+    "pytorch>=1.7" \
     "torchvision" \
     "python-confluent-kafka" \
-    "transformers" \
+    "transformers=3.5.*" \
     "seqeval=0.0.12" \
     "python-whois" \
     "requests" \
@@ -69,11 +69,11 @@ pip install faker
 conda list
 
 ################################################################################
-# BUILD - Build libclx and clx from source
+# BUILD - Build clx from source
 ################################################################################
 
-logger "Build libclx and clx..."
-$WORKSPACE/build.sh clean libclx clx
+logger "Build clx..."
+$WORKSPACE/build.sh clean clx
 
 ################################################################################
 # TEST - Test python package

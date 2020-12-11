@@ -23,15 +23,29 @@ import torch
 from torch.nn import functional as F
 from torch.utils.data import DataLoader, TensorDataset
 from torch.utils.dlpack import from_dlpack
-from transformers import BertForTokenClassification
+from transformers import (
+    BertForTokenClassification,
+    DistilBertForTokenClassification,
+    ElectraForTokenClassification
+)
 
 log = logging.getLogger(__name__)
+
+ARCH_MAPPING = {
+    'BertForTokenClassification': BertForTokenClassification,
+    'DistilBertForTokenClassification': DistilBertForTokenClassification,
+    'ElectraForTokenClassification': ElectraForTokenClassification}
+
+MODEL_MAPPING = {
+    'BertForTokenClassification': 'bert-base-cased',
+    'DistilBertForTokenClassification': 'distilbert-base-cased',
+    'ElectraForTokenClassification': 'rapids/electra-small-discriminator'}
 
 
 class Cybert:
     """
-    Cyber log parsing using BERT. This class provides methods for
-    loading models, prediction, and postprocessing.
+    Cyber log parsing using BERT, DistilBERT, or ELECTRA. This class provides methods
+    for loading models, prediction, and postprocessing.
     """
 
     def __init__(self):
@@ -45,37 +59,29 @@ class Cybert:
                 self._vocab_lookup[index] = line.split()[0]
         self._hashpath = "%s/bert-base-cased-hash.txt" % resources_dir
 
-    def load_model(
-        self, model_filepath, config_filepath, pretrained_model="bert-base-cased"
-    ):
+    def load_model(self, model_filepath, config_filepath):
         """
         Load cybert model.
 
-        :param model_filepath: Filepath of the model (.pth or .bin) to
-        be loaded
+        :param model_filepath: Filepath of the model (.pth or .bin) to be loaded
         :type model_filepath: str
-        :param label_map_filepath: Config file (.json) to be
-        used
-        :type label_map_filepath: str
-        :param pretrained_model: Name of pretrained model to be loaded from
-        transformers
-        repo, default is bert-base-cased
-        :type pretrained_model: str
+        :param config_filepath: Config file (.json) to be used
+        :type config_filepath: str
 
         Examples
         --------
         >>> from clx.analytics.cybert import Cybert
         >>> cyparse = Cybert()
-        >>> cyparse.load_model('/path/to/model.pth', '/path/to/config.json')
+        >>> cyparse.load_model('/path/to/model.bin', '/path/to/config.json')
         """
+
         with open(config_filepath) as f:
             config = json.load(f)
+        model_arch = config["architectures"][0]
         self._label_map = {int(k): v for k, v in config["id2label"].items()}
-        model_state_dict = torch.load(model_filepath)
-        self._model = BertForTokenClassification.from_pretrained(
-            pretrained_model,
-            state_dict=model_state_dict,
-            num_labels=len(self._label_map),
+        self._model = ARCH_MAPPING[model_arch].from_pretrained(
+            model_filepath,
+            config=config_filepath,
         )
         self._model.cuda()
         self._model.eval()
@@ -135,10 +141,10 @@ class Cybert:
     def inference(self, raw_data_col, batch_size=160):
         """
         Cybert inference and postprocessing on dataset
-
         :param raw_data_col: logs to be processed
         :type raw_data_col: cudf.Series
-        :param batch_size: Log data is processed in batches using a Pytorch dataloader. The batch size parameter refers to the batch size indicated in torch.utils.data.DataLoader.
+        :param batch_size: Log data is processed in batches using a Pytorch dataloader.
+        The batch size parameter refers to the batch size indicated in torch.utils.data.DataLoader.
         :type batch_size: int
         :return: parsed_df
         :rtype: pandas.DataFrame
@@ -208,7 +214,9 @@ class Cybert:
         )
         parsed_df = pd.DataFrame(parsed_dfs[0].tolist())
         confidence_df = pd.DataFrame(parsed_dfs[1].tolist())
-        confidence_df = confidence_df.drop(["X"], axis=1).applymap(np.mean)
+        if "X" in confidence_df.columns:
+            confidence_df = confidence_df.drop(["X"], axis=1)
+        confidence_df = confidence_df.applymap(np.mean)
 
         # decode cleanup
         parsed_df = self.__decode_cleanup(parsed_df)

@@ -32,19 +32,17 @@ nvidia-smi
 logger "Activate conda env..."
 source activate rapids
 conda install --freeze-installed -c rapidsai-nightly -c rapidsai -c nvidia -c pytorch -c conda-forge \
-    pytorch torchvision requests yaml python-confluent-kafka python-whois markdown beautifulsoup4 jq
+    "pytorch>=1.7" torchvision "transformers=3.5.*" requests yaml python-confluent-kafka python-whois markdown beautifulsoup4 jq
     
 pip install mockito
 pip install cupy-cuda${CUDA_SHORT}
 
 logger "Check versions..."
 python --version
-$CC --version
-$CXX --version
 conda list
 
 #clx source build
-${PROJECT_WORKSPACE}/build.sh clean libclx clx
+${PROJECT_WORKSPACE}/build.sh clx
 
 #clx Sphinx Build
 logger "Build clx docs..."

@@ -12,6 +12,9 @@ Analytics
 .. autoclass:: clx.analytics.asset_classification.AssetClassification
     :members:
 
+.. autoclass:: clx.analytics.cybert.Cybert
+    :members:
+ 
 .. autoclass:: clx.analytics.dga_detector.DGADetector
     :members:
 
@@ -24,7 +27,7 @@ Analytics
 .. automodule:: clx.analytics.stats
     :members:
 
-.. automodule:: clx.analytics.tokenizer
+.. automodule:: clx.analytics.periodicity_detection
     :members:
 
 DNS Extractor

@@ -16,7 +16,7 @@ def str2ascii(df, domains_len):
     :rtype: cudf.DataFrame
     """
     df["len"] = df["domain"].str.len()
-    df = df.sort_values("len", ascending=False).reset_index()
+    df = df.sort_values("len", ascending=False)
     split_df = df["domain"].str.findall("[\w\.\-\@]")
     columns_cnt = len(split_df.columns)
 
@@ -29,9 +29,9 @@ def str2ascii(df, domains_len):
 
     # Replace ^ ascii value 94 with 0.
     temp_df = temp_df.replace(94, 0)
+    temp_df.index = df.index
     temp_df["len"] = df["len"]
     if "type" in df.columns:
         temp_df["type"] = df["type"]
     temp_df["domain"] = df["domain"]
-    temp_df.index = df.index
     return temp_df

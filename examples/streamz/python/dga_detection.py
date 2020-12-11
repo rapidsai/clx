@@ -13,45 +13,51 @@
 # limitations under the License.
 
 import gc
-import signal
 import sys
 import time
-import cudf
 import dask
 import torch
-import pandas as pd
+import signal
 from streamz import Stream
 from tornado import ioloop
 from clx_streamz_tools import utils
 
-
-def inference(messages):
-    # Messages will be received and run through cyBERT inferencing
+def inference(messages_df):
+    # Messages will be received and run through DGA inferencing
     worker = dask.distributed.get_worker()
     batch_start_time = int(round(time.time()))
-    df = cudf.DataFrame()
-    if type(messages) == str:
-        df["stream"] = [messages.decode("utf-8")]
-    elif type(messages) == list and len(messages) > 0:
-        df["stream"] = [msg.decode("utf-8") for msg in messages]
-    else:
-        print("ERROR: Unknown type encountered in inference")
-    
-    result_size = df.shape[0]
+    result_size = messages_df.shape[0]
     print("Processing batch size: " + str(result_size))
-    parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
-    confidence_df = confidence_df.add_suffix("_confidence")
-    parsed_df = pd.concat([parsed_df, confidence_df], axis=1)
+    dd = worker.data["dga_detector"]
+    preds = dd.predict(messages_df["domain"])
+    messages_df["preds"] = preds
     torch.cuda.empty_cache()
     gc.collect()
-    return (parsed_df, batch_start_time, result_size)
+    return (messages_df, batch_start_time, result_size)
 
 
 def sink_to_kafka(processed_data):
-    # Parsed data and confidence scores will be published to provided kafka producer
-    parsed_df = processed_data[0]
-    utils.kafka_sink(producer_conf, args.output_topic, parsed_df)
+    # Prediction data will be published to provided kafka producer
+    messages_df = processed_data[0]
+    utils.kafka_sink(producer_conf, args.output_topic, messages_df)
     return processed_data
+
+
+def worker_init():
+    # Initialization for each dask worker
+    from clx.analytics.dga_detector import DGADetector
+
+    worker = dask.distributed.get_worker()
+    dd = DGADetector()
+    print(
+        "Initializing Dask worker: "
+        + str(worker)
+        + " with dga model. Model File: "
+        + str(args.model)
+    )
+    dd.load_model(args.model)
+    worker.data["dga_detector"] = dd
+    print("Successfully initialized dask worker " + str(worker))
 
 
 def signal_term_handler(signal, frame):
@@ -70,26 +76,9 @@ def signal_term_handler(signal, frame):
     sys.exit(0)
 
 
-def worker_init():
-    # Initialization for each dask worker
-    from clx.analytics.cybert import Cybert
-
-    worker = dask.distributed.get_worker()
-    cy = Cybert()
-    print(
-        "Initializing Dask worker: "
-        + str(worker)
-        + " with cybert model. Model File: "
-        + str(args.model)
-        + " Label Map: "
-        + str(args.label_map)
-    )
-    cy.load_model(args.model, args.label_map)
-    worker.data["cybert"] = cy
-    print("Successfully initialized dask worker " + str(worker))
-
-
 def start_stream():
+    # Define the streaming pipeline.
+    # note: currently cudf engine supports only flatten json message format.
     source = Stream.from_kafka_batched(
         args.input_topic,
         consumer_conf,
@@ -98,6 +87,7 @@ def start_stream():
         npartitions=1,
         asynchronous=True,
         dask=True,
+        engine="cudf",
         max_batch_size=args.max_batch_size,
     )
     global output
@@ -115,11 +105,10 @@ def start_stream():
         output = source.map(inference).map(sink_to_kafka).gather()
 
     source.start()
-    
+
 if __name__ == "__main__":
     # Parse arguments
     args = utils.parse_arguments()
-
     # Handle script exit
     signal.signal(signal.SIGTERM, signal_term_handler)
     signal.signal(signal.SIGINT, signal_term_handler)
@@ -127,7 +116,12 @@ if __name__ == "__main__":
     client = utils.create_dask_client()
     client.run(worker_init)
 
-    producer_conf = {"bootstrap.servers": args.broker, "session.timeout.ms": "10000"}
+    producer_conf = {
+        "bootstrap.servers": args.broker,
+        "session.timeout.ms": "10000",
+        # "queue.buffering.max.messages": "250000",
+        # "linger.ms": "100"
+    }
     consumer_conf = {
         "bootstrap.servers": args.broker,
         "group.id": args.group_id,
@@ -135,7 +129,6 @@ if __name__ == "__main__":
         "enable.partition.eof": "true",
         "auto.offset.reset": "earliest",
     }
-
     print("Producer conf: " + str(producer_conf))
     print("Consumer conf: " + str(consumer_conf))
     
