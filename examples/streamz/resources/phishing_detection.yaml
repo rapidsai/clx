@@ -33,7 +33,7 @@ elasticsearch_conf:
    #cafile: <your/pem/filepath/CA.pem>
    #username: <your username>
    #password: <your password>
-   index: cybert
+   index: phishing_detect
 # other available sinks are "elasticsearch", "filesystem"
 sink: kafka
 # below properties are used when sink is set to filesystem
