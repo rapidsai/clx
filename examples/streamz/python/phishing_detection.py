@@ -23,7 +23,7 @@ from clx_streamz_tools import streamz_workflow
 
 class PhisingDetectionWorkflow(streamz_workflow.StreamzWorkflow):
     def inference(messages):
-        # Messages will be received and run through cyBERT inferencing
+        # Messages will be received and run through Phishing detection inferencing
         worker = dask.distributed.get_worker()
         batch_start_time = int(round(time.time()))
         df = cudf.DataFrame()
