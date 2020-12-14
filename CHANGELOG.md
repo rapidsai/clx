@@ -3,6 +3,7 @@
 ## New Features
 
 ## Improvements
+- PR #303 CLX sequence classifier
 
 ## Bug Fixes
 
