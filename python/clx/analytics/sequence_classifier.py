@@ -6,7 +6,6 @@ import cupy
 import numpy as np
 import torch
 import torch.nn as nn
-import gc
 from cuml.preprocessing.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
@@ -114,9 +113,6 @@ class SequenceClassifier:
 
         self._model = self._train(train_dataloader, validation_dataloader, self._model, epochs)
 
-        torch.cuda.empty_cache()
-        gc.collect()
-
     def evaluate_model(self, test_data, labels, max_seq_len=128, batch_size=32):
         """
         Evaluate trained model
@@ -152,9 +148,6 @@ class SequenceClassifier:
         flat_true_labels = [item for sublist in true_labels for item in sublist]
 
         accuracy = accuracy_score(flat_true_labels, flat_tests)
-
-        torch.cuda.empty_cache()
-        gc.collect()
 
         return accuracy
 
@@ -222,9 +215,6 @@ class SequenceClassifier:
             b_preds = cudf.io.from_dlpack(to_dlpack(b_preds))
             preds = preds.append(b_preds)
             probs = probs.append(b_probs)
-
-        torch.cuda.empty_cache()
-        gc.collect()
 
         return preds, probs
 
