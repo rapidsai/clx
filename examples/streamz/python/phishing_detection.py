@@ -39,7 +39,7 @@ def inference(messages):
     
     result_size = df.shape[0]
     print("Processing batch size: " + str(result_size))
-    pred, prob = worker.data["phish_detect"].predict(df["stream"])
+    pred, prob = worker.data["seq_classifier"].predict(df["stream"])
     results_gdf = cudf.DataFrame({"pred": pred, "prob": prob})
     torch.cuda.empty_cache()
     gc.collect()
@@ -74,15 +74,15 @@ def worker_init():
     from clx.analytics.phishing_detector import PhishingDetector
 
     worker = dask.distributed.get_worker()
-    phish_detect = PhishingDetector()
+    seq_classifier = SequenceClassifier()
     print(
         "Initializing Dask worker: "
         + str(worker)
         + " with phishing detection model. Model File: "
         + str(args.model)
     )
-    phish_detect.init_model(args.model)
-    worker.data["phish_detect"] = phish_detect
+    seq_classifier.init_model(args.model)
+    worker.data["seq_classifier"] = seq_classifier
     print("Successfully initialized dask worker " + str(worker))
 
 
