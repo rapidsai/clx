@@ -50,7 +50,7 @@ conda config --show-sources
 conda list --show-channel-urls
 
 #clx source build
-${PROJECT_WORKSPACE}/build.sh clean libclx clx
+${PROJECT_WORKSPACE}/build.sh clx
 
 #clx Sphinx Build
 gpuci_logger "Build clx docs"

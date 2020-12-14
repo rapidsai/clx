@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Copyright (c) 2019, NVIDIA CORPORATION.
+# Copyright (c) 2020, NVIDIA CORPORATION.
 ################################################################################
-# rapidscyber cpu build
+# CLX cpu build
 ################################################################################
 set -e
 
@@ -49,31 +49,15 @@ conda list --show-channel-urls
 conda config --set ssl_verify False
 
 ###############################################################################
-# BUILD - Conda package builds (conda deps: libclx <- clx)
+# BUILD - Conda package build
 ################################################################################
-
-gpuci_logger "Build conda pkg for libclx"
-if [ "$BUILD_LIBCLX" == '1' ]; then
-  if [[ -z "$PROJECT_FLASH" || "$PROJECT_FLASH" == "0" ]]; then
-    conda build conda/recipes/libclx
-  else
-    conda build --dirty --no-remove-work-dir conda/recipes/libclx
-  fi
-fi
 
 gpuci_logger "Build conda pkg for clx"
-if [ "$BUILD_CLX" == '1' ]; then
-  if [[ -z "$PROJECT_FLASH" || "$PROJECT_FLASH" == "0" ]]; then
-    conda build conda/recipes/clx
-  else
-    conda build --dirty --no-remove-work-dir conda/recipes/clx
-  fi
-fi
+conda build conda/recipes/clx
 
 ################################################################################
-# UPLOAD - Conda packages
+# UPLOAD - Conda package
 ################################################################################
 
 gpuci_logger "Upload packages"
 source ci/cpu/upload.sh
-

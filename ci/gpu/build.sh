@@ -45,7 +45,7 @@ gpuci_conda_retry install -y -c pytorch -c gwerbin \
     "cugraph=${MINOR_VERSION}" \
     "cuml=${MINOR_VERSION}" \
     "dask-cuda=${MINOR_VERSION}" \
-    "pytorch>=1.5" \
+    "pytorch>=1.7" \
     "torchvision" \
     "python-confluent-kafka" \
     "transformers" \
@@ -75,68 +75,37 @@ conda info
 conda config --show-sources
 conda list --show-channel-urls
 
+################################################################################
+# BUILD - Build clx from source
+################################################################################
+
+logger "Build clx..."
+$WORKSPACE/build.sh clean clx
+
 # FIX Added to deal with Anancoda SSL verification issues during conda builds
 conda config --set ssl_verify False
 
-if [[ -z "$PROJECT_FLASH" || "$PROJECT_FLASH" == "0" ]]; then
-    ################################################################################
-    # BUILD - Build libclx and clx from source
-    ################################################################################
+################################################################################
+# BUILD - Build libclx and clx from source
+################################################################################
 
-    gpuci_logger "Build libclx and clx"
-    $WORKSPACE/build.sh clean libclx clx
+gpuci_logger "Build libclx and clx"
+$WORKSPACE/build.sh clean libclx clx
 
-    ################################################################################
-    # TEST - Test python package
-    ################################################################################
-    set +e -Eo pipefail
-    EXITCODE=0
-    trap "EXITCODE=1" ERR
+################################################################################
+# TEST - Test python package
+################################################################################
+set +e -Eo pipefail
+EXITCODE=0
+trap "EXITCODE=1" ERR
 
-    if hasArg --skip-tests; then
-        gpuci_logger "Skipping Tests"
-    else
-        cd ${WORKSPACE}/python
-        py.test --ignore=ci --cache-clear --junitxml=${WORKSPACE}/junit-clx.xml -v
-        ${WORKSPACE}/ci/gpu/test-notebooks.sh 2>&1 | tee nbtest.log
-        python ${WORKSPACE}/ci/utils/nbtestlog2junitxml.py nbtest.log
-    fi
+if hasArg --skip-tests; then
+    gpuci_logger "Skipping Tests"
 else
-    export LD_LIBRARY_PATH="$WORKSPACE/ci/artifacts/clx/cpu/conda_work/build:$LD_LIBRARY_PATH"
-
-    TESTRESULTS_DIR=${WORKSPACE}/test-results
-    mkdir -p ${TESTRESULTS_DIR}
-    SUITEERROR=0
-
-    gpuci_logger "Check GPU usage..."
-    nvidia-smi
-
-    cd $WORKSPACE/python
-    
-    gpuci_logger "Installing librmm..."
-    conda install -c $WORKSPACE/ci/artifacts/clx/cpu/conda-bld/ libclx
-    export LIBCLX_BUILD_DIR="$WORKSPACE/ci/artifacts/clx/cpu/conda_work/build"
-    
-    gpuci_logger "Building clx"
-    "$WORKSPACE/build.sh" -v clx
-    
-    set +e -Eo pipefail
-    EXITCODE=0
-    trap "EXITCODE=1" ERR
-
-    gpuci_logger "Run pytest for CLX"
+    cd ${WORKSPACE}/python
     py.test --ignore=ci --cache-clear --junitxml=${WORKSPACE}/junit-clx.xml -v
-    EXITCODE=$?
-
     ${WORKSPACE}/ci/gpu/test-notebooks.sh 2>&1 | tee nbtest.log
     python ${WORKSPACE}/ci/utils/nbtestlog2junitxml.py nbtest.log
-    
-    if (( ${EXITCODE} != 0 )); then
-        SUITEERROR=${EXITCODE}
-        echo "FAILED: 1 or more tests in /clx/python"
-    fi
-
-    exit ${SUITEERROR}
 fi
 
 return "${EXITCODE}"
