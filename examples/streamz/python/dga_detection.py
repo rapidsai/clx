@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import gc
-import torch
 import time
 import dask
 from clx_streamz_tools import utils
@@ -30,8 +28,6 @@ class DGADetectionWorkflow(streamz_workflow.StreamzWorkflow):
         dd = worker.data["dga_detector"]
         preds = dd.predict(messages_df["domain"])
         messages_df["preds"] = preds
-        torch.cuda.empty_cache()
-        gc.collect()
         return (messages_df, batch_start_time, result_size)
 
     def worker_init(self):

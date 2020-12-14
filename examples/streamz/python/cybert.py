@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import gc
-import torch
 import time
 import dask
 import cudf
@@ -40,8 +38,6 @@ class CybertWorkflow(streamz_workflow.StreamzWorkflow):
         parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
         confidence_df = confidence_df.add_suffix("_confidence")
         parsed_df = pd.concat([parsed_df, confidence_df], axis=1)
-        torch.cuda.empty_cache()
-        gc.collect()
         return (parsed_df, batch_start_time, result_size)
 
     def worker_init(self):

@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import gc
-import torch
 import time
 import dask
 import cudf
@@ -38,8 +36,6 @@ class PhisingDetectionWorkflow(streamz_workflow.StreamzWorkflow):
         print("Processing batch size: " + str(result_size))
         pred, prob = worker.data["phish_detect"].predict(df["stream"])
         results_gdf = cudf.DataFrame({"pred": pred, "prob": prob})
-        torch.cuda.empty_cache()
-        gc.collect()
         return (results_gdf, batch_start_time, result_size)
 
     def worker_init():
