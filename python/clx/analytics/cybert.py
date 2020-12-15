@@ -113,15 +113,12 @@ class Cybert:
         raw_data_col = raw_data_col.str.replace("\\n", " ")
 
         byte_count = raw_data_col.str.byte_count()
-        max_num_chars = byte_count.sum()
         max_rows_tensor = int((byte_count / 120).ceil().sum())
 
         input_ids, att_mask, meta_data = raw_data_col.str.subword_tokenize(
             self._hashpath,
             128,
             116,
-            max_num_strings=len(raw_data_col),
-            max_num_chars=max_num_chars,
             max_rows_tensor=max_rows_tensor,
             do_lower=False,
             do_truncate=False,

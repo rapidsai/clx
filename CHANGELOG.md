@@ -1,3 +1,12 @@
+# clx 0.18.0 (Date TBD)
+
+## New Features
+
+## Improvements
+- PR #303 CLX sequence classifier
+
+## Bug Fixes
+
 # clx 0.17.0 (Date TBD)
 
 ## New Features
