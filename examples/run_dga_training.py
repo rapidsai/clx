@@ -27,6 +27,7 @@ import argparse
 import numpy as np
 from datetime import datetime
 from clx.analytics.dga_detector import DGADetector
+from clx.analytics import detector_utils as du
 from clx.analytics.detector_dataset import DetectorDataset
 from cuml.preprocessing.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, average_precision_score
@@ -91,7 +92,7 @@ def main():
     col_names = ["domain", "type"]
     dtypes = ["str", "int32"]
     input_df = cudf.read_csv(input_filepath, names=col_names, dtype=dtypes)
-    input_df = du.str2ascii(input_df, input_df.shape[0]).reset_index(drop=True)
+    input_df = du.str2ascii(input_df, input_df.shape[0])
     domain_train, domain_test, type_train, type_test = train_test_split(
         input_df, "type", train_size=0.7
     )

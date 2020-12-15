@@ -1,5 +1,4 @@
 import logging
-from clx.analytics import detector_utils as du
 
 log = logging.getLogger(__name__)
 
