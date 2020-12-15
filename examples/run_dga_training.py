@@ -99,8 +99,8 @@ def main():
     test_df = create_df(domain_test, type_test)
     train_df = create_df(domain_train, type_train)
 
-    train_dataset = DetectorDataset(train_df, batch_size=batch_size)
-    test_dataset = DetectorDataset(test_df, batch_size=batch_size)
+    train_dataset = DetectorDataset(train_df, batchsize=batch_size)
+    test_dataset = DetectorDataset(test_df, batchsize=batch_size)
 
     dd = DGADetector(lr=LR)
     dd.init_model(

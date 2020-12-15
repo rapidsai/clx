@@ -81,8 +81,7 @@ class DGADetector(Detector):
         """
         total_loss = 0
         i = 0
-        for idx_boundary in detector_dataset.offset_boundaries:
-            df = detector_dataset.get_chunk(idx_boundary)
+        for df in detector_dataset.get_chunks():
             domains_len = df["type"].count()
             if domains_len > 0:
                 types_tensor = self.__create_types_tensor(df["type"])
