@@ -3,49 +3,54 @@ from clx.analytics import detector_utils as du
 
 log = logging.getLogger(__name__)
 
-
 class DetectorDataset(object):
     """
     Wrapper class is used to hold the partitioned datframes and number of the records in all partitions.
     """
 
-    def __init__(self, df, batch_size):
-        """This function instantiates partitioned datframes and number of the records in all partitions.
+    def __init__(self, df, batchsize=1000):
+        """Constructor to create dataframe partitions.
 
-        :param df: domains dataframe.
+        :param df: Input dataframe.
         :type df: cudf.DataFrame
         :param batch_size: Number of records in the dataframe.
         :type batch_size: int
         """
-        self.__partitioned_dfs, self.__dataset_len = self.__get_partitioned_dfs(
-            df, batch_size
-        )
+        self.__df = df.reset_index(drop=True)
+        self.__dataset_len = df.shape[0]
+        self.__batchsize = batchsize
+        self.__offset_boundries = self.__get_boundaries()
 
     @property
-    def partitioned_dfs(self):
-        return self.__partitioned_dfs
+    def offset_boundaries(self):
+        return self.__offset_boundries
 
     @property
     def dataset_len(self):
         return self.__dataset_len
-
-    # https://github.com/rapidsai/cudf/issues/2861
-    # https://github.com/rapidsai/cudf/issues/1473
-    # Workaround for partitioning dataframe into small batches
-    def __get_partitioned_dfs(self, df, batch_size):
-        """Partition one dataframe to multiple small dataframes based on a given batch size.
-        :param df: Contains domains and it's types.
-        :type df: cudf.DataFrame
-        :param batch_size: Number of records has to be in each partitioned dataframe.
-        :type batch_size: int
+    
+    @property
+    def data(self):
+        return self.__df
+        
+    def __get_boundaries(self):
+        """Creates dataframe boundries
         """
-        dataset_len = df["domain"].count()
-        df = du.str2ascii(df, dataset_len).reset_index(drop=True)
         prev_chunk_offset = 0
-        partitioned_dfs = []
-        while prev_chunk_offset < dataset_len:
-            curr_chunk_offset = prev_chunk_offset + batch_size
-            chunk = df.iloc[prev_chunk_offset:curr_chunk_offset:1]
-            partitioned_dfs.append(chunk)
+        offset_boundaries = []
+        while prev_chunk_offset < self.__dataset_len:
+            curr_chunk_offset = prev_chunk_offset + self.__batchsize
+            offset_boundary = (prev_chunk_offset, curr_chunk_offset)
+            offset_boundaries.append(offset_boundary)
             prev_chunk_offset = curr_chunk_offset
-        return partitioned_dfs, dataset_len
+        return offset_boundaries
+    
+    def get_chunk(self, idx_boundary):
+        """Returns a chunck of original input dataframe based on index boundary
+        :param idx_boundary: Start and Stop index
+        :type idx_boundary: Tuple(int, int)
+        :return: Part of original input dataframe
+        :rtype: cudf.DataFrame
+        """
+        df_chunck = self.__df[idx_boundary[0]:idx_boundary[1]:1]
+        return df_chunck
