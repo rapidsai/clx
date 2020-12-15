@@ -3,6 +3,8 @@
 ## New Features
 
 ## Improvements
+- PR #303 CLX sequence classifier
+- PR #308 CLX streamz workflow updates
 
 ## Bug Fixes
 

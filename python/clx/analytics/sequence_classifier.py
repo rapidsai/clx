@@ -6,29 +6,19 @@ import cupy
 import numpy as np
 import torch
 import torch.nn as nn
-import gc
 from cuml.preprocessing.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from torch.utils.data import DataLoader, SequentialSampler, TensorDataset
+from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 from torch.utils.dlpack import from_dlpack, to_dlpack
 from tqdm import trange
-from transformers import AdamW, BertForSequenceClassification
-import warnings
-
-warnings.warn(
-    "The phishing detection module will be removed in 0.19. Please use equivalent clx.analytics.sequence_classifier.",
-    DeprecationWarning,
-    stacklevel=2,
-)
+from transformers import AutoModelForSequenceClassification, AdamW
 
 log = logging.getLogger(__name__)
 
 
-class PhishingDetector:
+class SequenceClassifier:
     """
-    Phishing detection using BERT. This class provides methods for training/loading BERT models, evaluation and prediction.
-
-    DEPRECATED: The phishing detection module will be removed in 0.19. Please use equivalent clx.analytics.sequence_classifier.
+    Sequence Classifier using BERT. This class provides methods for training/loading BERT models, evaluation and prediction.
     """
 
     def __init__(self):
@@ -37,25 +27,24 @@ class PhishingDetector:
         self._optimizer = None
         self._hashpath = self._get_hash_table_path()
 
-    def init_model(self, model_or_path="bert-base-uncased"):
+    def init_model(self, model_or_path):
         """
-        Load a pretrained BERT model. Default is bert-base-uncased.
+        Load model from huggingface or locally saved model.
 
-        :param model_or_path: directory path to model, default is bert-base-uncased
+        :param model_or_path: huggingface pretrained model name or directory path to model
         :type model_or_path: str
 
         Examples
         --------
-        >>> from clx.analytics.phishing_detector import PhishingDetector
-        >>> phish_detect = PhishingDetector()
+        >>> from clx.analytics.sequence_classifier import SequenceClassifier
+        >>> sc = SequenceClassifier()
 
-        >>> phish_detect.init_model()  # bert-base-uncased
+        >>> sc.init_model("bert-base-uncased")  # huggingface pre-trained model
 
-        >>> phish_detect.init_model(model_path)
+        >>> sc.init_model(model_path) # locally saved model
         """
-        self._model = BertForSequenceClassification.from_pretrained(
-            model_or_path, num_labels=2
-        )
+        self._model = AutoModelForSequenceClassification.from_pretrained(model_or_path)
+
         if torch.cuda.is_available():
             self._device = torch.device("cuda")
             self._model.cuda()
@@ -65,7 +54,7 @@ class PhishingDetector:
 
     def train_model(
         self,
-        emails,
+        train_data,
         labels,
         learning_rate=3e-5,
         max_seq_len=128,
@@ -75,9 +64,9 @@ class PhishingDetector:
         """
         Train the classifier
 
-        :param emails: dataframe where each row contains one column holding email text
-        :type emails: cudf.DataFrame
-        :param labels: series holding labels for each row in email dataframe
+        :param train_data: text data for training
+        :type train_data: cudf.Series
+        :param labels: labels for each element in train_data
         :type labels: cudf.Series
         :param learning_rate: learning rate
         :type learning_rate: float
@@ -92,88 +81,45 @@ class PhishingDetector:
         --------
         >>> from cuml.preprocessing.model_selection import train_test_split
         >>> emails_train, emails_test, labels_train, labels_test = train_test_split(train_emails_df, 'label', train_size=0.8)
-        >>> phish_detect.train_model(emails_train, labels_train)
+        >>> sc.train_model(emails_train, labels_train)
         """
-        emails["label"] = labels
+        train_gdf = cudf.DataFrame()
+        train_gdf["text"] = train_data
+        train_gdf["label"] = labels
         (
-            train_emails,
-            validation_emails,
+            train_data,
+            validation_data,
             train_labels,
             validation_labels,
-        ) = train_test_split(emails, "label", train_size=0.8, random_state=2)
+        ) = train_test_split(train_gdf, "label", train_size=0.8, random_state=2)
 
-        train_emails["label"] = train_labels
-        validation_emails["label"] = validation_labels
+        train_inputs, train_masks = self._bert_uncased_tokenize(train_data["text"], max_seq_len)
+        validation_inputs, validation_masks = self._bert_uncased_tokenize(validation_data["text"], max_seq_len)
 
-        train_dataset = self._get_partitioned_dfs(train_emails, batch_size)
-        validation_dataset = self._get_partitioned_dfs(validation_emails, batch_size)
+        # convert labels to tensors
+        train_labels = torch.tensor(train_labels.to_array())
+        validation_labels = torch.tensor(validation_labels.to_array())
+
+        # create dataloaders
+        train_dataset = TensorDataset(train_inputs, train_masks, train_labels)
+        train_sampler = RandomSampler(train_dataset)
+        train_dataloader = DataLoader(train_dataset, sampler=train_sampler, batch_size=batch_size)
+
+        validation_dataset = TensorDataset(validation_inputs, validation_masks, validation_labels)
+        validation_sampler = SequentialSampler(validation_dataset)
+        validation_dataloader = DataLoader(validation_dataset, sampler=validation_sampler, batch_size=batch_size)
 
         self._config_optimizer(learning_rate)
-        self._model.train()  # Enable training mode
 
-        for _ in trange(epochs, desc="Epoch"):
-            tr_loss = 0  # Tracking variables
-            nb_tr_examples, nb_tr_steps = 0, 0
+        self._model = self._train(train_dataloader, validation_dataloader, self._model, epochs)
 
-            # iterate through partitioned training dataset
-            for b_df in train_dataset:
-                b_input_ids, b_input_mask = self._bert_uncased_tokenize(
-                    b_df.email, max_seq_len
-                )
-                b_labels = torch.tensor(b_df["label"].to_array()).to(self._device)
-                self._optimizer.zero_grad()  # Clear out the gradients
-                loss = self._model(
-                    b_input_ids,
-                    token_type_ids=None,
-                    attention_mask=b_input_mask,
-                    labels=b_labels,
-                )[
-                    0
-                ]  # forwardpass
-
-                loss.sum().backward()
-                self._optimizer.step()  # update parameters
-                tr_loss += loss.sum().item()  # get a numeric value
-                nb_tr_examples += b_input_ids.size(0)
-                nb_tr_steps += 1
-
-            print("Train loss: {}".format(tr_loss / nb_tr_steps))
-
-        self._model.eval()  # Put model in evaluation mode to evaluate loss on the validation set
-
-        eval_accuracy = 0
-        nb_eval_steps = 0
-
-        # iterate through partitioned validation dataset
-        for b_df in validation_dataset:
-            b_input_ids, b_input_mask = self._bert_uncased_tokenize(
-                b_df.email, max_seq_len
-            )
-            b_labels = torch.tensor(b_df["label"].to_array()).to(self._device)
-
-            with torch.no_grad():  # Telling the model not to compute or store gradients, saving memory and speeding up validation
-                logits = self._model(
-                    b_input_ids, token_type_ids=None, attention_mask=b_input_mask
-                )[
-                    0
-                ]  # Forward pass, calculate logit predictions
-            logits = cupy.fromDlpack(to_dlpack(logits))
-            label_ids = cupy.fromDlpack(to_dlpack(b_labels))
-
-            temp_eval_accuracy = self._flatten_accuracy(logits, label_ids)
-
-            eval_accuracy += temp_eval_accuracy
-            nb_eval_steps += 1
-
-        print("Validation Accuracy: {}".format(eval_accuracy / nb_eval_steps))
-
-    def evaluate_model(self, emails, labels, max_seq_len=128, batch_size=32):
+    def evaluate_model(self, test_data, labels, max_seq_len=128, batch_size=32):
         """
-        Evaluate trained BERT model
+        Evaluate trained model
 
-        :param emails: dataframe where each row contains one column holding email text
-        :type emails: cudf.Dataframe
-        :param labels: series holding labels for each row in email dataframe
+        :param test_data: test data to evaluate model
+        :type test_data: cudf.Series
+        :param labels: labels for each element in test_data
         :type labels: cudf.Series
         :param max_seq_len: Limits the length of the sequence returned by tokenizer. If tokenized sentence is shorter than max_seq_len, output will be padded with 0s. If the tokenized sentence is longer than max_seq_len it will be truncated to max_seq_len.
         :type max_seq_len: int
@@ -184,9 +130,9 @@ class PhishingDetector:
         --------
         >>> from cuml.preprocessing.model_selection import train_test_split
         >>> emails_train, emails_test, labels_train, labels_test = train_test_split(train_emails_df, 'label', train_size=0.8)
-        >>> phish_detect.evaluate_model(emails_test, labels_test)
+        >>> sc.evaluate_model(emails_test, labels_test)
         """
-        test_inputs, test_masks = self._bert_uncased_tokenize(emails.email, max_seq_len)
+        test_inputs, test_masks = self._bert_uncased_tokenize(test_data, max_seq_len)
 
         test_labels = torch.tensor(labels.to_array())
         test_data = TensorDataset(test_inputs, test_masks, test_labels)
@@ -216,49 +162,59 @@ class PhishingDetector:
         --------
         >>> from cuml.preprocessing.model_selection import train_test_split
         >>> emails_train, emails_test, labels_train, labels_test = train_test_split(train_emails_df, 'label', train_size=0.8)
-        >>> phish_detect.train_model(emails_train, labels_train)
-        >>> phish_detect.save_model()
+        >>> sc.train_model(emails_train, labels_train)
+        >>> sc.save_model()
         """
 
         self._model.module.save_pretrained(save_to_path)
 
-    def predict(self, emails, max_seq_len=128, threshold=0.5):
+    def predict(self, input_data, max_seq_len=128, batch_size=32, threshold=0.5):
         """
         Predict the class with the trained model
 
-        :param emails: series where each element is text from single email
-        :type emails: cudf.Series
+        :param input_data: input text data for prediction
+        :type input_data: cudf.Series
         :param max_seq_len: Limits the length of the sequence returned by tokenizer. If tokenized sentence is shorter than max_seq_len, output will be padded with 0s. If the tokenized sentence is longer than max_seq_len it will be truncated to max_seq_len.
         :type max_seq_len: int
         :param batch_size: batch size
         :type batch_size: int
         :param threshold: results with probabilities higher than this will be labeled as positive
         :type threshold: float
-        :return: predictions: predicted labels (False or True) for each email
-        :rtype: cudf.Series
+        :return: predictions, probabilities: predictions are labels (0 or 1) based on minimum threshold
+        :rtype: cudf.Series, cudf.Series
 
         Examples
         --------
         >>> from cuml.preprocessing.model_selection import train_test_split
         >>> emails_train, emails_test, labels_train, labels_test = train_test_split(train_emails_df, 'label', train_size=0.8)
-        >>> phish_detect.train_model(emails_train, labels_train)
-        >>> predictions = phish_detect.predict(new_emails, threshold=0.8)
+        >>> sc.train_model(emails_train, labels_train)
+        >>> predictions = sc.predict(emails_test, threshold=0.8)
         """
-        predict_inputs, predict_masks = self._bert_uncased_tokenize(emails, max_seq_len)
+        predict_inputs, predict_masks = self._bert_uncased_tokenize(input_data, max_seq_len)
         predict_inputs = predict_inputs.type(torch.LongTensor).to(self._device)
         predict_masks = predict_masks.to(self._device)
-        with torch.no_grad():
-            logits = self._model(
-                predict_inputs, token_type_ids=None, attention_mask=predict_masks
-            )[0]
-            probs = torch.sigmoid(logits[:, 1])
-            preds = probs.ge(threshold)
 
-        probs = cudf.io.from_dlpack(to_dlpack(probs))
-        preds = cudf.io.from_dlpack(to_dlpack(preds))
+        predict_inputs = predict_inputs.type(torch.LongTensor)
+        predict_data = TensorDataset(predict_inputs, predict_masks)
+        predict_sampler = SequentialSampler(predict_data)
+        predict_dataloader = DataLoader(predict_data, sampler=predict_sampler, batch_size=batch_size)
 
-        torch.cuda.empty_cache()
-        gc.collect()
+        preds = cudf.Series()
+        probs = cudf.Series()
+        for batch in predict_dataloader:
+            batch = tuple(t.to(self._device) for t in batch)
+            b_input_ids, b_input_masks = batch
+            with torch.no_grad():
+                logits = self._model(
+                    b_input_ids, token_type_ids=None, attention_mask=b_input_masks
+                )[0]
+                b_probs = torch.sigmoid(logits[:, 1])
+                b_preds = b_probs.ge(threshold)
+
+            b_probs = cudf.io.from_dlpack(to_dlpack(b_probs))
+            b_preds = cudf.io.from_dlpack(to_dlpack(b_preds))
+            preds = preds.append(b_preds)
+            probs = probs.append(b_probs)
 
         return preds, probs
 
@@ -340,13 +296,46 @@ class PhishingDetector:
         )
         return input_ids.type(torch.long), attention_mask.type(torch.long)
 
-    def _get_partitioned_dfs(self, df, batch_size):
-        dataset_len = df.shape[0]
-        prev_chunk_offset = 0
-        partitioned_dfs = []
-        while prev_chunk_offset < dataset_len:
-            curr_chunk_offset = prev_chunk_offset + batch_size
-            chunk = df.iloc[prev_chunk_offset:curr_chunk_offset:1]
-            partitioned_dfs.append(chunk)
-            prev_chunk_offset = curr_chunk_offset
-        return partitioned_dfs
+    def _train(self, train_dataloader, validation_dataloader, model, epochs):
+        model.train()  # Enable training mode
+        for _ in trange(epochs, desc="Epoch"):
+            tr_loss = 0   # Tracking variables
+            nb_tr_examples, nb_tr_steps = 0, 0
+            for step, batch in enumerate(train_dataloader):
+                batch = tuple(t.to(self._device) for t in batch)  # Add batch to GPU
+                b_input_ids, b_input_mask, b_labels = batch  # Unpack the inputs from dataloader
+                self._optimizer.zero_grad()  # Clear out the gradients
+                loss = model(b_input_ids, token_type_ids=None, attention_mask=b_input_mask, labels=b_labels)[0]  # forwardpass
+
+                loss.sum().backward()
+                self._optimizer.step()  # update parameters
+                tr_loss += loss.sum().item()  # get a numeric value
+                nb_tr_examples += b_input_ids.size(0)
+                nb_tr_steps += 1
+
+            print("Train loss: {}".format(tr_loss / nb_tr_steps))
+
+            model.eval()  # Put model in evaluation mode to evaluate loss on the validation set
+
+            eval_accuracy = 0
+            nb_eval_steps = 0
+
+            for batch in validation_dataloader:
+                batch = tuple(t.to(self._device) for t in batch)
+
+                b_input_ids, b_input_mask, b_labels = batch
+
+                with torch.no_grad():  # Telling the model not to compute or store gradients, saving memory and speeding up validation
+                    logits = model(b_input_ids, token_type_ids=None, attention_mask=b_input_mask)[0]  # Forward pass, calculate logit predictions
+                logits = cupy.fromDlpack(to_dlpack(logits))
+                label_ids = cupy.fromDlpack(to_dlpack(b_labels))
+                # logits = logits.detach().cpu().numpy()
+                # label_ids = b_labels.to('cpu').numpy()
+                temp_eval_accuracy = self._flatten_accuracy(logits, label_ids)
+
+                eval_accuracy += temp_eval_accuracy
+                nb_eval_steps += 1
+
+            print("Validation Accuracy: {}".format(eval_accuracy / nb_eval_steps))
+
+        return model
