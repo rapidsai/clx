@@ -63,26 +63,28 @@ class DGADetector(Detector):
         }
         super()._save_model(checkpoint, file_path)
 
-    def train_model(self, detector_dataset):
+    def train_model(self, dataloader):
         """This function is used for training RNNClassifier model with a given training dataset. It returns total loss to determine model prediction accuracy.
-        :param detector_dataset: Instance holds preprocessed data
-        :type detector_dataset: DetectorDataset
+        :param dataloader: Instance holds preprocessed data
+        :type dataloader: Dataloader
         :return: Total loss
         :rtype: int
 
         Examples
         --------
+        >>> import cudf
         >>> from clx.analytics.dga_detector import DGADetector
-        >>> partitioned_dfs = ... # partitioned_dfs = [df1, df2, ...] represents training dataset
         >>> dd = DGADetector()
         >>> dd.init_model()
-        >>> dd.train_model(detector_dataset)
+        >>> train_df = cudf.Dataframe()
+        >>> dataloader = DataLoader(train_df, batchsize=10)
+        >>> dd.train_model(dataloader)
         1.5728906989097595
         """
         total_loss = 0
         i = 0
-        for df in detector_dataset.get_chunks():
-            domains_len = df["type"].count()
+        for df in dataloader.get_chunks():
+            domains_len = df.shape[0]
             if domains_len > 0:
                 types_tensor = self.__create_types_tensor(df["type"])
                 df = df.drop(["type", "domain"], axis=1)
@@ -95,8 +97,8 @@ class DGADetector(Detector):
                     print(
                         "[{}/{} ({:.0f}%)]\tLoss: {:.2f}".format(
                             i * domains_len,
-                            detector_dataset.dataset_len,
-                            100.0 * i * domains_len / detector_dataset.dataset_len,
+                            dataloader.dataset_len,
+                            100.0 * i * domains_len / dataloader.dataset_len,
                             total_loss / i * domains_len,
                         )
                     )
@@ -164,11 +166,11 @@ class DGADetector(Detector):
         seq_tensor = from_dlpack(dlpack_ascii_tensor).long()
         return seq_tensor
 
-    def evaluate_model(self, detector_dataset):
+    def evaluate_model(self, dataloader):
         """This function evaluates the trained model to verify it's accuracy.
 
-        :param detector_dataset: Instance holds preprocessed data.
-        :type detector_dataset: DetectorDataset
+        :param dataloader: Instance holds preprocessed data.
+        :type dataloader: DataLoader
         :return: Model accuracy
         :rtype: decimal
 
@@ -176,23 +178,23 @@ class DGADetector(Detector):
         --------
         >>> dd = DGADetector()
         >>> dd.init_model()
-        >>> dd.evaluate_model(detector_dataset)
+        >>> dd.evaluate_model(dataloader)
         Evaluating trained model ...
         Test set: Accuracy: 3/4 (0.75)
         """
         log.info("Evaluating trained model ...")
         correct = 0
-        for df in detector_dataset.partitioned_dfs:
+        for df in dataloader.get_chunks():
             target = self.__create_types_tensor(df["type"])
             df = df.drop(["type", "domain"], axis=1)
             input, seq_lengths = self.__create_variables(df)
             output = self.model(input, seq_lengths)
             pred = output.data.max(1, keepdim=True)[1]
             correct += pred.eq(target.data.view_as(pred)).cpu().sum()
-        accuracy = float(correct) / detector_dataset.dataset_len
+        accuracy = float(correct) / dataloader.dataset_len
         print(
             "Test set: Accuracy: {}/{} ({})\n".format(
-                correct, detector_dataset.dataset_len, accuracy
+                correct, dataloader.dataset_len, accuracy
             )
         )
         return accuracy

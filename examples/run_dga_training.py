@@ -27,8 +27,8 @@ import argparse
 import numpy as np
 from datetime import datetime
 from clx.analytics.dga_detector import DGADetector
-from clx.analytics import detector_utils as du
-from clx.analytics.detector_dataset import DetectorDataset
+from clx.utils.data.dataloader import DataLoader
+from clx.utils.data.dga_dataset import DGADataset
 from cuml.preprocessing.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, average_precision_score
 
@@ -39,7 +39,7 @@ HIDDEN_SIZE = 100
 N_DOMAIN_TYPE = 2
 
 
-def train_and_eval(dd, train_dataset, test_dataset, epoch, output_dir):
+def train_and_eval(dd, train_dataloader, test_dataloader, epoch, output_dir):
     print("Initiating model training")
     create_dir(output_dir)
     max_accuracy = 0
@@ -48,8 +48,8 @@ def train_and_eval(dd, train_dataset, test_dataset, epoch, output_dir):
         print("---------")
         print("Epoch: %s" % (i))
         print("---------")
-        dd.train_model(train_dataset)
-        accuracy = dd.evaluate_model(test_dataset)
+        dd.train_model(train_dataloader)
+        accuracy = dd.evaluate_model(test_dataloader)
         now = datetime.now()
         output_filepath = (
             output_dir
@@ -89,19 +89,23 @@ def main():
     batch_size = int(args["batch_size"])
     output_dir = args["output_dir"]
 
-    col_names = ["domain", "type"]
-    dtypes = ["str", "int32"]
-    input_df = cudf.read_csv(input_filepath, names=col_names, dtype=dtypes)
-    input_df = du.str2ascii(input_df, input_df.shape[0])
+    # expected input columns and it's datatypes 
+    # col_names = ["domain", "type"]
+    # dtypes = ["str", "int32"]
+    # input_df = cudf.read_csv(input_filepath, names=col_names, dtype=dtypes)
+    input_df = cudf.read_csv(input_filepath)
     domain_train, domain_test, type_train, type_test = train_test_split(
         input_df, "type", train_size=0.7
     )
 
     test_df = create_df(domain_test, type_test)
     train_df = create_df(domain_train, type_train)
-
-    train_dataset = DetectorDataset(train_df, batchsize=batch_size)
-    test_dataset = DetectorDataset(test_df, batchsize=batch_size)
+    
+    test_dataset = DGADataset(test_df)
+    train_dataset = DGADataset(train_df)
+    
+    train_dataloader = DataLoader(test_dataset, batchsize=batch_size)
+    test_dataloader = DataLoader(train_dataset, batchsize=batch_size)
 
     dd = DGADetector(lr=LR)
     dd.init_model(
@@ -110,7 +114,7 @@ def main():
         hidden_size=HIDDEN_SIZE,
         n_domain_type=N_DOMAIN_TYPE,
     )
-    model_filepath = train_and_eval(dd, train_dataset, test_dataset, epoch, output_dir)
+    model_filepath = train_and_eval(dd, train_dataloader, test_dataloader, epoch, output_dir)
 
 
 def parse_cmd_args():
