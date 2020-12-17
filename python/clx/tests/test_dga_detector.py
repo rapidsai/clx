@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import cudf
-from clx.analytics.detector_dataset import DetectorDataset
+from clx.utlis.data.dga_dataset import DGADataset
+from clx.utlis.data.dataloader import DataLoader
 from clx.analytics.dga_detector import DGADetector
 from clx.analytics.model.rnn_classifier import RNNClassifier
 import torch
 from os import path
 
-test_dataset_len = 4
 test_batchsize = 2
 test_df = cudf.DataFrame(
     {
@@ -31,7 +31,8 @@ test_df = cudf.DataFrame(
         "type": [1, 1, 0, 1],
     }
 )
-dataset = DetectorDataset(test_df, test_batchsize)
+dataset = DGADataset(test_df)
+dataloader = DataLoader(dataset, batchsize=test_batchsize)
 
 dd = DGADetector()
 dd.init_model()
@@ -40,14 +41,14 @@ dd.init_model()
 def test_train_model():
     if torch.cuda.is_available():
         # train model
-        total_loss = dd.train_model(dataset)
+        total_loss = dd.train_model(dataloader)
         assert isinstance(total_loss, (int, float))
 
 
 def test_evaluate_model():
     if torch.cuda.is_available():
         # evaluate model
-        accuracy = dd.evaluate_model(dataset)
+        accuracy = dd.evaluate_model(dataloader)
         assert isinstance(accuracy, (int, float))
 
 

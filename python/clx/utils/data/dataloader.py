@@ -11,9 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import logging
 
 log = logging.getLogger(__name__)
+
 
 class DataLoader(object):
     """
@@ -34,11 +36,11 @@ class DataLoader(object):
     @property
     def dataset_len(self):
         return self.__dataset.length
-    
+
     @property
     def dataset(self):
         return self.__dataset
-        
+
     def get_chunks(self):
         """Returns chunks of original input dataframe based on batchsize
         """
@@ -48,4 +50,3 @@ class DataLoader(object):
             chunk = self.__dataset.data[prev_chunk_offset:curr_chunk_offset:1]
             prev_chunk_offset = curr_chunk_offset
             yield chunk
-            

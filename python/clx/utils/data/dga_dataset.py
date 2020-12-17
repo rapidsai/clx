@@ -11,14 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from clx.utils.data.dataset import Dataset
 from clx.analytics import detector_utils as du
+
 
 class DGADataset(Dataset):
     def __init__(self, df):
         df = self.__preprocess(df)
         super.__init__(df)
-        
+
     def __preprocess(self, df):
         df = du.str2ascii(df, df.shape[0])
         return df

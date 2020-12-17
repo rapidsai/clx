@@ -11,18 +11,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+
 class Dataset(object):
     def __init__(self, df):
-        self.df = df.reset_index(drop=True)
-        
+        self._df = df.reset_index(drop=True)
+        self._dataset_len = self.df.shape[0]
+
+    @property
     def length(self):
         """
         Returns dataframe length
         """
-        return self.df.shape[0]
-    
+        return self._dataset_len
+
+    @property
     def data(self):
         """
         Retruns dataframe
         """
-        return self.df
+        return self._df
