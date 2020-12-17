@@ -35,6 +35,7 @@ ENV CLX_STREAMZ_HOME /opt/clx_streamz
 
 ADD examples/streamz/scripts "$CLX_STREAMZ_HOME"/scripts
 ADD examples/streamz/python "$CLX_STREAMZ_HOME"/python
+ADD examples/streamz/resources "$CLX_STREAMZ_HOME"/resources
 
 RUN mkdir -p "$CLX_STREAMZ_HOME"/ml/models/cybert && \
 	mkdir "$CLX_STREAMZ_HOME"/ml/models/dga && \
@@ -65,7 +66,9 @@ RUN source activate rapids && \
     conda install -c pytorch "pytorch>=1.7" torchvision "cudf_kafka=${RAPIDS_VERSION}" "custreamz=${RAPIDS_VERSION}" "scikit-learn>=0.21" "nodejs>=12" ipywidgets python-confluent-kafka "transformers=3.5.*" "seqeval=0.0.12" python-whois seaborn requests matplotlib pytest jupyterlab "openjdk=8.0.152" dask-cuda && \
     pip install "git+https://github.com/rapidsai/cudatashader.git" && \
     pip install mockito && \
-    pip install wget
+    pip install wget && \
+    pip install elasticsearch && \
+    pip install elasticsearch-async
 
 RUN source activate rapids \
   && conda install -n rapids jupyterlab-nvdashboard \

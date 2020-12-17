@@ -13,7 +13,7 @@
 # limitations under the License.
 
 """
-Example Usage: python train_dga_model.py \
+Example Usage: python run_dga_training.py \
                     --training-data benign_and_dga_domains.csv \
                     --output-dir trained_models \
                     --batch-size 10000 \
@@ -143,4 +143,4 @@ def parse_cmd_args():
 # execution starts here
 if __name__ == "__main__":
     args = parse_cmd_args()
-    main()
+    
