@@ -61,10 +61,7 @@ Your Quickstart Docker container includes the data and models required to run cy
 ```
 docker exec clx_streamz bash -c 'source activate rapids \
     && python $CLX_STREAMZ_HOME/python/cybert.py \
-    --broker localhost:9092 \
-    --input_topic cybert_input \
-    --output_topic cybert_output \
-    --group_id streamz \
+    --conf $CLX_STREAMZ_HOME/resources/cybert.yaml \
     --model $CLX_STREAMZ_HOME/ml/models/cybert/pytorch_model.bin \
     --label_map $CLX_STREAMZ_HOME/ml/models/cybert/config.json \
     --poll_interval 1s \
@@ -75,10 +72,7 @@ docker exec clx_streamz bash -c 'source activate rapids \
 ```
 docker exec clx_streamz bash -c 'source activate rapids \
     && python $CLX_STREAMZ_HOME/python/dga_detection.py \
-    --broker localhost:9092 \
-    --input_topic dga_detection_input \
-    --output_topic dga_detection_output \
-    --group_id streamz \
+    --conf $CLX_STREAMZ_HOME/resources/dga_detection.yaml \
     --model $CLX_STREAMZ_HOME/ml/models/dga/pytorch_model.bin \
     --poll_interval 1s \
     --max_batch_size 500'
@@ -102,10 +96,7 @@ To capture benchmarks add the benchmark flag along with average log size (kb), f
 ```
 docker exec clx_streamz bash -c 'source activate rapids \
     && python $CLX_STREAMZ_HOME/python/cybert.py \
-    --broker localhost:9092 \
-    --input_topic cybert_input \
-    --output_topic cybert_output \
-    --group_id streamz \
+    --conf $CLX_STREAMZ_HOME/resources/cybert.yaml \
     --model $CLX_STREAMZ_HOME/ml/models/cybert/pytorch_model.bin \
     --label_map $CLX_STREAMZ_HOME/ml/models/cybert/config.json \
     --poll_interval 1s \
@@ -141,10 +132,7 @@ $ less cybert_workflow.log
     ```
     docker exec clx_streamz bash -c 'source activate rapids \
         && python $CLX_STREAMZ_HOME/python/<workflow_script> \
-        --broker <host:port> \
-        --input_topic <input_topic> \
-        --output_topic <output_topic> \
-        --group_id <kafka_consumer_group_id> \
+        --conf <configuration filepath> \
         --model <model filepath> \
         --label_map <labels filepath> \
         --poll_interval <poll_interval> \
@@ -152,10 +140,7 @@ $ less cybert_workflow.log
         --benchmark <avg log size>'
     ```
     **Parameters:**
-    - `broker`* - Host and port where kafka broker is running. 
-    - `group_id`* - Kafka [group id](https://docs.confluent.io/current/installation/configuration/consumer-configs.html#group.id) that uniquely identifies the streamz data consumer.
-    - `input_topic` - The name for the input topic to consumer data.
-    - `output_topic` - The name for the output topic to send the output data.
+    - `conf` - The path to specify source and sink configuration properties.
     - `model_file` - The path to your model file
     - `label_file` - The path to your label file
     - `poll_interval`* - Interval (in seconds) to poll the Kafka input topic for data (Ex: 60s)
@@ -163,3 +148,34 @@ $ less cybert_workflow.log
     - `benchmark` - To capture benchmarks add the benchmark flag along with average log size (kb), for throughput (mb/s) and average batch size (mb) estimates.
 
     ``*`` = More information on these parameters can be found in the streamz [documentation](https://streamz.readthedocs.io/en/latest/api.html#streamz.from_kafka_batched).
+    
+**Configuration File Properties**
+- `cudf_engine` - This value determines whether to use cudf engine while consuming messages using streamz API
+- `kafka_conf`
+   - `input_topic` - Consumer Kafka topic name
+   - `output_topic` - Publisher Kafka topic name
+   - `n_partitions` - Number of partitions in the consumer Kafka topic
+    - `producer_conf` - User can specify any valid Kafka producer configuration within this block
+      - `bootstrap.servers` - Kafka brokers Ex: localhost:9092, localhost2:9092
+      - `session.timeout.ms` - Message publishing timout
+      - `queue.buffering.max.messages` - Max number of messages that can hold in the queue
+      - `...`
+   - `consumer_conf` - User can specify any valid Kafka consumer configuration within this block
+      - `bootstrap.servers` - Kafka brokers Ex: localhost:9092, localhost2:9092
+      - `group.id` - Kafka consumer group id
+      - `session.timeout.ms` - Message consuming timout
+      - `...`
+- `elasticsearch_conf` - Elasticsearch sink configuration
+   - `url` - Elasticsearch service url
+   - `port` - Elasticsearch service port
+   - `cafile` - Path to pem file
+   - `username` - Username
+   - `password` - Password
+   - `index` - Name to index the documents
+- `sink` - Sink to write processed data Ex: "kafka" or "elasticsearch" or "filesystem"
+
+**Note: Below properties are used only when sink is set to "filesystem"**
+- `col_delimiter` - Column delimiter Ex: ","
+- `file_extension` - File extension Ex: ".csv"
+- `output_dir` - Output filepath
+```

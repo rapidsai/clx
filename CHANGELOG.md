@@ -4,6 +4,7 @@
 
 ## Improvements
 - PR #303 CLX sequence classifier
+- PR #308 CLX streamz workflow updates
 - PR #313 XGBoost training notebook
 
 ## Bug Fixes

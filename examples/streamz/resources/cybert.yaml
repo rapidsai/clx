@@ -1,0 +1,42 @@
+# cudf_engine currently supports only on flatten json input data
+cudf_engine: false
+kafka_conf:
+   input_topic: cybert_input
+   output_topic: cybert_output
+   # consumer topic partitions
+   n_partitions: 1
+   producer_conf:
+     bootstrap.servers: localhost:9092
+     session.timeout.ms: '10000'
+     #queue.buffering.max.messages: '250000'
+     #linger.ms: '100'
+     #security.protocol: SASL_SSL
+     #sasl.mechanism: PLAIN
+     #ssl.ca.location: <your/pem/filepath/CA.pem>
+     #sasl.username: <your username>
+     #sasl.password: <your password>
+   consumer_conf:
+     bootstrap.servers: localhost:9092
+     group.id: streamz
+     session.timeout.ms: '60000'
+     enable.partition.eof: 'true'
+     auto.offset.reset: earliest
+     #security.protocol: SASL_SSL
+     #sasl.mechanism: PLAIN
+     #ssl.ca.location: <your/pem/filepath/CA.pem>
+     #sasl.username: <your username>
+     #sasl.password: <your password>
+elasticsearch_conf:
+   url: localhost #https://{}:{}@test.nvidia.com:{}/
+   port: 9200
+  # below properties are required if elasticsearch cluster is SSL enabled
+   #cafile: <your/pem/filepath/CA.pem>
+   #username: <your username>
+   #password: <your password>
+   index: cybert
+# other available sinks are "elasticsearch", "filesystem"
+sink: kafka
+# below properties are used when sink is set to filesystem
+col_delimiter: ','
+file_extension: '.csv'
+output_dir: '/your/output/newdir/path'
