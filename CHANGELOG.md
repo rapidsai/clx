@@ -8,7 +8,7 @@
 - PR #313 XGBoost training notebook
 
 ## Bug Fixes
-- PR #314 Fix detector dataset errors when batchsize set to small
+- PR #315 Fix detector dataset errors when batchsize set to small
 
 # clx 0.17.0 (10 Dec 2020)
 

@@ -14,8 +14,6 @@
 import cudf
 from clx.utils.data.dataset import Dataset
 from clx.utils.data.dataloader import DataLoader
-import torch
-from os import path
 
 test_batchsize = 2
 test_df = cudf.DataFrame(
@@ -50,6 +48,7 @@ expected_part_df2 = cudf.DataFrame(
 )
 dataset = Dataset(test_df)
 dataloader = DataLoader(dataset, batchsize=test_batchsize)
+
 
 def test_get_chunks():
     df_parts = []
