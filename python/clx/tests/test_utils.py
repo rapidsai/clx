@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import cudf
-from clx.analytics import detector_utils as du
+from clx.utils.data import utils
 
 test_domains_len = 2
 test_input_df = cudf.DataFrame(
@@ -46,5 +46,5 @@ expected_output_df["domain"] = ["studytour.com.tw", "cnn.com"]
 
 
 def test_str2ascii():
-    actual_output_df = du.str2ascii(test_input_df, test_domains_len)
+    actual_output_df = utils.str2ascii(test_input_df, test_domains_len)
     assert actual_output_df.equals(expected_output_df)

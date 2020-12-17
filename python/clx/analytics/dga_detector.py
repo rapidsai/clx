@@ -1,7 +1,7 @@
 import cudf
 import torch
 import logging
-from clx.analytics import detector_utils as du
+from clx.utils.data import utils
 from torch.utils.dlpack import from_dlpack
 from clx.analytics.detector import Detector
 from clx.analytics.model.rnn_classifier import RNNClassifier
@@ -72,12 +72,9 @@ class DGADetector(Detector):
 
         Examples
         --------
-        >>> import cudf
         >>> from clx.analytics.dga_detector import DGADetector
         >>> dd = DGADetector()
         >>> dd.init_model()
-        >>> train_df = cudf.Dataframe()
-        >>> dataloader = DataLoader(train_df, batchsize=10)
         >>> dd.train_model(dataloader)
         1.5728906989097595
         """
@@ -121,7 +118,7 @@ class DGADetector(Detector):
         """
         df = cudf.DataFrame({"domain": domains})
         domains_len = df["domain"].count()
-        temp_df = du.str2ascii(df, domains_len)
+        temp_df = utils.str2ascii(df, domains_len)
         # Assigning sorted domains index to return learned labels as per the given input order.
         df.index = temp_df.index
         df["domain"] = temp_df["domain"]
