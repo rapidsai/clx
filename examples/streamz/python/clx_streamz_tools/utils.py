@@ -57,7 +57,12 @@ def kafka_sink(output_topic, parsed_df):
     json_str = parsed_df.to_json(orient="records", lines=True)
     json_recs = json_str.split("\n")
     for json_rec in json_recs:
-        producer.produce(output_topic, json_rec)
+        try:
+           producer.poll(0)
+           producer.produce(output_topic, json_rec)
+        except BufferError as be:
+           producer.poll(0.1)
+           print(be)
     producer.flush()
 
 
