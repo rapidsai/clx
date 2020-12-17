@@ -143,4 +143,4 @@ def parse_cmd_args():
 # execution starts here
 if __name__ == "__main__":
     args = parse_cmd_args()
-    
+    main()
