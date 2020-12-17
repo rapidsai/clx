@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import cudf
-from clx.utlis.data.dga_dataset import DGADataset
-from clx.utlis.data.dataloader import DataLoader
+from clx.utils.data.dga_dataset import DGADataset
+from clx.utils.data.dataloader import DataLoader
 from clx.analytics.dga_detector import DGADetector
 from clx.analytics.model.rnn_classifier import RNNClassifier
 import torch

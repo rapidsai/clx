@@ -13,14 +13,14 @@
 # limitations under the License.
 
 from clx.utils.data.dataset import Dataset
-from clx.analytics import detector_utils as du
+from clx.utils.data import utils
 
 
 class DGADataset(Dataset):
     def __init__(self, df):
         df = self.__preprocess(df)
-        super.__init__(df)
+        super().__init__(df)
 
     def __preprocess(self, df):
-        df = du.str2ascii(df, df.shape[0])
+        df = utils.str2ascii(df, df.shape[0])
         return df

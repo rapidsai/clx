@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import cudf
-from clx.utlis.data.dataset import Dataset
-from clx.utlis.data.dataloader import DataLoader
+from clx.utils.data.dataset import Dataset
+from clx.utils.data.dataloader import DataLoader
 import torch
 from os import path
 
@@ -51,11 +51,10 @@ expected_part_df2 = cudf.DataFrame(
 dataset = Dataset(test_df)
 dataloader = DataLoader(dataset, batchsize=test_batchsize)
 
-def test_get_chuncks():
+def test_get_chunks():
     df_parts = []
-    for df_part in dataloader.get_chuncks():
+    for df_part in dataloader.get_chunks():
         df_parts.append(df_part)
     assert len(df_parts) == 2
-    assert df_parts[0].equals(expected_part_df1)
-    assert df_parts[1].equals(expected_part_df2)
-    
+    assert df_parts[0].reset_index(drop=True).equals(expected_part_df1)
+    assert df_parts[1].reset_index(drop=True).equals(expected_part_df2)

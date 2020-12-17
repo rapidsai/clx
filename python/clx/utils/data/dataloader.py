@@ -42,7 +42,9 @@ class DataLoader(object):
         return self.__dataset
 
     def get_chunks(self):
-        """Returns chunks of original input dataframe based on batchsize
+        """ A generator function that yields each chunk of original input dataframe based on batchsize
+        :return: Partitioned dataframe.
+        :rtype: cudf.DataFrame
         """
         prev_chunk_offset = 0
         while prev_chunk_offset < self.__dataset.length:
