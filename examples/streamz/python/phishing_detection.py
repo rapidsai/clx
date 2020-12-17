@@ -19,7 +19,7 @@ from clx_streamz_tools import utils
 from clx_streamz_tools import streamz_workflow
 
 
-class SequenceClassifierWorkflow(streamz_workflow.StreamzWorkflow):
+class PhisingDetectionWorkflow(streamz_workflow.StreamzWorkflow):
     def inference(messages):
         # Messages will be received and run through sequence classifier inferencing
         worker = dask.distributed.get_worker()

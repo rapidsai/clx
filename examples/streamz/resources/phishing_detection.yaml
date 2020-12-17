@@ -1,8 +1,8 @@
 # cudf_engine currently supports only on flatten json input data
 cudf_engine: false
 kafka_conf:
-   input_topic: sequence_classifier_input
-   output_topic: sequence_classifier_output
+   input_topic: phising_detection_input
+   output_topic: phising_detection_output
    # consumer topic partitions
    n_partitions: 1
    producer_conf:
@@ -33,7 +33,7 @@ elasticsearch_conf:
    #cafile: <your/pem/filepath/CA.pem>
    #username: <your username>
    #password: <your password>
-   index: seq_classifier
+   index: phising_detection
 # other available sinks are "elasticsearch", "filesystem"
 sink: kafka
 # below properties are used when sink is set to filesystem
