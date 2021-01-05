@@ -28,7 +28,7 @@ import numpy as np
 from datetime import datetime
 from clx.analytics.dga_detector import DGADetector
 from clx.utils.data.dataloader import DataLoader
-from clx.utils.data.dga_dataset import DGADataset
+from clx.analytics.dga_dataset import DGADataset
 from cuml.preprocessing.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, average_precision_score
 

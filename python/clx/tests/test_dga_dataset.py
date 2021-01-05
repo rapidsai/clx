@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import cudf
-from clx.utils.data.dga_dataset import DGADataset
+from clx.analytics.dga_dataset import DGADataset
 
 test_domains_len = 2
 test_batchsize = 1
