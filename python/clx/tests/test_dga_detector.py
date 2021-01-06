@@ -19,6 +19,8 @@ from clx.analytics.model.rnn_classifier import RNNClassifier
 import torch
 from os import path
 
+gpu_count = torch.cuda.device_count()
+
 train_data = cudf.Series(
     ["studytour.com.tw", "cnn.com", "bakercityherald.com", "bankmobile.com"]
 )
@@ -33,8 +35,11 @@ dd.init_model()
 def test_train_model():
     if torch.cuda.is_available():
         # train model
-        total_loss = dd.train_model(train_data, labels, batch_size=2)
-        assert isinstance(total_loss, (int, float))
+        dd.train_model(train_data, labels, batch_size=2)
+        if gpu_count > 1:
+            assert isinstance(dd.model.module, RNNClassifier)
+        else:
+            assert isinstance(dd.model, RNNClassifier)
 
 
 def test_evaluate_model():
@@ -72,7 +77,6 @@ def test_load_model(tmpdir):
         dd2 = DGADetector()
         dd2.init_model()
         dd2.load_model(str(tmpdir.join("clx_dga.mdl")))
-        gpu_count = torch.cuda.device_count()
         if gpu_count > 1:
             assert isinstance(dd2.model.module, RNNClassifier)
         else:
