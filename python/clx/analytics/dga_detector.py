@@ -1,6 +1,7 @@
 import cudf
 import torch
 import logging
+from tqdm import trange
 from torch.utils.dlpack import from_dlpack
 from clx.utils.data import utils
 from clx.analytics.detector import Detector
@@ -9,7 +10,7 @@ from clx.analytics.dga_dataset import DGADataset
 from clx.analytics.model.rnn_classifier import RNNClassifier
 from cuml.preprocessing.model_selection import train_test_split
 
-log = logging.getLogger(_name_)
+log = logging.getLogger(__name__)
 
 
 class DGADetector(Detector):
@@ -102,8 +103,8 @@ class DGADetector(Detector):
                         print(
                             "[{}/{} ({:.0f}%)]\tLoss: {:.2f}".format(
                                 i * domains_len,
-                                dataloader.dataset_len,
-                                100.0 * i * domains_len / dataloader.dataset_len,
+                                train_dataloader.dataset_len,
+                                100.0 * i * domains_len / train_dataloader.dataset_len,
                                 total_loss / i * domains_len,
                             )
                         )
@@ -233,8 +234,8 @@ class DGADetector(Detector):
         train_dataloader = DataLoader(test_dataset, batchsize=batch_size)
         test_dataloader = DataLoader(train_dataset, batchsize=batch_size)
         return train_dataloader, test_dataloader
-    
-    def _create_df(domain_df, type_series):
+
+    def _create_df(self, domain_df, type_series):
         df = cudf.DataFrame()
         df["domain"] = domain_df["domain"].reset_index(drop=True)
         df["type"] = type_series.reset_index(drop=True)

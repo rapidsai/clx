@@ -12,18 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import cudf
+from clx.utils.data.dataloader import DataLoader
 from clx.analytics.dga_detector import DGADetector
+from clx.analytics.dga_dataset import DGADataset
 from clx.analytics.model.rnn_classifier import RNNClassifier
 import torch
 from os import path
 
-train_data = cudf.Series([
-            "studytour.com.tw",
-            "cnn.com",
-            "bakercityherald.com",
-            "bankmobile.com",
-        ])
+train_data = cudf.Series(
+    ["studytour.com.tw", "cnn.com", "bakercityherald.com", "bankmobile.com"]
+)
 labels = cudf.Series([1, 1, 0, 1])
+
+test_df = cudf.DataFrame({"domain": ["cnn.com", "bakercityherald.com"], "type": [1, 0]})
 
 dd = DGADetector()
 dd.init_model()
@@ -38,8 +39,10 @@ def test_train_model():
 
 def test_evaluate_model():
     if torch.cuda.is_available():
+        dataset = DGADataset(test_df)
+        dataloader = DataLoader(dataset, batchsize=2)
         # evaluate model
-        accuracy = dd.evaluate_model(train_data, labels, batch_size=2)
+        accuracy = dd.evaluate_model(dataloader)
         assert isinstance(accuracy, (int, float))
 
 

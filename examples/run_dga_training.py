@@ -32,16 +32,8 @@ CHAR_VOCAB = 128
 HIDDEN_SIZE = 100
 N_DOMAIN_TYPE = 2
 
-
-def create_dir(dir_path):
-    print("Verify if directory `%s` is already exists." % (dir_path))
-    if not os.path.exists(dir_path):
-        print("Directory `%s` does not exists." % (dir_path))
-        print("Creating directory `%s` to store trained models." % (dir_path))
-        os.makedirs(dir_path)
-
 def main():
-    epoch = int(args["epochs"])
+    epochs = int(args["epochs"])
     input_filepath = args["training_data"]
     batch_size = int(args["batch_size"])
     output_dir = args["output_dir"]
@@ -58,17 +50,19 @@ def main():
         n_domain_type=N_DOMAIN_TYPE,
     )
     dd.train_model(train_data, labels, batch_size=batch_size, epochs=epochs, train_size=0.7)
+    
+    if not os.path.exists(output_dir):
+        print("Creating directory '{}'".format(output_dir))
+        os.makedirs(output_dir)
     now = datetime.now()
-    output_filepath = (
-            output_dir
-            + "/"
-            + "rnn_classifier_{}.bin".format(now.strftime("%Y-%m-%d_%H_%M_%S"))
-        )
-    dd.save_model(output_filepath)
+    model_filename = "rnn_classifier_{}.bin".format(now.strftime("%Y-%m-%d_%H_%M_%S"))
+    model_filepath = os.path.join(output_dir, model_filename)
+    print("Saving trained model to location '{}'".format(model_filepath))
+    dd.save_model(model_filepath)
 
 def parse_cmd_args():
     # construct the argument parse and parse the arguments
-    ap = argparse.ArgumentParser(description="DGA model trainer")
+    ap = argparse.ArgumentParser(description="DGA detection model training script")
     ap.add_argument(
         "--training-data", required=True, help="CSV with domain and type fields"
     )

@@ -3,13 +3,13 @@ import torch
 import torch.nn as nn
 from abc import ABC, abstractmethod
 
-log = logging.getLogger(_name_)
+log = logging.getLogger(__name__)
 
 GPU_COUNT = torch.cuda.device_count()
 
 
 class Detector(ABC):
-    def _init_(self, lr=0.001):
+    def __init__(self, lr=0.001):
         self.lr = lr
         self._model = None
         self._optimizer = None
