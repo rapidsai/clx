@@ -231,8 +231,8 @@ class DGADetector(Detector):
         test_dataset = DGADataset(test_df)
         train_dataset = DGADataset(train_df)
 
-        train_dataloader = DataLoader(test_dataset, batchsize=batch_size)
-        test_dataloader = DataLoader(train_dataset, batchsize=batch_size)
+        test_dataloader = DataLoader(test_dataset, batchsize=batch_size)
+        train_dataloader = DataLoader(train_dataset, batchsize=batch_size)
         return train_dataloader, test_dataloader
 
     def _create_df(self, domain_df, type_series):
