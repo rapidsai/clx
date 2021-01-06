@@ -47,7 +47,7 @@ def main():
     output_dir = args["output_dir"]
     # load input data to gpu memory
     input_df = cudf.read_csv(input_filepath)
-    training_data = input_df['domain']
+    train_data = input_df['domain']
     labels = input_df['type']
     del input_df
     dd = DGADetector(lr=LR)
@@ -57,7 +57,7 @@ def main():
         hidden_size=HIDDEN_SIZE,
         n_domain_type=N_DOMAIN_TYPE,
     )
-    dd.train_model(training_data, labels, batch_size=batch_size, epochs=epochs, train_size=0.7)
+    dd.train_model(train_data, labels, batch_size=batch_size, epochs=epochs, train_size=0.7)
     now = datetime.now()
     output_filepath = (
             output_dir

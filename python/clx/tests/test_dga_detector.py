@@ -17,7 +17,7 @@ from clx.analytics.model.rnn_classifier import RNNClassifier
 import torch
 from os import path
 
-training_data = cudf.Series([
+train_data = cudf.Series([
             "studytour.com.tw",
             "cnn.com",
             "bakercityherald.com",
@@ -32,14 +32,14 @@ dd.init_model()
 def test_train_model():
     if torch.cuda.is_available():
         # train model
-        total_loss = dd.train_model(training_data, labels, batch_size=2)
+        total_loss = dd.train_model(train_data, labels, batch_size=2)
         assert isinstance(total_loss, (int, float))
 
 
 def test_evaluate_model():
     if torch.cuda.is_available():
         # evaluate model
-        accuracy = dd.evaluate_model(training_data, labels, batch_size=2)
+        accuracy = dd.evaluate_model(train_data, labels, batch_size=2)
         assert isinstance(accuracy, (int, float))
 
 

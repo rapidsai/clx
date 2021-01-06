@@ -67,7 +67,7 @@ class DGADetector(Detector):
         super()._save_model(checkpoint, file_path)
 
     def train_model(
-        self, training_data, labels, batch_size=1000, epochs=5, train_size=0.7
+        self, train_data, labels, batch_size=1000, epochs=5, train_size=0.7
     ):
         """This function is used for training RNNClassifier model with a given training dataset. It returns total loss to determine model prediction accuracy.
         :param dataloader: Instance holds preprocessed data
@@ -83,20 +83,7 @@ class DGADetector(Detector):
         >>> dd.train_model(dataloader)
         1.5728906989097595
         """
-        train_gdf = cudf.DataFrame()
-        train_gdf["domain"] = train_data
-        train_gdf["type"] = labels
-        domain_train, domain_test, type_train, type_test = train_test_split(
-            train_gdf, "type", train_size=0.7
-        )
-        test_df = self._create_df(domain_test, type_test)
-        train_df = self._create_df(domain_train, type_train)
-
-        test_dataset = DGADataset(test_df)
-        train_dataset = DGADataset(train_df)
-
-        train_dataloader = DataLoader(test_dataset, batchsize=batch_size)
-        test_dataloader = DataLoader(train_dataset, batchsize=batch_size)
+        train_dataloader, test_dataloader = self._preprocess_data(train_data, labels, batch_size, train_size)
 
         for _ in trange(epochs, desc="Epoch"):
             total_loss = 0
@@ -230,6 +217,23 @@ class DGADetector(Detector):
         """
         return tensor.cuda()
 
+    def _preprocess_data(self, train_data, labels, batch_size, train_size):
+        train_gdf = cudf.DataFrame()
+        train_gdf["domain"] = train_data
+        train_gdf["type"] = labels
+        domain_train, domain_test, type_train, type_test = train_test_split(
+            train_gdf, "type", train_size=0.7
+        )
+        test_df = self._create_df(domain_test, type_test)
+        train_df = self._create_df(domain_train, type_train)
+
+        test_dataset = DGADataset(test_df)
+        train_dataset = DGADataset(train_df)
+
+        train_dataloader = DataLoader(test_dataset, batchsize=batch_size)
+        test_dataloader = DataLoader(train_dataset, batchsize=batch_size)
+        return train_dataloader, test_dataloader
+    
     def _create_df(domain_df, type_series):
         df = cudf.DataFrame()
         df["domain"] = domain_df["domain"].reset_index(drop=True)
