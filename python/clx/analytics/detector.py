@@ -40,7 +40,7 @@ class Detector(ABC):
         pass
 
     @abstractmethod
-    def train_model(self, epoch, train_dataset):
+    def train_model(self, training_data, labels, batch_size=1000, epochs=1, train_size=0.7):
         pass
 
     @abstractmethod

@@ -17,63 +17,20 @@ Example Usage: python run_dga_training.py \
                     --training-data benign_and_dga_domains.csv \
                     --output-dir trained_models \
                     --batch-size 10000 \
-                    --epoch 2
+                    --epochs 2
 """
 import os
-import time
 import cudf
 import torch
 import argparse
-import numpy as np
 from datetime import datetime
 from clx.analytics.dga_detector import DGADetector
-from clx.utils.data.dataloader import DataLoader
-from clx.analytics.dga_dataset import DGADataset
-from cuml.preprocessing.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, average_precision_score
 
 LR = 0.001
 N_LAYERS = 4
 CHAR_VOCAB = 128
 HIDDEN_SIZE = 100
 N_DOMAIN_TYPE = 2
-
-
-def train_and_eval(dd, train_dataloader, test_dataloader, epoch, output_dir):
-    print("Initiating model training")
-    create_dir(output_dir)
-    max_accuracy = 0
-    prev_model_file_path = ""
-    for i in range(1, epoch + 1):
-        print("---------")
-        print("Epoch: %s" % (i))
-        print("---------")
-        dd.train_model(train_dataloader)
-        accuracy = dd.evaluate_model(test_dataloader)
-        now = datetime.now()
-        output_filepath = (
-            output_dir
-            + "/"
-            + "rnn_classifier_{}.bin".format(now.strftime("%Y-%m-%d_%H_%M_%S"))
-        )
-        if accuracy > max_accuracy:
-            dd.save_model(output_filepath)
-            max_accuracy = accuracy
-            if prev_model_file_path:
-                os.remove(prev_model_file_path)
-            prev_model_file_path = output_filepath
-    print(
-        "Model with highest accuracy (%s) is stored to location %s"
-        % (max_accuracy, prev_model_file_path)
-    )
-    return prev_model_file_path
-
-
-def create_df(domain_df, type_series):
-    df = cudf.DataFrame()
-    df["domain"] = domain_df["domain"].reset_index(drop=True)
-    df["type"] = type_series.reset_index(drop=True)
-    return df
 
 
 def create_dir(dir_path):
@@ -84,29 +41,15 @@ def create_dir(dir_path):
         os.makedirs(dir_path)
 
 def main():
-    epoch = int(args["epoch"])
+    epoch = int(args["epochs"])
     input_filepath = args["training_data"]
     batch_size = int(args["batch_size"])
     output_dir = args["output_dir"]
-
-    # expected input columns and it's datatypes 
-    # col_names = ["domain", "type"]
-    # dtypes = ["str", "int32"]
-    # input_df = cudf.read_csv(input_filepath, names=col_names, dtype=dtypes)
+    # load input data to gpu memory
     input_df = cudf.read_csv(input_filepath)
-    domain_train, domain_test, type_train, type_test = train_test_split(
-        input_df, "type", train_size=0.7
-    )
-
-    test_df = create_df(domain_test, type_test)
-    train_df = create_df(domain_train, type_train)
-    
-    test_dataset = DGADataset(test_df)
-    train_dataset = DGADataset(train_df)
-    
-    train_dataloader = DataLoader(test_dataset, batchsize=batch_size)
-    test_dataloader = DataLoader(train_dataset, batchsize=batch_size)
-
+    training_data = input_df['domain']
+    labels = input_df['type']
+    del input_df
     dd = DGADetector(lr=LR)
     dd.init_model(
         n_layers=N_LAYERS,
@@ -114,8 +57,14 @@ def main():
         hidden_size=HIDDEN_SIZE,
         n_domain_type=N_DOMAIN_TYPE,
     )
-    model_filepath = train_and_eval(dd, train_dataloader, test_dataloader, epoch, output_dir)
-
+    dd.train_model(training_data, labels, batch_size=batch_size, epochs=epochs, train_size=0.7)
+    now = datetime.now()
+    output_filepath = (
+            output_dir
+            + "/"
+            + "rnn_classifier_{}.bin".format(now.strftime("%Y-%m-%d_%H_%M_%S"))
+        )
+    dd.save_model(output_filepath)
 
 def parse_cmd_args():
     # construct the argument parse and parse the arguments
@@ -132,7 +81,7 @@ def parse_cmd_args():
         help="Dividing dataset into number of batches or sets or parts",
     )
     ap.add_argument(
-        "--epoch",
+        "--epochs",
         required=True,
         help="One epoch is when an entire dataset is passed forward and backward through the neural network only once",
     )
