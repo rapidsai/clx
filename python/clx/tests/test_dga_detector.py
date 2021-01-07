@@ -60,6 +60,7 @@ def test_predict():
         assert preds.dtype == int
         assert isinstance(preds, cudf.core.series.Series)
 
+
 def test2_predict():
     if torch.cuda.is_available():
         test_domains = cudf.Series(["nvidia.com", "dfsdfsdf"])
