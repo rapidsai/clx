@@ -131,7 +131,7 @@ class DGADetector(Detector):
         """
         df = cudf.DataFrame({"domain": domains})
         domains_len = df["domain"].count()
-        temp_df = du.str2ascii(df, domains_len)
+        temp_df = utils.str2ascii(df, domains_len)
         # Assigning sorted domains index to return learned labels as per the given input order.
         df.index = temp_df.index
         df["domain"] = temp_df["domain"]
