@@ -136,7 +136,7 @@ class DGADetector(Detector):
         df.index = temp_df.index
         df["domain"] = temp_df["domain"]
         temp_df = temp_df.drop("domain", axis=1)
-        input, seq_lengths = self.__create_variables(temp_df)
+        input, seq_lengths = self._create_variables(temp_df)
         del temp_df
         model_result = self.model(input, seq_lengths)
         model_result = model_result[: , 0]
