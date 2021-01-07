@@ -71,17 +71,23 @@ class DGADetector(Detector):
         self, train_data, labels, batch_size=1000, epochs=5, train_size=0.7
     ):
         """This function is used for training RNNClassifier model with a given training dataset. It returns total loss to determine model prediction accuracy.
-        :param dataloader: Instance holds preprocessed data
-        :type dataloader: Dataloader
-        :return: Total loss
-        :rtype: int
+        :param train_data: Training data
+        :type train_data: cudf.Series
+        :param labels: labels data
+        :type labels: cudf.Series
+        :param batch_size: batch size
+        :type batch_size: int
+        :param epochs: Number of epochs for training
+        :type epochs: int
+        :param train_size: Training size for splitting training and test data
+        :type train_size: int
 
         Examples
         --------
         >>> from clx.analytics.dga_detector import DGADetector
         >>> dd = DGADetector()
         >>> dd.init_model()
-        >>> dd.train_model(dataloader)
+        >>> dd.train_model(train_data, labels)
         1.5728906989097595
         """
         train_dataloader, test_dataloader = self._preprocess_data(train_data, labels, batch_size, train_size)
@@ -112,34 +118,33 @@ class DGADetector(Detector):
 
     def predict(self, domains):
         """This function accepts cudf series of domains as an argument to classify domain names as benign/malicious and returns the learned label for each object in the form of cudf series.
-
         :param domains: List of domains.
         :type domains: cudf.Series
         :return: Predicted results with respect to given domains.
         :rtype: cudf.Series
-
         Examples
         --------
         >>> dd.predict(['nvidia.com', 'dgadomain'])
-        0    0
-        1    1
-        Name: is_dga, dtype: int64
+        0    0.010
+        1    0.924
+        Name: dga_probability, dtype: decimal
         """
         df = cudf.DataFrame({"domain": domains})
         domains_len = df["domain"].count()
-        temp_df = utils.str2ascii(df, domains_len)
+        temp_df = du.str2ascii(df, domains_len)
         # Assigning sorted domains index to return learned labels as per the given input order.
         df.index = temp_df.index
         df["domain"] = temp_df["domain"]
         temp_df = temp_df.drop("domain", axis=1)
-        input, seq_lengths = self._create_variables(temp_df)
+        input, seq_lengths = self.__create_variables(temp_df)
         del temp_df
         model_result = self.model(input, seq_lengths)
-        pred = model_result.data.max(1, keepdim=True)[1]
-        type_ids = pred.view(-1).tolist()
-        df["is_dga"] = type_ids
+        model_result = model_result[: , 0]
+        dga_proabability = torch.sigmoid(model_result)
+        dga_proabability = dga_proabability.view(-1).tolist()
+        df["dga_probability"] = dga_proabability
         df = df.sort_index()
-        return df["is_dga"]
+        return df["dga_probability"]
 
     def _create_types_tensor(self, type_series):
         """Create types tensor variable in the same order of sequence tensor"""
@@ -223,7 +228,7 @@ class DGADetector(Detector):
         train_gdf["domain"] = train_data
         train_gdf["type"] = labels
         domain_train, domain_test, type_train, type_test = train_test_split(
-            train_gdf, "type", train_size=0.7
+            train_gdf, "type", train_size=train_size
         )
         test_df = self._create_df(domain_test, type_test)
         train_df = self._create_df(domain_train, type_train)
