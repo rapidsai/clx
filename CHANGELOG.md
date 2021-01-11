@@ -3,15 +3,19 @@
 ## New Features
 
 ## Improvements
+
 - PR #276 Project Flash and gpuCI Scripts Update
+- PR #303 CLX sequence classifier
+- PR #308 CLX streamz workflow updates
+- PR #313 XGBoost training notebook
 
 ## Bug Fixes
-
 
 # clx 0.17.0 (10 Dec 2020)
 
 ## New Features
 - PR #277 cyBERT class to support DistilBERT and ELECTRA
+- PR #273 FIL streamz notebook
 - PR #281 CLX module for periodicity detection
 
 ## Improvements
@@ -21,10 +25,17 @@
 - PR #283 Remove CLX subword tokenizer
 - PR #286 Update to PyTorch 1.7 for CUDA 11 support
 - PR #287 Dockerfile updates
+- PR #292 Phishing detection updates and workflow
+- PR #288 Update network mapping notebooks to download from S3
+- PR #296 cyBERT load model function update
 
 ## Bug Fixes
 - PR #269 Add cybert class to docs build
 - PR #271 Alert Analysis notebook fix
+- PR #291 DNS Extractor fix
+- PR #294 API doc fixes
+- PR #295 Docs build script fix
+- PR #298 Zeek parser fix
 
 # clx 0.16.0 (21 Oct 2020)
 
