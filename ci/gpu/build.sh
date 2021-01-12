@@ -52,7 +52,7 @@ conda install -y -c pytorch -c gwerbin \
     "pytorch=1.7.0" \
     "torchvision" \
     "python-confluent-kafka" \
-    "transformers=3.5.*" \
+    "transformers=4.*" \
     "seqeval=0.0.12" \
     "python-whois" \
     "requests" \
