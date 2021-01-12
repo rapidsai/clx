@@ -18,15 +18,8 @@ from clx.analytics.dga_dataset import DGADataset
 from clx.analytics.model.rnn_classifier import RNNClassifier
 import torch
 from os import path
-
-gpu_count = torch.cuda.device_count()
-
-train_data = cudf.Series(
-    ["studytour.com.tw", "cnn.com", "bakercityherald.com", "bankmobile.com"]
-)
-labels = cudf.Series([1, 1, 0, 1])
-
-test_df = cudf.DataFrame({"domain": ["cnn.com", "bakercityherald.com"], "type": [1, 0]})
+from faker import Faker
+import random
 
 dd = DGADetector()
 dd.init_model()
@@ -34,8 +27,16 @@ dd.init_model()
 
 def test_train_model():
     if torch.cuda.is_available():
+
+        fake = Faker()
+        Faker.seed(0)
+        domain_col = [fake.dga() for _ in range(200)]
+        label_col = [random.randint(0, 1) for _ in range(200)]
+        train_gdf = cudf.DataFrame(list(zip(domain_col, label_col)), columns=["domain", "label"])
+
         # train model
-        dd.train_model(train_data, labels, batch_size=2)
+        dd.train_model(train_gdf["domain"], train_gdf["label"], batch_size=2)
+        gpu_count = torch.cuda.device_count()
         if gpu_count > 1:
             assert isinstance(dd.model.module, RNNClassifier)
         else:
@@ -44,6 +45,7 @@ def test_train_model():
 
 def test_evaluate_model():
     if torch.cuda.is_available():
+        test_df = cudf.DataFrame({"domain": ["cnn.com", "bakercityherald.com"], "type": [1, 0]})
         dataset = DGADataset(test_df)
         dataloader = DataLoader(dataset, batchsize=2)
         # evaluate model
@@ -87,6 +89,7 @@ def test_load_model(tmpdir):
         dd2 = DGADetector()
         dd2.init_model()
         dd2.load_model(str(tmpdir.join("clx_dga.mdl")))
+        gpu_count = torch.cuda.device_count()
         if gpu_count > 1:
             assert isinstance(dd2.model.module, RNNClassifier)
         else:
