@@ -22,6 +22,8 @@ class Loda(object):
         Note: If n_bins=None, the number of breaks is being computed as in:
         L. Birge, Y. Rozenholc, How many bins should be put in a regular
         histogram? 2006.
+        X (cupy.ndarray) : NxD training sample. 
+             
         """
         nrows, n_components = X.shape
         if not self.n_bins:
