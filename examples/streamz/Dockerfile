@@ -70,6 +70,11 @@ RUN source activate rapids && \
     pip install elasticsearch && \
     pip install elasticsearch-async
 
+# slashnext download and install
+RUN source activate rapids && \
+    git clone https://github.com/slashnext/SlashNext-URL-Analysis-and-Enrichment.git /opt/slashnext && \
+    pip install /opt/slashnext/Python\ SDK/src/
+    
 RUN source activate rapids \
   && conda install -n rapids jupyterlab-nvdashboard \
   && jupyter labextension install @jupyter-widgets/jupyterlab-manager dask-labextension jupyterlab-nvdashboard
