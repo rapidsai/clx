@@ -8,7 +8,7 @@ DROPOUT = 0.0
 
 class RNNClassifier(nn.Module):
     def __init__(
-        self, input_size, hidden_size, output_size, n_layers=1, bidirectional=True
+        self, input_size, hidden_size, output_size, n_layers, bidirectional=True
     ):
         super(RNNClassifier, self).__init__()
         self.input_size = input_size

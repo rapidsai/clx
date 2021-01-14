@@ -16,13 +16,13 @@ dependencies:
 - dask-cudf=0.18.*
 - cupy>7.1.0,<9.0.0a0
 - cudatoolkit=10.2
-- pytorch>=1.7
+- pytorch=1.7.0
 - torchvision
 - scikit-learn>=0.21
 - s3fs
 - ipywidgets
 - python-confluent-kafka
-- transformers=3.5.*
+- transformers=4.*
 - seqeval
 - python-whois
 - seaborn

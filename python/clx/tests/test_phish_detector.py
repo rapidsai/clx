@@ -46,7 +46,7 @@ def test_train_model():
         )
         assert isinstance(
             phish_detect._model.module,
-            transformers.modeling_bert.BertForSequenceClassification,
+            transformers.models.bert.modeling_bert.BertForSequenceClassification
         )
 
 
