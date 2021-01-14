@@ -106,9 +106,49 @@ For additional examples, browse our complete [API documentation](https://docs.ra
 ## Getting CLX
 ### Intro
 There are 3 ways to get CLX :
+1. [Quick Start](#quickstart)
 1. [Build CLX Docker Image](#docker)
 1. [Conda Installation](#conda)
 1. [Build from Source](#source)
+
+<a name="quickstart"></a>
+
+## Quick Start
+
+Please see the [Demo Docker Repository](https://hub.docker.com/r/rapidsai/rapidsai-clx-nightly), choosing a tag based on the NVIDIA CUDA version you’re running. This provides a ready to run Docker container with CLX and its dependencies already installed.
+
+Pull image:
+```
+docker pull rapidsai/rapidsai-clx-nightly:0.18-cuda11.0-runtime-ubuntu18.04-py3.7
+```
+
+### Start CLX container
+#### Preferred - Docker CE v19+ and nvidia-container-toolkit
+```aidl
+docker run -it --gpus '"device=0"' \
+  --rm -d \
+  -p 8888:8888 \
+  -p 8787:8787 \
+  -p 8686:8686 \
+  rapidsai/rapidsai-clx-nightly:0.18-cuda11.0-runtime-ubuntu18.04-py3.7
+```
+
+#### Legacy - Docker CE v18 and nvidia-docker2
+```aidl
+docker run -it --runtime=nvidia \
+  --rm -d \
+  -p 8888:8888 \
+  -p 8787:8787 \
+  -p 8686:8686 \
+  rapidsai/rapidsai-clx-nightly:0.18-cuda11.0-runtime-ubuntu18.04-py3.7
+```
+
+### Container Ports
+The following ports are used by the **runtime containers only** (not base containers):
+* 8888 - exposes a JupyterLab notebook server
+* 8786 - exposes a Dask scheduler
+* 8787 - exposes a Dask diagnostic web server
+
 
 <a name="docker"></a>
 
@@ -125,7 +165,7 @@ Prerequisites
 Pull the RAPIDS image suitable to your environment and build CLX image. Please see the [rapidsai-dev-nightly](https://hub.docker.com/r/rapidsai/rapidsai-dev-nightly) Docker repository, choosing a tag based on the NVIDIA CUDA version you’re running. More information on getting started with RAPIDS can be found [here](https://rapids.ai/start.html).
 
 ```aidl
-docker pull rapidsai/rapidsai-dev-nightly:0.15-cuda10.1-devel-ubuntu18.04-py3.7
+docker pull rapidsai/rapidsai-dev-nightly:0.18-cuda10.1-devel-ubuntu18.04-py3.7
 docker build -t clx:latest .
 ```
 
@@ -135,7 +175,7 @@ Start the container and the notebook server. There are multiple ways to do this,
 
 #### Preferred - Docker CE v19+ and nvidia-container-toolkit
 ```aidl
-docker run  --gpus '"device=0"' \
+docker run -it --gpus '"device=0"' \
   --rm -d \
   -p 8888:8888 \
   -p 8787:8787 \
@@ -145,7 +185,7 @@ docker run  --gpus '"device=0"' \
 
 #### Legacy - Docker CE v18 and nvidia-docker2
 ```aidl
-docker run --runtime=nvidia \
+docker run -it --runtime=nvidia \
   --rm -d \
   -p 8888:8888 \
   -p 8787:8787 \
@@ -164,10 +204,31 @@ The container will include scripts for your convenience to start and stop Jupyte
 
 ### Docker Container with SIEM Integration
 
-If you want a CLX container with SIEM integration (including data ingest), follow the steps above to build the CLX image. Then use `docker-compose` to start multiple containers running CLX, Kafka, and Zookeeper. 
+The following steps show how to use `docker-compose` create a CLX environment ready for SIEM integration (including data ingest). We will be using `docker-compose` to start multiple containers run CLX, Kafak and Zookeeper.
 
-```aidl
+First, make sure to have the following installed:
+
+* [Docker Compose 1.27.4](https://docs.docker.com/compose/install/)
+* [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#install-guide)
+* [nvidia-container-runtime](https://github.com/NVIDIA/nvidia-container-runtime/)
+
+Add the following to `/etc/docker/daemon.json` if not already there:
+```
+runtimes": {
+        "nvidia": {
+                "path": "/usr/bin/nvidia-container-runtime",
+                "runtimeArgs": []
+        }
+}
+```
+Run the following to start your containers. Modify port mappings in `docker-compose.yml` if there are port conflicts.
+```
 docker-compose up
+```
+By default, all GPUs in your system will visible to your CLX container. To choose which GPUs you want visible, you can add the following to the `clx` section of your `docker-compose.yml`:
+```
+environment:
+      - NVIDIA_VISIBLE_DEVICES=0,1
 ```
 
 <a name="conda"></a>
