@@ -113,7 +113,7 @@ There are 3 ways to get CLX :
 
 <a name="quickstart"></a>
 
-## Quick Start
+### Quick Start
 
 Please see the [Demo Docker Repository](https://hub.docker.com/r/rapidsai/rapidsai-clx-nightly), choosing a tag based on the NVIDIA CUDA version you’re running. This provides a ready to run Docker container with CLX and its dependencies already installed.
 
@@ -122,8 +122,8 @@ Pull image:
 docker pull rapidsai/rapidsai-clx-nightly:0.18-cuda11.0-runtime-ubuntu18.04-py3.7
 ```
 
-### Start CLX container
-#### Preferred - Docker CE v19+ and nvidia-container-toolkit
+#### Start CLX container
+##### Preferred - Docker CE v19+ and nvidia-container-toolkit
 ```aidl
 docker run -it --gpus '"device=0"' \
   --rm -d \
@@ -133,7 +133,7 @@ docker run -it --gpus '"device=0"' \
   rapidsai/rapidsai-clx-nightly:0.18-cuda11.0-runtime-ubuntu18.04-py3.7
 ```
 
-#### Legacy - Docker CE v18 and nvidia-docker2
+##### Legacy - Docker CE v18 and nvidia-docker2
 ```aidl
 docker run -it --runtime=nvidia \
   --rm -d \
@@ -143,7 +143,7 @@ docker run -it --runtime=nvidia \
   rapidsai/rapidsai-clx-nightly:0.18-cuda11.0-runtime-ubuntu18.04-py3.7
 ```
 
-### Container Ports
+#### Container Ports
 The following ports are used by the **runtime containers only** (not base containers):
 * 8888 - exposes a JupyterLab notebook server
 * 8786 - exposes a Dask scheduler
@@ -152,7 +152,7 @@ The following ports are used by the **runtime containers only** (not base contai
 
 <a name="docker"></a>
 
-## Build CLX Docker Image
+### Build CLX Docker Image
 
 Prerequisites
 
@@ -169,11 +169,11 @@ docker pull rapidsai/rapidsai-dev-nightly:0.18-cuda10.1-devel-ubuntu18.04-py3.7
 docker build -t clx:latest .
 ```
 
-### Docker Container without SIEM Integration
+#### Docker Container without SIEM Integration
 
 Start the container and the notebook server. There are multiple ways to do this, depending on what version of Docker you have.
 
-#### Preferred - Docker CE v19+ and nvidia-container-toolkit
+##### Preferred - Docker CE v19+ and nvidia-container-toolkit
 ```aidl
 docker run -it --gpus '"device=0"' \
   --rm -d \
@@ -183,7 +183,7 @@ docker run -it --gpus '"device=0"' \
   clx:latest
 ```
 
-#### Legacy - Docker CE v18 and nvidia-docker2
+##### Legacy - Docker CE v18 and nvidia-docker2
 ```aidl
 docker run -it --runtime=nvidia \
   --rm -d \
@@ -202,7 +202,7 @@ The container will include scripts for your convenience to start and stop Jupyte
 /rapids/utils/stop_jupyter.sh
 ```
 
-### Docker Container with SIEM Integration
+#### Docker Container with SIEM Integration
 
 The following steps show how to use `docker-compose` to create a CLX environment ready for SIEM integration. We will be using `docker-compose` to start multiple containers running CLX, Kafka and Zookeeper.
 
@@ -233,7 +233,7 @@ environment:
 
 <a name="conda"></a>
 
-## Conda Install 
+### Conda Install 
 It is easy to install CLX using conda. You can get a minimal conda installation with Miniconda or get the full installation with Anaconda.
 
 Install and update CLX using the conda command:
@@ -244,9 +244,9 @@ conda install -c rapidsai-nightly -c nvidia -c pytorch -c conda-forge -c default
 
 <a name="source"></a>
 
-## Building from Source and Contributing
+### Building from Source and Contributing
 
 For contributing guildelines please reference our [guide for contributing](CONTRIBUTING.md).
 
-## Documentation
+### Documentation
 Python API documentation can be found [here](https://docs.rapids.ai/api) or generated from [docs](docs) directory.
