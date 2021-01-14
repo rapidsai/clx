@@ -225,7 +225,7 @@ Run the following to start your containers. Modify port mappings in `docker-comp
 ```
 docker-compose up
 ```
-By default, all GPUs in your system will visible to your CLX container. To choose which GPUs you want visible, you can add the following to the `clx` section of your `docker-compose.yml`:
+By default, all GPUs in your system will be visible to your CLX container. To choose which GPUs you want visible, you can add the following to the `clx` section of your `docker-compose.yml`:
 ```
 environment:
       - NVIDIA_VISIBLE_DEVICES=0,1
