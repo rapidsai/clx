@@ -204,7 +204,7 @@ The container will include scripts for your convenience to start and stop Jupyte
 
 ### Docker Container with SIEM Integration
 
-The following steps show how to use `docker-compose` create a CLX environment ready for SIEM integration (including data ingest). We will be using `docker-compose` to start multiple containers run CLX, Kafak and Zookeeper.
+The following steps show how to use `docker-compose` create a CLX environment ready for SIEM integration (including data ingest). We will be using `docker-compose` to start multiple containers running CLX, Kafka and Zookeeper.
 
 First, make sure to have the following installed:
 
