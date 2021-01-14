@@ -26,6 +26,7 @@ class SlashNextClient(object):
         if snx_ir_workspace is not None:
             if not os.path.exists(snx_ir_workspace):
                 try:
+                    print('Creating directory {}'.format(snx_ir_workspace))
                     os.makedirs(snx_ir_workspace)
                 except Exception as error:
                     raise Exception("Error while creating workspace: " + repr(error))
@@ -39,6 +40,16 @@ class SlashNextClient(object):
     def verify_connection(self):
         """
         Verify SlashNext cloud database connection.
+        
+        Examples
+        --------
+        >>> from clx.osi.slashnext import SlashNextClient
+        >>> api_key = 'slashnext_cloud_apikey'
+        >>> snx_ir_workspace_dir = 'snx_ir_workspace'
+        >>> slashnext = SlashNextClient(api_key, snx_ir_workspace_dir)
+        >>> slashnext.verify_connection()
+        Successfully connected to SlashNext cloud.
+        'success'
         """
         status, details = self.conn.test()
         if status == "ok":
@@ -72,6 +83,16 @@ class SlashNextClient(object):
         :type host: str
         :return Query response as list.
         :rtype: list
+        
+        Examples
+        --------
+        >>> from clx.osi.slashnext import SlashNextClient
+        >>> api_key = 'slashnext_cloud_apikey'
+        >>> snx_ir_workspace_dir = 'snx_ir_workspace'
+        >>> slashnext = SlashNextClient(api_key, snx_ir_workspace_dir)
+        >>> response_list = slashnext.host_reputation('google.com')
+        >>> type(response_list[0])
+        <class 'dict'>
         """
         command = "slashnext-host-reputation host={}".format(host)
         try:
@@ -86,6 +107,16 @@ class SlashNextClient(object):
         :type host: str
         :return Query response as list.
         :rtype: list
+        
+        Examples
+        --------
+        >>> from clx.osi.slashnext import SlashNextClient
+        >>> api_key = 'slashnext_cloud_apikey'
+        >>> snx_ir_workspace_dir = 'snx_ir_workspace'
+        >>> slashnext = SlashNextClient(api_key, snx_ir_workspace_dir)
+        >>> response_list = slashnext.host_report('google.com')
+        >>> type(response_list[0])
+        <class 'dict'>
         """
         command = "slashnext-host-report host={}".format(host)
         try:
@@ -102,6 +133,16 @@ class SlashNextClient(object):
         :type limit: int
         :return Query response as list.
         :rtype: list
+        
+        Examples
+        --------
+        >>> from clx.osi.slashnext import SlashNextClient
+        >>> api_key = 'slashnext_cloud_apikey'
+        >>> snx_ir_workspace_dir = 'snx_ir_workspace'
+        >>> slashnext = SlashNextClient(api_key, snx_ir_workspace_dir)
+        >>> response_list = slashnext.host_urls('google.com', limit=1)
+        >>> type(response_list[0])
+        <class 'dict'>
         """
         command = "slashnext-host-urls host={} limit={}".format(host, limit)
         try:
@@ -118,6 +159,16 @@ class SlashNextClient(object):
         :type extended_info: boolean
         :return Query response as list.
         :rtype: list
+        
+        Examples
+        --------
+        >>> from clx.osi.slashnext import SlashNextClient
+        >>> api_key = 'slashnext_cloud_apikey'
+        >>> snx_ir_workspace_dir = 'snx_ir_workspace'
+        >>> slashnext = SlashNextClient(api_key, snx_ir_workspace_dir)
+        >>> response_list = slashnext.url_scan('http://ajeetenterprises.in/js/kbrad/drive/index.php', extended_info=False)
+        >>> type(response_list[0])
+        <class 'dict'>
         """
         command = "slashnext-url-scan url={} extended_info={}".format(
             url, str(extended_info).lower()
@@ -138,6 +189,16 @@ class SlashNextClient(object):
         :type timeout: int
         :return Query response as list.
         :rtype: list
+        
+        Examples
+        --------
+        >>> from clx.osi.slashnext import SlashNextClient
+        >>> api_key = 'slashnext_cloud_apikey'
+        >>> snx_ir_workspace_dir = 'snx_ir_workspace'
+        >>> slashnext = SlashNextClient(api_key, snx_ir_workspace_dir)
+        >>> response_list = slashnext.url_scan_sync('http://ajeetenterprises.in/js/kbrad/drive/index.php', extended_info=False, timeout=10)
+        >>> type(response_list[0])
+        <class 'dict'>
         """
         command = "slashnext-url-scan-sync url={} extended_info={} timeout={}".format(
             url, str(extended_info).lower(), timeout
@@ -156,6 +217,16 @@ class SlashNextClient(object):
         :type extended_info: boolean
         :return Query response as list.
         :rtype: list
+        
+        Examples
+        --------
+        >>> from clx.osi.slashnext import SlashNextClient
+        >>> api_key = 'slashnext_cloud_apikey'
+        >>> snx_ir_workspace_dir = 'snx_ir_workspace'
+        >>> slashnext = SlashNextClient(api_key, snx_ir_workspace_dir)
+        >>> response_list = slashnext.scan_report('2-ba57-755a7458c8a3', extended_info=False)
+        >>> type(response_list[0])
+        <class 'dict'>
         """
         command = "slashnext-scan-report scanid={} extended_info={}".format(
             scanid, str(extended_info).lower()
@@ -174,6 +245,16 @@ class SlashNextClient(object):
         :type resolution: str
         :return Query response as list.
         :rtype: list
+        
+        Examples
+        --------
+        >>> from clx.osi.slashnext import SlashNextClient
+        >>> api_key = 'slashnext_cloud_apikey'
+        >>> snx_ir_workspace_dir = 'snx_ir_workspace'
+        >>> slashnext = SlashNextClient(api_key, snx_ir_workspace_dir)
+        >>> response_list = slashnext.download_screenshot('2-ba57-755a7458c8a3')
+        >>> type(response_list[0])
+        <class 'dict'>
         """
         command = "slashnext-download-screenshot scanid={} resolution={}".format(
             scanid, resolution.lower()
@@ -190,6 +271,16 @@ class SlashNextClient(object):
         :type scanid: str
         :return Query response as list.
         :rtype: list
+        
+        Examples
+        --------
+        >>> from clx.osi.slashnext import SlashNextClient
+        >>> api_key = 'slashnext_cloud_apikey'
+        >>> snx_ir_workspace_dir = 'snx_ir_workspace'
+        >>> slashnext = SlashNextClient(api_key, snx_ir_workspace_dir)
+        >>> response_list = slashnext.download_html('2-ba57-755a7458c8a3')
+        >>> type(response_list[0])
+        <class 'dict'>
         """
         command = "slashnext-download-html scanid={}".format(scanid)
         try:
@@ -204,6 +295,16 @@ class SlashNextClient(object):
         :type scanid: str
         :return Query response as list.
         :rtype: list
+        
+        Examples
+        --------
+        >>> from clx.osi.slashnext import SlashNextClient
+        >>> api_key = 'slashnext_cloud_apikey'
+        >>> snx_ir_workspace_dir = 'snx_ir_workspace'
+        >>> slashnext = SlashNextClient(api_key, snx_ir_workspace_dir)
+        >>> response_list = slashnext.download_text('2-ba57-755a7458c8a3')
+        >>> type(response_list[0])
+        <class 'dict'>
         """
         command = "slashnext-download-text scanid={}".format(scanid)
         try:
@@ -216,6 +317,16 @@ class SlashNextClient(object):
         Find information about your API quota, like current usage, quota left etc.
         :return Query response as list.
         :rtype: list
+        
+        Examples
+        --------
+        >>> from clx.osi.slashnext import SlashNextClient
+        >>> api_key = 'slashnext_cloud_apikey'
+        >>> snx_ir_workspace_dir = 'snx_ir_workspace'
+        >>> slashnext = SlashNextClient(api_key, snx_ir_workspace_dir)
+        >>> response_list = slashnext.api_quota()
+        >>> type(response_list[0])
+        <class 'dict'>
         """
         command = "slashnext-api-quota"
         try:

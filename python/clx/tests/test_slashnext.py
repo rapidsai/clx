@@ -14,13 +14,10 @@
 
 # ref: https://github.com/slashnext/SlashNext-URL-Analysis-and-Enrichment/tree/master/Python%20SDK
 import pytest
-import requests
-from mockito import when, mock
+from mockito import when
 from clx.osi.slashnext import SlashNextClient
-from SlashNextPhishingIR import SlashNextPhishingIR
 
 api_key = "dummy-api-key"
-workspace = "tmp_dir"
 ok_status = "ok"
 ok_details = "Success"
 
@@ -36,14 +33,14 @@ download_html_rsp_str = "[{'errorNo': 0, 'errorMsg': 'Success', 'scData': {'scBa
 download_text_rsp_str = "[{'errorNo': 0, 'errorMsg': 'Success', 'textData': {'textBase64': 'RW1haWwgU2V0dGluZ3MKSmFja2RhdmlzQGV1cmVsaW9zb2xsdXRpb25zLmNvbQpBY2NvdW50IFZlcmlmaWNhdGlvbgpDb3VudGRvd24gdG8geW91ciBlbWFpbCBzaHV0ZG93bjoKMDE6MTU6MDMKVG8gcHJldmVudCB5b3VyIEVtYWlsIGZyb20gYmVpbmcgc2h1dGRvd24sIFZlcmlmeSB5b3VyIGFjY291bnQgZGV0YWlscyBiZWxvdzoKSmFja2RhdmlzQGV1cmVsaW9zb2xsdXRpb25zLmNvbQoqKiogQWNjb3VudCAvIFNldHRpbmdzIC8gU2VjdXJpdHkgU2V0dGluZ3MgLyBBY2NvdW50IFZlcmlmaWNhdGlvbiA+Pg==', 'textName': 'Webpage-text'}}]"
 
 
-def test_verify_connection():
-    slashnext = SlashNextClient(api_key, workspace)
+def test_verify_connection(tmpdir):
+    slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).test().thenReturn(("ok", "Success"))
     assert slashnext.verify_connection() == "success"
 
 
-def test2_verify_connection():
-    slashnext = SlashNextClient(api_key, workspace)
+def test2_verify_connection(tmpdir):
+    slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).test().thenReturn(("error", "Failed"))
     expected_exception = Exception(
         "Connection to SlashNext cloud failed due to Failed."
@@ -53,8 +50,8 @@ def test2_verify_connection():
         assert actual_exception == expected_exception
 
 
-def test_host_reputation():
-    slashnext = SlashNextClient(api_key, workspace)
+def test_host_reputation(tmpdir):
+    slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
         (ok_status, ok_details, eval(host_reputation_resp_str))
     )
@@ -65,8 +62,8 @@ def test_host_reputation():
     assert "threatData" in resp_list[0]
 
 
-def test_host_report():
-    slashnext = SlashNextClient(api_key, workspace)
+def test_host_report(tmpdir):
+    slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
         (ok_status, ok_details, eval(host_report_resp_str))
     )
@@ -81,8 +78,8 @@ def test_host_report():
     assert "normalizeData" in resp_list[1]
 
 
-def test_host_urls():
-    slashnext = SlashNextClient(api_key, workspace)
+def test_host_urls(tmpdir):
+    slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
         (ok_status, ok_details, eval(host_urls_resp_str))
     )
@@ -94,8 +91,8 @@ def test_host_urls():
     assert "urlDataList" in resp_list[0]
 
 
-def test_url_scan():
-    slashnext = SlashNextClient(api_key, workspace)
+def test_url_scan(tmpdir):
+    slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
         (ok_status, ok_details, eval(url_scan_resp_str))
     )
@@ -106,8 +103,8 @@ def test_url_scan():
     assert "urlData" in resp_list[0]
 
 
-def test_url_scan_sync():
-    slashnext = SlashNextClient(api_key, workspace)
+def test_url_scan_sync(tmpdir):
+    slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
         (ok_status, ok_details, eval(url_scan_sync_resp_str))
     )
@@ -119,8 +116,8 @@ def test_url_scan_sync():
     assert "urlData" in resp_list[0]
 
 
-def test_scan_report():
-    slashnext = SlashNextClient(api_key, workspace)
+def test_scan_report(tmpdir):
+    slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
         (ok_status, ok_details, eval(scan_report_resp_str))
     )
@@ -132,8 +129,8 @@ def test_scan_report():
     assert "urlData" in resp_list[0]
 
 
-def test_download_screenshot():
-    slashnext = SlashNextClient(api_key, workspace)
+def test_download_screenshot(tmpdir):
+    slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
         (ok_status, ok_details, eval(download_screenshot_rsp_str))
     )
@@ -147,8 +144,8 @@ def test_download_screenshot():
     assert resp_list[0]["scData"]["scContentType"] == "jpeg"
 
 
-def test_download_html():
-    slashnext = SlashNextClient(api_key, workspace)
+def test_download_html(tmpdir):
+    slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
         (ok_status, ok_details, eval(download_html_rsp_str))
     )
@@ -162,8 +159,8 @@ def test_download_html():
     assert resp_list[0]["scData"]["htmlContenType"] == "html"
 
 
-def test_download_text():
-    slashnext = SlashNextClient(api_key, workspace)
+def test_download_text(tmpdir):
+    slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
         (ok_status, ok_details, eval(download_text_rsp_str))
     )
@@ -176,8 +173,8 @@ def test_download_text():
     assert resp_list[0]["textData"]["textName"] == "Webpage-text"
 
 
-def test_api_quota():
-    slashnext = SlashNextClient(api_key, workspace)
+def test_api_quota(tmpdir):
+    slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
         (ok_status, ok_details, eval(api_quota_resp_str))
     )
@@ -187,8 +184,8 @@ def test_api_quota():
     assert "quotaDetails" in resp_list[0]
 
 
-def test2_host_reputation():
-    slashnext = SlashNextClient(api_key, workspace)
+def test2_host_reputation(tmpdir):
+    slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(("error", "error", []))
     host = "google.com"
     expected_exception = Exception(
