@@ -105,7 +105,7 @@ For additional examples, browse our complete [API documentation](https://docs.ra
 
 ## Getting CLX
 ### Intro
-There are 3 ways to get CLX :
+There are 4 ways to get CLX :
 1. [Quick Start](#quickstart)
 1. [Build CLX Docker Image](#docker)
 1. [Conda Installation](#conda)
