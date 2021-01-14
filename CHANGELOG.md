@@ -1,6 +1,7 @@
 # clx 0.18.0 (Date TBD)
 
 ## New Features
+- PR #328 SlashNext API integration
 
 ## Improvements
 - PR #303 CLX sequence classifier

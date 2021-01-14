@@ -26,7 +26,7 @@ class SlashNextClient(object):
         if snx_ir_workspace is not None:
             if not os.path.exists(snx_ir_workspace):
                 try:
-                    print('Creating directory {}'.format(snx_ir_workspace))
+                    print("Creating directory {}".format(snx_ir_workspace))
                     os.makedirs(snx_ir_workspace)
                 except Exception as error:
                     raise Exception("Error while creating workspace: " + repr(error))
@@ -40,7 +40,6 @@ class SlashNextClient(object):
     def verify_connection(self):
         """
         Verify SlashNext cloud database connection.
-        
         Examples
         --------
         >>> from clx.osi.slashnext import SlashNextClient
@@ -83,7 +82,7 @@ class SlashNextClient(object):
         :type host: str
         :return Query response as list.
         :rtype: list
-        
+
         Examples
         --------
         >>> from clx.osi.slashnext import SlashNextClient
@@ -107,7 +106,7 @@ class SlashNextClient(object):
         :type host: str
         :return Query response as list.
         :rtype: list
-        
+
         Examples
         --------
         >>> from clx.osi.slashnext import SlashNextClient
@@ -133,7 +132,7 @@ class SlashNextClient(object):
         :type limit: int
         :return Query response as list.
         :rtype: list
-        
+
         Examples
         --------
         >>> from clx.osi.slashnext import SlashNextClient
@@ -159,7 +158,7 @@ class SlashNextClient(object):
         :type extended_info: boolean
         :return Query response as list.
         :rtype: list
-        
+
         Examples
         --------
         >>> from clx.osi.slashnext import SlashNextClient
@@ -189,7 +188,7 @@ class SlashNextClient(object):
         :type timeout: int
         :return Query response as list.
         :rtype: list
-        
+
         Examples
         --------
         >>> from clx.osi.slashnext import SlashNextClient
@@ -217,7 +216,7 @@ class SlashNextClient(object):
         :type extended_info: boolean
         :return Query response as list.
         :rtype: list
-        
+
         Examples
         --------
         >>> from clx.osi.slashnext import SlashNextClient
@@ -245,7 +244,7 @@ class SlashNextClient(object):
         :type resolution: str
         :return Query response as list.
         :rtype: list
-        
+
         Examples
         --------
         >>> from clx.osi.slashnext import SlashNextClient
@@ -271,7 +270,7 @@ class SlashNextClient(object):
         :type scanid: str
         :return Query response as list.
         :rtype: list
-        
+
         Examples
         --------
         >>> from clx.osi.slashnext import SlashNextClient
@@ -295,7 +294,7 @@ class SlashNextClient(object):
         :type scanid: str
         :return Query response as list.
         :rtype: list
-        
+
         Examples
         --------
         >>> from clx.osi.slashnext import SlashNextClient
@@ -317,7 +316,7 @@ class SlashNextClient(object):
         Find information about your API quota, like current usage, quota left etc.
         :return Query response as list.
         :rtype: list
-        
+
         Examples
         --------
         >>> from clx.osi.slashnext import SlashNextClient
