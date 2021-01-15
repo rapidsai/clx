@@ -86,13 +86,6 @@ $WORKSPACE/build.sh clean clx
 conda config --set ssl_verify False
 
 ################################################################################
-# BUILD - Build libclx and clx from source
-################################################################################
-
-gpuci_logger "Build libclx and clx"
-$WORKSPACE/build.sh clean libclx clx
-
-################################################################################
 # TEST - Test python package
 ################################################################################
 set +e -Eo pipefail
