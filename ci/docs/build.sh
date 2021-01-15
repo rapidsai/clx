@@ -35,6 +35,7 @@ conda install --freeze-installed -c rapidsai-nightly -c rapidsai -c nvidia -c py
     "pytorch>=1.7" torchvision "transformers=3.5.*" requests yaml python-confluent-kafka python-whois markdown beautifulsoup4 jq
     
 pip install mockito
+pip install "git+https://github.com/slashnext/SlashNext-URL-Analysis-and-Enrichment.git#egg=slashnext-phishing-ir&subdirectory=Python SDK/src"
 pip install cupy-cuda${CUDA_SHORT}
 
 logger "Check versions..."

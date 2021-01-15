@@ -68,7 +68,8 @@ RUN source activate rapids && \
     pip install mockito && \
     pip install wget && \
     pip install elasticsearch && \
-    pip install elasticsearch-async
+    pip install elasticsearch-async && \
+    pip install "git+https://github.com/slashnext/SlashNext-URL-Analysis-and-Enrichment.git#egg=slashnext-phishing-ir&subdirectory=Python SDK/src"
 
 # slashnext download and install
 RUN source activate rapids && \

@@ -18,12 +18,8 @@ RUN source activate rapids && \
     conda install -c pytorch "pytorch=1.7.0" torchvision "cudf_kafka=${RAPIDS_VERSION}" "custreamz=${RAPIDS_VERSION}" "scikit-learn>=0.21" "nodejs>=12" ipywidgets python-confluent-kafka "transformers=4.*" "seqeval=0.0.12" python-whois seaborn requests matplotlib pytest jupyterlab && \
     pip install "git+https://github.com/rapidsai/cudatashader.git" && \
     pip install mockito && \
-    pip install wget
-
-# slashnext download and install
-RUN source activate rapids && \
-    git clone https://github.com/slashnext/SlashNext-URL-Analysis-and-Enrichment.git /opt/slashnext && \
-    pip install /opt/slashnext/Python\ SDK/src/
+    pip install wget && \
+    pip install "git+https://github.com/slashnext/SlashNext-URL-Analysis-and-Enrichment.git#egg=slashnext-phishing-ir&subdirectory=Python SDK/src"
     
 RUN source activate rapids \
   && conda install -n rapids jupyterlab-nvdashboard \
