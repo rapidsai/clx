@@ -59,6 +59,12 @@ conda install -y -c pytorch -c gwerbin \
     "matplotlib" \
     "faker"
 
+# https://docs.rapids.ai/maintainers/depmgmt/ 
+# gpuci_conda_retry remove --force rapids-build-env rapids-notebook-env
+# gpuci_conda_retry install "your-pkg=1.0.0"
+gpuci_conda_retry remove --force rapids-build-env rapids-notebook-env
+gpuci_conda_retry install "libgcc-ng=9.3.0" "libstdcxx-ng=9.3.0" "libgfortran-ng=9.3.0"
+
 logger "pip install git+https://github.com/rapidsai/cudatashader.git"
 pip install "git+https://github.com/rapidsai/cudatashader.git"
 logger "pip install mockito"
