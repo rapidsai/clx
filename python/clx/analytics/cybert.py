@@ -63,28 +63,25 @@ class Cybert:
         """
         Load cybert model.
 
-        :param model_filepath: Filepath of the model (.pth or .bin) to
-        be loaded
+        :param model_filepath: Filepath of the model (.pth or .bin) to be loaded
         :type model_filepath: str
-        :param label_map_filepath: Config file (.json) to be
-        used
-        :type label_map_filepath: str
+        :param config_filepath: Config file (.json) to be used
+        :type config_filepath: str
 
         Examples
         --------
         >>> from clx.analytics.cybert import Cybert
         >>> cyparse = Cybert()
-        >>> cyparse.load_model('/path/to/model.pth', '/path/to/config.json')
+        >>> cyparse.load_model('/path/to/model.bin', '/path/to/config.json')
         """
+
         with open(config_filepath) as f:
             config = json.load(f)
         model_arch = config["architectures"][0]
         self._label_map = {int(k): v for k, v in config["id2label"].items()}
-        model_state_dict = torch.load(model_filepath)
         self._model = ARCH_MAPPING[model_arch].from_pretrained(
-            MODEL_MAPPING[model_arch],
-            state_dict=model_state_dict,
-            num_labels=len(self._label_map),
+            model_filepath,
+            config=config_filepath,
         )
         self._model.cuda()
         self._model.eval()
@@ -116,15 +113,12 @@ class Cybert:
         raw_data_col = raw_data_col.str.replace("\\n", " ")
 
         byte_count = raw_data_col.str.byte_count()
-        max_num_chars = byte_count.sum()
         max_rows_tensor = int((byte_count / 120).ceil().sum())
 
         input_ids, att_mask, meta_data = raw_data_col.str.subword_tokenize(
             self._hashpath,
             128,
             116,
-            max_num_strings=len(raw_data_col),
-            max_num_chars=max_num_chars,
             max_rows_tensor=max_rows_tensor,
             do_lower=False,
             do_truncate=False,

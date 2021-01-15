@@ -10,19 +10,19 @@ channels:
 - auto
 dependencies:
 - numpy>=1.17.3,<1.19.0
-- cugraph=0.17.*
-- cuml=0.17.*
-- cuxfilter=0.17.*
-- dask-cudf=0.17.*
+- cugraph=0.18.*
+- cuml=0.18.*
+- cuxfilter=0.18.*
+- dask-cudf=0.18.*
 - cupy>7.1.0,<9.0.0a0
 - cudatoolkit=10.1
-- pytorch>=1.7
+- pytorch=1.7.0
 - torchvision
 - scikit-learn>=0.21
 - s3fs
 - ipywidgets
 - python-confluent-kafka
-- transformers
+- transformers=4.*
 - seqeval
 - python-whois
 - seaborn

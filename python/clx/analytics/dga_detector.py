@@ -1,10 +1,14 @@
 import cudf
 import torch
 import logging
-from clx.analytics import detector_utils as du
+from tqdm import trange
 from torch.utils.dlpack import from_dlpack
+from clx.utils.data import utils
 from clx.analytics.detector import Detector
+from clx.utils.data.dataloader import DataLoader
+from clx.analytics.dga_dataset import DGADataset
 from clx.analytics.model.rnn_classifier import RNNClassifier
+from cuml.preprocessing.model_selection import train_test_split
 
 log = logging.getLogger(__name__)
 
@@ -63,100 +67,116 @@ class DGADetector(Detector):
         }
         super()._save_model(checkpoint, file_path)
 
-    def train_model(self, detector_dataset):
+    def train_model(
+        self, train_data, labels, batch_size=1000, epochs=5, train_size=0.7
+    ):
         """This function is used for training RNNClassifier model with a given training dataset. It returns total loss to determine model prediction accuracy.
-        :param detector_dataset: Instance holds preprocessed data
-        :type detector_dataset: DetectorDataset
-        :return: Total loss
-        :rtype: int
+        :param train_data: Training data
+        :type train_data: cudf.Series
+        :param labels: labels data
+        :type labels: cudf.Series
+        :param batch_size: batch size
+        :type batch_size: int
+        :param epochs: Number of epochs for training
+        :type epochs: int
+        :param train_size: Training size for splitting training and test data
+        :type train_size: int
 
         Examples
         --------
         >>> from clx.analytics.dga_detector import DGADetector
-        >>> partitioned_dfs = ... # partitioned_dfs = [df1, df2, ...] represents training dataset
         >>> dd = DGADetector()
         >>> dd.init_model()
-        >>> dd.train_model(detector_dataset)
+        >>> dd.train_model(train_data, labels)
         1.5728906989097595
         """
-        total_loss = 0
-        i = 0
-        for df in detector_dataset.partitioned_dfs:
-            domains_len = df["type"].count()
-            if domains_len > 0:
-                types_tensor = self.__create_types_tensor(df["type"])
-                df = df.drop(["type", "domain"], axis=1)
-                input, seq_lengths = self.__create_variables(df)
-                model_result = self.model(input, seq_lengths)
-                loss = self.__get_loss(model_result, types_tensor)
-                total_loss += loss
-                i = i + 1
-                if i % 10 == 0:
-                    print(
-                        "[{}/{} ({:.0f}%)]\tLoss: {:.2f}".format(
-                            i * domains_len,
-                            detector_dataset.dataset_len,
-                            100.0 * i * domains_len / detector_dataset.dataset_len,
-                            total_loss / i * domains_len,
+        train_dataloader, test_dataloader = self._preprocess_data(
+            train_data, labels, batch_size, train_size
+        )
+
+        for _ in trange(epochs, desc="Epoch"):
+            total_loss = 0
+            i = 0
+            for df in train_dataloader.get_chunks():
+                domains_len = df.shape[0]
+                if domains_len > 0:
+                    types_tensor = self._create_types_tensor(df["type"])
+                    df = df.drop(["type", "domain"], axis=1)
+                    input, seq_lengths = self._create_variables(df)
+                    model_result = self.model(input, seq_lengths)
+                    loss = self._get_loss(model_result, types_tensor)
+                    total_loss += loss
+                    i = i + 1
+                    if i % 10 == 0:
+                        print(
+                            "[{}/{} ({:.0f}%)]\tLoss: {:.2f}".format(
+                                i * domains_len,
+                                train_dataloader.dataset_len,
+                                100.0 * i * domains_len / train_dataloader.dataset_len,
+                                total_loss / i * domains_len,
+                            )
                         )
-                    )
-        return total_loss
+            self.evaluate_model(test_dataloader)
 
-    def predict(self, domains):
+    def predict(self, domains, probability=False):
         """This function accepts cudf series of domains as an argument to classify domain names as benign/malicious and returns the learned label for each object in the form of cudf series.
-
         :param domains: List of domains.
         :type domains: cudf.Series
         :return: Predicted results with respect to given domains.
         :rtype: cudf.Series
-
         Examples
         --------
         >>> dd.predict(['nvidia.com', 'dgadomain'])
-        0    0
-        1    1
-        Name: is_dga, dtype: int64
+        0    0.010
+        1    0.924
+        Name: dga_probability, dtype: decimal
         """
         df = cudf.DataFrame({"domain": domains})
         domains_len = df["domain"].count()
-        temp_df = du.str2ascii(df, domains_len)
+        temp_df = utils.str2ascii(df, domains_len)
         # Assigning sorted domains index to return learned labels as per the given input order.
         df.index = temp_df.index
         df["domain"] = temp_df["domain"]
         temp_df = temp_df.drop("domain", axis=1)
-        input, seq_lengths = self.__create_variables(temp_df)
+        input, seq_lengths = self._create_variables(temp_df)
         del temp_df
         model_result = self.model(input, seq_lengths)
-        pred = model_result.data.max(1, keepdim=True)[1]
-        type_ids = pred.view(-1).tolist()
-        df["is_dga"] = type_ids
+        if probability:
+            model_result = model_result[:, 0]
+            preds = torch.sigmoid(model_result)
+            preds = preds.view(-1).tolist()
+            df["preds"] = preds
+        else:
+            preds = model_result.data.max(1, keepdim=True)[1]
+            preds = preds.view(-1).tolist()
+            df["preds"] = preds
         df = df.sort_index()
-        return df["is_dga"]
+        return df["preds"]
 
-    def __create_types_tensor(self, type_series):
+    def _create_types_tensor(self, type_series):
         """Create types tensor variable in the same order of sequence tensor"""
         types = type_series.to_array()
         types_tensor = torch.LongTensor(types)
         if torch.cuda.is_available():
-            types_tensor = self.__set_var2cuda(types_tensor)
+            types_tensor = self._set_var2cuda(types_tensor)
         return types_tensor
 
-    def __create_variables(self, df):
+    def _create_variables(self, df):
         """
         Creates vectorized sequence for given domains and wraps around cuda for parallel processing.
         """
         seq_len_arr = df["len"].to_array()
         df = df.drop("len", axis=1)
         seq_len_tensor = torch.LongTensor(seq_len_arr)
-        seq_tensor = self.__df2tensor(df)
+        seq_tensor = self._df2tensor(df)
         # Return variables
         # DataParallel requires everything to be a Variable
         if torch.cuda.is_available():
-            seq_tensor = self.__set_var2cuda(seq_tensor)
-            seq_len_tensor = self.__set_var2cuda(seq_len_tensor)
+            seq_tensor = self._set_var2cuda(seq_tensor)
+            seq_len_tensor = self._set_var2cuda(seq_len_tensor)
         return seq_tensor, seq_len_tensor
 
-    def __df2tensor(self, ascii_df):
+    def _df2tensor(self, ascii_df):
         """
         Converts gdf -> dlpack tensor -> torch tensor
         """
@@ -164,11 +184,11 @@ class DGADetector(Detector):
         seq_tensor = from_dlpack(dlpack_ascii_tensor).long()
         return seq_tensor
 
-    def evaluate_model(self, detector_dataset):
+    def evaluate_model(self, dataloader):
         """This function evaluates the trained model to verify it's accuracy.
 
-        :param detector_dataset: Instance holds preprocessed data.
-        :type detector_dataset: DetectorDataset
+        :param dataloader: Instance holds preprocessed data.
+        :type dataloader: DataLoader
         :return: Model accuracy
         :rtype: decimal
 
@@ -176,36 +196,59 @@ class DGADetector(Detector):
         --------
         >>> dd = DGADetector()
         >>> dd.init_model()
-        >>> dd.evaluate_model(detector_dataset)
+        >>> dd.evaluate_model(dataloader)
         Evaluating trained model ...
         Test set: Accuracy: 3/4 (0.75)
         """
         log.info("Evaluating trained model ...")
         correct = 0
-        for df in detector_dataset.partitioned_dfs:
-            target = self.__create_types_tensor(df["type"])
+        for df in dataloader.get_chunks():
+            target = self._create_types_tensor(df["type"])
             df = df.drop(["type", "domain"], axis=1)
-            input, seq_lengths = self.__create_variables(df)
+            input, seq_lengths = self._create_variables(df)
             output = self.model(input, seq_lengths)
             pred = output.data.max(1, keepdim=True)[1]
             correct += pred.eq(target.data.view_as(pred)).cpu().sum()
-        accuracy = float(correct) / detector_dataset.dataset_len
+        accuracy = float(correct) / dataloader.dataset_len
         print(
             "Test set: Accuracy: {}/{} ({})\n".format(
-                correct, detector_dataset.dataset_len, accuracy
+                correct, dataloader.dataset_len, accuracy
             )
         )
         return accuracy
 
-    def __get_loss(self, model_result, types_tensor):
+    def _get_loss(self, model_result, types_tensor):
         loss = self.criterion(model_result, types_tensor)
         self.model.zero_grad()
         loss.backward()
         self.optimizer.step()
         return loss.item()
 
-    def __set_var2cuda(self, tensor):
+    def _set_var2cuda(self, tensor):
         """
         Set variable to cuda.
         """
         return tensor.cuda()
+
+    def _preprocess_data(self, train_data, labels, batch_size, train_size):
+        train_gdf = cudf.DataFrame()
+        train_gdf["domain"] = train_data
+        train_gdf["type"] = labels
+        domain_train, domain_test, type_train, type_test = train_test_split(
+            train_gdf, "type", train_size=train_size
+        )
+        test_df = self._create_df(domain_test, type_test)
+        train_df = self._create_df(domain_train, type_train)
+
+        test_dataset = DGADataset(test_df)
+        train_dataset = DGADataset(train_df)
+
+        test_dataloader = DataLoader(test_dataset, batchsize=batch_size)
+        train_dataloader = DataLoader(train_dataset, batchsize=batch_size)
+        return train_dataloader, test_dataloader
+
+    def _create_df(self, domain_df, type_series):
+        df = cudf.DataFrame()
+        df["domain"] = domain_df["domain"].reset_index(drop=True)
+        df["type"] = type_series.reset_index(drop=True)
+        return df
