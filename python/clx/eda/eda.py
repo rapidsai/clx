@@ -34,7 +34,7 @@ class EDA:
 
         Examples
         --------
-        >>> from clx.eda.eda import EDA
+        >>> from clx.eda import EDA
         >>> import cudf
         >>> df = cudf.DataFrame()
         >>> df['a'] = [1,2,3,4]

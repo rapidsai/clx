@@ -19,7 +19,7 @@ import cuxfilter
 import pandas as pd
 import pytest
 
-from clx.eda.eda import EDA
+from clx.eda import EDA
 
 
 @pytest.fixture
