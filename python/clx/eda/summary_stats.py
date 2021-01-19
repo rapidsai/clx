@@ -19,8 +19,7 @@ from clx.eda.analysis import Analysis
 
 class SummaryStatistics(Analysis):
     def __init__(self, dataframe):
-        self.analysis = {}
-        self.analysis = self.generate_analysis(dataframe)
+        super().__init__(dataframe)
 
     def __summary_obj(self, series):
         summary = {}
@@ -32,8 +31,8 @@ class SummaryStatistics(Analysis):
 
     def __summary_bool(self, series):
         summary = {}
-        true_per = (series == True).sum()
-        summary["true_percent"] = str(true_per)
+        true_per = series.value_counts().loc[True]
+        summary["true_percent"] = str(true_per / len(series))
         return summary
 
     def __summary_num(self, series):
@@ -46,19 +45,19 @@ class SummaryStatistics(Analysis):
 
     def __summary_time(self, series):
         summary = {}
-        duration = series._time.max() - series._time.min()
+        duration = series.max() - series.min()
         days = duration.astype("timedelta64[D]").astype(int)
         seconds = duration.astype("timedelta64[s]").astype(int)
         hours = days * 24 + seconds // 3600
         minutes = (seconds % 3600) // 60
         seconds = seconds % 60
-        msg = "\t timespan - {0} days, {1} hours, {2} minutes, {3} seconds".format(
+        msg = "{0} days, {1} hours, {2} minutes, {3} seconds".format(
             days, hours, minutes, seconds
         )
         summary["timespan"] = msg
         return summary
 
-    def generate_analysis(self, dataframe):
+    def _generate_analysis(self, dataframe):
         # This function will receive a dataframe and returns a dictionary of summary statistics
         summary_dict = {}
         for col in dataframe.columns:
@@ -77,7 +76,8 @@ class SummaryStatistics(Analysis):
                 summary_dict[col]["error"] = msg
         return summary_dict
 
-    def get_charts(self, dataframe):
+    def _generate_charts(self, dataframe):
+        """Get barcharts for the summary analysis"""
         charts = []
         for col in dataframe.columns:
             if dataframe[col].dtype == "object":

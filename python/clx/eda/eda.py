@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import json
+import os
 
 import cuxfilter
 from cuxfilter.layouts import feature_and_double_base
@@ -21,39 +22,96 @@ from clx.eda.summary_stats import SummaryStatistics
 
 
 class EDA:
-    modules = {"SummaryStatistics": SummaryStatistics}
+    eda_modules = {"SummaryStatistics": SummaryStatistics}
 
     def __init__(self, dataframe):
+        """
+        An EDA (Exploratory Data Analysis) Object.
+        Parameters
+        ----------
+        :param dataframe: Dataframe to be used for analysis
+        :type dataframe: cudf.DataFrame
+
+        Examples
+        --------
+        >>> from clx.eda.eda import EDA
+        >>> import cudf
+        >>> df = cudf.DataFrame()
+        >>> df['a'] = [1,2,3,4]
+        >>> df['b'] = ['a','b','c','c']
+        >>> df['c'] = [True, False, True, True]
+        >>> df['d'] = cudf.Series(pd.date_range("2000-01-01", periods=3,freq="m"))
+        >>> eda = EDA(df)
+        >>> eda
+            {
+                "SummaryStatistics": {
+                    "a": {
+                        "dtype": "int64",
+                        "summary": {
+                            "unique": "4",
+                            "total": "4"
+                        }
+                    },
+                    "b": {
+                        "dtype": "object",
+                        "summary": {
+                            "unique": "3",
+                            "total": "4"
+                        }
+                    },
+                    "c": {
+                        "dtype": "bool",
+                        "summary": {
+                            "true_percent": "0.75"
+                        }
+                    },
+                    "d": {
+                        "dtype": "datetime64[ns]",
+                        "summary": {
+                            "timespan": "60 days, 2880 hours, 0 minutes, 0 seconds"
+                        }
+                    }
+                }
+            }
+        """
         self.dataframe = dataframe
-        self.module_output = {}
+        self.__module_ref = {}
         self.analysis = {}
-        self.analysis = self.__generate_analysis(dataframe)
+        self.analysis, self.__module_ref = self.__generate_analysis(dataframe)
 
     def __repr__(self):
         return json.dumps(self.analysis, indent=2)
 
     def __generate_analysis(self, dataframe):
-        # For each of the modules, generate the analysis
-        output = {}
-        for key, analysis in self.modules.items():
-            analysis_output = analysis(dataframe)
-            output[key] = analysis_output.analysis
-            self.module_output[key] = analysis_output
-        return output
+        """For each of the modules, generate the analysis"""
+        module_ref = {}
+        analysis_results = {}
+        for key, eda_module in self.eda_modules.items():
+            eda_module_obj = eda_module(dataframe)
+            module_ref[key] = eda_module_obj
+            analysis_results[key] = eda_module_obj.analysis
+        return analysis_results, module_ref
 
-    def save_analysis(self):
-        for key, analysis in self.module_output.items():
-            output_file = key + ".out"
-            print("saving output to", output_file)
-            analysis.save_analysis(output_file)
+    def save_analysis(self, dirpath):
+        """Save analysis output to directory path.
 
-    def cuxfilter_dashboard(self, dataframe):
-        for module in self.module_output.values():
-            c = module.get_charts(dataframe)
-        cux_df = cuxfilter.DataFrame.from_dataframe(dataframe)
+        :param dirpath: Directory path to save analysis output.
+        :type dirpath: str
+        """
+        for key, analysis in self.__module_ref.items():
+            if os.path.isdir(dirpath):
+                output_file = dirpath + "/" + key
+                analysis.save_analysis(output_file)
+
+    def cuxfilter_dashboard(self):
+        """Create cuxfilter dashboard for Exploratory Data Analysis.
+        """
+        for module in self.__module_ref.values():
+            charts = module.charts
+        cux_df = cuxfilter.DataFrame.from_dataframe(self.dataframe)
         return cux_df.dashboard(
-            c,
+            charts,
             layout=feature_and_double_base,
             theme=cuxfilter.themes.light,
-            title="EDA Prototype",
+            title="Exploratory Data Analysis",
         )

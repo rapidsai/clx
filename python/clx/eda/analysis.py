@@ -17,23 +17,37 @@ from abc import ABC, abstractmethod
 
 
 class Analysis(ABC):
-    def __init__(self):
-        self.analysis = {}
+    def __init__(self, dataframe):
+        self._analysis = {}
+        self._charts = []
+        self._analysis = self._generate_analysis(dataframe)
+        self._charts = self._generate_charts(dataframe)
+
+    @property
+    def analysis(self):
+        return self._analysis
+
+    @property
+    def charts(self):
+        return self._charts
 
     @abstractmethod
-    def generate_analysis(self, dataframe):
-        # Returns a dictionary
+    def _generate_analysis(self, dataframe):
+        """Abstract function intended to create a dictionary summarizing analysis results of the dataframe"""
+        pass
+
+    @abstractmethod
+    def _generate_charts(self, dataframe):
+        """Abstract function intended to create a list of cuxfilt"""
         pass
 
     def to_json(self):
         """Get json version of analysis results"""
         return json.dumps(self.analysis, indent=2)
 
-    def save_analysis(self, output_filepath, format="json"):
-        formatted_output = ""
-        if format == "json":
-            formatted_output = self.to_json()
-        else:
-            raise NotImplementedError()
-        with open(output_filepath, "w") as file:
+    def save_analysis(self, output_filepath):
+        """Save analysis to a json file
+        TODO: Expand to other output types"""
+        formatted_output = self.to_json()
+        with open(output_filepath + ".json", "w") as file:
             file.write(formatted_output)
