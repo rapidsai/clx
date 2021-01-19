@@ -4,6 +4,7 @@
 - PR #328 SlashNext API integration
 
 ## Improvements
+- PR #276 Project Flash and gpuCI Scripts Update
 - PR #303 CLX sequence classifier
 - PR #308 CLX streamz workflow updates
 - PR #313 XGBoost training notebook
