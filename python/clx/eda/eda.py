@@ -116,7 +116,7 @@ class EDA:
         """
         for module in self.__module_ref.values():
             charts = module.charts
-        cux_df = cuxfilter.DataFrame.from_dataframe(self.dataframe)
+        cux_df = cuxfilter.DataFrame.from_dataframe(self.__dataframe)
         return cux_df.dashboard(
             charts,
             layout=feature_and_double_base,
