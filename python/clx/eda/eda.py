@@ -36,6 +36,7 @@ class EDA:
         --------
         >>> from clx.eda import EDA
         >>> import cudf
+        >>> import pandas as pd
         >>> df = cudf.DataFrame()
         >>> df['a'] = [1,2,3,4]
         >>> df['b'] = ['a','b','c','c']
