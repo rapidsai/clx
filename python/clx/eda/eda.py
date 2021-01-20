@@ -74,10 +74,18 @@ class EDA:
                 }
             }
         """
-        self.dataframe = dataframe
+        self.__dataframe = dataframe
         self.__module_ref = {}
-        self.analysis = {}
-        self.analysis, self.__module_ref = self.__generate_analysis(dataframe)
+        self.__analysis = {}
+        self.__analysis, self.__module_ref = self.__generate_analysis(dataframe)
+
+    @property
+    def analysis(self):
+        return self.__analysis
+
+    @property
+    def dataframe(self):
+        return self.__dataframe
 
     def __repr__(self):
         return json.dumps(self.analysis, indent=2)
