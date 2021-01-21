@@ -21,6 +21,12 @@ from os.path import abspath, basename
 
 
 class VirusTotalClient(object):
+    """
+    Wrapper class to query VirusTotal database.
+
+    :param apikey: API key
+    :param proxies: proxies
+    """
     def __init__(self, api_key=None, proxies=None):
         if api_key is None:
             raise ValueError("Virus Total API key is None.")
@@ -44,8 +50,7 @@ class VirusTotalClient(object):
         """
         This function allows you to send a file for scanning with VirusTotal.
         Before performing submissions it would be nice to retrieve the latest report on the file.
-        File size limit is 32MB, in order to submit files up to 200MB in size it is mandatory to request a special upload URL
-        using the /file/scan/upload_url endpoint.
+        File size limit is 32MB, in order to submit files up to 200MB in size it is mandatory to use `scan_big_file` feature
         :param file: File to be scanned
         :type file: str
         :return: Response
@@ -76,7 +81,7 @@ class VirusTotalClient(object):
         """
         This function rescan given files.
         :param *resource: The resource argument can be the MD5, SHA-1 or SHA-256 of the file you want to re-scan.
-        :type *resource: Non-Keyword Arguments
+        :type *resource: str
         :return: Response
         :rtype: dict
 
@@ -231,7 +236,7 @@ class VirusTotalClient(object):
         --------
         >>> from clx.osi.virus_total import VirusTotalClient
         >>> client = VirusTotalClient(api_key='your-api-key')
-        >>> client.file_scan('test.sh')
+        >>> client.scan_big_file('test.sh')
         {'status_code': 200, 'json_resp': {'scan_id': '0204e88255a0bd7807547e9186621f0478a6bb2c43e795fb5e6934e5cda0e1f6-1605914572', 'sha1': '70c0942965354dbb132c05458866b96709e37f44'...}
         """
         params = {"apikey": self.api_key}

@@ -22,11 +22,10 @@ log = logging.getLogger(__name__)
 
 class FarsightLookupClient(object):
     """
-    This class provides functionality to query DNSDB record in various ways
+    Wrapper class to query DNSDB record in various ways
     Example: by IP, DomainName
 
     :param server: Farsight server
-    :param header: HTTP headers
     :param apikey: API key
     :param limit: limit
     :param http_proxy: HTTP proxy
@@ -39,8 +38,28 @@ class FarsightLookupClient(object):
         self.proxy_args = self.__get_proxy_args(http_proxy, https_proxy)
 
     def query_rrset(self, oname, rrtype=None, bailiwick=None, before=None, after=None):
-        """
-        batch version of querying DNSDB by given domain name and time ranges.
+        """Batch version of querying DNSDB by given domain name and time ranges.
+        :param oname: DNS domain name.
+        :type oname: str
+        :param rrtype: The resource record type of the resource record, either using the standard DNS type mnemonic, or an RFC 3597 generic type, i.e. the string TYPE immediately followed by the decimal RRtype number.
+        :type rrtype: str
+        :param bailiwick: The “bailiwick” of an RRset in DNSDB observed via passive DNS replication is the closest enclosing zone delegated to a nameserver which served the RRset. 
+        :type bailiwick: str
+        :param before: Output results seen before this time.
+        :type before: UNIX timestamp
+        :param after: Output results seen after this time.
+        :type after: UNIX timestamp
+        :return: Response
+        :rtype: dict
+
+        Examples
+        --------
+        >>> from clx.osi.farsight import FarsightLookupClient
+        >>> client = FarsightLookupClient("https://localhost", "your-api-key")
+        >>> client.query_rrset("www.dnsdb.info")
+        {"status_code": 200,...}
+        >>> client.query_rrset("www.dnsdb.info", rrtype="CNAME", bailiwick="dnsdb.info.", before=1374184718, after=1564909243,)
+        {"status_code": 200,...}
         """
         quoted_name = self.__quote(oname)
         if bailiwick:
@@ -58,8 +77,26 @@ class FarsightLookupClient(object):
         return self.__query(path, before, after)
 
     def query_rdata_name(self, rdata_name, rrtype=None, before=None, after=None):
-        """
-        query matches only a single DNSDB record of given oname and time ranges.
+        """Query matches only a single DNSDB record of given owner name and time ranges.
+        :param rdata_name: DNS domain name.
+        :type rdata_name: str
+        :param rrtype: The resource record type of the resource record, either using the standard DNS type mnemonic, or an RFC 3597 generic type, i.e. the string TYPE immediately followed by the decimal RRtype number.
+        :type rrtype: str
+        :param before: Output results seen before this time.
+        :type before: UNIX timestamp
+        :param after: Output results seen after this time.
+        :type after: UNIX timestamp
+        :return: Response
+        :rtype: dict
+
+        Examples
+        --------
+        >>> from clx.osi.farsight import FarsightLookupClient
+        >>> client = FarsightLookupClient("https://localhost", "your-api-key", limit=1)
+        >>> client.query_rdata_name("www.farsightsecurity.com")
+        {"status_code": 200,...}
+        >>> client.query_rdata_name("www.farsightsecurity.com", rrtype="PTR", before=1386638408, after=1561176503)
+        {"status_code": 200,...}
         """
         quoted_name = self.__quote(rdata_name)
         if rrtype:
@@ -69,8 +106,24 @@ class FarsightLookupClient(object):
         return self.__query(path, before, after)
 
     def query_rdata_ip(self, rdata_ip, before=None, after=None):
-        """
-        query to find DNSDB records matching a specific IP address with given time range.
+        """Query to find DNSDB records matching a specific IP address with given time range.
+        :param rdata_ip: The VALUE is one of an IPv4 or IPv6 single address, with a prefix length, or with an address range. If a prefix is provided, the delimiter between the network address and prefix length is a single comma (“,”) character rather than the usual slash (“/”) character to avoid clashing with the HTTP URI path name separator..
+        :type rdata_ip: str
+        :param before: Output results seen before this time.
+        :type before: UNIX timestamp
+        :param after: Output results seen after this time.
+        :type after: UNIX timestamp
+        :return: Response
+        :rtype: dict
+        
+        Examples
+        --------
+        >>> from clx.osi.farsight import FarsightLookupClient
+        >>> client = FarsightLookupClient("https://localhost", "your-api-key", limit=1)
+        >> client.query_rdata_ip("100.0.0.1")
+        {"status_code": 200,...}
+        >>> client.query_rdata_ip("100.0.0.1", before=1428433465, after=1538014110)
+        {"status_code": 200,...}
         """
         path = "rdata/ip/%s" % rdata_ip.replace("/", ",")
         return self.__query(path, before, after)
