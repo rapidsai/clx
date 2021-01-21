@@ -49,6 +49,7 @@ conda install -y -c pytorch -c gwerbin \
     "cugraph=${MINOR_VERSION}" \
     "cuml=${MINOR_VERSION}" \
     "dask-cuda=${MINOR_VERSION}" \
+    "cuxfilter=${MINOR_VERSION}" \
     "pytorch>=1.7" \
     "torchvision" \
     "python-confluent-kafka" \
