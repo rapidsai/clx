@@ -28,19 +28,19 @@ class WhoIsLookupClient(object):
     Wrapper class to query WhoIs API.
 
     :param sep: Delimiter to concat nested list values from the Whois response.
-    :param datetime_format: Format to convert Whois response datetime object.
+    :param datetime_format: Format to convert WhoIs response datetime object.
     """
     def __init__(self, sep=",", datetime_format="%m-%d-%Y %H:%M:%S"):
         self.sep = sep
         self.datetime_format = datetime_format
 
     def whois(self, domains, arr2str=True):
-        """Function to access parsed WHOIS data for a given domain.
+        """Function to access parsed WhoIs data for a given domain.
         :param domains: Domains to perform whois lookup.
         :type domains: list
-        :param arr2str: Convert whois lookup response object to list of strings.
+        :param arr2str: Convert WhoIs lookup response object to list of strings.
         :type arr2str: boolean
-        :return: Whois information with respect to given domains.
+        :return: WhoIs information with respect to given domains.
         :rtype: list/obj
 
         Examples
