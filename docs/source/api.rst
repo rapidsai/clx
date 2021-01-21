@@ -18,7 +18,7 @@ Analytics
 .. autoclass:: clx.analytics.dga_detector.DGADetector
     :members:
 
-.. autoclass:: clx.eda.eda.EDA
+.. autoclass:: clx.eda.EDA
     :members:
 
 .. autoclass:: clx.analytics.phishing_detector.PhishingDetector
