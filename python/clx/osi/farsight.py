@@ -1,4 +1,4 @@
-# Copyright (c) 2019, NVIDIA CORPORATION.
+# Copyright (c) 2021, NVIDIA CORPORATION.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# ref: https://docs.dnsdb.info/dnsdb-api/
 
 import json
 import requests
@@ -43,7 +45,7 @@ class FarsightLookupClient(object):
         :type oname: str
         :param rrtype: The resource record type of the resource record, either using the standard DNS type mnemonic, or an RFC 3597 generic type, i.e. the string TYPE immediately followed by the decimal RRtype number.
         :type rrtype: str
-        :param bailiwick: The “bailiwick” of an RRset in DNSDB observed via passive DNS replication is the closest enclosing zone delegated to a nameserver which served the RRset. 
+        :param bailiwick: The “bailiwick” of an RRset in DNSDB observed via passive DNS replication is the closest enclosing zone delegated to a nameserver which served the RRset.
         :type bailiwick: str
         :param before: Output results seen before this time.
         :type before: UNIX timestamp
@@ -115,7 +117,7 @@ class FarsightLookupClient(object):
         :type after: UNIX timestamp
         :return: Response
         :rtype: dict
-        
+
         Examples
         --------
         >>> from clx.osi.farsight import FarsightLookupClient

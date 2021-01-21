@@ -1,4 +1,4 @@
-# Copyright (c) 2019, NVIDIA CORPORATION.
+# Copyright (c) 2021, NVIDIA CORPORATION.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ class WhoIsLookupClient(object):
 
     str_arr_keys = ["domain_name", "name_servers", "status", "emails", "dnssec"]
     datetime_arr_keys = ["creation_date", "updated_date", "expiration_date"]
-    
+
     """
     Wrapper class to query WhoIs API.
 
