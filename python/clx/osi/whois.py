@@ -29,8 +29,21 @@ class WhoIsLookupClient(object):
         self.datetime_format = datetime_format
 
     def whois(self, domains, arr2str=True):
-        """
-        Function to access parsed WHOIS data for a given domain.
+        """Function to access parsed WHOIS data for a given domain.
+        :param domains: Domains to perform whois lookup.
+        :type domains: list
+        :param arr2str: Convert whois lookup response object to list of strings.
+        :type arr2str: boolean
+        :return: Whois information with respect to given domains.
+        :rtype: list/obj
+
+        Examples
+        --------
+        >>> from clx.osi.whois import WhoIsLookupClient
+        >>> domains = ["nvidia.com"]
+        >>> client = WhoIsLookupClient()
+        >>> client.whois(domains)
+        [{'domain_name': 'NVIDIA.COM', 'registrar': 'Safenames Ltd', 'whois_server': 'whois.safenames.net'...}]
         """
         result = []
         for domain in domains:
