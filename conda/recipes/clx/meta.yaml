@@ -29,9 +29,9 @@ requirements:
     - scikit-learn>=0.21
     - cugraph {{ minor_version }}.*
     - cuml {{ minor_version }}.*
-    - pytorch>=1.7
+    - pytorch 1.7.0
     - torchvision
-    - transformers 3.5.*
+    - transformers 4.*
 
 about:
   home: http://rapids.ai/

@@ -3,11 +3,15 @@
 ## New Features
 
 ## Improvements
+- PR #276 Project Flash and gpuCI Scripts Update
 - PR #303 CLX sequence classifier
+- PR #308 CLX streamz workflow updates
+- PR #313 XGBoost training notebook
 
 ## Bug Fixes
+- PR #315 Fix detector dataset errors when batchsize set to small
 
-# clx 0.17.0 (Date TBD)
+# clx 0.17.0 (10 Dec 2020)
 
 ## New Features
 - PR #277 cyBERT class to support DistilBERT and ELECTRA
