@@ -31,7 +31,7 @@ class SummaryStatistics(Analysis):
 
     def __summary_bool(self, series):
         summary = {}
-        true_per = series.value_counts().loc[True]
+        true_per = (series == True).sum()  # noqa: E712
         summary["true_percent"] = str(true_per / len(series))
         return summary
 
