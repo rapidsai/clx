@@ -5,16 +5,14 @@ class Loda:
     """
     Anomaly detection using Lightweight Online Detector of Anomalies (LODA). LODA detects anomalies in a dataset
     by computing the likelihood of data points using an ensemble of one-dimensional histograms.
+
+    :param n_bins: Number of bins for each histogram. If None a heuristic is used to compute the number of bins.
+    :type n_bins: int
+    :param n_random_cuts: Number of projection to use.
+    :type n_random_cuts: int
     """
 
     def __init__(self, n_bins=None, n_random_cuts=100):
-        """
-        Loda constructor
-        :param n_bins: Number of bins for each histogram. If None a heuristic is used to compute the number of bins.
-        :type n_bins: int
-        :param n_random_cuts: Number of projection to use.
-        :type n_random_cuts: int
-        """
         self._n_bins = n_bins
         self._n_random_cuts = n_random_cuts
         self._weights = cp.ones(n_random_cuts) / n_random_cuts
