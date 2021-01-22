@@ -95,6 +95,8 @@ class Loda:
 
         :param anomaly: selected anomaly from input dataset
         :type anomaly: cupy.ndarray
+        :param scaled: set to scale output feature importance scores
+        :type scaled: boolean
 
         Examples
         --------
