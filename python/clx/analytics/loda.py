@@ -3,7 +3,7 @@ import cupy as cp
 
 class Loda:
     """
-    Anomaly detection using Lightweight Online Detector of Anomalies (LODA). Loda detects anomalies in a dataset 
+    Anomaly detection using Lightweight Online Detector of Anomalies (LODA). LODA detects anomalies in a dataset
     by computing the likelihood of data points using an ensemble of one-dimensional histograms.
     """
 
@@ -24,14 +24,18 @@ class Loda:
 
     def fit(self, train_data):
         """
-        Fit training data and construct histogram.
-        The type of histogram is 'regular', and right-open
-        Note: If n_bins=None, the number of breaks is being computed as in:
-        L. Birge, Y. Rozenholc, How many bins should be put in a regular
-        histogram? 2006.
+        Fit training data and construct histograms.
 
         :param train_data: NxD training sample
         :type train_data: cupy.ndarray
+
+        Examples
+        --------
+        >>> from clx.analytics.loda import Loda
+        >>> import cupy as cp
+        >>> x = cp.random.randn(100,5) # 5-D multivariate synthetic dataset
+        >>> loda_ad = Loda(n_bins=None, n_random_cuts=100)
+        >>> loda_ad.fit(x)
         """
         nrows, n_components = train_data.shape
         if not self._n_bins:
@@ -57,6 +61,21 @@ class Loda:
 
         :param input_data: NxD training sample
         :type input_data: cupy.ndarray
+
+        Examples
+        --------
+        >>> from clx.analytics.loda import Loda
+        >>> import cupy as cp
+        >>> x = cp.random.randn(100,5) # 5-D multivariate synthetic dataset
+        >>> loda_ad = Loda(n_bins=None, n_random_cuts=100)
+        >>> loda_ad.fit(x)
+        >>> loda_ad.score(x)
+        array([0.04295848, 0.02853553, 0.04587308, 0.03750692, 0.05050418,
+        0.02671958, 0.03538646, 0.05606504, 0.03418612, 0.04040502,
+        0.03542846, 0.02801463, 0.04884918, 0.02943411, 0.02741364,
+        0.02702433, 0.03064191, 0.02575712, 0.03957355, 0.02729784,
+        ...
+        0.03943715, 0.02701243, 0.02880341, 0.04086408, 0.04365477])
         """
         if cp.ndim(input_data) < 2:
             input_data = input_data.reshape(1, -1)
@@ -70,13 +89,21 @@ class Loda:
         pred_scores /= self._n_random_cuts
         return pred_scores.ravel()
 
-    
     def explain(self, anomaly, scaled=True):
         """
         Explain anomaly based on contributions (t-scores) of each feature across histograms.
 
         :param anomaly: selected anomaly from input dataset
         :type anomaly: cupy.ndarray
+
+        Examples
+        --------
+        >>> loda_ad.explain(x[5]) # x[5] is found anomaly
+        array([[1.        ],
+        [0.        ],
+        [0.69850349],
+        [0.91081035],
+        [0.78774349]])
         """
         if cp.ndim(anomaly) < 2:
             anomaly = anomaly.reshape(1, -1)
@@ -88,8 +115,7 @@ class Loda:
                 self._projections[:, feature] != 0)[0]
             index_not_selected_feature = cp.where(
                 self._projections[:, feature] == 0)[0]
-            scores_with_feature = self._instance_score(anomaly,
-                                                      index_selected_feature)
+            scores_with_feature = self._instance_score(anomaly, index_selected_feature)
             scores_without_feature = self._instance_score(
                 anomaly, index_not_selected_feature)
             ranked_feature_importance[feature, 0] = self._t_test(
@@ -129,5 +155,4 @@ class Loda:
             \frac{\bar{s^2_j}}{\norm{\bar{I_j}}}}}
         """
         return (cp.mean(with_sample) - cp.mean(without_sample)) /\
-            cp.sqrt(cp.var(with_sample)**2 / len(with_sample) +
-                    cp.var(without_sample)**2 / len(without_sample))
+            cp.sqrt(cp.var(with_sample)**2 / len(with_sample) + cp.var(without_sample)**2 / len(without_sample))
