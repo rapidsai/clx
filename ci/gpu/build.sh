@@ -1,12 +1,12 @@
-#/usr/bin/env bash
+#!/usr/bin/env bash
+# Copyright (c) 2018-2020, NVIDIA CORPORATION.
+##########################################
+# CLX GPU build & testscript for CI      #
+##########################################
+
 set -e
 NUMARGS=$#
 ARGS=$*
-
-# Logger function for build status output
-function logger() {
-  echo -e "\n>>>> $@\n"
-}
 
 # Arg parsing function
 function hasArg {
@@ -14,7 +14,8 @@ function hasArg {
 }
 
 # Set path and build parallel level
-export PATH=/conda/bin:/usr/local/cuda/bin:$PATH
+export PATH=/opt/conda/bin:/usr/local/cuda/bin:$PATH
+export PARALLEL_LEVEL=${PARALLEL_LEVEL:-4}
 export CUDA_REL=${CUDA_VERSION%.*}
 export CUDA_SHORT=${CUDA_REL//./}
 
@@ -30,20 +31,15 @@ export MINOR_VERSION=`echo $GIT_DESCRIBE_TAG | grep -o -E '([0-9]+\.[0-9]+)'`
 # SETUP - Check environment
 ################################################################################
 
-logger "Get env..."
+gpuci_logger "Get env"
 env
 
-logger "Activate conda env..."
-source activate rapids
+gpuci_logger "Activate conda env"
+. /opt/conda/etc/profile.d/conda.sh
+conda activate rapids
 
-logger "Check versions..."
-python --version
-
-# FIX Added to deal with Anancoda SSL verification issues during conda builds
-conda config --set ssl_verify False
-
-logger "conda install required packages"
-conda install -y -c pytorch -c gwerbin \
+gpuci_logger "Install conda dependenciess"
+gpuci_conda_retry install -y -c pytorch -c gwerbin \
     "rapids-build-env=$MINOR_VERSION.*" \
     "rapids-notebook-env=$MINOR_VERSION.*" \
     "cugraph=${MINOR_VERSION}" \
@@ -59,14 +55,26 @@ conda install -y -c pytorch -c gwerbin \
     "matplotlib" \
     "faker"
 
-logger "pip install git+https://github.com/rapidsai/cudatashader.git"
+# https://docs.rapids.ai/maintainers/depmgmt/
+# gpuci_conda_retry remove --force rapids-build-env rapids-notebook-env
+# gpuci_conda_retry install -y "your-pkg=1.0.0"
+
+gpuci_logger "Install cudatashader"
 pip install "git+https://github.com/rapidsai/cudatashader.git"
-logger "pip install mockito"
+pip install "git+https://github.com/slashnext/SlashNext-URL-Analysis-and-Enrichment.git#egg=slashnext-phishing-ir&subdirectory=Python SDK/src"
 pip install mockito
 pip install wget
 pip install faker
 
-conda list
+gpuci_logger "Check versions"
+python --version
+$CC --version
+$CXX --version
+
+gpuci_logger "Show conda info"
+conda info
+conda config --show-sources
+conda list --show-channel-urls
 
 ################################################################################
 # BUILD - Build clx from source
@@ -74,6 +82,9 @@ conda list
 
 logger "Build clx..."
 $WORKSPACE/build.sh clean clx
+
+# FIX Added to deal with Anancoda SSL verification issues during conda builds
+conda config --set ssl_verify False
 
 ################################################################################
 # TEST - Test python package
@@ -83,7 +94,7 @@ EXITCODE=0
 trap "EXITCODE=1" ERR
 
 if hasArg --skip-tests; then
-    logger "Skipping Tests..."
+    gpuci_logger "Skipping Tests"
 else
     cd ${WORKSPACE}/python
     py.test --ignore=ci --cache-clear --junitxml=${WORKSPACE}/junit-clx.xml -v
