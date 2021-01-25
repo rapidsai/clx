@@ -5,21 +5,9 @@
 Python:
   - 'python/**'
   - 'notebooks/**'
-  
-libclx:
-  - 'cpp/**'
 
-CMake:
-  - '**/CMakeLists.txt'
-  - '**/cmake/**'
-  
-Java:
-  - 'java/**'
-  
-Ops:
-  - '.github/**'
+ci:
   - 'ci/**'
+
+conda:
   - 'conda/**'
-  - '**/Dockerfile'
-  - '**/.dockerignore'
-  - 'docker/**'
