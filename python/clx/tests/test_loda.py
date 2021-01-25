@@ -14,11 +14,12 @@
 import cupy
 from clx.analytics.loda import Loda
 
-ld = Loda(n_random_cuts=10, n_bins=None)
-x = cupy.random.randint(0, 100, size=(10, 10))
+
 
 
 def test_fit():
+    ld = Loda(n_random_cuts=10, n_bins=None)
+    x = cupy.random.randint(0, 100, size=(200, 10))
     ld.fit(x)
     assert ld._histograms is not None
     assert isinstance(
@@ -29,6 +30,9 @@ def test_fit():
 
 
 def test_score():
+    ld = Loda(n_random_cuts=10, n_bins=None)
+    x = cupy.random.randint(0, 100, size=(200, 10))
+    ld.fit(x)
     scores = ld.score(x)
     assert scores is not None
     assert isinstance(
@@ -39,10 +43,13 @@ def test_score():
 
 
 def test_explain():
+    ld = Loda(n_random_cuts=10, n_bins=None)
+    x = cupy.random.randint(0, 100, size=(200, 10))
+    ld.fit(x)
     explanation = ld.explain(x[0])
     assert explanation is not None
     assert isinstance(
         explanation,
         cupy.core.core.ndarray
     )
-    assert cupy.all(explanation >= 0)
+
