@@ -15,8 +15,6 @@ import cupy
 from clx.analytics.loda import Loda
 
 
-
-
 def test_fit():
     ld = Loda(n_random_cuts=10, n_bins=None)
     x = cupy.random.randint(0, 100, size=(200, 10))
@@ -52,4 +50,3 @@ def test_explain():
         explanation,
         cupy.core.core.ndarray
     )
-
