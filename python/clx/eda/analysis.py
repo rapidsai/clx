@@ -18,8 +18,6 @@ from abc import ABC, abstractmethod
 
 class Analysis(ABC):
     def __init__(self, dataframe):
-        self._analysis = {}
-        self._charts = []
         self._analysis = self._generate_analysis(dataframe)
         self._charts = self._generate_charts(dataframe)
 

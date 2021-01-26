@@ -76,8 +76,6 @@ class EDA:
             }
         """
         self.__dataframe = dataframe
-        self.__module_ref = {}
-        self.__analysis = {}
         self.__analysis, self.__module_ref = self.__generate_analysis(dataframe)
 
     @property
