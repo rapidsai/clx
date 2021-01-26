@@ -27,6 +27,7 @@ def test_major_ports():
     expected["conns"] = [2, 1, 1]
 
     actual = ports.major_ports(input_addr_col, input_port_col)
+    actual = actual.sort_values("addr").reset_index(drop=True)
 
     assert actual.equals(expected)
 
@@ -42,6 +43,7 @@ def test_major_ports_ephemeral():
     expected["conns"] = [1, 1, 1, 1]
 
     actual = ports.major_ports(input_addr_col, input_port_col, eph_min=50000)
+    actual = actual.sort_values("addr").reset_index(drop=True)
 
     assert actual.equals(expected)
 
@@ -57,6 +59,7 @@ def test_major_ports_min_conns():
     expected["conns"] = [2]
 
     actual = ports.major_ports(input_addr_col, input_port_col, min_conns=2)
+    actual = actual.sort_values("addr").reset_index(drop=True)
 
     assert actual.equals(expected)
 
@@ -72,5 +75,6 @@ def test_major_ports_all_params():
     expected["conns"] = [2, 2]
 
     actual = ports.major_ports(input_addr_col, input_port_col, min_conns=2, eph_min=7000)
+    actual = actual.sort_values("addr").reset_index(drop=True)
 
     assert actual.equals(expected)
