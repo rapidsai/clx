@@ -61,6 +61,7 @@ gpuci_conda_retry install -y -c pytorch -c gwerbin \
 
 gpuci_logger "Install cudatashader"
 pip install "git+https://github.com/rapidsai/cudatashader.git"
+pip install "git+https://github.com/slashnext/SlashNext-URL-Analysis-and-Enrichment.git#egg=slashnext-phishing-ir&subdirectory=Python SDK/src"
 pip install mockito
 pip install wget
 pip install faker
