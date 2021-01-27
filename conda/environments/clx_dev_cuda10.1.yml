@@ -10,10 +10,10 @@ channels:
 - auto
 dependencies:
 - numpy>=1.17.3,<1.19.0
-- cugraph=0.18.*
-- cuml=0.18.*
-- cuxfilter=0.18.*
-- dask-cudf=0.18.*
+- cugraph=0.19.*
+- cuml=0.19.*
+- cuxfilter=0.19.*
+- dask-cudf=0.19.*
 - cupy>7.1.0,<9.0.0a0
 - cudatoolkit=10.1
 - pytorch=1.7.0
