@@ -5,6 +5,9 @@
 Python:
   - 'python/**'
   - 'notebooks/**'
+  
+integration:
+  - 'siem_integrations'
 
 gpuCI:
   - 'ci/**'
