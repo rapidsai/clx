@@ -6,19 +6,9 @@
 
 ## Bug Fixes
 
-# clx 0.18.0 (Date TBD)
+# 0.18.0
 
-## New Features
-- PR #328 SlashNext API integration
-
-## Improvements
-- PR #276 Project Flash and gpuCI Scripts Update
-- PR #303 CLX sequence classifier
-- PR #308 CLX streamz workflow updates
-- PR #313 XGBoost training notebook
-
-## Bug Fixes
-- PR #315 Fix detector dataset errors when batchsize set to small
+Please see https://github.com/rapidsai/clx/releases/tag/branch-0.18-latest for the latest changes to this development branch.
 
 # clx 0.17.0 (10 Dec 2020)
 
