@@ -27,6 +27,9 @@ Analytics
 .. automodule:: clx.analytics.perfect_hash
     :members:
 
+.. autoclass:: clx.eda.EDA
+    :members:
+
 .. autoclass:: clx.analytics.phishing_detector.PhishingDetector
     :members:
 
