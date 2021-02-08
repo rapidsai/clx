@@ -1,4 +1,4 @@
-# Copyright (c) 2019, NVIDIA CORPORATION.
+# Copyright (c) 2021, NVIDIA CORPORATION.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,13 +24,32 @@ class WhoIsLookupClient(object):
     str_arr_keys = ["domain_name", "name_servers", "status", "emails", "dnssec"]
     datetime_arr_keys = ["creation_date", "updated_date", "expiration_date"]
 
+    """
+    Wrapper class to query WhoIs API.
+
+    :param sep: Delimiter to concat nested list values from the Whois response.
+    :param datetime_format: Format to convert WhoIs response datetime object.
+    """
     def __init__(self, sep=",", datetime_format="%m-%d-%Y %H:%M:%S"):
         self.sep = sep
         self.datetime_format = datetime_format
 
     def whois(self, domains, arr2str=True):
-        """
-        Function to access parsed WHOIS data for a given domain.
+        """Function to access parsed WhoIs data for a given domain.
+        :param domains: Domains to perform whois lookup.
+        :type domains: list
+        :param arr2str: Convert WhoIs lookup response object to list of strings.
+        :type arr2str: boolean
+        :return: WhoIs information with respect to given domains.
+        :rtype: list/obj
+
+        Examples
+        --------
+        >>> from clx.osi.whois import WhoIsLookupClient
+        >>> domains = ["nvidia.com"]
+        >>> client = WhoIsLookupClient()
+        >>> client.whois(domains)
+        [{'domain_name': 'NVIDIA.COM', 'registrar': 'Safenames Ltd', 'whois_server': 'whois.safenames.net'...}]
         """
         result = []
         for domain in domains:
