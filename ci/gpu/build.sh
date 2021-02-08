@@ -45,6 +45,7 @@ gpuci_conda_retry install -y -c pytorch -c gwerbin \
     "cugraph=${MINOR_VERSION}" \
     "cuml=${MINOR_VERSION}" \
     "dask-cuda=${MINOR_VERSION}" \
+    "cuxfilter=${MINOR_VERSION}" \
     "pytorch=1.7.0" \
     "torchvision" \
     "python-confluent-kafka" \
@@ -64,7 +65,6 @@ pip install "git+https://github.com/rapidsai/cudatashader.git"
 pip install "git+https://github.com/slashnext/SlashNext-URL-Analysis-and-Enrichment.git#egg=slashnext-phishing-ir&subdirectory=Python SDK/src"
 pip install mockito
 pip install wget
-pip install faker
 
 gpuci_logger "Check versions"
 python --version
