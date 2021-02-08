@@ -14,8 +14,17 @@ Analytics
 
 .. autoclass:: clx.analytics.cybert.Cybert
     :members:
- 
+
+.. autoclass:: clx.analytics.detector.Detector
+    :members:
+
+.. autoclass:: clx.analytics.dga_dataset.DGADataset
+    :members:
+
 .. autoclass:: clx.analytics.dga_detector.DGADetector
+    :members:
+
+.. automodule:: clx.analytics.perfect_hash
     :members:
 
 .. autoclass:: clx.eda.EDA
@@ -25,6 +34,9 @@ Analytics
     :members:
 
 .. autoclass:: clx.analytics.model.rnn_classifier.RNNClassifier
+    :members:
+
+.. autoclass:: clx.analytics.model.tabular_model.TabularModel
     :members:
 
 .. autoclass:: clx.analytics.sequence_classifier.SequenceClassifier
@@ -57,6 +69,9 @@ OSI (Open Source Integration)
 .. autoclass:: clx.osi.whois.WhoIsLookupClient
     :members:
 
+.. autoclass:: clx.osi.slashnext.SlashNextClient
+    :members:
+    
 Parsers
 -------
 
@@ -70,6 +85,18 @@ Parsers
     :members:
 
 .. automodule:: clx.parsers.zeek
+    :members:
+
+Utils
+-----
+
+.. autoclass:: clx.utils.data.dataloader.DataLoader
+    :members:
+
+.. autoclass:: clx.utils.data.dataset.Dataset
+    :members:
+
+.. autoclass:: clx.utils.data.utils
     :members:
 
 Workflow
