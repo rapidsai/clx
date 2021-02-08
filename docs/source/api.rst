@@ -30,6 +30,9 @@ Analytics
 .. autoclass:: clx.eda.EDA
     :members:
 
+.. autoclass:: clx.analytics.loda.Loda
+    :members:
+
 .. autoclass:: clx.analytics.phishing_detector.PhishingDetector
     :members:
 
