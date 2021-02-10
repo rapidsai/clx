@@ -1,4 +1,4 @@
-# Copyright (c) 2020, NVIDIA CORPORATION.
+# Copyright (c) 2021, NVIDIA CORPORATION.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,13 +24,42 @@ def __get_prop(row):
 
 
 def binary(dataframe, entity_id, feature_id):
+    """
+    Create binary feature dataframe using provided dataset, entity, and feature.
+
+    :param values: dataframe
+    :type values: cudf.DataFrame
+    :param values: entity_id
+    :type values: str
+    :param values: feature_id
+    :type values: str
+    :return: dataframe
+    :rtype: cudf.DataFrame
+
+    Examples
+    --------
+    >>> import cudf
+    >>> import clx.features
+    >>> df = cudf.DataFrame(
+            {
+                "time": [1, 2, 3],
+                "user": ["u1", "u2", "u1",],
+                "computer": ["c1", "c1", "c3"],
+            }
+        )
+    >>> output = clx.features.binary(df, "user", "computer")
+    >>> output
+            c1	c3
+        user
+        u1	1.0	1.0
+        u2	1.0	0.0
+    """
     df_grouped = (
         dataframe.groupby([entity_id, feature_id])
         .count()
         .reset_index()
         .set_index(entity_id)
     )
-    # print(df_grouped)
     p_df_grouped = df_grouped.to_pandas()
     p_df_grouped = pd.pivot_table(
         p_df_grouped,
@@ -38,20 +67,48 @@ def binary(dataframe, entity_id, feature_id):
         columns=[feature_id],
         values=p_df_grouped.columns[1],
     ).fillna(0)
-    # print(p_df_grouped)
     p_df_grouped[p_df_grouped != 0.0] = 1
     output_dataframe = cudf.DataFrame.from_pandas(p_df_grouped)
     return output_dataframe
 
 
 def frequency(dataframe, entity_id, feature_id):
+    """
+    Create binary feature dataframe using provided dataset, entity, and feature.
+
+    :param values: dataframe
+    :type values: cudf.DataFrame
+    :param values: entity_id
+    :type values: str
+    :param values: feature_id
+    :type values: str
+    :return: dataframe
+    :rtype: cudf.DataFrame
+
+    Examples
+    --------
+    >>> import cudf
+    >>> import clx.features
+    >>> df = cudf.DataFrame(
+            {
+                "time": [1, 2, 3],
+                "user": ["u1", "u2", "u1",],
+                "computer": ["c1", "c1", "c3"],
+            }
+        )
+    >>> output = clx.features.binary(df, "user", "computer")
+    >>> output
+            c1	c3
+        user
+        u1	0.5	0.5
+        u2	1.0	0.0
+    """
     df_grouped = (
         dataframe.groupby([entity_id, feature_id])
         .count()
         .reset_index()
         .set_index(entity_id)
     )
-    # print(df_grouped)
     p_df_grouped = df_grouped.to_pandas()
     p_df_grouped = pd.pivot_table(
         p_df_grouped,
@@ -59,7 +116,6 @@ def frequency(dataframe, entity_id, feature_id):
         columns=[feature_id],
         values=p_df_grouped.columns[1],
     ).fillna(0)
-    # print(p_df_grouped)
     p_df_grouped = p_df_grouped.apply(__get_prop, axis=1)
     output_dataframe = cudf.DataFrame.from_pandas(p_df_grouped)
     return output_dataframe
