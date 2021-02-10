@@ -74,7 +74,7 @@ def binary(dataframe, entity_id, feature_id):
 
 def frequency(dataframe, entity_id, feature_id):
     """
-    Create binary feature dataframe using provided dataset, entity, and feature.
+    Create frequency feature dataframe using provided dataset, entity, and feature.
 
     :param values: dataframe
     :type values: cudf.DataFrame
