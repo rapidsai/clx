@@ -46,7 +46,7 @@ gpuci_conda_retry install -y -c pytorch -c gwerbin \
     "cuml=${MINOR_VERSION}" \
     "dask-cuda=${MINOR_VERSION}" \
     "cuxfilter=${MINOR_VERSION}" \
-    "pytorch=1.7.0" \
+    "pytorch=1.7.1" \
     "torchvision" \
     "python-confluent-kafka" \
     "transformers=4.*" \
