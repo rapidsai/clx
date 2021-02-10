@@ -1,4 +1,4 @@
-# Copyright (c) 2019, NVIDIA CORPORATION.
+# Copyright (c) 2021, NVIDIA CORPORATION.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,8 +17,16 @@ import json
 import requests
 from os.path import abspath, basename
 
+# ref https://developers.virustotal.com/reference
+
 
 class VirusTotalClient(object):
+    """
+    Wrapper class to query VirusTotal database.
+
+    :param apikey: API key
+    :param proxies: proxies
+    """
     def __init__(self, api_key=None, proxies=None):
         if api_key is None:
             raise ValueError("Virus Total API key is None.")
@@ -42,8 +50,18 @@ class VirusTotalClient(object):
         """
         This function allows you to send a file for scanning with VirusTotal.
         Before performing submissions it would be nice to retrieve the latest report on the file.
-        File size limit is 32MB, in order to submit files up to 200MB in size it is mandatory to request a special upload URL
-        using the /file/scan/upload_url endpoint.
+        File size limit is 32MB, in order to submit files up to 200MB in size it is mandatory to use `scan_big_file` feature
+        :param file: File to be scanned
+        :type file: str
+        :return: Response
+        :rtype: dict
+
+        Examples
+        --------
+        >>> from clx.osi.virus_total import VirusTotalClient
+        >>> client = VirusTotalClient(api_key='your-api-key')
+        >>> client.file_scan('test.sh')
+        {'status_code': 200, 'json_resp': {'scan_id': '0204e88255a0bd7807547e9186621f0478a6bb2c43e795fb5e6934e5cda0e1f6-1605914572', 'sha1': '70c0942965354dbb132c05458866b96709e37f44'...}
         """
         file_size_mb = self.__get_file_size(file)
         params = {"apikey": self.api_key}
@@ -62,7 +80,17 @@ class VirusTotalClient(object):
     def file_rescan(self, *resource):
         """
         This function rescan given files.
-        The resource argument can be the MD5, SHA-1 or SHA-256 of the file you want to re-scan.
+        :param *resource: The resource argument can be the MD5, SHA-1 or SHA-256 of the file you want to re-scan.
+        :type *resource: str
+        :return: Response
+        :rtype: dict
+
+        Examples
+        --------
+        >>> from clx.osi.virus_total import VirusTotalClient
+        >>> client = VirusTotalClient(api_key='your-api-key')
+        >>> client.file_rescan('70c0942965354dbb132c05458866b96709e37f44')
+        {'status_code': 200, 'json_resp': {'scan_id': ...}}
         """
         params = {"apikey": self.api_key, "resource": ",".join(*resource)}
         resp = self.__post(
@@ -72,8 +100,19 @@ class VirusTotalClient(object):
 
     def file_report(self, *resource):
         """
-        The resource argument can be the MD5, SHA-1 or SHA-256 of a file for which you want to retrieve
+        Retrieve file scan reports
+        :param *resource: The resource argument can be the MD5, SHA-1 or SHA-256 of a file for which you want to retrieve
         the most recent antivirus report. You may also specify a scan_id returned by the /file/scan endpoint.
+        :type *resource: str
+        :return: Response
+        :rtype: dict
+
+        Examples
+        --------
+        >>> from clx.osi.virus_total import VirusTotalClient
+        >>> client = VirusTotalClient(api_key='your-api-key')
+        >>> client.file_report(["99017f6eebbac24f351415dd410d522d"])
+        {'status_code': 200, 'json_resp': {'scans': {'Bkav': {'detected': True, 'version': '1.3.0.9899', 'result': 'W32.AIDetectVM.malware1'...}}
         """
         params = {"apikey": self.api_key, "resource": ",".join(*resource)}
         resp = self.__get(
@@ -82,8 +121,18 @@ class VirusTotalClient(object):
         return resp
 
     def url_scan(self, *url):
-        """
-        This function scan on provided url with VirusTotal.
+        """Retrieve URL scan reports
+        :param *url: A URL for which you want to retrieve the most recent report. You may also specify a scan_id (sha256-timestamp as returned by the URL submission API) to access a specific report.
+        :type *url: str
+        :return: Response
+        :rtype: dict
+
+        Examples
+        --------
+        >>> from clx.osi.virus_total import VirusTotalClient
+        >>> client = VirusTotalClient(api_key='your-api-key')
+        >>> client.url_scan(["virustotal.com"])
+        {'status_code': 200, 'json_resp': {'permalink': 'https://www.virustotal.com/gui/url/...}}
         """
         params = {"apikey": self.api_key, "url": "\n".join(*url)}
         resp = self.__post(
@@ -93,7 +142,18 @@ class VirusTotalClient(object):
 
     def url_report(self, *resource):
         """
-        The resource argument must be the URL to retrieve the most recent report.
+        Retrieve URL scan reports
+        :param *resource: The resource argument must be the URL to retrieve the most recent report.
+        :type *resource: str
+        :return: Response
+        :rtype: dict
+
+        Examples
+        --------
+        >>> from clx.osi.virus_total import VirusTotalClient
+        >>> client = VirusTotalClient(api_key='your-api-key')
+        >>> client.url_report(["virustotal.com"])
+        {'status_code': 200, 'json_resp': {'scan_id': 'a354494a73382ea0b4bc47f4c9e8d6c578027cd4598196dc88f05a22b5817293-1605914280'...}
         """
         params = {"apikey": self.api_key, "resource": "\n".join(*resource)}
         resp = self.__post(
@@ -104,6 +164,17 @@ class VirusTotalClient(object):
     def ipaddress_report(self, ip):
         """
         Retrieve report using ip address.
+        :param ip: An IP address
+        :type ip: str
+        :return: Response
+        :rtype: dict
+
+        Examples
+        --------
+        >>> from clx.osi.virus_total import VirusTotalClient
+        >>> client = VirusTotalClient(api_key='your-api-key')
+        >>> client.ipaddress_report("90.156.201.27")
+        {'status_code': 200, 'json_resp': {'asn': 25532, 'undetected_urls...}}
         """
         params = {"apikey": self.api_key, "ip": ip}
         resp = self.__get(
@@ -114,6 +185,17 @@ class VirusTotalClient(object):
     def domain_report(self, domain):
         """
         Retrieve report using domain.
+        :param domain: A domain name
+        :type domain: str
+        :return: Response
+        :rtype: dict
+
+        Examples
+        --------
+        >>> from clx.osi.virus_total import VirusTotalClient
+        >>> client = VirusTotalClient(api_key='your-api-key')
+        >>> client.domain_report("027.ru")
+        {'status_code': 200, 'json_resp': {'BitDefender category': 'parked', 'undetected_downloaded_samples'...}}
         """
         params = {"apikey": self.api_key, "domain": domain}
         resp = self.__get(
@@ -124,6 +206,17 @@ class VirusTotalClient(object):
     def put_comment(self, resource, comment):
         """
         Post comment for a file or URL
+        :param resource: Either an md5/sha1/sha256 hash of the file you want to review or the URL itself that you want to comment on.
+        :type resource: str
+        :return: Response
+        :rtype: dict
+
+        Examples
+        --------
+        >>> from clx.osi.virus_total import VirusTotalClient
+        >>> client = VirusTotalClient(api_key='your-api-key')
+        >>> client.put_comment("75efd85cf6f8a962fe016787a7f57206ea9263086ee496fc62e3fc56734d4b53", "This is a test comment")
+        {'status_code': 200, 'json_resp': {'response_code': 0, 'verbose_msg': 'Duplicate comment'}}
         """
         params = {"apikey": self.api_key, "resource": resource, "comment": comment}
         resp = self.__post(
@@ -134,6 +227,17 @@ class VirusTotalClient(object):
     def scan_big_file(self, files):
         """
         Scanning files larger than 32MB
+        :param file: File to be scanned
+        :type file: str
+        :return: Response
+        :rtype: dict
+
+        Examples
+        --------
+        >>> from clx.osi.virus_total import VirusTotalClient
+        >>> client = VirusTotalClient(api_key='your-api-key')
+        >>> client.scan_big_file('test.sh')
+        {'status_code': 200, 'json_resp': {'scan_id': '0204e88255a0bd7807547e9186621f0478a6bb2c43e795fb5e6934e5cda0e1f6-1605914572', 'sha1': '70c0942965354dbb132c05458866b96709e37f44'...}
         """
         params = {"apikey": self.api_key}
         upload_url_json = self.__get(self.vt_endpoint_dict["upload_url"], params=params)

@@ -37,7 +37,7 @@ label = [random.randint(0, 6) for _ in range(9000)]
 train_pd = pd.DataFrame(list(zip(column1, column2, column3, column4, column5, column6, column7, column8, column9, column10, label)), columns=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "label"])
 train_gdf = cudf.from_pandas(train_pd)
 
-batch_size = 1000
+batch_size = 6
 epochs = 15
 
 
