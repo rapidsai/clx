@@ -20,6 +20,7 @@ import cupy
 import numpy as np
 import pandas as pd
 import torch
+import torch.nn as nn
 from torch.nn import functional as F
 from torch.utils.data import DataLoader, TensorDataset
 from torch.utils.dlpack import from_dlpack
@@ -85,6 +86,7 @@ class Cybert:
         )
         self._model.cuda()
         self._model.eval()
+        self._model = nn.DataParallel(self._model)
 
     def preprocess(self, raw_data_col, stride_len=116, max_seq_len=128):
         """
