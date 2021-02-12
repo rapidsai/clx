@@ -36,12 +36,17 @@ def test_frequency_features():
     expected = cudf.DataFrame(
         {
             "user": ["u1", "u2", "u3"],
-            "c1": [0.75, 0, 0],
-            "c2": [0.25, 0.5, 0],
-            "c3": [0, 0.5, 1.0],
+            "c1": [0.75, 0.00, 0.00],
+            "c2": [0.25, 0.50, 0.0],
+            "c3": [0.0, 0.5, 1.0],
         }
     )
     expected = expected.set_index("user")
+    expected.columns = cudf.MultiIndex(
+        names=[None, "computer"],
+        codes=[[0, 0, 0], [0, 1, 2]],
+        levels=[["time"], ["c1", "c2", "c3"]],
+    )
     assert expected.equals(actual)
 
 

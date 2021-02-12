@@ -16,13 +16,6 @@ import cudf
 import pandas as pd
 
 
-def __get_prop(row):
-    if row.sum() == 0:
-        return pd.Series([0.0] * row.shape[0])
-    else:
-        return row / row.sum()
-
-
 def binary(dataframe, entity_id, feature_id):
     """
     Create binary feature dataframe using provided dataset, entity, and feature.
@@ -125,10 +118,7 @@ def frequency(dataframe, entity_id, feature_id):
     # https://github.com/rapidsai/cudf/issues/1214
     pdf_grouped = df_grouped.to_pandas()
     pdf_pivot = pd.pivot_table(
-        pdf_grouped,
-        index=[entity_id],
-        columns=[feature_id],
-        values=pdf_grouped.columns[1],
+        pdf_grouped, index=[entity_id], columns=[feature_id]
     ).fillna(0)
     output_df = cudf.DataFrame.from_pandas(pdf_pivot)
     sum_col = output_df.sum(axis=1)
