@@ -1,4 +1,5 @@
 import cudf
+import pytest
 
 import clx.features
 
@@ -25,6 +26,11 @@ def test_binary_features():
     assert expected.equals(actual)
 
 
+def test_binary_exception():
+    with pytest.raises(Exception):
+        clx.features.binary(df, "user", "a")
+
+
 def test_frequency_features():
     actual = clx.features.frequency(df, "user", "computer")
     expected = cudf.DataFrame(
@@ -37,3 +43,8 @@ def test_frequency_features():
     )
     expected = expected.set_index("user")
     assert expected.equals(actual)
+
+
+def test_frequency_exception():
+    with pytest.raises(Exception):
+        clx.features.frequency(df, "a", "computer")

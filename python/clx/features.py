@@ -54,22 +54,29 @@ def binary(dataframe, entity_id, feature_id):
         u1	1.0	1.0
         u2	1.0	0.0
     """
+    if entity_id and feature_id not in dataframe.columns:
+        raise Exception(
+            "{0} and {1} must be column names in the input dataframe".format(
+                entity_id, feature_id
+            )
+        )
     df_grouped = (
         dataframe.groupby([entity_id, feature_id])
         .count()
         .reset_index()
         .set_index(entity_id)
     )
-    p_df_grouped = df_grouped.to_pandas()
-    p_df_grouped = pd.pivot_table(
-        p_df_grouped,
+    # https://github.com/rapidsai/cudf/issues/1214
+    pdf_grouped = df_grouped.to_pandas()
+    pdf_pivot = pd.pivot_table(
+        pdf_grouped,
         index=[entity_id],
         columns=[feature_id],
-        values=p_df_grouped.columns[1],
+        values=pdf_grouped.columns[1],
     ).fillna(0)
-    p_df_grouped[p_df_grouped != 0.0] = 1
-    output_dataframe = cudf.DataFrame.from_pandas(p_df_grouped)
-    return output_dataframe
+    df_output = cudf.DataFrame.from_pandas(pdf_pivot)
+    df_output[df_output != 0.0] = 1
+    return df_output
 
 
 def frequency(dataframe, entity_id, feature_id):
@@ -103,19 +110,28 @@ def frequency(dataframe, entity_id, feature_id):
         u1	0.5	0.5
         u2	1.0	0.0
     """
+    if entity_id and feature_id not in dataframe.columns:
+        raise Exception(
+            "{0} and {1} must be column names in the input dataframe".format(
+                entity_id, feature_id
+            )
+        )
     df_grouped = (
         dataframe.groupby([entity_id, feature_id])
         .count()
         .reset_index()
         .set_index(entity_id)
     )
-    p_df_grouped = df_grouped.to_pandas()
-    p_df_grouped = pd.pivot_table(
-        p_df_grouped,
+    # https://github.com/rapidsai/cudf/issues/1214
+    pdf_grouped = df_grouped.to_pandas()
+    pdf_pivot = pd.pivot_table(
+        pdf_grouped,
         index=[entity_id],
         columns=[feature_id],
-        values=p_df_grouped.columns[1],
+        values=pdf_grouped.columns[1],
     ).fillna(0)
-    p_df_grouped = p_df_grouped.apply(__get_prop, axis=1)
-    output_dataframe = cudf.DataFrame.from_pandas(p_df_grouped)
-    return output_dataframe
+    output_df = cudf.DataFrame.from_pandas(pdf_pivot)
+    sum_col = output_df.sum(axis=1)
+    for col in output_df.columns:
+        output_df[col] = output_df[col] / sum_col
+    return output_df
