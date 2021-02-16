@@ -12,9 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import cudf
-import pandas as pd
-
 
 def binary(dataframe, entity_id, feature_id):
     """
@@ -53,22 +50,9 @@ def binary(dataframe, entity_id, feature_id):
                 entity_id, feature_id
             )
         )
-    df_grouped = (
-        dataframe.groupby([entity_id, feature_id])
-        .count()
-        .reset_index()
-        .set_index(entity_id)
-    )
-    # https://github.com/rapidsai/cudf/issues/1214
-    pdf_grouped = df_grouped.to_pandas()
-    pdf_pivot = pd.pivot_table(
-        pdf_grouped,
-        index=[entity_id],
-        columns=[feature_id],
-        values=pdf_grouped.columns[1],
-    ).fillna(0)
-    df_output = cudf.DataFrame.from_pandas(pdf_pivot)
-    df_output[df_output != 0.0] = 1
+    df_grouped = dataframe.groupby([entity_id, feature_id]).count().reset_index()
+    df_output = df_grouped.pivot(index=entity_id, columns=feature_id).fillna(0)
+    df_output[df_output != 0] = 1
     return df_output
 
 
@@ -115,13 +99,9 @@ def frequency(dataframe, entity_id, feature_id):
         .reset_index()
         .set_index(entity_id)
     )
-    # https://github.com/rapidsai/cudf/issues/1214
-    pdf_grouped = df_grouped.to_pandas()
-    pdf_pivot = pd.pivot_table(
-        pdf_grouped, index=[entity_id], columns=[feature_id]
-    ).fillna(0)
-    output_df = cudf.DataFrame.from_pandas(pdf_pivot)
-    sum_col = output_df.sum(axis=1)
-    for col in output_df.columns:
-        output_df[col] = output_df[col] / sum_col
-    return output_df
+    df_grouped = dataframe.groupby([entity_id, feature_id]).count().reset_index()
+    df_output = df_grouped.pivot(index=entity_id, columns=feature_id).fillna(0)
+    sum_col = df_output.sum(axis=1)
+    for col in df_output.columns:
+        df_output[col] = df_output[col] / sum_col
+    return df_output

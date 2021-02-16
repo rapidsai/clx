@@ -15,14 +15,17 @@ df = cudf.DataFrame(
 def test_binary_features():
     actual = clx.features.binary(df, "user", "computer")
     expected = cudf.DataFrame(
-        {
-            "user": ["u1", "u2", "u3"],
-            "c1": [1.0, 0, 0.0],
-            "c2": [1.0, 1.0, 0],
-            "c3": [0.0, 1.0, 1.0],
-        }
+        {"user": ["u1", "u2", "u3"], "c1": [1, 0, 0], "c2": [1, 1, 0], "c3": [0, 1, 1]}
     )
     expected = expected.set_index("user")
+    expected["c1"] = expected["c1"].astype("int32")
+    expected["c2"] = expected["c2"].astype("int32")
+    expected["c3"] = expected["c3"].astype("int32")
+    expected.columns = cudf.MultiIndex(
+        names=[None, "computer"],
+        codes=[[0, 0, 0], [0, 1, 2]],
+        levels=[["time"], ["c1", "c2", "c3"]],
+    )
     assert expected.equals(actual)
 
 
