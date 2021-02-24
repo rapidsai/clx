@@ -7,6 +7,11 @@ IP
 .. automodule:: clx.ip
     :members:
 
+Features
+--------
+.. automodule:: clx.features
+    :members:
+
 Analytics
 ---------
 .. autoclass:: clx.analytics.asset_classification.AssetClassification
