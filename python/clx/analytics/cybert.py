@@ -20,6 +20,7 @@ import cupy
 import numpy as np
 import pandas as pd
 import torch
+import torch.nn as nn
 from torch.nn import functional as F
 from torch.utils.data import DataLoader, TensorDataset
 from torch.utils.dlpack import from_dlpack
@@ -85,6 +86,7 @@ class Cybert:
         )
         self._model.cuda()
         self._model.eval()
+        self._model = nn.DataParallel(self._model)
 
     def preprocess(self, raw_data_col, stride_len=116, max_seq_len=128):
         """
@@ -113,15 +115,12 @@ class Cybert:
         raw_data_col = raw_data_col.str.replace("\\n", " ")
 
         byte_count = raw_data_col.str.byte_count()
-        max_num_chars = byte_count.sum()
         max_rows_tensor = int((byte_count / 120).ceil().sum())
 
         input_ids, att_mask, meta_data = raw_data_col.str.subword_tokenize(
             self._hashpath,
             128,
             116,
-            max_num_strings=len(raw_data_col),
-            max_num_chars=max_num_chars,
             max_rows_tensor=max_rows_tensor,
             do_lower=False,
             do_truncate=False,

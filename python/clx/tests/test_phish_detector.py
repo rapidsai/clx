@@ -41,12 +41,12 @@ def test_train_model():
             y_train,
             learning_rate=3e-5,
             max_seq_len=128,
-            batch_size=32,
+            batch_size=6,
             epochs=1,
         )
         assert isinstance(
             phish_detect._model.module,
-            transformers.modeling_bert.BertForSequenceClassification,
+            transformers.models.bert.modeling_bert.BertForSequenceClassification
         )
 
 

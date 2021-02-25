@@ -13,6 +13,13 @@ from torch.utils.data import DataLoader, SequentialSampler, TensorDataset
 from torch.utils.dlpack import from_dlpack, to_dlpack
 from tqdm import trange
 from transformers import AdamW, BertForSequenceClassification
+import warnings
+
+warnings.warn(
+    "The phishing detection module will be removed in 0.19. Please use equivalent clx.analytics.sequence_classifier.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 log = logging.getLogger(__name__)
 
@@ -20,6 +27,8 @@ log = logging.getLogger(__name__)
 class PhishingDetector:
     """
     Phishing detection using BERT. This class provides methods for training/loading BERT models, evaluation and prediction.
+
+    DEPRECATED: The phishing detection module will be removed in 0.19. Please use equivalent clx.analytics.sequence_classifier.
     """
 
     def __init__(self):
@@ -33,7 +42,7 @@ class PhishingDetector:
         Load a pretrained BERT model. Default is bert-base-uncased.
 
         :param model_or_path: directory path to model, default is bert-base-uncased
-        :type input_file: str
+        :type model_or_path: str
 
         Examples
         --------

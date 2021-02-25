@@ -1,5 +1,5 @@
 # An integration test & dev container which builds and installs CLX from default branch
-ARG RAPIDS_VERSION=0.17
+ARG RAPIDS_VERSION=0.18
 ARG CUDA_VERSION=10.1
 ARG CUDA_SHORT_VERSION=${CUDA_VERSION}
 ARG LINUX_VERSION=ubuntu18.04
@@ -15,11 +15,12 @@ RUN apt update -y --fix-missing && \
     apt install -y krb5-user
 
 RUN source activate rapids && \
-    conda install -c pytorch "pytorch>=1.7" torchvision "cudf_kafka=${RAPIDS_VERSION}" "custreamz=${RAPIDS_VERSION}" "scikit-learn>=0.21" "nodejs>=12" ipywidgets python-confluent-kafka "transformers=3.5.*" "seqeval=0.0.12" python-whois seaborn requests matplotlib pytest jupyterlab && \
+    conda install -c pytorch "pytorch=1.7.1" torchvision "cudf_kafka=${RAPIDS_VERSION}" "custreamz=${RAPIDS_VERSION}" "scikit-learn>=0.21" "nodejs>=12" ipywidgets python-confluent-kafka "transformers=4.*" "seqeval=0.0.12" python-whois seaborn requests matplotlib pytest jupyterlab && \
     pip install "git+https://github.com/rapidsai/cudatashader.git" && \
     pip install mockito && \
-    pip install wget
-
+    pip install wget && \
+    pip install "git+https://github.com/slashnext/SlashNext-URL-Analysis-and-Enrichment.git#egg=slashnext-phishing-ir&subdirectory=Python SDK/src"
+    
 RUN source activate rapids \
   && conda install -n rapids jupyterlab-nvdashboard \
   && jupyter labextension install @jupyter-widgets/jupyterlab-manager dask-labextension jupyterlab-nvdashboard

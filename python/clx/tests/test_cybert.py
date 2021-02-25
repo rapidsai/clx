@@ -93,8 +93,8 @@ def get_expected_inference():
 def test_load_model():
     cyparse.load_model(MODEL_FILENAME, CONFIG_FILENAME)
     assert isinstance(cyparse._label_map, dict)
-    assert isinstance(cyparse._model,
-                      transformers.modeling_bert.BertForTokenClassification)
+    assert isinstance(cyparse._model.module,
+                      transformers.models.bert.modeling_bert.BertForTokenClassification)
 
 
 def test_preprocess():
