@@ -17,12 +17,12 @@ def binary(dataframe, entity_id, feature_id):
     """
     Create binary feature dataframe using provided dataset, entity, and feature.
 
-    :param values: dataframe
-    :type values: cudf.DataFrame
-    :param values: entity_id
-    :type values: str
-    :param values: feature_id
-    :type values: str
+    :param dataframe: Input dataframe to create binary features
+    :type dataframe: cudf.DataFrame
+    :param entity_id: Entity ID. Must be a column within `dataframe`
+    :type entity_id: str
+    :param feature_id: Feature ID. Must be a column within `dataframe`
+    :type feature_id: str
     :return: dataframe
     :rtype: cudf.DataFrame
 
@@ -60,12 +60,12 @@ def frequency(dataframe, entity_id, feature_id):
     """
     Create frequency feature dataframe using provided dataset, entity, and feature.
 
-    :param values: dataframe
-    :type values: cudf.DataFrame
-    :param values: entity_id
-    :type values: str
-    :param values: feature_id
-    :type values: str
+    :param dataframe: Input dataframe to create binary features
+    :type dataframe: cudf.DataFrame
+    :param entity_id: Entity ID. Must be a column within `dataframe`
+    :type entity_id: str
+    :param feature_id: Feature ID. Must be a column within `dataframe`
+    :type feature_id: str
     :return: dataframe
     :rtype: cudf.DataFrame
 
