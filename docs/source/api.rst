@@ -38,9 +38,6 @@ Analytics
 .. autoclass:: clx.analytics.loda.Loda
     :members:
 
-.. autoclass:: clx.analytics.phishing_detector.PhishingDetector
-    :members:
-
 .. autoclass:: clx.analytics.model.rnn_classifier.RNNClassifier
     :members:
 
