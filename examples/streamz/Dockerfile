@@ -29,7 +29,7 @@ RUN apt-get install -y librdkafka-dev \
     apt-get clean
 
 ENV SCALA_VERSION 2.13
-ENV KAFKA_VERSION 2.5.1
+ENV KAFKA_VERSION 2.7.0
 ENV KAFKA_HOME /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"
 ENV CLX_STREAMZ_HOME /opt/clx_streamz
 
@@ -41,9 +41,9 @@ RUN mkdir -p "$CLX_STREAMZ_HOME"/ml/models/cybert && \
 	mkdir "$CLX_STREAMZ_HOME"/ml/models/dga && \
 	mkdir "$CLX_STREAMZ_HOME"/data
 
-RUN wget -q https://downloads.apache.org/kafka/2.5.1/kafka_2.13-2.5.1.tgz -O /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz && \
-        tar xfz /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz -C /opt && \
-        rm /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz
+RUN wget -q https://downloads.apache.org/kafka/$KAFKA_VERSION/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz -O /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz && \
+    tar xfz /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz -C /opt && \
+    rm /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz
 
 # Download cybert apache model from huggingface for example
 RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/config.json -O "$CLX_STREAMZ_HOME"/ml/models/cybert/config.json
@@ -63,7 +63,7 @@ EXPOSE 2181
 EXPOSE 9092
 
 RUN source activate rapids && \
-    conda install -c pytorch "pytorch=1.7.0" torchvision "cudf_kafka=${RAPIDS_VERSION}" "custreamz=${RAPIDS_VERSION}" "scikit-learn>=0.21" "nodejs>=12" ipywidgets python-confluent-kafka "transformers=4.*" "seqeval=0.0.12" python-whois seaborn requests matplotlib pytest jupyterlab "openjdk=8.0.152" dask-cuda && \
+    conda install -c pytorch "pytorch=1.7.1" torchvision "cudf_kafka=${RAPIDS_VERSION}" "custreamz=${RAPIDS_VERSION}" "scikit-learn>=0.21" "nodejs>=12" ipywidgets python-confluent-kafka "transformers=4.*" "seqeval=0.0.12" python-whois seaborn requests matplotlib pytest jupyterlab "openjdk=8.0.152" dask-cuda && \
     pip install "git+https://github.com/rapidsai/cudatashader.git" && \
     pip install mockito && \
     pip install wget && \

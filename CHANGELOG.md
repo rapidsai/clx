@@ -1,6 +1,41 @@
-# 0.18.0
+# clx 0.18.0 (24 Feb 2021)
 
-Please see https://github.com/rapidsai/clx/releases/tag/branch-0.18-latest for the latest changes to this development branch.
+## Bug Fixes 🐛
+
+- Fix Kafka download in CLX Streamz Docker image (#349) @efajardo-nv
+- Fix PageRank in Network Mapping notebook (#342) @efajardo-nv
+- Port heuristic update (#336) @efajardo-nv
+- Fix pytorch version in conda recipe (#321) @efajardo-nv
+- Pin to PyTorch 1.7.0 (#320) @efajardo-nv
+
+## Documentation 📖
+
+- OSI Docs (#331) @bsuryadevara
+- README updates (#326) @efajardo-nv
+
+## New Features 🚀
+
+- CLX Module for LODA Anomaly Detection (#335) @efajardo-nv
+- SlashNext API Integration (#328) @bsuryadevara
+- Loda algorithm for anomaly detection and explanation. (#325) @tzemicheal
+- Exploratory Data Analysis Summary Stats (#324) @brhodes10
+- Auto-label PRs based on their content (#318) @jolorunyomi
+- Add xgboost training example (#313) @raykallen
+
+## Improvements 🛠️
+
+- Update stale GHA with exemptions &amp; new labels (#353) @mike-wendt
+- Add GHA to mark issues/prs as stale/rotten (#351) @Ethyling
+- Update to PyTorch 1.7.1 (#343) @efajardo-nv
+- Prepare Changelog for Automation (#337) @ajschmidt8
+- Add PyTorch DataParallel to cyBERT (#327) @efajardo-nv
+- Update to HuggingFace Transformers v4 (#322) @efajardo-nv
+- Adding Predictive Maintenance &amp; Root Cause Analysis Notebook (#317) @gbatmaz
+- Fix DGA Detection Notebook and DetectorDataset Memory Errors (#315) @bsuryadevara
+- Update CLX Streamz workflow to simplify new workflow implementation (#308) @bsuryadevara
+- Update to FIL Streamz example notebook (#307) @brhodes10
+- CLX sequence classifier (#303) @efajardo-nv
+- gpuCI Scripts Update (#276) @dillon-cullinan
 
 # clx 0.17.0 (10 Dec 2020)
 
