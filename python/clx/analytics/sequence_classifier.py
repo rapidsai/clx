@@ -137,6 +137,7 @@ class SequenceClassifier:
         test_dataset = Dataset(test_gdf)
         test_dataloader = DataLoader(test_dataset, batchsize=batch_size)
 
+        self._model.eval()
         tests, true_labels = [], []
         for df in test_dataloader.get_chunks():
             b_labels = df["label"]
@@ -210,6 +211,8 @@ class SequenceClassifier:
 
         preds = cudf.Series()
         probs = cudf.Series()
+
+        self._model.eval()
         for df in predict_dataloader.get_chunks():
             b_input_ids, b_input_mask = self._bert_uncased_tokenize(df["text"], max_seq_len)
             with torch.no_grad():
