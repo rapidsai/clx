@@ -72,3 +72,22 @@ def test_save_model(tmpdir):
         sc.save_model(tmpdir)
         assert path.exists(str(tmpdir.join("config.json")))
         assert path.exists(str(tmpdir.join("pytorch_model.bin")))
+
+
+def test_save_checkpoint(tmpdir):
+    if torch.cuda.is_available():
+        fname = str(tmpdir.mkdir("tmp_test_fs_writer").join("sc_checkpoint.tar"))
+        sc.save_checkpoint(fname)
+        assert path.exists(fname)
+
+
+def test_load_checkpoint(tmpdir):
+    if torch.cuda.is_available():
+        fname = str(tmpdir.mkdir("tmp_test_fs_writer").join("sc_checkpoint.tar"))
+        sc.save_checkpoint(fname)
+        assert path.exists(fname)
+        sc.load_checkpoint(fname)
+        assert isinstance(
+            sc._model.module,
+            transformers.models.bert.modeling_bert.BertForSequenceClassification,
+        )
