@@ -32,13 +32,7 @@ Analytics
 .. automodule:: clx.analytics.perfect_hash
     :members:
 
-.. autoclass:: clx.eda.EDA
-    :members:
-
 .. autoclass:: clx.analytics.loda.Loda
-    :members:
-
-.. autoclass:: clx.analytics.phishing_detector.PhishingDetector
     :members:
 
 .. autoclass:: clx.analytics.model.rnn_classifier.RNNClassifier
@@ -59,6 +53,11 @@ Analytics
 DNS Extractor
 -------------
 .. automodule:: clx.dns.dns_extractor
+    :members:
+
+Exploratory Data Analysis
+-------------------------
+.. autoclass:: clx.eda.EDA
     :members:
 
 Heuristics
