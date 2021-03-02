@@ -183,7 +183,7 @@ class SequenceClassifier:
         """
 
         checkpoint = {
-            "state_dict": self._model.state_dict()
+            "state_dict": self._model.module.state_dict()
         }
         torch.save(checkpoint, file_path)
 
