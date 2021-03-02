@@ -201,7 +201,7 @@ class SequenceClassifier:
         """
 
         model_dict = torch.load(file_path)
-        self._model.load_state_dict(model_dict["state_dict"])
+        self._model.module.load_state_dict(model_dict["state_dict"])
 
     def predict(self, input_data, max_seq_len=128, batch_size=32, threshold=0.5):
         """
