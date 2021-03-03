@@ -90,6 +90,7 @@ class DGADetector(Detector):
         >>> dd.train_model(train_data, labels)
         1.5728906989097595
         """
+        self.model.train()
         train_dataloader, test_dataloader = self._preprocess_data(
             train_data, labels, batch_size, train_size
         )
@@ -131,6 +132,7 @@ class DGADetector(Detector):
         1    0.924
         Name: dga_probability, dtype: decimal
         """
+        self.model.eval()
         df = cudf.DataFrame({"domain": domains})
         domains_len = df["domain"].count()
         temp_df = utils.str2ascii(df, domains_len)
