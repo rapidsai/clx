@@ -76,14 +76,14 @@ def test_save_model(tmpdir):
 
 def test_save_checkpoint(tmpdir):
     if torch.cuda.is_available():
-        fname = str(tmpdir.mkdir("tmp_test_fs_writer").join("sc_checkpoint.tar"))
+        fname = str(tmpdir.mkdir("tmp_test_sequence_classifier").join("sc_checkpoint.tar"))
         sc.save_checkpoint(fname)
         assert path.exists(fname)
 
 
 def test_load_checkpoint(tmpdir):
     if torch.cuda.is_available():
-        fname = str(tmpdir.mkdir("tmp_test_fs_writer").join("sc_checkpoint.tar"))
+        fname = str(tmpdir.mkdir("tmp_test_sequence_classifier").join("sc_checkpoint.tar"))
         sc.save_checkpoint(fname)
         assert path.exists(fname)
         sc.load_checkpoint(fname)
