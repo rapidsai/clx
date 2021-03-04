@@ -130,6 +130,7 @@ class SequenceClassifier:
         >>> emails_train, emails_test, labels_train, labels_test = train_test_split(train_emails_df, 'label', train_size=0.8)
         >>> sc.evaluate_model(emails_test, labels_test)
         """
+        self._model.eval()
         test_gdf = cudf.DataFrame()
         test_gdf["text"] = test_data
         test_gdf["label"] = labels
@@ -137,31 +138,28 @@ class SequenceClassifier:
         test_dataset = Dataset(test_gdf)
         test_dataloader = DataLoader(test_dataset, batchsize=batch_size)
 
-        self._model.eval()
-        tests, true_labels = [], []
+        eval_accuracy = 0
+        nb_eval_steps = 0
         for df in test_dataloader.get_chunks():
-            b_labels = df["label"]
             b_input_ids, b_input_mask = self._bert_uncased_tokenize(df["text"], max_seq_len)
             b_labels = torch.tensor(df["label"].to_array())
             with torch.no_grad():
-
                 logits = self._model(
                     b_input_ids, token_type_ids=None, attention_mask=b_input_mask
                 )[0]
 
-            logits = logits.detach().cpu().numpy()
-            label_ids = b_labels.to("cpu").numpy()
+            logits = logits.type(torch.DoubleTensor).to(self._device)
+            logits = cupy.fromDlpack(to_dlpack(logits))
+            label_ids = b_labels.type(torch.IntTensor).to(self._device)
+            label_ids = cupy.fromDlpack(to_dlpack(label_ids))
+            temp_eval_accuracy = self._flatten_accuracy(logits, label_ids)
 
-            tests.append(logits)
-            true_labels.append(label_ids)
+            eval_accuracy += temp_eval_accuracy
+            nb_eval_steps += 1
 
-        flat_tests = [item for sublist in tests for item in sublist]
-        flat_tests = np.argmax(flat_tests, axis=1).flatten()
-        flat_true_labels = [item for sublist in true_labels for item in sublist]
+        accuracy = eval_accuracy / nb_eval_steps
 
-        accuracy = accuracy_score(flat_true_labels, flat_tests)
-
-        return accuracy
+        return float(accuracy)
 
     def save_model(self, save_to_path="."):
         """
