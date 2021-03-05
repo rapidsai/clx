@@ -168,6 +168,41 @@ class SequenceClassifier:
 
         self._model.module.save_pretrained(save_to_path)
 
+    def save_checkpoint(self, file_path):
+        """
+        Save model checkpoint
+
+        :param file_path: file path to save checkpoint
+        :type file_path: str
+
+        Examples
+        --------
+        >>> sc.init_model("bert-base-uncased")  # huggingface pre-trained model
+        >>> sc.train_model(train_data, train_labels)
+        >>> sc.save_checkpoint(PATH)
+        """
+
+        checkpoint = {
+            "state_dict": self._model.module.state_dict()
+        }
+        torch.save(checkpoint, file_path)
+
+    def load_checkpoint(self, file_path):
+        """
+        Load model checkpoint
+
+        :param file_path: file path to load checkpoint
+        :type file_path: str
+
+        Examples
+        --------
+        >>> sc.init_model("bert-base-uncased")  # huggingface pre-trained model
+        >>> sc.load_checkpoint(PATH)
+        """
+
+        model_dict = torch.load(file_path)
+        self._model.module.load_state_dict(model_dict["state_dict"])
+
     def predict(self, input_data, max_seq_len=128, batch_size=32, threshold=0.5):
         """
         Predict the class with the trained model
@@ -190,6 +225,8 @@ class SequenceClassifier:
         >>> sc.train_model(emails_train, labels_train)
         >>> predictions = sc.predict(emails_test, threshold=0.8)
         """
+        self._model.eval()
+
         predict_inputs, predict_masks = self._bert_uncased_tokenize(input_data, max_seq_len)
         predict_inputs = predict_inputs.type(torch.LongTensor).to(self._device)
         predict_masks = predict_masks.to(self._device)
