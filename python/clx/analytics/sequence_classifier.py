@@ -3,12 +3,10 @@ import os
 
 import cudf
 import cupy
-import numpy as np
 import torch
 import torch.nn as nn
 from clx.utils.data.dataloader import DataLoader
 from clx.utils.data.dataset import Dataset
-from sklearn.metrics import accuracy_score
 from torch.utils.dlpack import from_dlpack, to_dlpack
 from tqdm import trange
 from transformers import AutoModelForSequenceClassification, AdamW
