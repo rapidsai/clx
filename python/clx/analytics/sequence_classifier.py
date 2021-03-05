@@ -97,7 +97,6 @@ class SequenceClassifier:
             tr_loss = 0   # Tracking variables
             nb_tr_examples, nb_tr_steps = 0, 0
             for df in train_dataloader.get_chunks():
-                b_labels = df["label"]
                 b_input_ids, b_input_mask = self._bert_uncased_tokenize(df["text"], max_seq_len)
                 b_labels = torch.tensor(df["label"].to_array())
                 self._optimizer.zero_grad()  # Clear out the gradients
