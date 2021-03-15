@@ -50,6 +50,9 @@ Analytics
 .. automodule:: clx.analytics.periodicity_detection
     :members:
 
+.. automodule:: clx.analytics.anomaly_detection
+    :members:
+
 DNS Extractor
 -------------
 .. automodule:: clx.dns.dns_extractor
