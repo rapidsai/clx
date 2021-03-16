@@ -1,5 +1,7 @@
 # <div align="left"><img src="img/rapids_logo.png" width="90px"/>&nbsp;&nbsp;Cyber Log Accelerators (CLX)</div>
 
+[![Build Status](https://gpuci.gpuopenanalytics.com/job/rapidsai/job/gpuci/job/clx/job/branches/job/clx-branch-pipeline/badge/icon)](https://gpuci.gpuopenanalytics.com/job/rapidsai/job/gpuci/job/clx/job/branches/job/clx-branch-pipeline/)
+
 **NOTE:** For the latest stable [README.md](https://github.com/rapidsai/clx/blob/main/README.md) ensure you are on the `main` branch.
 
 CLX ("clicks") provides a collection of [RAPIDS](https://rapids.ai/) examples for security analysts, data scientists, and engineers to quickly get started applying RAPIDS and GPU acceleration to real-world cybersecurity use cases.
