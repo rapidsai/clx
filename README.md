@@ -262,5 +262,3 @@ Find out more details on the [RAPIDS site](https://rapids.ai/community.html)
 ## <div align="left"><img src="img/rapids_logo.png" width="265px"/></div> Open GPU Data Science
 
 The RAPIDS suite of open source software libraries aim to enable execution of end-to-end data science and analytics pipelines entirely on GPUs. It relies on NVIDIA® CUDA® primitives for low-level compute optimization, but exposing that GPU parallelism and high-bandwidth memory speed through user-friendly Python interfaces.
-
-<p align="center"><img src="img/rapids_arrow.png" width="80%"/></p>
