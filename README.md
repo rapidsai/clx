@@ -1,4 +1,4 @@
-# <div align="left"><img src="img/rapids_logo.png" width="90px"/>&nbsp;&nbsp;Cyber Log Accelerators (CLX)</div>
+# <div align="left"><img src="img/rapids_logo.png" width="90px"/>&nbsp;&nbsp;CLX - Cyber Log Accelerators</div>
 
 [![Build Status](https://gpuci.gpuopenanalytics.com/job/rapidsai/job/gpuci/job/clx/job/branches/job/clx-branch-pipeline/badge/icon)](https://gpuci.gpuopenanalytics.com/job/rapidsai/job/gpuci/job/clx/job/branches/job/clx-branch-pipeline/)
 
@@ -13,101 +13,12 @@ The goal of CLX is to:
 1. Accelerate log parsing in a flexible, non-regex method. and
 1. Provide SIEM integration with GPU compute environments via RAPIDS and effectively extend the SIEM environment.
 
+### Documentation
+Python API documentation can be found [here](https://docs.rapids.ai/api) or generated from [docs](docs) directory.
 
-## Getting Started with Python and Notebooks
-CLX is targeted towards cybersecurity data scientists, senior security analysts, threat hunters, and forensic investigators. Data scientists can use CLX in traditional Python files and Jupyter notebooks. The notebooks folder contains example use cases and workflow instantiations. It's also easy to get started using CLX with RAPIDS with Python. The code below reads cyber alerts, aggregates them by day, and calculates the rolling z-score value across multiple days to look for outliers in volumes of alerts. Expanded code is available in the alert analysis notebook.
-
-```python
-import cudf
-import s3fs
-from os import path
-
-# download data
-if not path.exists("./splunk_faker_raw4"):
-    fs = s3fs.S3FileSystem(anon=True)
-    fs.get("rapidsai-data/cyber/clx/splunk_faker_raw4", "./splunk_faker_raw4")
-
-# read in alert data
-gdf = cudf.read_csv('./splunk_faker_raw4')
-gdf.columns = ['raw']
-
-# parse the alert data using CLX built-in parsers
-from clx.parsers.splunk_notable_parser import SplunkNotableParser
-
-snp = SplunkNotableParser()
-parsed_gdf = cudf.DataFrame()
-parsed_gdf = snp.parse(gdf, 'raw')
-
-# define function to round time to the day
-def round2day(epoch_time):
-    return int(epoch_time/86400)*86400
-
-# aggregate alerts by day
-parsed_gdf['time'] = parsed_gdf['time'].astype(int)
-parsed_gdf['day'] = parsed_gdf.time.applymap(round2day)
-day_rule_gdf= parsed_gdf[['search_name','day','time']].groupby(['search_name', 'day']).count().reset_index()
-day_rule_gdf.columns = ['rule', 'day', 'count']
-
-# import the rolling z-score function from CLX statistics
-from clx.analytics.stats import rzscore
-
-# pivot the alert data so each rule is a column
-def pivot_table(gdf, index_col, piv_col, v_col):
-    index_list = gdf[index_col].unique()
-    piv_gdf = cudf.DataFrame()
-    piv_gdf[index_col] = index_list
-    for group in gdf[piv_col].unique():
-        temp_df = gdf[gdf[piv_col] == group]
-        temp_df = temp_df[[index_col, v_col]]
-        temp_df.columns = [index_col, group]
-        piv_gdf = piv_gdf.merge(temp_df, on=[index_col], how='left')
-    piv_gdf = piv_gdf.set_index(index_col)
-    return piv_gdf.sort_index()
-
-alerts_per_day_piv = pivot_table(day_rule_gdf, 'day', 'rule', 'count').fillna(0)
-
-# create a new cuDF with the rolling z-score values calculated
-r_zscores = cudf.DataFrame()
-for rule in alerts_per_day_piv.columns:
-    x = alerts_per_day_piv[rule]
-    r_zscores[rule] = rzscore(x, 7) #7 day window
-
-```
-
-## Getting Started With Workflows
-
-In addition to traditional Python files and Jupyter notebooks, CLX also includes structure in the form of a workflow. A workflow is a series of data transformations performed on a [GPU dataframe](https://github.com/rapidsai/cudf) that contains raw cyber data, with the goal of surfacing meaningful cyber analytical output. Multiple I/O methods are available, including Kafka and on-disk file stores.
-
-Example flow workflow reading and writing to file:
-
-```python
-from clx.workflow import netflow_workflow
-
-source = {
-   "type": "fs",
-   "input_format": "csv",
-   "input_path": "/path/to/input",
-   "schema": ["firstname","lastname","gender"],
-   "delimiter": ",",
-   "required_cols": ["firstname","lastname","gender"],
-   "dtype": ["str","str","str"],
-   "header": "0"
-}
-dest = {
-   "type": "fs",
-   "output_format": "csv",
-   "output_path": "/path/to/output"
-}
-wf = netflow_workflow.NetflowWorkflow(source=source, destination=dest, name="my-netflow-workflow")
-wf.run_workflow()
-```
-
-For additional examples, browse our complete [API documentation](https://docs.rapids.ai/api/clx/nightly/api.html), or check out our more detailed [notebooks](https://github.com/rapidsai/clx/tree/main/notebooks).
-
-
-## Getting CLX
+## Installation 
 ### Intro
-There are 4 ways to get CLX :
+There are 4 ways to get started with CLX :
 1. [Quick Start](#quickstart)
 1. [Build CLX Docker Image](#docker)
 1. [Conda Installation](#conda)
@@ -246,9 +157,110 @@ conda install -c rapidsai-nightly -c nvidia -c pytorch -c conda-forge -c default
 
 <a name="source"></a>
 
-### Building from Source and Contributing
+### Build/Install from Source
 
-For contributing guildelines please reference our [guide for contributing](CONTRIBUTING.md).
+See build [instructions](CONTRIBUTING.md#setting-up-your-build-environment).
 
-### Documentation
-Python API documentation can be found [here](https://docs.rapids.ai/api) or generated from [docs](docs) directory.
+## Getting Started with Python and Notebooks
+CLX is targeted towards cybersecurity data scientists, senior security analysts, threat hunters, and forensic investigators. Data scientists can use CLX in traditional Python files and Jupyter notebooks. The notebooks folder contains example use cases and workflow instantiations. It's also easy to get started using CLX with RAPIDS with Python. The code below reads cyber alerts, aggregates them by day, and calculates the rolling z-score value across multiple days to look for outliers in volumes of alerts. Expanded code is available in the alert analysis notebook.
+
+```python
+import cudf
+import s3fs
+from os import path
+
+# download data
+if not path.exists("./splunk_faker_raw4"):
+    fs = s3fs.S3FileSystem(anon=True)
+    fs.get("rapidsai-data/cyber/clx/splunk_faker_raw4", "./splunk_faker_raw4")
+
+# read in alert data
+gdf = cudf.read_csv('./splunk_faker_raw4')
+gdf.columns = ['raw']
+
+# parse the alert data using CLX built-in parsers
+from clx.parsers.splunk_notable_parser import SplunkNotableParser
+
+snp = SplunkNotableParser()
+parsed_gdf = cudf.DataFrame()
+parsed_gdf = snp.parse(gdf, 'raw')
+
+# define function to round time to the day
+def round2day(epoch_time):
+    return int(epoch_time/86400)*86400
+
+# aggregate alerts by day
+parsed_gdf['time'] = parsed_gdf['time'].astype(int)
+parsed_gdf['day'] = parsed_gdf.time.applymap(round2day)
+day_rule_gdf= parsed_gdf[['search_name','day','time']].groupby(['search_name', 'day']).count().reset_index()
+day_rule_gdf.columns = ['rule', 'day', 'count']
+
+# import the rolling z-score function from CLX statistics
+from clx.analytics.stats import rzscore
+
+# pivot the alert data so each rule is a column
+def pivot_table(gdf, index_col, piv_col, v_col):
+    index_list = gdf[index_col].unique()
+    piv_gdf = cudf.DataFrame()
+    piv_gdf[index_col] = index_list
+    for group in gdf[piv_col].unique():
+        temp_df = gdf[gdf[piv_col] == group]
+        temp_df = temp_df[[index_col, v_col]]
+        temp_df.columns = [index_col, group]
+        piv_gdf = piv_gdf.merge(temp_df, on=[index_col], how='left')
+    piv_gdf = piv_gdf.set_index(index_col)
+    return piv_gdf.sort_index()
+
+alerts_per_day_piv = pivot_table(day_rule_gdf, 'day', 'rule', 'count').fillna(0)
+
+# create a new cuDF with the rolling z-score values calculated
+r_zscores = cudf.DataFrame()
+for rule in alerts_per_day_piv.columns:
+    x = alerts_per_day_piv[rule]
+    r_zscores[rule] = rzscore(x, 7) #7 day window
+
+```
+
+## Getting Started With Workflows
+
+In addition to traditional Python files and Jupyter notebooks, CLX also includes structure in the form of a workflow. A workflow is a series of data transformations performed on a [GPU dataframe](https://github.com/rapidsai/cudf) that contains raw cyber data, with the goal of surfacing meaningful cyber analytical output. Multiple I/O methods are available, including Kafka and on-disk file stores.
+
+Example flow workflow reading and writing to file:
+
+```python
+from clx.workflow import netflow_workflow
+
+source = {
+   "type": "fs",
+   "input_format": "csv",
+   "input_path": "/path/to/input",
+   "schema": ["firstname","lastname","gender"],
+   "delimiter": ",",
+   "required_cols": ["firstname","lastname","gender"],
+   "dtype": ["str","str","str"],
+   "header": "0"
+}
+dest = {
+   "type": "fs",
+   "output_format": "csv",
+   "output_path": "/path/to/output"
+}
+wf = netflow_workflow.NetflowWorkflow(source=source, destination=dest, name="my-netflow-workflow")
+wf.run_workflow()
+```
+
+For additional examples, browse our complete [API documentation](https://docs.rapids.ai/api/clx/nightly/api.html), or check out our more detailed [notebooks](https://github.com/rapidsai/clx/tree/main/notebooks).
+
+## Contributing
+
+Please see our [guide for contributing to CLX](CONTRIBUTING.md).  
+
+## Contact
+
+Find out more details on the [RAPIDS site](https://rapids.ai/community.html)
+
+## <div align="left"><img src="img/rapids_logo.png" width="265px"/></div> Open GPU Data Science
+
+The RAPIDS suite of open source software libraries aim to enable execution of end-to-end data science and analytics pipelines entirely on GPUs. It relies on NVIDIA® CUDA® primitives for low-level compute optimization, but exposing that GPU parallelism and high-bandwidth memory speed through user-friendly Python interfaces.
+
+<p align="center"><img src="img/rapids_arrow.png" width="80%"/></p>
