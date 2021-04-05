@@ -22,68 +22,73 @@ from clx.eda.summary_stats import SummaryStatistics
 
 
 class EDA:
-    eda_modules = {"SummaryStatistics": SummaryStatistics}
+    """An EDA (Exploratory Data Analysis) Object. EDA is used to explore different features of a given dataframe.
 
-    def __init__(self, dataframe):
-        """
-        An EDA (Exploratory Data Analysis) Object.
-        Parameters
-        ----------
-        :param dataframe: Dataframe to be used for analysis
-        :type dataframe: cudf.DataFrame
+    :param dataframe: Dataframe to be used for analysis
+    :type dataframe: cudf.DataFrame
 
-        Examples
-        --------
-        >>> from clx.eda import EDA
-        >>> import cudf
-        >>> import pandas as pd
-        >>> df = cudf.DataFrame()
-        >>> df['a'] = [1,2,3,4]
-        >>> df['b'] = ['a','b','c','c']
-        >>> df['c'] = [True, False, True, True]
-        >>> df['d'] = cudf.Series(pd.date_range("2000-01-01", periods=3,freq="m"))
-        >>> eda = EDA(df)
-        >>> eda
-            {
-                "SummaryStatistics": {
-                    "a": {
-                        "dtype": "int64",
-                        "summary": {
-                            "unique": "4",
-                            "total": "4"
-                        }
-                    },
-                    "b": {
-                        "dtype": "object",
-                        "summary": {
-                            "unique": "3",
-                            "total": "4"
-                        }
-                    },
-                    "c": {
-                        "dtype": "bool",
-                        "summary": {
-                            "true_percent": "0.75"
-                        }
-                    },
-                    "d": {
-                        "dtype": "datetime64[ns]",
-                        "summary": {
-                            "timespan": "60 days, 2880 hours, 0 minutes, 0 seconds"
-                        }
+    Examples
+    --------
+    >>> from clx.eda import EDA
+    >>> import cudf
+    >>> import pandas as pd
+    >>> df = cudf.DataFrame()
+    >>> df['a'] = [1,2,3,4]
+    >>> df['b'] = ['a','b','c','c']
+    >>> df['c'] = [True, False, True, True]
+    >>> df['d'] = cudf.Series(pd.date_range("2000-01-01", periods=3,freq="m"))
+    >>> eda = EDA(df)
+    >>> eda
+        {
+            "SummaryStatistics": {
+                "a": {
+                    "dtype": "int64",
+                    "summary": {
+                        "unique": "4",
+                        "total": "4"
+                    }
+                },
+                "b": {
+                    "dtype": "object",
+                    "summary": {
+                        "unique": "3",
+                        "total": "4"
+                    }
+                },
+                "c": {
+                    "dtype": "bool",
+                    "summary": {
+                        "true_percent": "0.75"
+                    }
+                },
+                "d": {
+                    "dtype": "datetime64[ns]",
+                    "summary": {
+                        "timespan": "60 days, 2880 hours, 0 minutes, 0 seconds"
                     }
                 }
             }
-        """
+        }
+    """
+
+    eda_modules = {"SummaryStatistics": SummaryStatistics}
+
+    def __init__(self, dataframe):
         self.__dataframe = dataframe
         self.__analysis, self.__module_ref = self.__generate_analysis(dataframe)
 
     @property
     def analysis(self):
+        """
+        Analysis results as a `dict`
+        """
         return self.__analysis
 
     @property
     def dataframe(self):
+        """
+        Dataframe used for analysis
+        """
         return self.__dataframe
 
     def __repr__(self):
@@ -112,6 +117,9 @@ class EDA:
 
     def cuxfilter_dashboard(self):
         """Create cuxfilter dashboard for Exploratory Data Analysis.
+
+        :return: cuxfilter dashboard with populated with data and charts.
+        :rtype: cuxfilter.DashBoard
         """
         for module in self.__module_ref.values():
             charts = module.charts
