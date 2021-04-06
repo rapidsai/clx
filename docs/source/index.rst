@@ -15,6 +15,12 @@ Welcome to clx's documentation!
    intro-clx-workflow.ipynb
    intro-clx-dga.ipynb
    intro-clx-streamz.ipynb
+   intro-clx-asset-classification.ipynb
+   intro-clx-cybert.ipynb
+   intro-clx-loda-anomaly-detection.ipynb
+   intro-clx-periodicity-detection.ipynb
+   intro-clx-phishing-detection.ipynb
+   intro-clx-predictive-maintenance.ipynb
 
 Indices and tables
 ==================
