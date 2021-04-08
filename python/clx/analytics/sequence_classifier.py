@@ -10,11 +10,12 @@ from clx.utils.data.dataset import Dataset
 from torch.utils.dlpack import from_dlpack, to_dlpack
 from tqdm import trange
 from transformers import AutoModelForSequenceClassification, AdamW
+from abc import ABC, abstractmethod
 
 log = logging.getLogger(__name__)
 
 
-class SequenceClassifier:
+class SequenceClassifier(ABC):
     """
     Sequence Classifier using BERT. This class provides methods for training/loading BERT models, evaluation and prediction.
     """
@@ -25,7 +26,11 @@ class SequenceClassifier:
         self._optimizer = None
         self._hashpath = self._get_hash_table_path()
 
-    def init_model(self, model_or_path):
+    @abstractmethod
+    def predict(self, input_data, max_seq_len=128, batch_size=32, threshold=0.5):
+        pass
+
+    def init_model(self, model_or_path, num_labels=2):
         """
         Load model from huggingface or locally saved model.
 
@@ -41,7 +46,7 @@ class SequenceClassifier:
 
         >>> sc.init_model(model_path) # locally saved model
         """
-        self._model = AutoModelForSequenceClassification.from_pretrained(model_or_path)
+        self._model = AutoModelForSequenceClassification.from_pretrained(model_or_path, num_labels=num_labels)
 
         if torch.cuda.is_available():
             self._device = torch.device("cuda")

@@ -15,12 +15,12 @@ from transformers import AutoModelForSequenceClassification, AdamW
 log = logging.getLogger(__name__)
 
 
-class MulticlassSequenceClassifier(SequenceClassifier):
+class BinarySequenceClassifier(SequenceClassifier):
     """
     Sequence Classifier using BERT. This class provides methods for training/loading BERT models, evaluation and prediction.
     """
 
-    def predict(self, input_data, max_seq_len=128, batch_size=32):
+    def predict(self, input_data, max_seq_len=128, batch_size=32, threshold=0.5):
         """
         Predict the class with the trained model
 
@@ -59,11 +59,12 @@ class MulticlassSequenceClassifier(SequenceClassifier):
                 logits = self._model(
                     b_input_ids, token_type_ids=None, attention_mask=b_input_mask
                 )[0]
+                b_probs = torch.sigmoid(logits[:, 1])
+                b_preds = b_probs.ge(threshold)
 
-            logits = logits.type(torch.DoubleTensor).to(self._device)
-            logits = cupy.fromDlpack(to_dlpack(logits))
-            b_preds = cupy.argmax(logits, axis=1).flatten()
-            b_preds = cudf.Series(b_preds)
+            b_probs = cudf.io.from_dlpack(to_dlpack(b_probs))
+            b_preds = cudf.io.from_dlpack(to_dlpack(b_preds))
             preds = preds.append(b_preds)
+            probs = probs.append(b_probs)
 
-        return preds
+        return preds, probs
