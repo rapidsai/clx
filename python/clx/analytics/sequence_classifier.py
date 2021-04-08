@@ -215,55 +215,6 @@ class SequenceClassifier(ABC):
         model_dict = torch.load(file_path)
         self._model.module.load_state_dict(model_dict["state_dict"])
 
-    def predict(self, input_data, max_seq_len=128, batch_size=32, threshold=0.5):
-        """
-        Predict the class with the trained model
-
-        :param input_data: input text data for prediction
-        :type input_data: cudf.Series
-        :param max_seq_len: Limits the length of the sequence returned by tokenizer. If tokenized sentence is shorter than max_seq_len, output will be padded with 0s. If the tokenized sentence is longer than max_seq_len it will be truncated to max_seq_len.
-        :type max_seq_len: int
-        :param batch_size: batch size
-        :type batch_size: int
-        :param threshold: results with probabilities higher than this will be labeled as positive
-        :type threshold: float
-        :return: predictions, probabilities: predictions are labels (0 or 1) based on minimum threshold
-        :rtype: cudf.Series, cudf.Series
-
-        Examples
-        --------
-        >>> from cuml.preprocessing.model_selection import train_test_split
-        >>> emails_train, emails_test, labels_train, labels_test = train_test_split(train_emails_df, 'label', train_size=0.8)
-        >>> sc.train_model(emails_train, labels_train)
-        >>> predictions = sc.predict(emails_test, threshold=0.8)
-        """
-
-        predict_gdf = cudf.DataFrame()
-        predict_gdf["text"] = input_data
-
-        predict_dataset = Dataset(predict_gdf)
-        predict_dataloader = DataLoader(predict_dataset, batchsize=batch_size)
-
-        preds = cudf.Series()
-        probs = cudf.Series()
-
-        self._model.eval()
-        for df in predict_dataloader.get_chunks():
-            b_input_ids, b_input_mask = self._bert_uncased_tokenize(df["text"], max_seq_len)
-            with torch.no_grad():
-                logits = self._model(
-                    b_input_ids, token_type_ids=None, attention_mask=b_input_mask
-                )[0]
-                b_probs = torch.sigmoid(logits[:, 1])
-                b_preds = b_probs.ge(threshold)
-
-            b_probs = cudf.io.from_dlpack(to_dlpack(b_probs))
-            b_preds = cudf.io.from_dlpack(to_dlpack(b_preds))
-            preds = preds.append(b_preds)
-            probs = probs.append(b_probs)
-
-        return preds, probs
-
     def _get_hash_table_path(self):
         hash_table_path = "%s/resources/bert-base-uncased-hash.txt" % os.path.dirname(
             os.path.realpath(__file__)

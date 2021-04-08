@@ -1,16 +1,12 @@
 import logging
-import os
 
 import cudf
 import cupy
 import torch
-import torch.nn as nn
 from clx.analytics.sequence_classifier import SequenceClassifier
 from clx.utils.data.dataloader import DataLoader
 from clx.utils.data.dataset import Dataset
-from torch.utils.dlpack import from_dlpack, to_dlpack
-from tqdm import trange
-from transformers import AutoModelForSequenceClassification, AdamW
+from torch.utils.dlpack import to_dlpack
 
 log = logging.getLogger(__name__)
 
@@ -50,7 +46,6 @@ class MulticlassSequenceClassifier(SequenceClassifier):
         predict_dataloader = DataLoader(predict_dataset, batchsize=batch_size)
 
         preds = cudf.Series()
-        probs = cudf.Series()
 
         self._model.eval()
         for df in predict_dataloader.get_chunks():
