@@ -36,7 +36,7 @@ class MulticlassSequenceClassifier(SequenceClassifier):
         >>> from cuml.preprocessing.model_selection import train_test_split
         >>> emails_train, emails_test, labels_train, labels_test = train_test_split(train_emails_df, 'label', train_size=0.8)
         >>> sc.train_model(emails_train, labels_train)
-        >>> predictions = sc.predict(emails_test, threshold=0.8)
+        >>> predictions = sc.predict(emails_test)
         """
 
         predict_gdf = cudf.DataFrame()
