@@ -23,8 +23,6 @@ class BinarySequenceClassifier(SequenceClassifier):
 
         :param model_or_path: huggingface pretrained model name or directory path to model
         :type model_or_path: str
-        :param num_labels: number of labels used only for multiclass classification
-        :type num_labels: int
 
         Examples
         --------

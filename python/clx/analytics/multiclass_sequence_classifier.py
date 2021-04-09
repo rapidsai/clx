@@ -32,9 +32,9 @@ class MulticlassSequenceClassifier(SequenceClassifier):
         >>> from clx.analytics.multiclass_sequence_classifier import MulticlassSequenceClassifier
         >>> sc = MulticlassSequenceClassifier()
 
-        >>> sc.init_model("bert-base-uncased")  # huggingface pre-trained model
+        >>> sc.init_model("bert-base-uncased", num_labels=4)  # huggingface pre-trained model
 
-        >>> sc.init_model(model_path) # locally saved model
+        >>> sc.init_model(model_path, num_labels=4) # locally saved model
         """
         self._model = AutoModelForSequenceClassification.from_pretrained(model_or_path, num_labels=num_labels)
 
