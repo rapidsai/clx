@@ -2,10 +2,12 @@ import logging
 
 import cudf
 import torch
+import torch.nn as nn
+from torch.utils.dlpack import to_dlpack
 from clx.analytics.sequence_classifier import SequenceClassifier
 from clx.utils.data.dataloader import DataLoader
 from clx.utils.data.dataset import Dataset
-from torch.utils.dlpack import to_dlpack
+from transformers import AutoModelForSequenceClassification
 
 log = logging.getLogger(__name__)
 
@@ -14,6 +16,33 @@ class BinarySequenceClassifier(SequenceClassifier):
     """
     Sequence Classifier using BERT. This class provides methods for training/loading BERT models, evaluation and prediction.
     """
+
+    def init_model(self, model_or_path):
+        """
+        Load model from huggingface or locally saved model.
+
+        :param model_or_path: huggingface pretrained model name or directory path to model
+        :type model_or_path: str
+        :param num_labels: number of labels used only for multiclass classification
+        :type num_labels: int
+
+        Examples
+        --------
+        >>> from clx.analytics.binary_sequence_classifier import BinarySequenceClassifier
+        >>> sc = BinarySequenceClassifier()
+
+        >>> sc.init_model("bert-base-uncased")  # huggingface pre-trained model
+
+        >>> sc.init_model(model_path) # locally saved model
+        """
+        self._model = AutoModelForSequenceClassification.from_pretrained(model_or_path)
+
+        if torch.cuda.is_available():
+            self._device = torch.device("cuda")
+            self._model.cuda()
+            self._model = nn.DataParallel(self._model)
+        else:
+            self._device = torch.device("cpu")
 
     def predict(self, input_data, max_seq_len=128, batch_size=32, threshold=0.5):
         """

@@ -17,6 +17,10 @@ Analytics
 .. autoclass:: clx.analytics.asset_classification.AssetClassification
     :members:
 
+.. autoclass:: clx.analytics.binary_sequence_classifier.BinarySequenceClassifier
+    :members:
+    :inherited-members:
+
 .. autoclass:: clx.analytics.cybert.Cybert
     :members:
 
@@ -29,9 +33,6 @@ Analytics
 .. autoclass:: clx.analytics.dga_detector.DGADetector
     :members:
 
-.. automodule:: clx.analytics.perfect_hash
-    :members:
-
 .. autoclass:: clx.analytics.loda.Loda
     :members:
 
@@ -41,16 +42,20 @@ Analytics
 .. autoclass:: clx.analytics.model.tabular_model.TabularModel
     :members:
 
-.. autoclass:: clx.analytics.sequence_classifier.SequenceClassifier
+.. autoclass:: clx.analytics.multiclass_sequence_classifier.MulticlassSequenceClassifier
+    :members:
+    :inherited-members:
+
+.. automodule:: clx.analytics.anomaly_detection
     :members:
 
-.. automodule:: clx.analytics.stats
+.. automodule:: clx.analytics.perfect_hash
     :members:
 
 .. automodule:: clx.analytics.periodicity_detection
     :members:
 
-.. automodule:: clx.analytics.anomaly_detection
+.. automodule:: clx.analytics.stats
     :members:
 
 DNS Extractor

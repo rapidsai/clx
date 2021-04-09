@@ -4,12 +4,11 @@ import os
 import cudf
 import cupy
 import torch
-import torch.nn as nn
 from clx.utils.data.dataloader import DataLoader
 from clx.utils.data.dataset import Dataset
 from torch.utils.dlpack import from_dlpack, to_dlpack
 from tqdm import trange
-from transformers import AutoModelForSequenceClassification, AdamW
+from transformers import AdamW
 from abc import ABC, abstractmethod
 
 log = logging.getLogger(__name__)
@@ -29,33 +28,6 @@ class SequenceClassifier(ABC):
     @abstractmethod
     def predict(self, input_data, max_seq_len=128, batch_size=32, threshold=0.5):
         pass
-
-    def init_model(self, model_or_path, num_labels=2):
-        """
-        Load model from huggingface or locally saved model.
-
-        :param model_or_path: huggingface pretrained model name or directory path to model
-        :type model_or_path: str
-        :param num_labels: number of labels used only for multiclass classification
-        :type num_labels: int
-
-        Examples
-        --------
-        >>> from clx.analytics.sequence_classifier import SequenceClassifier
-        >>> sc = SequenceClassifier()
-
-        >>> sc.init_model("bert-base-uncased")  # huggingface pre-trained model
-
-        >>> sc.init_model(model_path) # locally saved model
-        """
-        self._model = AutoModelForSequenceClassification.from_pretrained(model_or_path, num_labels=num_labels)
-
-        if torch.cuda.is_available():
-            self._device = torch.device("cuda")
-            self._model.cuda()
-            self._model = nn.DataParallel(self._model)
-        else:
-            self._device = torch.device("cpu")
 
     def train_model(
         self,
