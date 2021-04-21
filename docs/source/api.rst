@@ -7,6 +7,11 @@ IP
 .. automodule:: clx.ip
     :members:
 
+Features
+--------
+.. automodule:: clx.features
+    :members:
+
 Analytics
 ---------
 .. autoclass:: clx.analytics.asset_classification.AssetClassification
@@ -27,13 +32,7 @@ Analytics
 .. automodule:: clx.analytics.perfect_hash
     :members:
 
-.. autoclass:: clx.eda.EDA
-    :members:
-
 .. autoclass:: clx.analytics.loda.Loda
-    :members:
-
-.. autoclass:: clx.analytics.phishing_detector.PhishingDetector
     :members:
 
 .. autoclass:: clx.analytics.model.rnn_classifier.RNNClassifier
@@ -51,9 +50,17 @@ Analytics
 .. automodule:: clx.analytics.periodicity_detection
     :members:
 
+.. automodule:: clx.analytics.anomaly_detection
+    :members:
+
 DNS Extractor
 -------------
 .. automodule:: clx.dns.dns_extractor
+    :members:
+
+Exploratory Data Analysis
+-------------------------
+.. autoclass:: clx.eda.EDA
     :members:
 
 Heuristics
