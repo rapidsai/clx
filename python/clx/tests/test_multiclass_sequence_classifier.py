@@ -20,18 +20,18 @@ import transformers
 from cuml.preprocessing.model_selection import train_test_split
 from faker import Faker
 
-from clx.analytics.sequence_classifier import SequenceClassifier
+from clx.analytics.multiclass_sequence_classifier import MulticlassSequenceClassifier
 
-sc = SequenceClassifier()
+sc = MulticlassSequenceClassifier()
 if torch.cuda.is_available():
-    sc.init_model("bert-base-uncased")
+    sc.init_model("bert-base-uncased", num_labels=3)
 
 
 def test_train_model():
     if torch.cuda.is_available():
         fake = Faker()
         email_col = [fake.text() for _ in range(200)]
-        label_col = [random.randint(0, 1) for _ in range(200)]
+        label_col = [random.randint(0, 2) for _ in range(200)]
         emails_gdf = cudf.DataFrame(list(zip(email_col, label_col)), columns=["email", "label"])
         X_train, X_test, y_train, y_test = train_test_split(
             emails_gdf, "label", train_size=0.8, random_state=10
@@ -64,7 +64,7 @@ def test_predict():
     if torch.cuda.is_available():
         X_test = cudf.Series(["email 1", "email 2"])
         preds = sc.predict(X_test, max_seq_len=128)
-        assert preds[0].isin([False, True]).equals(cudf.Series([True, True]))
+        assert preds.isin([0, 1, 2]).equals(cudf.Series([True, True]))
 
 
 def test_save_model(tmpdir):
