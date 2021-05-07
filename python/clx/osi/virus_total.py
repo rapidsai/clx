@@ -51,6 +51,7 @@ class VirusTotalClient(object):
         This function allows you to send a file for scanning with VirusTotal.
         Before performing submissions it would be nice to retrieve the latest report on the file.
         File size limit is 32MB, in order to submit files up to 200MB in size it is mandatory to use `scan_big_file` feature
+        
         :param file: File to be scanned
         :type file: str
         :return: Response
@@ -80,6 +81,7 @@ class VirusTotalClient(object):
     def file_rescan(self, *resource):
         """
         This function rescan given files.
+        
         :param *resource: The resource argument can be the MD5, SHA-1 or SHA-256 of the file you want to re-scan.
         :type *resource: str
         :return: Response
@@ -101,6 +103,7 @@ class VirusTotalClient(object):
     def file_report(self, *resource):
         """
         Retrieve file scan reports
+        
         :param *resource: The resource argument can be the MD5, SHA-1 or SHA-256 of a file for which you want to retrieve
         the most recent antivirus report. You may also specify a scan_id returned by the /file/scan endpoint.
         :type *resource: str
@@ -122,6 +125,7 @@ class VirusTotalClient(object):
 
     def url_scan(self, *url):
         """Retrieve URL scan reports
+        
         :param *url: A URL for which you want to retrieve the most recent report. You may also specify a scan_id (sha256-timestamp as returned by the URL submission API) to access a specific report.
         :type *url: str
         :return: Response
@@ -143,6 +147,7 @@ class VirusTotalClient(object):
     def url_report(self, *resource):
         """
         Retrieve URL scan reports
+        
         :param *resource: The resource argument must be the URL to retrieve the most recent report.
         :type *resource: str
         :return: Response
@@ -164,6 +169,7 @@ class VirusTotalClient(object):
     def ipaddress_report(self, ip):
         """
         Retrieve report using ip address.
+        
         :param ip: An IP address
         :type ip: str
         :return: Response
@@ -185,6 +191,7 @@ class VirusTotalClient(object):
     def domain_report(self, domain):
         """
         Retrieve report using domain.
+        
         :param domain: A domain name
         :type domain: str
         :return: Response
@@ -206,6 +213,7 @@ class VirusTotalClient(object):
     def put_comment(self, resource, comment):
         """
         Post comment for a file or URL
+        
         :param resource: Either an md5/sha1/sha256 hash of the file you want to review or the URL itself that you want to comment on.
         :type resource: str
         :return: Response
@@ -227,6 +235,7 @@ class VirusTotalClient(object):
     def scan_big_file(self, files):
         """
         Scanning files larger than 32MB
+        
         :param file: File to be scanned
         :type file: str
         :return: Response

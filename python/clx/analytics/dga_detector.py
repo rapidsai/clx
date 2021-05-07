@@ -71,6 +71,7 @@ class DGADetector(Detector):
         self, train_data, labels, batch_size=1000, epochs=5, train_size=0.7
     ):
         """This function is used for training RNNClassifier model with a given training dataset. It returns total loss to determine model prediction accuracy.
+        
         :param train_data: Training data
         :type train_data: cudf.Series
         :param labels: labels data
@@ -121,6 +122,7 @@ class DGADetector(Detector):
 
     def predict(self, domains, probability=False):
         """This function accepts cudf series of domains as an argument to classify domain names as benign/malicious and returns the learned label for each object in the form of cudf series.
+        
         :param domains: List of domains.
         :type domains: cudf.Series
         :return: Predicted results with respect to given domains.
