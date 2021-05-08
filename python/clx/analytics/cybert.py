@@ -140,7 +140,7 @@ class Cybert:
     def inference(self, raw_data_col, batch_size=160):
         """
         Cybert inference and postprocessing on dataset
-        
+
         :param raw_data_col: logs to be processed
         :type raw_data_col: cudf.Series
         :param batch_size: Log data is processed in batches using a Pytorch dataloader.

@@ -40,7 +40,7 @@ class SlashNextClient(object):
     def verify_connection(self):
         """
         Verify SlashNext cloud database connection.
-        
+
         Examples
         --------
         >>> from clx.osi.slashnext import SlashNextClient
@@ -63,7 +63,7 @@ class SlashNextClient(object):
     def _execute(self, command):
         """
         Execute all SlashNext Phishing Incident Response SDK supported actions/commands.
-        
+
         :param command: Query to execute on SlashNext cloud database.
         :type command: str
         :return Query response as list.
@@ -80,7 +80,7 @@ class SlashNextClient(object):
     def host_reputation(self, host):
         """
         Queries the SlashNext cloud database and retrieves the reputation of a host.
-        
+
         :param host: The host to look up in the SlashNext Threat Intelligence database. Can be either a domain name or an IPv4 address.
         :type host: str
         :return Query response as list.
@@ -105,7 +105,7 @@ class SlashNextClient(object):
     def host_report(self, host):
         """
         Queries the SlashNext cloud database and retrieves a detailed report.
-        
+
         :param host: The host to look up in the SlashNext Threat Intelligence database. Can be either a domain name or an IPv4 address.
         :type host: str
         :return Query response as list.
@@ -130,7 +130,7 @@ class SlashNextClient(object):
     def host_urls(self, host, limit=10):
         """
         Queries the SlashNext cloud database and retrieves a list of all URLs.
-        
+
         :param host: The host to look up in the SlashNext Threat Intelligence database, for which to return a list of associated URLs. Can be either a domain name or an IPv4 address.
         :type host: str
         :param limit: The maximum number of URL records to fetch. Default is "10".
@@ -157,7 +157,7 @@ class SlashNextClient(object):
     def url_scan(self, url, extended_info=True):
         """
         Perform a real-time URL reputation scan with SlashNext cloud-based SEER threat detection engine.
-        
+
         :param url: The URL that needs to be scanned.
         :type url: str
         :param extended_info: Whether to download forensics data, such as screenshot, HTML, and rendered text.
@@ -186,7 +186,7 @@ class SlashNextClient(object):
     def url_scan_sync(self, url, extended_info=True, timeout=60):
         """
         Perform a real-time URL scan with SlashNext cloud-based SEER threat detection engine in a blocking mode.
-        
+
         :param url: The URL that needs to be scanned.
         :type url: str
         :param extended_info: Whether to download forensics data, such as screenshot, HTML, and rendered text.
@@ -217,7 +217,7 @@ class SlashNextClient(object):
     def scan_report(self, scanid, extended_info=True):
         """
         Retrieve URL scan results against a previous scan request.
-        
+
         :param scanid: Scan ID of the scan for which to get the report. Can be retrieved from the "slashnext-url-scan" action or "slashnext-url-scan-sync" action.
         :type scanid: str
         :param extended_info: Whether to download forensics data, such as screenshot, HTML, and rendered text.
@@ -246,7 +246,7 @@ class SlashNextClient(object):
     def download_screenshot(self, scanid, resolution="high"):
         """
         Downloads a screenshot of a web page against a previous URL scan request.
-        
+
         :param scanid: Scan ID of the scan for which to get the report. Can be retrieved from the "slashnext-url-scan" action or "slashnext-url-scan-sync" action.
         :type scanid: str
         :param resolution: Resolution of the web page screenshot. Can be "high" or "medium". Default is "high".
@@ -263,7 +263,6 @@ class SlashNextClient(object):
         >>> response_list = slashnext.download_screenshot('2-ba57-755a7458c8a3')
         >>> type(response_list[0])
         <class 'dict'>
-        
         """
         command = "slashnext-download-screenshot scanid={} resolution={}".format(
             scanid, resolution.lower()
@@ -276,7 +275,7 @@ class SlashNextClient(object):
     def download_html(self, scanid):
         """
         Downloads a web page HTML against a previous URL scan request.
-        
+
         :param scanid: Scan ID of the scan for which to get the report. Can be retrieved from the "slashnext-url-scan" action or "slashnext-url-scan-sync" action.
         :type scanid: str
         :return Query response as list.
@@ -301,7 +300,7 @@ class SlashNextClient(object):
     def download_text(self, scanid):
         """
         Downloads the text of a web page against a previous URL scan request.
-        
+
         :param scanid: Scan ID of the scan for which to get the report. Can be retrieved from the "slashnext-url-scan" action or "slashnext-url-scan-sync" action.
         :type scanid: str
         :return Query response as list.
@@ -326,7 +325,7 @@ class SlashNextClient(object):
     def api_quota(self):
         """
         Find information about your API quota, like current usage, quota left etc.
-        
+
         :return Query response as list.
         :rtype: list
 

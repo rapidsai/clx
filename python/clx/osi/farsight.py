@@ -42,7 +42,7 @@ class FarsightLookupClient(object):
     def query_rrset(self, oname, rrtype=None, bailiwick=None, before=None, after=None):
         """
         Batch version of querying DNSDB by given domain name and time ranges.
-        
+
         :param oname: DNS domain name.
         :type oname: str
         :param rrtype: The resource record type of the resource record, either using the standard DNS type mnemonic, or an RFC 3597 generic type, i.e. the string TYPE immediately followed by the decimal RRtype number.
@@ -64,7 +64,7 @@ class FarsightLookupClient(object):
         {"status_code": 200,...}
         >>> client.query_rrset("www.dnsdb.info", rrtype="CNAME", bailiwick="dnsdb.info.", before=1374184718, after=1564909243,)
         {"status_code": 200,...}
-        """ 
+        """
         quoted_name = self.__quote(oname)
         if bailiwick:
             if not rrtype:
@@ -83,7 +83,7 @@ class FarsightLookupClient(object):
     def query_rdata_name(self, rdata_name, rrtype=None, before=None, after=None):
         """
         Query matches only a single DNSDB record of given owner name and time ranges.
-        
+
         :param rdata_name: DNS domain name.
         :type rdata_name: str
         :param rrtype: The resource record type of the resource record, either using the standard DNS type mnemonic, or an RFC 3597 generic type, i.e. the string TYPE immediately followed by the decimal RRtype number.
@@ -114,7 +114,7 @@ class FarsightLookupClient(object):
     def query_rdata_ip(self, rdata_ip, before=None, after=None):
         """
         Query to find DNSDB records matching a specific IP address with given time range.
-        
+
         :param rdata_ip: The VALUE is one of an IPv4 or IPv6 single address, with a prefix length, or with an address range. If a prefix is provided, the delimiter between the network address and prefix length is a single comma (“,”) character rather than the usual slash (“/”) character to avoid clashing with the HTTP URI path name separator..
         :type rdata_ip: str
         :param before: Output results seen before this time.
@@ -140,7 +140,6 @@ class FarsightLookupClient(object):
         """
         submit http get request
         """
-        
         response = requests.get(url, headers=self.headers, proxies=self.proxy_args)
         return response
 

@@ -37,7 +37,7 @@ class WhoIsLookupClient(object):
     def whois(self, domains, arr2str=True):
         """
         Function to access parsed WhoIs data for a given domain.
-        
+
         :param domains: Domains to perform whois lookup.
         :type domains: list
         :param arr2str: Convert WhoIs lookup response object to list of strings.
