@@ -22,5 +22,5 @@ class DGADataset(Dataset):
         super().__init__(df)
 
     def __preprocess(self, df):
-        df = utils.str2ascii(df, df.shape[0])
+        df = utils.str2ascii(df, 'domain')
         return df
