@@ -22,7 +22,7 @@ def test_fit():
     assert ld._histograms is not None
     assert isinstance(
         ld._histograms,
-        cupy.core.core.ndarray
+        cupy.ndarray
     )
     assert cupy.all(ld._histograms > 0)
 
@@ -35,7 +35,7 @@ def test_score():
     assert scores is not None
     assert isinstance(
         scores,
-        cupy.core.core.ndarray
+        cupy.ndarray
     )
     assert cupy.all(scores > 0)
 
@@ -48,5 +48,5 @@ def test_explain():
     assert explanation is not None
     assert isinstance(
         explanation,
-        cupy.core.core.ndarray
+        cupy.ndarray
     )

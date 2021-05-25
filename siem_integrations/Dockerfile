@@ -15,7 +15,7 @@ RUN apt update -y --fix-missing && \
     apt install -y vim
 
 RUN source activate rapids \
-    && conda install -c blazingsql-nightly/label/cuda${CUDA_VERSION} -c blazingsql-nightly -c rapidsai-nightly -c conda-forge -c defaults blazingsql \
+    && conda install -c blazingsql-nightly/label/cuda${CUDA_VERSION} -c blazingsql-nightly -c rapidsai-nightly -c conda-forge blazingsql \
     && pip install flatbuffers
 
 RUN source activate rapids \
