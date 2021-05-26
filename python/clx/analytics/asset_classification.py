@@ -1,5 +1,5 @@
 import cudf
-from cuml.preprocessing.model_selection import train_test_split
+from cuml.model_selection import train_test_split
 import torch
 import torch.optim as torch_optim
 import torch.nn.functional as F

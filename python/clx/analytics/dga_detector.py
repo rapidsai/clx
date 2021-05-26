@@ -8,7 +8,7 @@ from clx.analytics.detector import Detector
 from clx.utils.data.dataloader import DataLoader
 from clx.analytics.dga_dataset import DGADataset
 from clx.analytics.model.rnn_classifier import RNNClassifier
-from cuml.preprocessing.model_selection import train_test_split
+from cuml.model_selection import train_test_split
 
 log = logging.getLogger(__name__)
 
