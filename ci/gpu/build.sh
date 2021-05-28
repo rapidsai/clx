@@ -40,8 +40,6 @@ conda activate rapids
 
 gpuci_logger "Install conda dependenciess"
 gpuci_conda_retry install -y -c pytorch -c gwerbin \
-    "rapids-build-env=$MINOR_VERSION.*" \
-    "rapids-notebook-env=$MINOR_VERSION.*" \
     "cugraph=${MINOR_VERSION}" \
     "cuml=${MINOR_VERSION}" \
     "dask-cuda=${MINOR_VERSION}" \
