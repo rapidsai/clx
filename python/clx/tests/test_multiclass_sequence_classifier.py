@@ -17,7 +17,7 @@ from os import path
 import cudf
 import torch
 import transformers
-from cuml.preprocessing.model_selection import train_test_split
+from cuml.model_selection import train_test_split
 from faker import Faker
 
 from clx.analytics.multiclass_sequence_classifier import MulticlassSequenceClassifier
