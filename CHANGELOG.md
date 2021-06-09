@@ -1,6 +1,18 @@
-# clx 21.06.00 (Date TBD)
+# clx 21.06.00 (9 Jun 2021)
 
-Please see https://github.com/rapidsai/clx/releases/tag/v21.06.00a for the latest changes to this development branch.
+## 🐛 Bug Fixes
+
+- Update cuml impots ([#407](https://github.com/rapidsai/clx/pull/407)) [@efajado-nv](https://github.com/efajado-nv)
+
+## 🚀 New Featues
+
+- REVIEW: ABP notebook Taining+Infeence ([#398](https://github.com/rapidsai/clx/pull/398)) [@gbatmaz](https://github.com/gbatmaz)
+
+## 🛠️ Impovements
+
+- Update conda dev envionments ([#406](https://github.com/rapidsai/clx/pull/406)) [@efajado-nv](https://github.com/efajado-nv)
+- Update `CHANGELOG.md` links fo calve ([#402](https://github.com/rapidsai/clx/pull/402)) [@ajschmidt8](https://github.com/ajschmidt8)
+- Update docs build scipt ([#401](https://github.com/rapidsai/clx/pull/401)) [@ajschmidt8](https://github.com/ajschmidt8)
 
 # clx 0.19.0 (21 Apr 2021)
 
