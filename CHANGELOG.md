@@ -2,17 +2,17 @@
 
 ## 🐛 Bug Fixes
 
-- Update cuml impots ([#407](https://github.com/rapidsai/clx/pull/407)) [@efajado-nv](https://github.com/efajado-nv)
+- Update cuml imports ([#407](https://github.com/rapidsai//pull/407)) [@efajardo-nv](https://github.com/efajardo-nv)
 
-## 🚀 New Featues
+## 🚀 New Features
 
-- REVIEW: ABP notebook Taining+Infeence ([#398](https://github.com/rapidsai/clx/pull/398)) [@gbatmaz](https://github.com/gbatmaz)
+- REVIEW: ABP notebook Training+Inference ([#398](https://github.com/rapidsai//pull/398)) [@gbatmaz](https://github.com/gbatmaz)
 
-## 🛠️ Impovements
+## 🛠️ Improvements
 
-- Update conda dev envionments ([#406](https://github.com/rapidsai/clx/pull/406)) [@efajado-nv](https://github.com/efajado-nv)
-- Update `CHANGELOG.md` links fo calve ([#402](https://github.com/rapidsai/clx/pull/402)) [@ajschmidt8](https://github.com/ajschmidt8)
-- Update docs build scipt ([#401](https://github.com/rapidsai/clx/pull/401)) [@ajschmidt8](https://github.com/ajschmidt8)
+- Update conda dev environments ([#406](https://github.com/rapidsai//pull/406)) [@efajardo-nv](https://github.com/efajardo-nv)
+- Update `CHANGELOG.md` links for calver ([#402](https://github.com/rapidsai//pull/402)) [@ajschmidt8](https://github.com/ajschmidt8)
+- Update docs build script ([#401](https://github.com/rapidsai//pull/401)) [@ajschmidt8](https://github.com/ajschmidt8)
 
 # clx 0.19.0 (21 Apr 2021)
 
