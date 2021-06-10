@@ -17,12 +17,12 @@ from os import path
 import cudf
 import torch
 import transformers
-from cuml.preprocessing.model_selection import train_test_split
+from cuml.model_selection import train_test_split
 from faker import Faker
 
-from clx.analytics.sequence_classifier import SequenceClassifier
+from clx.analytics.binary_sequence_classifier import BinarySequenceClassifier
 
-sc = SequenceClassifier()
+sc = BinarySequenceClassifier()
 if torch.cuda.is_available():
     sc.init_model("bert-base-uncased")
 

@@ -1,7 +1,7 @@
 # Copyright (c) 2020, NVIDIA CORPORATION.
 
 # An integration test & dev container which builds and installs CLX from default branch
-ARG RAPIDS_VERSION=0.19
+ARG RAPIDS_VERSION=21.06
 ARG CUDA_VERSION=10.2
 ARG CUDA_SHORT_VERSION=${CUDA_VERSION}
 ARG LINUX_VERSION=ubuntu18.04

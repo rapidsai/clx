@@ -46,5 +46,5 @@ expected_output_df["domain"] = ["studytour.com.tw", "cnn.com"]
 
 
 def test_str2ascii():
-    actual_output_df = utils.str2ascii(test_input_df, test_domains_len)
+    actual_output_df = utils.str2ascii(test_input_df, 'domain')
     assert actual_output_df.equals(expected_output_df)

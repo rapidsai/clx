@@ -18,20 +18,20 @@ import logging
 log = logging.getLogger(__name__)
 
 
-def str2ascii(df, domains_len):
+def str2ascii(df, col_name):
     """
     This function sorts domain name entries in desc order based on the length of domain and converts domain name to ascii characters.
 
     :param df: Domains which requires conversion.
     :type df: cudf.DataFrame
-    :param domains_len: Number of entries in df.
-    :type domains_len: int
+    :param col_name: Name of the column that needs to be transformed.
+    :type col_name: str
     :return: Ascii character converted information.
     :rtype: cudf.DataFrame
     """
-    df["len"] = df["domain"].str.len()
+    df["len"] = df[col_name].str.len()
     df = df.sort_values("len", ascending=False)
-    split_df = df["domain"].str.findall("[\w\.\-\@]")
+    split_df = df[col_name].str.findall("[\w\W\d\D\s\S]")
     columns_cnt = len(split_df.columns)
 
     # Replace null's with ^.
@@ -47,5 +47,5 @@ def str2ascii(df, domains_len):
     temp_df["len"] = df["len"]
     if "type" in df.columns:
         temp_df["type"] = df["type"]
-    temp_df["domain"] = df["domain"]
+    temp_df[col_name] = df[col_name]
     return temp_df

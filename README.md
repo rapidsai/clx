@@ -152,7 +152,7 @@ It is easy to install CLX using conda. You can get a minimal conda installation 
 Install and update CLX using the conda command:
 
 ```
-conda install -c rapidsai-nightly -c nvidia -c pytorch -c conda-forge -c defaults clx
+conda install -c rapidsai-nightly -c nvidia -c pytorch -c conda-forge clx
 ```
 
 <a name="source"></a>

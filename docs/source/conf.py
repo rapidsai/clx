@@ -24,9 +24,9 @@ copyright = '2019, NVIDIA'
 author = 'NVIDIA'
 
 # The short X.Y version
-version = '0.19'
+version = '21.06'
 # The full version, including alpha/beta/rc tags
-release = '0.19.0'
+release = '21.06.00'
 
 
 # -- General configuration ---------------------------------------------------
