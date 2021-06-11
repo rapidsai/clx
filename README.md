@@ -31,13 +31,13 @@ There are 4 ways to get started with CLX :
 Please see the [Demo Docker Repository](https://hub.docker.com/r/rapidsai/rapidsai-clx-nightly), choosing a tag based on the NVIDIA CUDA version you’re running. This provides a ready to run Docker container with CLX and its dependencies already installed.
 
 Pull image:
-```
+```sh
 docker pull rapidsai/rapidsai-clx-nightly:0.18-cuda11.0-runtime-ubuntu18.04-py3.7
 ```
 
 #### Start CLX container
 ##### Preferred - Docker CE v19+ and nvidia-container-toolkit
-```aidl
+```sh
 docker run -it --gpus '"device=0"' \
   --rm -d \
   -p 8888:8888 \
@@ -47,7 +47,7 @@ docker run -it --gpus '"device=0"' \
 ```
 
 ##### Legacy - Docker CE v18 and nvidia-docker2
-```aidl
+```sh
 docker run -it --runtime=nvidia \
   --rm -d \
   -p 8888:8888 \
@@ -77,7 +77,7 @@ Prerequisites
 
 Pull the RAPIDS image suitable to your environment and build CLX image. Please see the [rapidsai-dev-nightly](https://hub.docker.com/r/rapidsai/rapidsai-dev-nightly) Docker repository, choosing a tag based on the NVIDIA CUDA version you’re running. More information on getting started with RAPIDS can be found [here](https://rapids.ai/start.html).
 
-```aidl
+```sh
 docker pull rapidsai/rapidsai-dev-nightly:0.18-cuda10.1-devel-ubuntu18.04-py3.7
 docker build -t clx:latest .
 ```
@@ -87,7 +87,7 @@ docker build -t clx:latest .
 Start the container and the notebook server. There are multiple ways to do this, depending on what version of Docker you have.
 
 ##### Preferred - Docker CE v19+ and nvidia-container-toolkit
-```aidl
+```sh
 docker run -it --gpus '"device=0"' \
   --rm -d \
   -p 8888:8888 \
@@ -97,7 +97,7 @@ docker run -it --gpus '"device=0"' \
 ```
 
 ##### Legacy - Docker CE v18 and nvidia-docker2
-```aidl
+```sh
 docker run -it --runtime=nvidia \
   --rm -d \
   -p 8888:8888 \
@@ -107,7 +107,7 @@ docker run -it --runtime=nvidia \
 ```
 
 The container will include scripts for your convenience to start and stop JupyterLab.
-```
+```sh
 # Start JupyterLab
 /rapids/utils/start_jupyter.sh
 
@@ -126,8 +126,8 @@ First, make sure to have the following installed:
 * [nvidia-container-runtime](https://github.com/NVIDIA/nvidia-container-runtime/)
 
 Add the following to `/etc/docker/daemon.json` if not already there:
-```
-runtimes": {
+```json
+"runtimes": {
         "nvidia": {
                 "path": "/usr/bin/nvidia-container-runtime",
                 "runtimeArgs": []
@@ -135,11 +135,11 @@ runtimes": {
 }
 ```
 Run the following to start your containers. Modify port mappings in `docker-compose.yml` if there are port conflicts.
-```
+```sh
 docker-compose up
 ```
 By default, all GPUs in your system will be visible to your CLX container. To choose which GPUs you want visible, you can add the following to the `clx` section of your `docker-compose.yml`:
-```
+```yaml
 environment:
       - NVIDIA_VISIBLE_DEVICES=0,1
 ```
@@ -151,7 +151,7 @@ It is easy to install CLX using conda. You can get a minimal conda installation 
 
 Install and update CLX using the conda command:
 
-```
+```sh
 conda install -c rapidsai-nightly -c nvidia -c pytorch -c conda-forge clx
 ```
 
