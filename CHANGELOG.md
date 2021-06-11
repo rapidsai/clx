@@ -2,9 +2,21 @@
 
 Please see https://github.com/rapidsai/clx/releases/tag/v21.08.00a for the latest changes to this development branch.
 
-# clx 21.06.00 (Date TBD)
+# clx 21.06.00 (9 Jun 2021)
 
-Please see https://github.com/rapidsai/clx/releases/tag/v21.06.00a for the latest changes to this development branch.
+## 🐛 Bug Fixes
+
+- Update cuml imports ([#407](https://github.com/rapidsai/clx/pull/407)) [@efajardo-nv](https://github.com/efajardo-nv)
+
+## 🚀 New Features
+
+- REVIEW: ABP notebook Training+Inference ([#398](https://github.com/rapidsai/clx/pull/398)) [@gbatmaz](https://github.com/gbatmaz)
+
+## 🛠️ Improvements
+
+- Update conda dev environments ([#406](https://github.com/rapidsai/clx/pull/406)) [@efajardo-nv](https://github.com/efajardo-nv)
+- Update `CHANGELOG.md` links for calver ([#402](https://github.com/rapidsai/clx/pull/402)) [@ajschmidt8](https://github.com/ajschmidt8)
+- Update docs build script ([#401](https://github.com/rapidsai/clx/pull/401)) [@ajschmidt8](https://github.com/ajschmidt8)
 
 # clx 0.19.0 (21 Apr 2021)
 
