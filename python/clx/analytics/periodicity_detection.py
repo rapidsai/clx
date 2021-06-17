@@ -8,7 +8,7 @@ def to_periodogram(signal):
     :param signal: signal (time domain)
     :type signal: cudf.Series
     :return: CuPy array representing periodogram
-    :rtype: cupy.core.core.ndarray
+    :rtype: cupy.ndarray
     """
 
     # convert cudf series to cupy array
@@ -33,7 +33,7 @@ def filter_periodogram(prdg, p_value):
     :param periodogram: periodogram to be filtered
     :type signal: cudf.Series
     :return: CuPy array representing periodogram
-    :rtype: cupy.core.core.ndarray
+    :rtype: cupy.ndarray
     """
 
     filtered_prdg = cp.copy(prdg)
@@ -47,9 +47,9 @@ def to_time_domain(prdg):
     Convert the signal back to time domain.
 
     :param prdg: periodogram (frequency domain)
-    :type prdg: cupy.core.core.ndarray
+    :type prdg: cupy.ndarray
     :return: CuPy array representing reconstructed signal
-    :rtype: cupy.core.core.ndarray
+    :rtype: cupy.ndarray
     """
 
     acf = cp.abs(cp.fft.ifft(prdg))
