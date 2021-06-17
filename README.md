@@ -32,7 +32,7 @@ Please see the [Demo Docker Repository](https://hub.docker.com/r/rapidsai/rapids
 
 Pull image:
 ```
-docker pull rapidsai/rapidsai-clx-nightly:0.18-cuda11.0-runtime-ubuntu18.04-py3.7
+docker pull rapidsai/rapidsai-clx-nightly:21.06-cuda11.0-runtime-ubuntu18.04-py3.7
 ```
 
 #### Start CLX container
@@ -43,7 +43,7 @@ docker run -it --gpus '"device=0"' \
   -p 8888:8888 \
   -p 8787:8787 \
   -p 8686:8686 \
-  rapidsai/rapidsai-clx-nightly:0.18-cuda11.0-runtime-ubuntu18.04-py3.7
+  rapidsai/rapidsai-clx-nightly:21.06-cuda11.0-runtime-ubuntu18.04-py3.7
 ```
 
 ##### Legacy - Docker CE v18 and nvidia-docker2
@@ -53,7 +53,7 @@ docker run -it --runtime=nvidia \
   -p 8888:8888 \
   -p 8787:8787 \
   -p 8686:8686 \
-  rapidsai/rapidsai-clx-nightly:0.18-cuda11.0-runtime-ubuntu18.04-py3.7
+  rapidsai/rapidsai-clx-nightly:21.06-cuda11.0-runtime-ubuntu18.04-py3.7
 ```
 
 #### Container Ports
@@ -70,7 +70,7 @@ The following ports are used by the **runtime containers only** (not base contai
 Prerequisites
 
 * NVIDIA Pascal™ GPU architecture or better
-* CUDA 10.1+ compatible NVIDIA driver
+* CUDA 11.0 compatible NVIDIA driver
 * Ubuntu 16.04/18.04 or CentOS 7
 * Docker CE v18+
 * nvidia-docker v2+
@@ -78,7 +78,7 @@ Prerequisites
 Pull the RAPIDS image suitable to your environment and build CLX image. Please see the [rapidsai-dev-nightly](https://hub.docker.com/r/rapidsai/rapidsai-dev-nightly) Docker repository, choosing a tag based on the NVIDIA CUDA version you’re running. More information on getting started with RAPIDS can be found [here](https://rapids.ai/start.html).
 
 ```aidl
-docker pull rapidsai/rapidsai-dev-nightly:0.18-cuda10.1-devel-ubuntu18.04-py3.7
+docker pull rapidsai/rapidsai-dev-nightly:21.06-cuda11.0-devel-ubuntu18.04-py3.7
 docker build -t clx:latest .
 ```
 
