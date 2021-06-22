@@ -121,7 +121,7 @@ class SequenceClassifier(ABC):
         eval_accuracy = 0
         nb_eval_steps = 0
         for df in test_dataloader.get_chunks():
-            b_input_ids, b_input_mask = self._bert_uncased_tokenize(self._tokenizer, df["text"], max_seq_len)
+            b_input_ids, b_input_mask = self._bert_uncased_tokenize(df["text"], max_seq_len)
             b_labels = torch.tensor(df["label"].to_array())
             with torch.no_grad():
                 logits = self._model(
