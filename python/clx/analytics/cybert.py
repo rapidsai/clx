@@ -16,14 +16,12 @@ import logging
 import os
 from collections import defaultdict
 
-import cupy
 import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
 from torch.utils.data import DataLoader, TensorDataset
-from torch.utils.dlpack import from_dlpack
 from transformers import (
     BertForTokenClassification,
     DistilBertForTokenClassification,
@@ -88,8 +86,7 @@ class Cybert:
         model_arch = config["architectures"][0]
         self._label_map = {int(k): v for k, v in config["id2label"].items()}
         self._model = ARCH_MAPPING[model_arch].from_pretrained(
-            model_filepath,
-            config=config_filepath,
+            model_filepath, config=config_filepath,
         )
         self._model.cuda()
         self._model.eval()
@@ -120,8 +117,6 @@ class Cybert:
         raw_data_col = raw_data_col.str.replace("\\t", " ")
         raw_data_col = raw_data_col.str.replace("=", "= ")
         raw_data_col = raw_data_col.str.replace("\\n", " ")
-
-        byte_count = raw_data_col.str.byte_count()
 
         output = self.tokenizer(
             raw_data_col,
