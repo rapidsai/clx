@@ -27,20 +27,25 @@ from torch.utils.dlpack import from_dlpack
 from transformers import (
     BertForTokenClassification,
     DistilBertForTokenClassification,
-    ElectraForTokenClassification
+    ElectraForTokenClassification,
 )
+
+from cudf.core.subword_tokenizer import SubwordTokenizer
+
 
 log = logging.getLogger(__name__)
 
 ARCH_MAPPING = {
-    'BertForTokenClassification': BertForTokenClassification,
-    'DistilBertForTokenClassification': DistilBertForTokenClassification,
-    'ElectraForTokenClassification': ElectraForTokenClassification}
+    "BertForTokenClassification": BertForTokenClassification,
+    "DistilBertForTokenClassification": DistilBertForTokenClassification,
+    "ElectraForTokenClassification": ElectraForTokenClassification,
+}
 
 MODEL_MAPPING = {
-    'BertForTokenClassification': 'bert-base-cased',
-    'DistilBertForTokenClassification': 'distilbert-base-cased',
-    'ElectraForTokenClassification': 'rapids/electra-small-discriminator'}
+    "BertForTokenClassification": "bert-base-cased",
+    "DistilBertForTokenClassification": "distilbert-base-cased",
+    "ElectraForTokenClassification": "rapids/electra-small-discriminator",
+}
 
 
 class Cybert:
@@ -59,6 +64,8 @@ class Cybert:
             for index, line in enumerate(f):
                 self._vocab_lookup[index] = line.split()[0]
         self._hashpath = "%s/bert-base-cased-hash.txt" % resources_dir
+
+        self.tokenizer = SubwordTokenizer(self._hashpath, do_lower_case=False)
 
     def load_model(self, model_filepath, config_filepath):
         """
@@ -115,27 +122,22 @@ class Cybert:
         raw_data_col = raw_data_col.str.replace("\\n", " ")
 
         byte_count = raw_data_col.str.byte_count()
-        max_rows_tensor = int((byte_count / 120).ceil().sum())
 
-        input_ids, att_mask, meta_data = raw_data_col.str.subword_tokenize(
-            self._hashpath,
-            128,
-            116,
-            max_rows_tensor=max_rows_tensor,
-            do_lower=False,
-            do_truncate=False,
+        output = self.tokenizer(
+            raw_data_col,
+            max_length=128,
+            stride=12,
+            max_num_rows=len(raw_data_col),
+            truncation=False,
+            add_special_tokens=False,
+            return_tensors="pt",
         )
 
-        num_rows = int(len(input_ids) / 128)
-        input_ids = from_dlpack(
-            (input_ids.reshape(num_rows, 128).astype(cupy.float)).toDlpack()
-        )
-        att_mask = from_dlpack(
-            (att_mask.reshape(num_rows, 128).astype(cupy.float)).toDlpack()
-        )
-        meta_data = meta_data.reshape(num_rows, 3)
+        input_ids = output["input_ids"].type(torch.long)
+        attention_masks = output["attention_mask"].type(torch.long)
+        meta_data = output["metadata"]
 
-        return input_ids.type(torch.long), att_mask.type(torch.long), meta_data
+        return input_ids, attention_masks, meta_data
 
     def inference(self, raw_data_col, batch_size=160):
         """
@@ -192,15 +194,15 @@ class Cybert:
     def __postprocess(self, infer_pdf):
         # cut overlapping edges
         infer_pdf["confidences"] = infer_pdf.apply(
-            lambda row: row["confidences"][row["start"]:row["stop"]], axis=1
+            lambda row: row["confidences"][row["start"] : row["stop"]], axis=1
         )
 
         infer_pdf["labels"] = infer_pdf.apply(
-            lambda row: row["labels"][row["start"]:row["stop"]], axis=1
+            lambda row: row["labels"][row["start"] : row["stop"]], axis=1
         )
 
         infer_pdf["token_ids"] = infer_pdf.apply(
-            lambda row: row["token_ids"][row["start"]:row["stop"]], axis=1
+            lambda row: row["token_ids"][row["start"] : row["stop"]], axis=1
         )
 
         # aggregated logs
