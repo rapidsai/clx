@@ -189,15 +189,15 @@ class Cybert:
     def __postprocess(self, infer_pdf):
         # cut overlapping edges
         infer_pdf["confidences"] = infer_pdf.apply(
-            lambda row: row["confidences"][row["start"] : row["stop"]], axis=1
+            lambda row: row["confidences"][row["start"]:row["stop"]], axis=1
         )
 
         infer_pdf["labels"] = infer_pdf.apply(
-            lambda row: row["labels"][row["start"] : row["stop"]], axis=1
+            lambda row: row["labels"][row["start"]:row["stop"]], axis=1
         )
 
         infer_pdf["token_ids"] = infer_pdf.apply(
-            lambda row: row["token_ids"][row["start"] : row["stop"]], axis=1
+            lambda row: row["token_ids"][row["start"]:row["stop"]], axis=1
         )
 
         # aggregated logs
