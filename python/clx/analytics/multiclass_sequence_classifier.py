@@ -45,6 +45,8 @@ class MulticlassSequenceClassifier(SequenceClassifier):
         else:
             self._device = torch.device("cpu")
 
+        self._tokenizer = SubwordTokenizer(self._hashpath, do_lower_case=False)
+
     def predict(self, input_data, max_seq_len=128, batch_size=32):
         """
         Predict the class with the trained model
