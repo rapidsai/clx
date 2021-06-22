@@ -1,6 +1,7 @@
 import logging
 
 import cudf
+from cudf.core.subword_tokenizer import SubwordTokenizer
 import cupy
 import torch
 import torch.nn as nn
