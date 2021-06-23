@@ -45,3 +45,7 @@ for FILE in conda/environments/*.yml; do
    sed_runner "s/cuxfilter=${CURRENT_SHORT_TAG}/cuxfilter=${NEXT_SHORT_TAG}/g" ${FILE};
    sed_runner "s/dask-cudf=${CURRENT_SHORT_TAG}/dask-cudf=${NEXT_SHORT_TAG}/g" ${FILE};
 done
+
+# README.md update
+sed_runner "s/rapidsai-clx:${CURRENT_SHORT_TAG}/rapidsai-clx:${NEXT_SHORT_TAG}/g" README.md
+sed_runner "s/rapidsai-dev:${CURRENT_SHORT_TAG}/rapidsai-dev:${NEXT_SHORT_TAG}/g" README.md
