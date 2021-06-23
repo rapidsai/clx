@@ -20,10 +20,10 @@ export CUDA_REL=${CUDA_VERSION%.*}
 export CUDA_SHORT=${CUDA_REL//./}
 
 # Set home to the job's workspace
-export HOME=$WORKSPACE
+export HOME="$WORKSPACE"
 
 # Switch to project root; also root of repo checkout
-cd $WORKSPACE
+cd "$WORKSPACE"
 export GIT_DESCRIBE_TAG=`git describe --tags`
 export MINOR_VERSION=`echo $GIT_DESCRIBE_TAG | grep -o -E '([0-9]+\.[0-9]+)'`
 
@@ -81,7 +81,7 @@ conda list --show-channel-urls
 ################################################################################
 
 logger "Build clx..."
-$WORKSPACE/build.sh clean clx
+"$WORKSPACE/build.sh" clean clx
 
 # FIX Added to deal with Anancoda SSL verification issues during conda builds
 conda config --set ssl_verify False
@@ -96,10 +96,10 @@ trap "EXITCODE=1" ERR
 if hasArg --skip-tests; then
     gpuci_logger "Skipping Tests"
 else
-    cd ${WORKSPACE}/python
-    py.test --ignore=ci --cache-clear --junitxml=${WORKSPACE}/junit-clx.xml -v
-    ${WORKSPACE}/ci/gpu/test-notebooks.sh 2>&1 | tee nbtest.log
-    python ${WORKSPACE}/ci/utils/nbtestlog2junitxml.py nbtest.log
+    cd "$WORKSPACE/python"
+    py.test --ignore=ci --cache-clear --junitxml="$WORKSPACE/junit-clx.xml" -v
+    "$WORKSPACE/ci/gpu/test-notebooks.sh" 2>&1 | tee nbtest.log
+    python "$WORKSPACE/ci/utils/nbtestlog2junitxml.py" nbtest.log
 fi
 
 return "${EXITCODE}"
