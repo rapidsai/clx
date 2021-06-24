@@ -31,9 +31,12 @@ There are 4 ways to get started with CLX :
 Please see the [Demo Docker Repository](https://hub.docker.com/r/rapidsai/rapidsai-clx-nightly), choosing a tag based on the NVIDIA CUDA version you’re running. This provides a ready to run Docker container with CLX and its dependencies already installed.
 
 Pull image:
+
 ```sh
-docker pull rapidsai/rapidsai-clx-nightly:21.06-cuda11.0-runtime-ubuntu18.04-py3.7
+docker pull rapidsai/rapidsai-clx:21.06-cuda11.0-runtime-ubuntu18.04-py3.7
 ```
+
+Nightly images for current development version can be pulled from https://hub.docker.com/r/rapidsai/rapidsai-clx-nightly.
 
 #### Start CLX container
 ##### Preferred - Docker CE v19+ and nvidia-container-toolkit
@@ -43,7 +46,7 @@ docker run -it --gpus '"device=0"' \
   -p 8888:8888 \
   -p 8787:8787 \
   -p 8686:8686 \
-  rapidsai/rapidsai-clx-nightly:21.06-cuda11.0-runtime-ubuntu18.04-py3.7
+  rapidsai/rapidsai-clx:21.06-cuda11.0-runtime-ubuntu18.04-py3.7
 ```
 
 ##### Legacy - Docker CE v18 and nvidia-docker2
@@ -53,7 +56,7 @@ docker run -it --runtime=nvidia \
   -p 8888:8888 \
   -p 8787:8787 \
   -p 8686:8686 \
-  rapidsai/rapidsai-clx-nightly:21.06-cuda11.0-runtime-ubuntu18.04-py3.7
+  rapidsai/rapidsai-clx:21.06-cuda11.0-runtime-ubuntu18.04-py3.7
 ```
 
 #### Container Ports
@@ -75,10 +78,10 @@ Prerequisites
 * Docker CE v18+
 * nvidia-docker v2+
 
-Pull the RAPIDS image suitable to your environment and build CLX image. Please see the [rapidsai-dev-nightly](https://hub.docker.com/r/rapidsai/rapidsai-dev-nightly) Docker repository, choosing a tag based on the NVIDIA CUDA version you’re running. More information on getting started with RAPIDS can be found [here](https://rapids.ai/start.html).
+Pull the RAPIDS image suitable to your environment and build CLX image. Please see the [rapidsai-dev](https://hub.docker.com/r/rapidsai/rapidsai-dev) or [rapidsai-dev-nightly](https://hub.docker.com/r/rapidsai/rapidsai-dev-nightly) Docker repositories, choosing a tag based on the NVIDIA CUDA version you’re running. More information on getting started with RAPIDS can be found [here](https://rapids.ai/start.html).
 
 ```sh
-docker pull rapidsai/rapidsai-dev-nightly:21.06-cuda11.0-devel-ubuntu18.04-py3.7
+docker pull rapidsai/rapidsai-dev:21.06-cuda11.0-devel-ubuntu18.04-py3.7
 docker build -t clx:latest .
 ```
 
@@ -152,6 +155,10 @@ It is easy to install CLX using conda. You can get a minimal conda installation 
 Install and update CLX using the conda command:
 
 ```sh
+# Stable
+conda install -c rapidsai -c nvidia -c pytorch -c conda-forge clx
+
+# Nightly
 conda install -c rapidsai-nightly -c nvidia -c pytorch -c conda-forge clx
 ```
 
