@@ -210,8 +210,9 @@ def pivot_table(gdf, index_col, piv_col, v_col):
     index_list = gdf[index_col].unique()
     piv_gdf = cudf.DataFrame()
     piv_gdf[index_col] = index_list
-    for group in gdf[piv_col].unique():
-        temp_df = gdf[gdf[piv_col] == group]
+    piv_unique = gdf[piv_col].unique()
+    for i in range(len(piv_unique)):
+        group = piv_unique[i]
         temp_df = temp_df[[index_col, v_col]]
         temp_df.columns = [index_col, group]
         piv_gdf = piv_gdf.merge(temp_df, on=[index_col], how='left')
