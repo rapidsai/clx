@@ -1,7 +1,7 @@
 # Copyright (c) 2019, NVIDIA CORPORATION.
 
 # Usage:
-#   conda build -c conda-forge -c defaults .
+#   conda build -c conda-forge .
 {% set version = environ.get('GIT_DESCRIBE_TAG', '0.0.0.dev').lstrip('v') + environ.get('VERSION_SUFFIX', '') %}
 {% set minor_version =  version.split('.')[0] + '.' + version.split('.')[1] %}
 {% set py_version=environ.get('CONDA_PY', 36) %}
@@ -19,6 +19,9 @@ build:
   string: py{{ py_version }}_{{ GIT_DESCRIBE_HASH }}_{{ GIT_DESCRIBE_NUMBER }}
   script_env:
     - VERSION_SUFFIX
+    - CC
+    - CXX
+    - CUDAHOSTCXX
 
 requirements:
   build:

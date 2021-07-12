@@ -24,9 +24,9 @@ copyright = '2019, NVIDIA'
 author = 'NVIDIA'
 
 # The short X.Y version
-version = '0.20'
+version = '21.08'
 # The full version, including alpha/beta/rc tags
-release = '0.20.0'
+release = '21.08.00'
 
 
 # -- General configuration ---------------------------------------------------
@@ -177,4 +177,4 @@ numpydoc_class_members_toctree = False
 
 
 def setup(app):
-    app.add_stylesheet('params.css')
+    app.add_css_file('params.css')

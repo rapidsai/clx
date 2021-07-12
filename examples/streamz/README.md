@@ -11,7 +11,7 @@ For convenience, you can build a Docker image that will include a working enviro
 
 Prerequisites:
 * NVIDIA Pascal™ GPU architecture or better
-* CUDA 10.1+ compatible NVIDIA driver
+* CUDA 11.0 compatible NVIDIA driver
 * Ubuntu 16.04/18.04 or CentOS 7
 * Docker CE v18+
 * nvidia-docker v2+

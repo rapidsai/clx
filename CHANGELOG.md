@@ -1,10 +1,51 @@
-# clx 0.20.0 (Date TBD)
+# clx 21.08.00 (Date TBD)
 
-Please see https://github.com/rapidsai/clx/releases/tag/v0.20.0a for the latest changes to this development branch.
+Please see https://github.com/rapidsai/clx/releases/tag/v21.08.00a for the latest changes to this development branch.
 
-# clx 0.19.0 (Date TBD)
+# clx 21.06.00 (9 Jun 2021)
 
-Please see https://github.com/rapidsai/clx/releases/tag/v0.19.0a for the latest changes to this development branch.
+## 🐛 Bug Fixes
+
+- Update cuml imports ([#407](https://github.com/rapidsai/clx/pull/407)) [@efajardo-nv](https://github.com/efajardo-nv)
+
+## 🚀 New Features
+
+- REVIEW: ABP notebook Training+Inference ([#398](https://github.com/rapidsai/clx/pull/398)) [@gbatmaz](https://github.com/gbatmaz)
+
+## 🛠️ Improvements
+
+- Update conda dev environments ([#406](https://github.com/rapidsai/clx/pull/406)) [@efajardo-nv](https://github.com/efajardo-nv)
+- Update `CHANGELOG.md` links for calver ([#402](https://github.com/rapidsai/clx/pull/402)) [@ajschmidt8](https://github.com/ajschmidt8)
+- Update docs build script ([#401](https://github.com/rapidsai/clx/pull/401)) [@ajschmidt8](https://github.com/ajschmidt8)
+
+# clx 0.19.0 (21 Apr 2021)
+
+## 🐛 Bug Fixes
+
+- Update Network Mapping notebook to skip Louvain on Pascal ([#362](https://github.com//rapidsai/clx/pull/362)) [@efajardo-nv](https://github.com/efajardo-nv)
+- Network mapping notebook fix ([#360](https://github.com//rapidsai/clx/pull/360)) [@efajardo-nv](https://github.com/efajardo-nv)
+
+## 📖 Documentation
+
+- Readme updates ([#373](https://github.com//rapidsai/clx/pull/373)) [@msadang](https://github.com/msadang)
+
+## 🚀 New Features
+
+- add pii training notebook ([#375](https://github.com//rapidsai/clx/pull/375)) [@raykallen](https://github.com/raykallen)
+- Add IDS (malware detection) usecase example using Loda. ([#369](https://github.com//rapidsai/clx/pull/369)) [@tzemicheal](https://github.com/tzemicheal)
+- anomaly detection dbscan ([#357](https://github.com//rapidsai/clx/pull/357)) [@brhodes10](https://github.com/brhodes10)
+- Dataset binary and frequency features ([#347](https://github.com//rapidsai/clx/pull/347)) [@brhodes10](https://github.com/brhodes10)
+
+## 🛠️ Improvements
+
+- Update Changelog Link ([#371](https://github.com//rapidsai/clx/pull/371)) [@ajschmidt8](https://github.com/ajschmidt8)
+- Update sequence classifier data loader ([#370](https://github.com//rapidsai/clx/pull/370)) [@efajardo-nv](https://github.com/efajardo-nv)
+- Add checkpoint support to sequence classifier ([#368](https://github.com//rapidsai/clx/pull/368)) [@efajardo-nv](https://github.com/efajardo-nv)
+- Prepare Changelog for Automation ([#367](https://github.com//rapidsai/clx/pull/367)) [@ajschmidt8](https://github.com/ajschmidt8)
+- Remove deprecated phishing detection module ([#366](https://github.com//rapidsai/clx/pull/366)) [@efajardo-nv](https://github.com/efajardo-nv)
+- Branch 0.19 merge 0.18 ([#365](https://github.com//rapidsai/clx/pull/365)) [@efajardo-nv](https://github.com/efajardo-nv)
+- Documentation fixes for EDA and Features modules ([#364](https://github.com//rapidsai/clx/pull/364)) [@brhodes10](https://github.com/brhodes10)
+- Fix merge conflicts in #339 ([#340](https://github.com//rapidsai/clx/pull/340)) [@ajschmidt8](https://github.com/ajschmidt8)
 
 # clx 0.18.0 (24 Feb 2021)
 

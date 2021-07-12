@@ -123,7 +123,7 @@ The following instructions are tested on Linux systems.
 
 CUDA requirement:
 
-* CUDA 10.1+
+* CUDA 11.0
 * NVIDIA driver 396.44+
 * Pascal architecture or better
 
@@ -146,11 +146,7 @@ Create the conda development environment:
 ```bash
 # create the conda environment (assuming in base `clx` directory)
 
-# for CUDA 10.1
-conda env create --name clx_dev --file conda/environments/clx_dev_cuda10.1.yml
-
-# for CUDA 10.2
-conda env create --name clx_dev --file conda/environments/clx_dev_cuda10.2.yml
+conda env create --name clx_dev --file conda/environments/clx_dev_cuda11.0.yml
 
 
 # activate the environment
@@ -163,11 +159,7 @@ conda deactivate
 The environment can be updated as development includes/changes the dependencies. To do so, run:
 
 ```bash
-# for CUDA 10.1
-conda env update --name clx_dev --file conda/environments/clx_dev_cuda10.1.yml
-
-# for CUDA 10.2
-conda env update --name clx_dev --file conda/environments/clx_dev_cuda10.2.yml
+conda env update --name clx_dev --file conda/environments/clx_dev_cuda11.0.yml
 
 conda activate clx_dev
 ```

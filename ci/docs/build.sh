@@ -13,7 +13,6 @@ fi
 export PATH=/conda/bin:/usr/local/cuda/bin:$PATH
 export HOME=$WORKSPACE
 export DOCS_WORKSPACE=$WORKSPACE/docs
-export NIGHTLY_VERSION=${NIGHTLY_OVERRIDE:=$(echo $BRANCH_VERSION | awk -F. '{ print $2 }')}
 export CUDA_REL=${CUDA_VERSION%.*}
 export CUDA_SHORT=${CUDA_REL//./}
 export PROJECTS=(clx)

@@ -41,6 +41,6 @@ if [[ "$BUILD_CLX" == "1" && "$UPLOAD_CLX" == "1" ]]; then
   test -e ${CLX_FILE}
   echo "Upload clx"
   echo ${CLX_FILE}
-  gpuci_retry anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-rapidsai} ${LABEL_OPTION} --skip-existing ${CLX_FILE}
+  gpuci_retry anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-rapidsai} ${LABEL_OPTION} --skip-existing ${CLX_FILE} --no-progress
 fi
 

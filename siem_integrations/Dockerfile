@@ -15,8 +15,7 @@ RUN apt update -y --fix-missing && \
     apt install -y vim
 
 RUN source activate rapids \
-    && conda install -c blazingsql-nightly/label/cuda${CUDA_VERSION} -c blazingsql-nightly -c rapidsai-nightly -c conda-forge -c defaults blazingsql \
-    && pip install flatbuffers
+    && conda install -c blazingsql-nightly/label/cuda${CUDA_VERSION} -c blazingsql-nightly -c rapidsai-nightly -c conda-forge blazingsql
 
 RUN source activate rapids \
     && conda install -y -c pytorch pytorch==1.3.1 torchvision=0.4.2 datashader>=0.10.* panel=0.6.* geopandas>=0.6.* pyppeteer s3fs gunicorn djangorestframework django supervisor nginx \
