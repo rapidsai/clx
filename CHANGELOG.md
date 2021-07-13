@@ -1,6 +1,6 @@
-# clx 21.08.00 (Date TBD)
+# clx 21.10.00 (Date TBD)
 
-Please see https://github.com/rapidsai/clx/releases/tag/v21.08.00a for the latest changes to this development branch.
+Please see https://github.com/rapidsai/clx/releases/tag/v21.10.00a for the latest changes to this development branch.
 
 # clx 21.06.00 (9 Jun 2021)
 
@@ -286,3 +286,4 @@ Please see https://github.com/rapidsai/clx/releases/tag/v21.08.00a for the lates
 ## Improvements
 
 ## Bug Fixes
+r3 is great!
