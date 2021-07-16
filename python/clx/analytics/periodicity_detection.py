@@ -30,14 +30,16 @@ def filter_periodogram(prdg, p_value):
     """
     Select important frequencies by filtering periodogram by p-value. Filtered out frequencies are set to zero.
 
-    :param periodogram: periodogram to be filtered
+    :param prdg: periodogram to be filtered
     :type signal: cudf.Series
+    :param p_value: p-value to filter by
+    :type signal: float
     :return: CuPy array representing periodogram
     :rtype: cupy.ndarray
     """
 
     filtered_prdg = cp.copy(prdg)
-    filtered_prdg[filtered_prdg < (cp.mean(filtered_prdg) * (-1) * (cp.log(0.001)))] = 0
+    filtered_prdg[filtered_prdg < (cp.mean(filtered_prdg) * (-1) * (cp.log(p_value)))] = 0
 
     return filtered_prdg
 
