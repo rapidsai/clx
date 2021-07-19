@@ -39,7 +39,7 @@ gpuci_logger "Activate conda env"
 conda activate rapids
 
 gpuci_logger "Install conda dependenciess"
-gpuci_conda_retry install -y -c pytorch \
+gpuci_mamba_retry install -y -c pytorch \
     "rapids-build-env=$MINOR_VERSION.*" \
     "rapids-notebook-env=$MINOR_VERSION.*" \
     "cugraph=${MINOR_VERSION}" \
@@ -57,8 +57,8 @@ gpuci_conda_retry install -y -c pytorch \
     "faker"
 
 # https://docs.rapids.ai/maintainers/depmgmt/
-# gpuci_conda_retry remove --force rapids-build-env rapids-notebook-env
-# gpuci_conda_retry install -y "your-pkg=1.0.0"
+# gpuci_mamba_retry remove --force rapids-build-env rapids-notebook-env
+# gpuci_mamba_retry install -y "your-pkg=1.0.0"
 
 gpuci_logger "Install cudatashader"
 pip install "git+https://github.com/rapidsai/cudatashader.git"
