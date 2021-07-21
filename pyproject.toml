@@ -1,3 +1,5 @@
+# Copyright (c) 2021, NVIDIA CORPORATION.
+
 [tool.black]
 line-length = 79
 target-version = ["py36"]
