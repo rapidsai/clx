@@ -1,17 +1,21 @@
 repos:
-  - repo: https://github.com/timothycrosley/isort
-    rev: 5.0.7
+  - repo: https://github.com/pycqa/isort
+    rev: 5.6.4
     hooks:
           - id: isort
+            files: ^python/.*
+            args: ["--settings-path=python/setup.cfg"]
   - repo: https://github.com/ambv/black
     rev: 19.10b0
     hooks:
-    - id: black
+          - id: black
+            files: ^python/.*
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.8.3
     hooks:
           - id: flake8
             alias: flake8
             name: flake8
+            files: ^python/.*
             args: ["--config=python/.flake8"]
             types: [python]
