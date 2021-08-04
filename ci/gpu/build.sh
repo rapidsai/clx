@@ -39,7 +39,7 @@ gpuci_logger "Activate conda env"
 conda activate rapids
 
 gpuci_logger "Install conda dependenciess"
-gpuci_conda_retry install -y -c pytorch -c gwerbin \
+gpuci_conda_retry install -y -c pytorch \
     "rapids-build-env=$MINOR_VERSION.*" \
     "rapids-notebook-env=$MINOR_VERSION.*" \
     "cugraph=${MINOR_VERSION}" \
@@ -50,7 +50,7 @@ gpuci_conda_retry install -y -c pytorch -c gwerbin \
     "torchvision" \
     "python-confluent-kafka" \
     "transformers=4.*" \
-    "seqeval=0.0.12" \
+    "seqeval=1.2.2" \
     "python-whois" \
     "requests" \
     "matplotlib" \

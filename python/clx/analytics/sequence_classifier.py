@@ -2,11 +2,13 @@ import logging
 import os
 
 import cudf
+from cudf.core.subword_tokenizer import SubwordTokenizer
+
 import cupy
 import torch
 from clx.utils.data.dataloader import DataLoader
 from clx.utils.data.dataset import Dataset
-from torch.utils.dlpack import from_dlpack, to_dlpack
+from torch.utils.dlpack import to_dlpack
 from tqdm import trange
 from transformers import AdamW
 from abc import ABC, abstractmethod
@@ -69,12 +71,14 @@ class SequenceClassifier(ABC):
 
         self._config_optimizer(learning_rate)
         self._model.train()  # Enable training mode
+        self._tokenizer = SubwordTokenizer(self._hashpath, do_lower_case=False)
 
         for _ in trange(epochs, desc="Epoch"):
             tr_loss = 0   # Tracking variables
             nb_tr_examples, nb_tr_steps = 0, 0
             for df in train_dataloader.get_chunks():
                 b_input_ids, b_input_mask = self._bert_uncased_tokenize(df["text"], max_seq_len)
+
                 b_labels = torch.tensor(df["label"].to_array())
                 self._optimizer.zero_grad()  # Clear out the gradients
                 loss = self._model(b_input_ids, token_type_ids=None, attention_mask=b_input_mask, labels=b_labels)[0]  # forwardpass
@@ -219,24 +223,14 @@ class SequenceClassifier(ABC):
         labels_flat = labels.flatten()
         return cupy.sum(pred_flat == labels_flat) / len(labels_flat)
 
-    def _bert_uncased_tokenize(self, strings, max_seq_len):
+    def _bert_uncased_tokenize(self, strings, max_length):
         """
         converts cudf.Series of strings to two torch tensors- token ids and attention mask with padding
         """
-        num_strings = len(strings)
-        token_ids, mask = strings.str.subword_tokenize(
-            self._hashpath,
-            max_length=max_seq_len,
-            stride=max_seq_len,
-            do_lower=False,
-            do_truncate=True,
-        )[:2]
-
-        # convert from cupy to torch tensor using dlpack
-        input_ids = from_dlpack(
-            token_ids.reshape(num_strings, max_seq_len).astype(cupy.float).toDlpack()
-        )
-        attention_mask = from_dlpack(
-            mask.reshape(num_strings, max_seq_len).astype(cupy.float).toDlpack()
-        )
-        return input_ids.type(torch.long), attention_mask.type(torch.long)
+        output = self._tokenizer(strings,
+                                 max_length=max_length,
+                                 max_num_rows=len(strings),
+                                 truncation=True,
+                                 add_special_tokens=False,
+                                 return_tensors="pt")
+        return output['input_ids'].type(torch.long), output['attention_mask'].type(torch.long)

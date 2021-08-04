@@ -1,24 +1,17 @@
-
 name: clx_dev
 channels:
 - rapidsai
-- nvidia
 - rapidsai-nightly
-- conda-forge
 - pytorch
-- gwerbin
-- auto
+- conda-forge
 dependencies:
-- numpy>=1.17.3,<1.19.0
-- cugraph=21.06.*
-- cuml=21.06.*
-- cuxfilter=21.06.*
-- dask-cudf=21.06.*
-- cupy>7.1.0,<9.0.0a0
 - cudatoolkit=11.0
+- python>=3.6,<3.9
 - pytorch=1.7.1
-- torchvision
-- scikit-learn>=0.21
+- cugraph=21.08.*
+- cuml=21.08.*
+- cuxfilter=21.08.*
+- scikit-learn=0.23.1
 - s3fs
 - ipywidgets
 - python-confluent-kafka
@@ -38,8 +31,6 @@ dependencies:
 - ipython
 - nbsphinx
 - pip:
-  - "git+https://github.com/dask/dask.git"
-  - "git+https://github.com/dask/distributed.git"
   - "git+https://github.com/rapidsai/cudatashader.git"
   - "git+https://github.com/slashnext/SlashNext-URL-Analysis-and-Enrichment.git#egg=slashnext-phishing-ir&subdirectory=Python SDK/src"
   - wget
