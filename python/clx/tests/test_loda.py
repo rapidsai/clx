@@ -13,7 +13,7 @@
 # limitations under the License.
 import cupy
 from clx.analytics.loda import Loda
-
+from os import path
 
 def test_fit():
     ld = Loda(n_random_cuts=10, n_bins=None)
@@ -50,3 +50,23 @@ def test_explain():
         explanation,
         cupy.ndarray
     )
+
+def test_save_model(tmpdir):
+    ld = Loda(n_random_cuts=10, n_bins=None)
+    x = cupy.random.randint(0, 100, size=(200, 10))
+    ld.fit(x)
+    ld.save_model(tmpdir + "clx_loda")
+    assert path.exists(tmpdir + "clx_loda.npz")
+
+
+def test_load_model(tmpdir):
+    ld = Loda(n_random_cuts=10, n_bins=None)
+    x = cupy.random.randint(0, 100, size=(200, 10))
+    ld.fit(x)
+    ld.save_model(tmpdir + "clx_loda")
+    assert path.exists(tmpdir + "clx_loda.npz")
+
+    # load model
+    ld = Loda.load_model(tmpdir + "clx_loda.npz")
+    assert isinstance(ld, Loda)
+    

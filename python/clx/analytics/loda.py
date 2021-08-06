@@ -1,4 +1,5 @@
 import cupy as cp
+from os import path
 
 
 class Loda:
@@ -156,3 +157,31 @@ class Loda:
         """
         return (cp.mean(with_sample) - cp.mean(without_sample)) /\
             cp.sqrt(cp.var(with_sample)**2 / len(with_sample) + cp.var(without_sample)**2 / len(without_sample))
+
+    def save_model(self, file_path):
+        """ This function save model to given location.
+
+        :param file_path: File path to save model.
+        :type file_path: string
+        """   
+        cp.savez_compressed(file_path, histograms=self._histograms,
+                            limits=self._limits, projections=self._projections)
+
+    @classmethod
+    def load_model(cls, file_path):
+        """ This function load already saved model and sets cuda parameters.
+        :param file_path: File path of a model to load.
+        :type filel_path: string
+        """
+
+        model = cp.load(file_path)
+        histograms = model['histograms']
+        projections = model['projections']
+        limits = model['limits']
+        n_random_cuts = histograms.shape[0]
+        n_bins = histograms.shape[1]
+        loda = Loda(n_random_cuts=n_random_cuts, n_bins=n_bins)
+        loda._histograms = histograms
+        loda._limits = limits
+        loda._projections = projections
+        return loda
