@@ -15,6 +15,7 @@ import cupy
 from clx.analytics.loda import Loda
 from os import path
 
+
 def test_fit():
     ld = Loda(n_random_cuts=10, n_bins=None)
     x = cupy.random.randint(0, 100, size=(200, 10))
@@ -51,6 +52,7 @@ def test_explain():
         cupy.ndarray
     )
 
+
 def test_save_model(tmpdir):
     ld = Loda(n_random_cuts=10, n_bins=None)
     x = cupy.random.randint(0, 100, size=(200, 10))
@@ -69,4 +71,3 @@ def test_load_model(tmpdir):
     # load model
     ld = Loda.load_model(tmpdir + "clx_loda.npz")
     assert isinstance(ld, Loda)
-    

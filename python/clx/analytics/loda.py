@@ -1,5 +1,4 @@
 import cupy as cp
-from os import path
 
 
 class Loda:
@@ -163,7 +162,7 @@ class Loda:
 
         :param file_path: File path to save model.
         :type file_path: string
-        """   
+        """
         cp.savez_compressed(file_path, histograms=self._histograms,
                             limits=self._limits, projections=self._projections)
 
