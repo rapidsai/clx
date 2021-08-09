@@ -115,7 +115,8 @@ class Loda:
                 self._projections[:, feature] != 0)[0]
             index_not_selected_feature = cp.where(
                 self._projections[:, feature] == 0)[0]
-            scores_with_feature = self._instance_score(anomaly, index_selected_feature)
+            scores_with_feature = self._instance_score(
+                anomaly, index_selected_feature)
             scores_without_feature = self._instance_score(
                 anomaly, index_not_selected_feature)
             ranked_feature_importance[feature, 0] = self._t_test(
