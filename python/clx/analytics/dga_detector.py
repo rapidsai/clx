@@ -50,7 +50,7 @@ class DGADetector(Detector):
         )
         model.load_state_dict(checkpoint["state_dict"])
         super().leverage_model(model)
-        
+
     def save_checkpoint(self, file_path):
         """ This function saves model checkpoint to given location.
 
@@ -95,7 +95,7 @@ class DGADetector(Detector):
         """
         log.info("Initiating model training ...")
         log.info('Truncate domains to width: {}'.format(truncate))
-        
+
         self.model.train()
         train_dataloader, test_dataloader = self._preprocess_data(
             train_data, labels, batch_size, train_size, truncate

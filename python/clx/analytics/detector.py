@@ -45,7 +45,7 @@ class Detector(ABC):
         :param file_path: File path of a model to be loaded.
         :type file_path: string
         """
-        
+
         model = torch.load(file_path)
         model.eval()
         self._model = model
@@ -58,13 +58,13 @@ class Detector(ABC):
         :param file_path: File path of a model to be saved.
         :type file_path: string
         """
-        
+
         torch.save(self.model, file_path)
-           
+
     def _save_checkpoint(self, checkpoint, file_path):
         torch.save(checkpoint, file_path)
         log.info("Pretrained model checkpoint saved to location: '{}'".format(file_path))
-        
+
     def _set_parallelism(self):
         if GPU_COUNT > 1:
             log.info("CUDA device count: {}".format(GPU_COUNT))

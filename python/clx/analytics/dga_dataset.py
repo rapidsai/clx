@@ -18,6 +18,7 @@ from clx.utils.data import utils
 
 log = logging.getLogger(__name__)
 
+
 class DGADataset(Dataset):
     """Constructor to create DGADataset instance.
 
@@ -26,6 +27,7 @@ class DGADataset(Dataset):
         :param truncate: Truncate string to n number of characters.
         :type truncate: int
     """
+
     def __init__(self, df, truncate):
         df = self.__preprocess(df, truncate)
         super().__init__(df)

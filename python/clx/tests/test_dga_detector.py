@@ -95,6 +95,7 @@ def test_load_model(tmpdir):
         else:
             assert isinstance(dd2.model, RNNClassifier)
 
+
 def test_save_checkpoint(tmpdir):
     if torch.cuda.is_available():
         # save model
