@@ -32,14 +32,6 @@ class Detector(ABC):
         pass
 
     @abstractmethod
-    def load_model(self, file_path):
-        pass
-
-    @abstractmethod
-    def save_model(self, file_path):
-        pass
-
-    @abstractmethod
     def train_model(self, training_data, labels, batch_size=1000, epochs=1, train_size=0.7):
         pass
 
@@ -47,16 +39,35 @@ class Detector(ABC):
     def predict(self, epoch, train_dataset):
         pass
 
-    def _load_model(self, model):
+    def load_model(self, file_path):
+        """ This function load already saved model and sets cuda parameters.
+
+        :param file_path: File path of a model to be loaded.
+        :type file_path: string
+        """
+        
+        model = torch.load(file_path)
         model.eval()
-        self.leverage_model(model)
+        self._model = model
+        self._set_model2cuda()
+        self._set_optimizer()
 
-    def _save_model(self, checkpoint, file_path):
+    def save_model(self, file_path):
+        """ This function saves model to a given location.
+
+        :param file_path: File path of a model to be saved.
+        :type file_path: string
+        """
+        
+        torch.save(self.model, file_path)
+           
+    def _save_checkpoint(self, checkpoint, file_path):
         torch.save(checkpoint, file_path)
-
+        log.info("Pretrained model checkpoint saved to location: '{}'".format(file_path))
+        
     def _set_parallelism(self):
         if GPU_COUNT > 1:
-            log.info("%s GPUs!" % (GPU_COUNT))
+            log.info("CUDA device count: {}".format(GPU_COUNT))
             self._model = nn.DataParallel(self.model)
             self._set_model2cuda()
         else:
@@ -69,7 +80,7 @@ class Detector(ABC):
 
     def _set_model2cuda(self):
         if torch.cuda.is_available():
-            log.info("Setting cuda")
+            log.info("Found GPU's now setting up cuda for the model")
             self.model.cuda()
 
     def leverage_model(self, model):
@@ -78,6 +89,7 @@ class Detector(ABC):
         :param model: Model instance.
         :type model: RNNClassifier
         """
+        model.eval()
         self._model = model
         self._set_parallelism()
         self._set_optimizer()

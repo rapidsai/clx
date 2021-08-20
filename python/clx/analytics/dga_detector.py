@@ -35,26 +35,26 @@ class DGADetector(Detector):
             model = RNNClassifier(char_vocab, hidden_size, n_domain_type, n_layers)
             self.leverage_model(model)
 
-    def load_model(self, file_path):
-        """ This function load already saved model and sets cuda parameters.
+    def load_checkpoint(self, file_path):
+        """ This function load already saved model checkpoint and sets cuda parameters.
 
-        :param file_path: File path of a model to loaded.
+        :param file_path: File path of a model checkpoint to be loaded.
         :type file_path: string
         """
-        model_dict = torch.load(file_path)
+        checkpoint = torch.load(file_path)
         model = RNNClassifier(
-            model_dict["input_size"],
-            model_dict["hidden_size"],
-            model_dict["output_size"],
-            model_dict["n_layers"],
+            checkpoint["input_size"],
+            checkpoint["hidden_size"],
+            checkpoint["output_size"],
+            checkpoint["n_layers"],
         )
-        model.load_state_dict(model_dict["state_dict"])
-        super()._load_model(model)
+        model.load_state_dict(checkpoint["state_dict"])
+        super().leverage_model(model)
+        
+    def save_checkpoint(self, file_path):
+        """ This function saves model checkpoint to given location.
 
-    def save_model(self, file_path):
-        """ This function saves model to given location.
-
-        :param file_path: File path to save model.
+        :param file_path: File path to save model checkpoint.
         :type file_path: string
         """
         model = self._get_unwrapped_model()
@@ -65,10 +65,10 @@ class DGADetector(Detector):
             "n_layers": model.n_layers,
             "output_size": model.output_size,
         }
-        super()._save_model(checkpoint, file_path)
+        super()._save_checkpoint(checkpoint, file_path)
 
     def train_model(
-        self, train_data, labels, batch_size=1000, epochs=5, train_size=0.7
+        self, train_data, labels, batch_size=1000, epochs=5, train_size=0.7, truncate=100
     ):
         """This function is used for training RNNClassifier model with a given training dataset. It returns total loss to determine model prediction accuracy.
 
@@ -82,6 +82,8 @@ class DGADetector(Detector):
         :type epochs: int
         :param train_size: Training size for splitting training and test data
         :type train_size: int
+        :param truncate: Truncate string to n number of characters.
+        :type truncate: int
 
         Examples
         --------
@@ -91,9 +93,12 @@ class DGADetector(Detector):
         >>> dd.train_model(train_data, labels)
         1.5728906989097595
         """
+        log.info("Initiating model training ...")
+        log.info('Truncate domains to width: {}'.format(truncate))
+        
         self.model.train()
         train_dataloader, test_dataloader = self._preprocess_data(
-            train_data, labels, batch_size, train_size
+            train_data, labels, batch_size, train_size, truncate
         )
 
         for _ in trange(epochs, desc="Epoch"):
@@ -110,7 +115,7 @@ class DGADetector(Detector):
                     total_loss += loss
                     i = i + 1
                     if i % 10 == 0:
-                        print(
+                        log.info(
                             "[{}/{} ({:.0f}%)]\tLoss: {:.2f}".format(
                                 i * domains_len,
                                 train_dataloader.dataset_len,
@@ -120,13 +125,15 @@ class DGADetector(Detector):
                         )
             self.evaluate_model(test_dataloader)
 
-    def predict(self, domains, probability=False):
+    def predict(self, domains, probability=False, truncate=100):
         """This function accepts cudf series of domains as an argument to classify domain names as benign/malicious and returns the learned label for each object in the form of cudf series.
 
         :param domains: List of domains.
         :type domains: cudf.Series
         :return: Predicted results with respect to given domains.
         :rtype: cudf.Series
+        :param truncate: Truncate string to n number of characters.
+        :type truncate: int
         Examples
         --------
         >>> dd.predict(['nvidia.com', 'dgadomain'])
@@ -134,8 +141,11 @@ class DGADetector(Detector):
         1    0.924
         Name: dga_probability, dtype: decimal
         """
+        log.debug("Initiating model inference ...")
         self.model.eval()
         df = cudf.DataFrame({"domain": domains})
+        log.debug('Truncate domains to width: {}'.format(truncate))
+        df['domain'] = df['domain'].str.slice_replace(truncate, repl='')
         temp_df = utils.str2ascii(df, 'domain')
         # Assigning sorted domains index to return learned labels as per the given input order.
         df.index = temp_df.index
@@ -201,7 +211,7 @@ class DGADetector(Detector):
         >>> dd.init_model()
         >>> dd.evaluate_model(dataloader)
         Evaluating trained model ...
-        Test set: Accuracy: 3/4 (0.75)
+        Test set accuracy: 3/4 (0.75)
         """
         log.info("Evaluating trained model ...")
         correct = 0
@@ -213,8 +223,8 @@ class DGADetector(Detector):
             pred = output.data.max(1, keepdim=True)[1]
             correct += pred.eq(target.data.view_as(pred)).cpu().sum()
         accuracy = float(correct) / dataloader.dataset_len
-        print(
-            "Test set: Accuracy: {}/{} ({})\n".format(
+        log.info(
+            "Test set accuracy: {}/{} ({})\n".format(
                 correct, dataloader.dataset_len, accuracy
             )
         )
@@ -233,7 +243,7 @@ class DGADetector(Detector):
         """
         return tensor.cuda()
 
-    def _preprocess_data(self, train_data, labels, batch_size, train_size):
+    def _preprocess_data(self, train_data, labels, batch_size, train_size, truncate):
         train_gdf = cudf.DataFrame()
         train_gdf["domain"] = train_data
         train_gdf["type"] = labels
@@ -243,8 +253,8 @@ class DGADetector(Detector):
         test_df = self._create_df(domain_test, type_test)
         train_df = self._create_df(domain_train, type_train)
 
-        test_dataset = DGADataset(test_df)
-        train_dataset = DGADataset(train_df)
+        test_dataset = DGADataset(test_df, truncate)
+        train_dataset = DGADataset(train_df, truncate)
 
         test_dataloader = DataLoader(test_dataset, batchsize=batch_size)
         train_dataloader = DataLoader(train_dataset, batchsize=batch_size)

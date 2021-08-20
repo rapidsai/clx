@@ -12,15 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 from clx.utils.data.dataset import Dataset
 from clx.utils.data import utils
 
+log = logging.getLogger(__name__)
 
 class DGADataset(Dataset):
-    def __init__(self, df):
-        df = self.__preprocess(df)
+    """Constructor to create DGADataset instance.
+
+        :param df: Input dataframe.
+        :type df: cudf.DataFrame
+        :param truncate: Truncate string to n number of characters.
+        :type truncate: int
+    """
+    def __init__(self, df, truncate):
+        df = self.__preprocess(df, truncate)
         super().__init__(df)
 
-    def __preprocess(self, df):
+    def __preprocess(self, df, truncate):
+        df['domain'] = df['domain'].str.slice_replace(truncate, repl='')
         df = utils.str2ascii(df, 'domain')
         return df

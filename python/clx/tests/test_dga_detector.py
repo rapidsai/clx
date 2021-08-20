@@ -94,3 +94,25 @@ def test_load_model(tmpdir):
             assert isinstance(dd2.model.module, RNNClassifier)
         else:
             assert isinstance(dd2.model, RNNClassifier)
+
+def test_save_checkpoint(tmpdir):
+    if torch.cuda.is_available():
+        # save model
+        dd.save_checkpoint(str(tmpdir.join("clx_dga.mdl")))
+        assert path.exists(str(tmpdir.join("clx_dga.mdl")))
+
+
+def test_load_checkpoint(tmpdir):
+    if torch.cuda.is_available():
+        # save model
+        dd.save_model(str(tmpdir.join("clx_dga.mdl")))
+        assert path.exists(str(tmpdir.join("clx_dga.mdl")))
+        # load model
+        dd2 = DGADetector()
+        dd2.init_model()
+        dd2.load_model(str(tmpdir.join("clx_dga.mdl")))
+        gpu_count = torch.cuda.device_count()
+        if gpu_count > 1:
+            assert isinstance(dd2.model.module, RNNClassifier)
+        else:
+            assert isinstance(dd2.model, RNNClassifier)
