@@ -2,9 +2,32 @@
 
 Please see https://github.com/rapidsai/clx/releases/tag/v21.10.00a for the latest changes to this development branch.
 
-# clx 21.08.00 (Date TBD)
+# clx 21.08.00 (4 Aug 2021)
 
-Please see https://github.com/rapidsai/clx/releases/tag/v21.08.00a for the latest changes to this development branch.
+## 🐛 Bug Fixes
+
+- Fix filter function in periodicity detection ([#440](https://github.com/rapidsai/clx/pull/440)) [@efajardo-nv](https://github.com/efajardo-nv)
+- Update conda development environment ([#428](https://github.com/rapidsai/clx/pull/428)) [@efajardo-nv](https://github.com/efajardo-nv)
+
+## 📖 Documentation
+
+- Update README getting started code ([#433](https://github.com/rapidsai/clx/pull/433)) [@efajardo-nv](https://github.com/efajardo-nv)
+
+## 🛠️ Improvements
+
+- variable fix so that accuracy_score doesn&#39;t throw an error ([#438](https://github.com/rapidsai/clx/pull/438)) [@taureandyernv](https://github.com/taureandyernv)
+- Update `conda` environment name for CI ([#436](https://github.com/rapidsai/clx/pull/436)) [@ajschmidt8](https://github.com/ajschmidt8)
+- Drop `flatbuffers` install ([#434](https://github.com/rapidsai/clx/pull/434)) [@jakirkham](https://github.com/jakirkham)
+- Update README instructions to include stable version ([#432](https://github.com/rapidsai/clx/pull/432)) [@efajardo-nv](https://github.com/efajardo-nv)
+- Update notebooks to use the new Tokenizer ([#430](https://github.com/rapidsai/clx/pull/430)) [@VibhuJawa](https://github.com/VibhuJawa)
+- Update sphinx config ([#427](https://github.com/rapidsai/clx/pull/427)) [@ajschmidt8](https://github.com/ajschmidt8)
+- Fix syntax highlighting in README ([#425](https://github.com/rapidsai/clx/pull/425)) [@garethsb](https://github.com/garethsb)
+- Fix `21.08` forward-merge conflicts ([#424](https://github.com/rapidsai/clx/pull/424)) [@ajschmidt8](https://github.com/ajschmidt8)
+- Use `cupy.ndarray` in docstrings ([#410](https://github.com/rapidsai/clx/pull/410)) [@jakirkham](https://github.com/jakirkham)
+- Fix merge conflicts in #408 ([#409](https://github.com/rapidsai/clx/pull/409)) [@ajschmidt8](https://github.com/ajschmidt8)
+- Added custreamz and cugraph integration demo ([#405](https://github.com/rapidsai/clx/pull/405)) [@shaneding](https://github.com/shaneding)
+- Fix merge conflicts ([#404](https://github.com/rapidsai/clx/pull/404)) [@ajschmidt8](https://github.com/ajschmidt8)
+- change pretrained model ([#387](https://github.com/rapidsai/clx/pull/387)) [@gbatmaz](https://github.com/gbatmaz)
 
 # clx 21.06.00 (9 Jun 2021)
 
