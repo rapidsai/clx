@@ -46,7 +46,8 @@ def test_train_model():
 def test_evaluate_model():
     if torch.cuda.is_available():
         test_df = cudf.DataFrame({"domain": ["cnn.com", "bakercityherald.com"], "type": [1, 0]})
-        dataset = DGADataset(test_df)
+        truncate = 100
+        dataset = DGADataset(test_df, truncate)
         dataloader = DataLoader(dataset, batchsize=2)
         # evaluate model
         accuracy = dd.evaluate_model(dataloader)
