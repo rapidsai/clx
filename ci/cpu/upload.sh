@@ -29,7 +29,7 @@ fi
 
 gpuci_logger "Get conda file output locations"
 
-export CLX_FILE=`conda build conda/recipes/clx --python=$PYTHON --output`
+export CLX_FILE=`conda build conda/recipes/clx --python=$PYTHON_VER --output`
 
 ################################################################################
 # UPLOAD - Conda packages
