@@ -46,7 +46,8 @@ def test_train_model():
 def test_evaluate_model():
     if torch.cuda.is_available():
         test_df = cudf.DataFrame({"domain": ["cnn.com", "bakercityherald.com"], "type": [1, 0]})
-        dataset = DGADataset(test_df)
+        truncate = 100
+        dataset = DGADataset(test_df, truncate)
         dataloader = DataLoader(dataset, batchsize=2)
         # evaluate model
         accuracy = dd.evaluate_model(dataloader)
@@ -81,6 +82,29 @@ def test_save_model(tmpdir):
 
 
 def test_load_model(tmpdir):
+    if torch.cuda.is_available():
+        # save model
+        dd.save_model(str(tmpdir.join("clx_dga.mdl")))
+        assert path.exists(str(tmpdir.join("clx_dga.mdl")))
+        # load model
+        dd2 = DGADetector()
+        dd2.init_model()
+        dd2.load_model(str(tmpdir.join("clx_dga.mdl")))
+        gpu_count = torch.cuda.device_count()
+        if gpu_count > 1:
+            assert isinstance(dd2.model.module, RNNClassifier)
+        else:
+            assert isinstance(dd2.model, RNNClassifier)
+
+
+def test_save_checkpoint(tmpdir):
+    if torch.cuda.is_available():
+        # save model
+        dd.save_checkpoint(str(tmpdir.join("clx_dga.mdl")))
+        assert path.exists(str(tmpdir.join("clx_dga.mdl")))
+
+
+def test_load_checkpoint(tmpdir):
     if torch.cuda.is_available():
         # save model
         dd.save_model(str(tmpdir.join("clx_dga.mdl")))
