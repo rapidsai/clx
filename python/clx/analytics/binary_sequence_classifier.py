@@ -1,6 +1,7 @@
 import logging
 
 import cudf
+from cudf.core.subword_tokenizer import SubwordTokenizer
 import torch
 import torch.nn as nn
 from torch.utils.dlpack import to_dlpack
@@ -41,6 +42,8 @@ class BinarySequenceClassifier(SequenceClassifier):
             self._model = nn.DataParallel(self._model)
         else:
             self._device = torch.device("cpu")
+
+        self._tokenizer = SubwordTokenizer(self._hashpath, do_lower_case=False)
 
     def predict(self, input_data, max_seq_len=128, batch_size=32, threshold=0.5):
         """
