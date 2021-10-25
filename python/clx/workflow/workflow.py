@@ -17,6 +17,7 @@ import logging
 import os
 import time
 import yaml
+from yaml import Loader
 from clx.io.factory.factory import Factory
 from abc import ABC, abstractmethod
 
@@ -102,7 +103,7 @@ class Workflow(ABC):
         try:
             config = None
             with open(yaml_file, "r") as ymlfile:
-                config = yaml.load(ymlfile)
+                config = yaml.load(ymlfile, Loader=Loader)
             self._source = config["source"]
             self._destination = config["destination"]
             self._io_reader = Factory.get_reader(self._source["type"], self._source)
