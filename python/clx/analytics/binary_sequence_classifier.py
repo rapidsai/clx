@@ -43,7 +43,7 @@ class BinarySequenceClassifier(SequenceClassifier):
         else:
             self._device = torch.device("cpu")
 
-        self._tokenizer = SubwordTokenizer(self._hashpath, do_lower_case=False)
+        self._tokenizer = SubwordTokenizer(self._hashpath, do_lower_case=True)
 
     def predict(self, input_data, max_seq_len=128, batch_size=32, threshold=0.5):
         """
