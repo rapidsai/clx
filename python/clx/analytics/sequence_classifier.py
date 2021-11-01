@@ -71,7 +71,7 @@ class SequenceClassifier(ABC):
 
         self._config_optimizer(learning_rate)
         self._model.train()  # Enable training mode
-        self._tokenizer = SubwordTokenizer(self._hashpath, do_lower_case=False)
+        self._tokenizer = SubwordTokenizer(self._hashpath, do_lower_case=True)
 
         for _ in trange(epochs, desc="Epoch"):
             tr_loss = 0   # Tracking variables
@@ -231,6 +231,6 @@ class SequenceClassifier(ABC):
                                  max_length=max_length,
                                  max_num_rows=len(strings),
                                  truncation=True,
-                                 add_special_tokens=False,
+                                 add_special_tokens=True,
                                  return_tensors="pt")
         return output['input_ids'].type(torch.long), output['attention_mask'].type(torch.long)
