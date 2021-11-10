@@ -42,6 +42,7 @@ gpuci_logger "Install conda dependenciess"
 gpuci_mamba_retry install -y -c pytorch \
     "rapids-build-env=$MINOR_VERSION.*" \
     "rapids-notebook-env=$MINOR_VERSION.*" \
+    "cudatoolkit=$CUDA_REL" \
     "cugraph=${MINOR_VERSION}" \
     "cuml=${MINOR_VERSION}" \
     "dask-cuda=${MINOR_VERSION}" \
