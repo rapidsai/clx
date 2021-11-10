@@ -39,14 +39,13 @@ gpuci_logger "Activate conda env"
 conda activate rapids
 
 gpuci_logger "Install conda dependenciess"
-gpuci_conda_retry install -y -c pytorch \
+gpuci_mamba_retry install -y -c pytorch \
     "rapids-build-env=$MINOR_VERSION.*" \
     "rapids-notebook-env=$MINOR_VERSION.*" \
     "cugraph=${MINOR_VERSION}" \
     "cuml=${MINOR_VERSION}" \
     "dask-cuda=${MINOR_VERSION}" \
     "cuxfilter=${MINOR_VERSION}" \
-    "pytorch=1.7.1" \
     "torchvision" \
     "python-confluent-kafka" \
     "transformers=4.*" \
@@ -60,7 +59,7 @@ gpuci_conda_retry install -y -c pytorch \
 # gpuci_conda_retry remove --force rapids-build-env rapids-notebook-env
 # gpuci_conda_retry install -y "your-pkg=1.0.0"
 
-gpuci_logger "Install cudatashader"
+pip install -U torch==1.10.0+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
 pip install "git+https://github.com/rapidsai/cudatashader.git"
 pip install "git+https://github.com/slashnext/SlashNext-URL-Analysis-and-Enrichment.git#egg=slashnext-phishing-ir&subdirectory=Python SDK/src"
 pip install mockito
