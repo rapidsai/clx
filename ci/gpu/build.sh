@@ -46,9 +46,7 @@ gpuci_mamba_retry install -y -c pytorch \
     "cuml=${MINOR_VERSION}" \
     "dask-cuda=${MINOR_VERSION}" \
     "cuxfilter=${MINOR_VERSION}" \
-    "torchvision" \
     "python-confluent-kafka" \
-    "transformers=4.*" \
     "seqeval=1.2.2" \
     "python-whois" \
     "requests" \
