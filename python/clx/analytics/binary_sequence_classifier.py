@@ -85,10 +85,10 @@ class BinarySequenceClassifier(SequenceClassifier):
                     b_input_ids, token_type_ids=None, attention_mask=b_input_mask
                 )[0]
                 b_probs = torch.sigmoid(logits[:, 1])
-                b_preds = b_probs.ge(threshold)
+                b_preds = b_probs.ge(threshold).type(torch.int8)
 
             b_probs = cudf.io.from_dlpack(to_dlpack(b_probs))
-            b_preds = cudf.io.from_dlpack(to_dlpack(b_preds))
+            b_preds = cudf.io.from_dlpack(to_dlpack(b_preds)).astype("boolean")
             preds = preds.append(b_preds)
             probs = probs.append(b_probs)
 
