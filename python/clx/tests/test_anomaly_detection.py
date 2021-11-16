@@ -44,6 +44,6 @@ def test_anomaly_detection():
     )
     fdf = clx.features.frequency(df, "user", "computer")  # Create feature data
     actual = clx.analytics.anomaly_detection.dbscan(fdf, min_samples=2, eps=0.5)
-    expected = cudf.Series([-1, -1], dtype="int32")
-    expected.index = cudf.Series([0, 3])
+    expected = cudf.Series([-1, -1], dtype="int32", index=None)
+    expected.index = cudf.Series(["u1", "u4"])
     assert actual.equals(expected)

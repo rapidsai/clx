@@ -4,7 +4,7 @@ import cuml
 
 def dbscan(feature_dataframe, min_samples=3, eps=0.3):
     """
-    Pass a feature dataframe to this function to detect anomalies in your feature dataframe. This function uses ``cugraph`` DBSCAN to detect anomalies
+    Pass a feature dataframe to this function to detect anomalies in your feature dataframe. This function uses ``cuML`` DBSCAN to detect anomalies
     and outputs associated labels 0,1,-1.
 
     Parameters
