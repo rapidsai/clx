@@ -6,9 +6,20 @@ Please see https://github.com/rapidsai/clx/releases/tag/v22.02.00a for the lates
 
 Please see https://github.com/rapidsai/clx/releases/tag/v21.12.00a for the latest changes to this development branch.
 
-# clx 21.10.00 (Date TBD)
+# clx 21.10.00 (7 Oct 2021)
 
-Please see https://github.com/rapidsai/clx/releases/tag/v21.10.00a for the latest changes to this development branch.
+## 🐛 Bug Fixes
+
+- Fix binary sequence classifier tokenizer initialization ([#452](https://github.com/rapidsai/clx/pull/452)) [@efajardo-nv](https://github.com/efajardo-nv)
+
+## 🚀 New Features
+
+- DGA extended sequence handling ([#449](https://github.com/rapidsai/clx/pull/449)) [@bsuryadevara](https://github.com/bsuryadevara)
+
+## 🛠️ Improvements
+
+- Fix Forward-Merge Conflicts ([#450](https://github.com/rapidsai/clx/pull/450)) [@ajschmidt8](https://github.com/ajschmidt8)
+- support space in workspace ([#383](https://github.com/rapidsai/clx/pull/383)) [@jolorunyomi](https://github.com/jolorunyomi)
 
 # clx 21.08.00 (4 Aug 2021)
 
