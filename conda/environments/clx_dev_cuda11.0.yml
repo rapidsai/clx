@@ -8,9 +8,9 @@ dependencies:
 - cudatoolkit=11.0
 - python>=3.6,<3.9
 - pytorch=1.7.1
-- cugraph=21.10.*
-- cuml=21.10.*
-- cuxfilter=21.10.*
+- cugraph=21.12.*
+- cuml=21.12.*
+- cuxfilter=21.12.*
 - scikit-learn=0.23.1
 - s3fs
 - ipywidgets
