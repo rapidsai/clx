@@ -25,29 +25,15 @@ import torch.nn as nn
 from torch.nn import functional as F
 from torch.utils.data import DataLoader, TensorDataset
 from torch.utils.dlpack import from_dlpack
-from transformers import (
-    BertForTokenClassification,
-    DistilBertForTokenClassification,
-    ElectraForTokenClassification
-)
+from transformers import BertForTokenClassification
+
 from cudf.core.subword_tokenizer import SubwordTokenizer
 
 log = logging.getLogger(__name__)
 
-ARCH_MAPPING = {
-    'BertForTokenClassification': BertForTokenClassification,
-    'DistilBertForTokenClassification': DistilBertForTokenClassification,
-    'ElectraForTokenClassification': ElectraForTokenClassification}
-
-MODEL_MAPPING = {
-    'BertForTokenClassification': 'bert-base-cased',
-    'DistilBertForTokenClassification': 'distilbert-base-cased',
-    'ElectraForTokenClassification': 'rapids/electra-small-discriminator'}
-
-
 class Cybert:
     """
-    Cyber log parsing using BERT, DistilBERT, or ELECTRA. This class provides methods
+    Cyber log parsing using BERT. This class provides methods
     for loading models, prediction, and postprocessing.
     """
 
@@ -82,9 +68,8 @@ class Cybert:
 
         with open(config_filepath) as f:
             config = json.load(f)
-        model_arch = config["architectures"][0]
         self._label_map = {int(k): v for k, v in config["id2label"].items()}
-        self._model = ARCH_MAPPING[model_arch].from_pretrained(
+        self._model = BertForTokenClassification.from_pretrained(
             model_filepath,
             config=config_filepath,
         )
