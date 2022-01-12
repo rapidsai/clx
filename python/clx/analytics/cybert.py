@@ -16,34 +16,33 @@ import logging
 import os
 from collections import defaultdict
 
+import cupy
 import numpy as np
 import pandas as pd
+import string
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
 from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.dlpack import from_dlpack
 from transformers import (
     BertForTokenClassification,
     DistilBertForTokenClassification,
-    ElectraForTokenClassification,
+    ElectraForTokenClassification
 )
-
 from cudf.core.subword_tokenizer import SubwordTokenizer
-
 
 log = logging.getLogger(__name__)
 
 ARCH_MAPPING = {
-    "BertForTokenClassification": BertForTokenClassification,
-    "DistilBertForTokenClassification": DistilBertForTokenClassification,
-    "ElectraForTokenClassification": ElectraForTokenClassification,
-}
+    'BertForTokenClassification': BertForTokenClassification,
+    'DistilBertForTokenClassification': DistilBertForTokenClassification,
+    'ElectraForTokenClassification': ElectraForTokenClassification}
 
 MODEL_MAPPING = {
-    "BertForTokenClassification": "bert-base-cased",
-    "DistilBertForTokenClassification": "distilbert-base-cased",
-    "ElectraForTokenClassification": "rapids/electra-small-discriminator",
-}
+    'BertForTokenClassification': 'bert-base-cased',
+    'DistilBertForTokenClassification': 'distilbert-base-cased',
+    'ElectraForTokenClassification': 'rapids/electra-small-discriminator'}
 
 
 class Cybert:
@@ -86,13 +85,14 @@ class Cybert:
         model_arch = config["architectures"][0]
         self._label_map = {int(k): v for k, v in config["id2label"].items()}
         self._model = ARCH_MAPPING[model_arch].from_pretrained(
-            model_filepath, config=config_filepath,
+            model_filepath,
+            config=config_filepath,
         )
         self._model.cuda()
         self._model.eval()
         self._model = nn.DataParallel(self._model)
 
-    def preprocess(self, raw_data_col, stride_len=116, max_seq_len=128):
+    def preprocess(self, raw_data_col, stride_len=64, max_seq_len=256):
         """
         Preprocess and tokenize data for cybert model inference.
 
@@ -112,29 +112,29 @@ class Cybert:
         >>> raw_df = cudf.Series(['Log event 1', 'Log event 2'])
         >>> input_ids, attention_masks, meta_data = cyparse.preprocess(raw_df)
         """
-        raw_data_col = raw_data_col.str.replace('"', "")
-        raw_data_col = raw_data_col.str.replace("\\r", " ")
-        raw_data_col = raw_data_col.str.replace("\\t", " ")
-        raw_data_col = raw_data_col.str.replace("=", "= ")
-        raw_data_col = raw_data_col.str.replace("\\n", " ")
+        for symbol in string.punctuation:
+            raw_data_col = raw_data_col.str.replace(symbol, ' '+ symbol+ ' ')
 
-        output = self.tokenizer(
-            raw_data_col,
-            max_length=128,
-            stride=12,
-            max_num_rows=len(raw_data_col),
-            truncation=False,
-            add_special_tokens=False,
-            return_tensors="pt",
+        byte_count = raw_data_col.str.byte_count()
+        max_rows_tensor = int((byte_count / 120).ceil().sum())
+        
+        tokenizer  = SubwordTokenizer(self._hashpath,
+                                      do_lower_case=False)
+        tokenizer_output = tokenizer(raw_data_col,
+          max_length=512,
+          stride=64,
+          truncation=False,
+          max_num_rows = max_rows_tensor,
+          add_special_tokens=False,
+          return_tensors='pt'
         )
+        input_ids=tokenizer_output['input_ids'].type(torch.long)
+        att_mask=tokenizer_output['attention_mask'].type(torch.long)
+        meta_data=tokenizer_output['metadata']
+        del tokenizer_output
+        return input_ids, att_mask, meta_data
 
-        input_ids = output["input_ids"].type(torch.long)
-        attention_masks = output["attention_mask"].type(torch.long)
-        meta_data = output["metadata"]
-
-        return input_ids, attention_masks, meta_data
-
-    def inference(self, raw_data_col, batch_size=160):
+    def inference(self, raw_data_col, batch_size=64):
         """
         Cybert inference and postprocessing on dataset
 
@@ -209,11 +209,22 @@ class Cybert:
         parsed_dfs = infer_pdf.apply(
             lambda row: self.__get_label_dicts(row), axis=1, result_type="expand"
         )
-        parsed_df = pd.DataFrame(parsed_dfs[0].tolist())
-        confidence_df = pd.DataFrame(parsed_dfs[1].tolist())
-        if "X" in confidence_df.columns:
-            confidence_df = confidence_df.drop(["X"], axis=1)
-        confidence_df = confidence_df.applymap(np.mean)
+        ext_parsed = pd.DataFrame(parsed_dfs[0].tolist())
+        ext_confidence = pd.DataFrame(parsed_dfs[1].tolist())
+        parsed_df = pd.DataFrame()
+        confidence_df = pd.DataFrame()
+        ext_confidence = ext_confidence.applymap(np.mean)
+        for label in ext_parsed.columns:
+            if label[0]=="B":
+                col_name = label[2:]
+                if "I-"+col_name in ext_parsed.columns:
+                    parsed_df[col_name]= ext_parsed[label]+" "+ext_parsed["I-"+col_name].fillna('')
+                    confidence_df[col_name] = (ext_confidence[label]+ext_confidence[label])/2
+                else:
+                    parsed_df[col_name] = ext_parsed[label]
+                    confidence_df[col_name]= ext_confidence[label]
+        del ext_parsed
+        del ext_confidence
 
         # decode cleanup
         parsed_df = self.__decode_cleanup(parsed_df)
@@ -226,7 +237,7 @@ class Cybert:
             row["labels"], row["confidences"], row["token_ids"]
         ):
             text_token = self._vocab_lookup[token_id]
-            if text_token[:2] != "##":
+            if text_token[:2] != "##" and text_token[0] !='.':
                 # if not a subword use the current label, else use previous
                 new_label = label
                 new_confidence = confidence
@@ -238,18 +249,24 @@ class Cybert:
                 token_dict[self._label_map[new_label]] = text_token
             confidence_dict[self._label_map[label]].append(new_confidence)
         return token_dict, confidence_dict
-
+    
     def __decode_cleanup(self, df):
-        return (
-            df.replace(" ##", "", regex=True)
-            .replace(" : ", ":", regex=True)
-            .replace("\[ ", "[", regex=True)
-            .replace(" ]", "]", regex=True)
-            .replace(" /", "/", regex=True)
-            .replace("/ ", "/", regex=True)
-            .replace(" - ", "-", regex=True)
-            .replace(" \( ", " (", regex=True)
-            .replace(" \) ", ") ", regex=True)
-            .replace("\+ ", "+", regex=True)
-            .replace(" . ", ".", regex=True)
-        )
+        df.replace(r"\s+##", "", regex=True, inplace = True)
+        df.replace(r"\s+\.+\s", ".", regex=True, inplace=True)
+        df.replace(r"\s+:+\s", ":", regex=True, inplace=True)
+        df.replace(r"\s+\|+\s", "|", regex=True, inplace=True)
+        df.replace(r"\s+\++\s", "+", regex=True, inplace=True)
+        df.replace(r"\s+\-+\s", "-", regex=True, inplace=True)
+        df.replace(r"\s+\<", "<", regex=True, inplace=True)
+        df.replace(r"\<+\s", "<", regex=True, inplace=True)
+        df.replace(r"\s+\>", ">", regex=True, inplace=True)
+        df.replace(r"\>+\s", ">", regex=True, inplace=True)
+        df.replace(r"\s+\=+\s", "=", regex=True, inplace=True)
+        df.replace(r"\s+\#+\s", "#", regex=True, inplace=True)
+        df.replace(r"\[+\s", "[", regex=True, inplace=True)
+        df.replace(r"\s\]", "]", regex=True, inplace=True)
+        df.replace(r"\(+\s", "(", regex=True, inplace=True)
+        df.replace(r"\s\)", ")", regex=True, inplace=True)
+        df.replace(r"\s\"", "\"", regex=True, inplace=True)
+        df.replace(r"\"+\s", "\"", regex=True, inplace=True)
+        return df
