@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2020, NVIDIA CORPORATION.
+# Copyright (c) 2020-2022, NVIDIA CORPORATION.
 ################################################################################
 # CLX cpu build
 ################################################################################
@@ -53,12 +53,15 @@ conda list --show-channel-urls
 # FIX Added to deal with Anancoda SSL verification issues during conda builds
 conda config --set ssl_verify False
 
+# FIXME: Remove
+gpuci_mamba_retry install -c conda-forge boa
+
 ###############################################################################
 # BUILD - Conda package build
 ################################################################################
 
 gpuci_logger "Build conda pkg for clx"
-conda build conda/recipes/clx
+gpuci_conda_retry mambabuild conda/recipes/clx
 
 ################################################################################
 # UPLOAD - Conda package
