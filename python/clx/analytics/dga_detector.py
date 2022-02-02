@@ -168,7 +168,7 @@ class DGADetector(Detector):
 
     def _create_types_tensor(self, type_series):
         """Create types tensor variable in the same order of sequence tensor"""
-        types = type_series.to_array()
+        types = type_series.values_host
         types_tensor = torch.LongTensor(types)
         if torch.cuda.is_available():
             types_tensor = self._set_var2cuda(types_tensor)
@@ -178,7 +178,7 @@ class DGADetector(Detector):
         """
         Creates vectorized sequence for given domains and wraps around cuda for parallel processing.
         """
-        seq_len_arr = df["len"].to_array()
+        seq_len_arr = df["len"].values_host
         df = df.drop("len", axis=1)
         seq_len_tensor = torch.LongTensor(seq_len_arr)
         seq_tensor = self._df2tensor(df)
