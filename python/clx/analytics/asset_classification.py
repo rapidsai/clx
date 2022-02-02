@@ -117,7 +117,7 @@ class AssetClassification:
         --------
         >>> cat_cols = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
         >>> cont_cols = ["10"]
-        >>> ac.predict(X_test, cat_cols, cont_cols).to_array()
+        >>> ac.predict(X_test, cat_cols, cont_cols).values_host
         0       0
         1       0
         2       0

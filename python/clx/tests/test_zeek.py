@@ -73,7 +73,7 @@ def test_parse_log_file(tmpdir):
         f.write(header + content + footer)
 
     parsed = zeek.parse_log_file(fname)
-    assert np.allclose(parsed["ts"].to_array(), actual["ts"].to_array())
+    assert np.allclose(parsed["ts"].values_host, actual["ts"].values_host)
     assert parsed["uid"].equals(actual["uid"])
     assert parsed["id.orig_h"].equals(actual["id.orig_h"])
     assert parsed["id.orig_p"].equals(actual["id.orig_p"])
@@ -81,7 +81,7 @@ def test_parse_log_file(tmpdir):
     assert parsed["id.resp_p"].equals(actual["id.resp_p"])
     assert parsed["proto"].equals(actual["proto"])
     assert parsed["service"].equals(actual["service"])
-    assert np.allclose(parsed["duration"].to_array(), actual["duration"].to_array())
+    assert np.allclose(parsed["duration"].values_host, actual["duration"].values_host)
     assert parsed["orig_bytes"].equals(actual["orig_bytes"])
     assert parsed["resp_bytes"].equals(actual["resp_bytes"])
     assert parsed["conn_state"].equals(actual["conn_state"])
