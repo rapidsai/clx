@@ -1,6 +1,18 @@
-# clx 21.12.00 (Date TBD)
+# clx 22.02.00 (2 Feb 2022)
 
-Please see https://github.com/rapidsai/clx/releases/tag/v21.12.00a for the latest changes to this development branch.
+
+
+# clx 21.12.00 (9 Dec 2021)
+
+## 🐛 Bug Fixes
+
+- Update sequence_classifier.py ([#459](https://github.com/rapidsai/clx/pull/459)) [@raykallen](https://github.com/raykallen)
+- Update CLX workflow yaml reader for pyyaml v6.0 ([#458](https://github.com/rapidsai/clx/pull/458)) [@efajardo-nv](https://github.com/efajardo-nv)
+
+## 🛠️ Improvements
+
+- Fix Changelog Merge Conflicts for `branch-21.12` ([#463](https://github.com/rapidsai/clx/pull/463)) [@ajschmidt8](https://github.com/ajschmidt8)
+- Update to PyTorch 1.10 ([#460](https://github.com/rapidsai/clx/pull/460)) [@efajardo-nv](https://github.com/efajardo-nv)
 
 # clx 21.10.00 (7 Oct 2021)
 
