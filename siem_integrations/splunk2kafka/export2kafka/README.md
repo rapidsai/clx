@@ -20,8 +20,9 @@ This is a Splunk App that installs `export2kafka` that enables data export from 
 ## Install
 
 1. Git clone this repo into `$SPLUNKHOME/etc/apps`
-2. Go to `http://$SPLUNKURL/en-us/debug/refresh`
-3. Click the "Refresh" button to load the app into the Web UI
+2. Copy `splunklib` from [splunk-sdk-python](https://github.com/splunk/splunk-sdk-python) to `$SPLUNKHOME/etc/apps`. Use tag version that matches your Splunk installation. *Note: Application was tested with Splunk 1.6.x*.
+3. Go to `http://$SPLUNKURL/en-us/debug/refresh`
+4. Click the "Refresh" button to load the app into the Web UI
 
 ## Usage
 ### Config Options
