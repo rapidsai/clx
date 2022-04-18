@@ -4,7 +4,11 @@ Please see https://github.com/rapidsai/clx/releases/tag/v22.06.00a for the lates
 
 # clx 22.04.00 (Date TBD)
 
-Please see https://github.com/rapidsai/clx/releases/tag/v22.04.00a for the latest changes to this development branch.
+## 🛠️ Improvements
+
+- Temporarily disable new `ops-bot` functionality ([#478](https://github.com/rapidsai/clx/pull/478)) [@ajschmidt8](https://github.com/ajschmidt8)
+- Add `.github/ops-bot.yaml` config file ([#477](https://github.com/rapidsai/clx/pull/477)) [@ajschmidt8](https://github.com/ajschmidt8)
+- removed deprecated function to_array ([#474](https://github.com/rapidsai/clx/pull/474)) [@bsuryadevara](https://github.com/bsuryadevara)
 
 # clx 22.02.00 (2 Feb 2022)
 
