@@ -26,6 +26,7 @@ export HOME="$WORKSPACE"
 cd "$WORKSPACE"
 export GIT_DESCRIBE_TAG=`git describe --tags`
 export MINOR_VERSION=`echo $GIT_DESCRIBE_TAG | grep -o -E '([0-9]+\.[0-9]+)'`
+unset GIT_DESCRIBE_TAG
 
 ################################################################################
 # SETUP - Check environment
@@ -38,25 +39,12 @@ gpuci_logger "Activate conda env"
 . /opt/conda/etc/profile.d/conda.sh
 conda activate rapids
 
-gpuci_logger "Install conda dependenciess"
+gpuci_logger "Install tests dependencies"
 gpuci_mamba_retry install -y \
-    "rapids-build-env=$MINOR_VERSION.*" \
-    "rapids-notebook-env=$MINOR_VERSION.*" \
-    "cudatoolkit=$CUDA_REL" \
-    "cugraph=${MINOR_VERSION}" \
-    "cuml=${MINOR_VERSION}" \
-    "dask-cuda=${MINOR_VERSION}" \
     "cuxfilter=${MINOR_VERSION}" \
-    "python-confluent-kafka" \
-    "seqeval=1.2.2" \
+    "faker" \
     "python-whois" \
-    "requests" \
-    "matplotlib" \
-    "faker"
-
-# https://docs.rapids.ai/maintainers/depmgmt/
-# gpuci_conda_retry remove --force rapids-build-env rapids-notebook-env
-# gpuci_conda_retry install -y "your-pkg=1.0.0"
+    "seqeval=1.2.2"
 
 pip install -U torch==1.11.0+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
 pip install "git+https://github.com/rapidsai/cudatashader.git"
@@ -75,14 +63,14 @@ conda config --show-sources
 conda list --show-channel-urls
 
 ################################################################################
-# BUILD - Build clx from source
+# BUILD - Build clx
 ################################################################################
 
-logger "Build clx..."
-"$WORKSPACE/build.sh" clean clx
-
-# FIX Added to deal with Anancoda SSL verification issues during conda builds
-conda config --set ssl_verify False
+gpuci_logger "Build and install clx..."
+cd "${WORKSPACE}"
+CONDA_BLD_DIR="${WORKSPACE}/.conda-bld"
+gpuci_conda_retry build --croot "${CONDA_BLD_DIR}" conda/recipes/clx
+gpuci_mamba_retry install -c "${CONDA_BLD_DIR}" clx
 
 ################################################################################
 # TEST - Test python package
