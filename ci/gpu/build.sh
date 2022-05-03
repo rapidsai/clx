@@ -38,7 +38,7 @@ gpuci_logger "Activate conda env"
 . /opt/conda/etc/profile.d/conda.sh
 conda activate rapids
 
-gpuci_logger "Install conda dependenciess"
+gpuci_logger "Install conda dependencies"
 gpuci_mamba_retry install -y \
     "rapids-build-env=$MINOR_VERSION.*" \
     "rapids-notebook-env=$MINOR_VERSION.*" \
@@ -52,7 +52,8 @@ gpuci_mamba_retry install -y \
     "python-whois" \
     "requests" \
     "matplotlib" \
-    "faker"
+    "faker" \
+    "transformers=4.*"
 
 # https://docs.rapids.ai/maintainers/depmgmt/
 # gpuci_conda_retry remove --force rapids-build-env rapids-notebook-env
