@@ -40,6 +40,8 @@ conda activate rapids
 
 gpuci_logger "Install conda dependenciess"
 gpuci_mamba_retry install -y \
+    "rapids-build-env=$MINOR_VERSION.*" \
+    "rapids-notebook-env=$MINOR_VERSION.*" \
     "cudatoolkit=$CUDA_REL" \
     "cugraph=${MINOR_VERSION}" \
     "cuml=${MINOR_VERSION}" \
