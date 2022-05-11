@@ -83,7 +83,6 @@ class EventParser(ABC):
             extracted_gdf = dataframe[raw_column].str.extract(regex_pattern)
             if not extracted_gdf.empty:
                 parsed_gdf[col] = extracted_gdf[0]
-            del extracted_gdf
 
         remaining_columns = list(self.columns - event_specific_columns)
         # Fill remaining columns with empty.
