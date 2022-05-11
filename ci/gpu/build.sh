@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2018-2020, NVIDIA CORPORATION.
+# Copyright (c) 2018-2022, NVIDIA CORPORATION.
 ##########################################
 # CLX GPU build & testscript for CI      #
 ##########################################
@@ -40,8 +40,6 @@ conda activate rapids
 
 gpuci_logger "Install conda dependenciess"
 gpuci_mamba_retry install -y \
-    "rapids-build-env=$MINOR_VERSION.*" \
-    "rapids-notebook-env=$MINOR_VERSION.*" \
     "cudatoolkit=$CUDA_REL" \
     "cugraph=${MINOR_VERSION}" \
     "cuml=${MINOR_VERSION}" \
@@ -58,7 +56,7 @@ gpuci_mamba_retry install -y \
 # gpuci_conda_retry remove --force rapids-build-env rapids-notebook-env
 # gpuci_conda_retry install -y "your-pkg=1.0.0"
 
-pip install -U torch==1.10.0+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
+pip install -U torch==1.11.0+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
 pip install "git+https://github.com/rapidsai/cudatashader.git"
 pip install "git+https://github.com/slashnext/SlashNext-URL-Analysis-and-Enrichment.git#egg=slashnext-phishing-ir&subdirectory=Python SDK/src"
 pip install mockito
