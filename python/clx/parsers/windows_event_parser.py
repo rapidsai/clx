@@ -53,11 +53,12 @@ class WindowsEventParser(EventParser):
         for eventcode in self.event_regex.keys():
             pattern = "eventcode=%s" % (eventcode)
             input_chunk = self.filter_by_pattern(dataframe, raw_column, pattern)
-            temp = self.parse_raw_event(
-                input_chunk, raw_column, self.event_regex[eventcode]
-            )
-            if not temp.empty:
-                output_chunks.append(temp)
+            if not input_chunk.empty:
+                temp = self.parse_raw_event(
+                    input_chunk, raw_column, self.event_regex[eventcode]
+                )
+                if not temp.empty:
+                    output_chunks.append(temp)
         parsed_dataframe = cudf.concat(output_chunks)
         # Replace null values with empty.
         parsed_dataframe = parsed_dataframe.fillna("")
