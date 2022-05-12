@@ -170,7 +170,7 @@ class Cybert:
             confidences, labels = torch.max(logits, 2)
             confidences_list.extend(confidences.detach().cpu().numpy().tolist())
             labels_list.extend(labels.detach().cpu().numpy().tolist())
-        infer_pdf = pd.DataFrame(meta_data).astype(int)
+        infer_pdf = pd.DataFrame(meta_data.cpu()).astype(int)
         infer_pdf.columns = ["doc", "start", "stop"]
         infer_pdf["confidences"] = confidences_list
         infer_pdf["labels"] = labels_list
