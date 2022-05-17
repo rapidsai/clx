@@ -44,10 +44,6 @@ gpuci_mamba_retry install -y \
     "cuxfilter=${MINOR_VERSION}" \
     "faker" \
     "python-whois" \
-    "requests" \
-    "matplotlib" \
-    "faker" \
-    "transformers=4.*" \
     "seqeval=1.2.2"
 
 pip install -U torch==1.11.0+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
