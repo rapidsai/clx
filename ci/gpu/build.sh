@@ -42,7 +42,6 @@ conda activate rapids
 gpuci_logger "Install conda dependencies"
 gpuci_mamba_retry install -y \
     "cuxfilter=${MINOR_VERSION}" \
-    "faker" \
     "python-whois" \
     "seqeval=1.2.2"
 
