@@ -146,7 +146,7 @@ Create the conda development environment:
 ```bash
 # create the conda environment (assuming in base `clx` directory)
 
-mamba env update --name clx_dev --file conda/environments/clx_dev_cuda11.5.yml
+mamba env create --name clx_dev --file conda/environments/clx_dev_cuda11.5.yml
 
 # activate the environment
 conda activate clx_dev
@@ -158,7 +158,7 @@ conda deactivate
 The environment can be updated as development includes/changes the dependencies. To do so, run:
 
 ```bash
-conda env update --name clx_dev --file conda/environments/clx_dev_cuda11.0.yml
+mamba env update --name clx_dev --file conda/environments/clx_dev_cuda11.5.yml
 
 conda activate clx_dev
 ```
