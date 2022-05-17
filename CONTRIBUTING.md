@@ -115,7 +115,7 @@ run each time you commit changes.
 
 ### Build from Source
 
-The following instructions are for developers and contributors to CLX OSS development. These instructions are tested on Linux Ubuntu 16.04 & 18.04. Use these instructions to build CLX from source and contribute to its development.  Other operating systems may be compatible, but are not currently tested.
+The following instructions are for developers and contributors to CLX OSS development. These instructions are tested on Linux Ubuntu 18.04 & 20.04. Use these instructions to build CLX from source and contribute to its development.  Other operating systems may be compatible, but are not currently tested.
 
 The following instructions are tested on Linux systems.
 
@@ -123,8 +123,8 @@ The following instructions are tested on Linux systems.
 
 CUDA requirement:
 
-* CUDA 11.0
-* NVIDIA driver 396.44+
+* CUDA 11.5
+* NVIDIA driver 470.82+
 * Pascal architecture or better
 
 You can obtain CUDA from [https://developer.nvidia.com/cuda-downloads](https://developer.nvidia.com/cuda-downloads).
