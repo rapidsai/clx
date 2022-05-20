@@ -6,7 +6,7 @@ Please see https://github.com/rapidsai/clx/releases/tag/v22.08.00a for the lates
 
 Please see https://github.com/rapidsai/clx/releases/tag/v22.06.00a for the latest changes to this development branch.
 
-# clx 22.04.00 (Date TBD)
+# clx 22.04.00 (6 Apr 2022)
 
 ## 🛠️ Improvements
 
