@@ -10,7 +10,7 @@ from clx.utils.data.dataloader import DataLoader
 from clx.utils.data.dataset import Dataset
 from torch.utils.dlpack import to_dlpack
 from tqdm import trange
-from transformers import AdamW
+from torch.optim import AdamW
 from abc import ABC, abstractmethod
 
 log = logging.getLogger(__name__)
