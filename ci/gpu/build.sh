@@ -66,10 +66,13 @@ conda list --show-channel-urls
 # BUILD - Build clx
 ################################################################################
 
+#TODO: Move boa installation to gpuci/rapidsai
+gpuci_mamba_retry install boa
+
 gpuci_logger "Build and install clx..."
 cd "${WORKSPACE}"
 CONDA_BLD_DIR="${WORKSPACE}/.conda-bld"
-gpuci_conda_retry build --croot "${CONDA_BLD_DIR}" conda/recipes/clx
+gpuci_conda_retry mambabuild --croot "${CONDA_BLD_DIR}" conda/recipes/clx
 gpuci_mamba_retry install -c "${CONDA_BLD_DIR}" clx
 
 ################################################################################
