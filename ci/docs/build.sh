@@ -11,14 +11,14 @@ if [ -z "$PROJECT_WORKSPACE" ]; then
 fi
 
 export PATH=/conda/bin:/usr/local/cuda/bin:$PATH
-export HOME=$WORKSPACE
-export DOCS_WORKSPACE=$WORKSPACE/docs
+export HOME="$WORKSPACE"
+export DOCS_WORKSPACE="$WORKSPACE/docs"
 export CUDA_REL=${CUDA_VERSION%.*}
 export CUDA_SHORT=${CUDA_REL//./}
 export PROJECTS=(clx)
 
 # Switch to project root; also root of repo checkout
-cd $PROJECT_WORKSPACE
+cd "$PROJECT_WORKSPACE"
 export GIT_DESCRIBE_TAG=`git describe --tags`
 export MINOR_VERSION=`echo $GIT_DESCRIBE_TAG | grep -o -E '([0-9]+\.[0-9]+)'`
 
@@ -48,11 +48,11 @@ conda config --show-sources
 conda list --show-channel-urls
 
 #clx source build
-${PROJECT_WORKSPACE}/build.sh clx
+"$PROJECT_WORKSPACE/build.sh" clx
 
 #clx Sphinx Build
 gpuci_logger "Build clx docs"
-cd ${PROJECT_WORKSPACE}/docs
+cd "$PROJECT_WORKSPACE/docs"
 make html
 
 cd $DOCS_WORKSPACE
@@ -62,6 +62,6 @@ if [ ! -d "api/clx/$BRANCH_VERSION" ]; then
 fi
 
 rm -rf api/clx/$BRANCH_VERSION/*
-mv ${PROJECT_WORKSPACE}/docs/build/html/* $DOCS_WORKSPACE/api/clx/$BRANCH_VERSION
+mv "$PROJECT_WORKSPACE/docs/build/html/"* $DOCS_WORKSPACE/api/clx/$BRANCH_VERSION
 
 

@@ -1,6 +1,7 @@
 import logging
 
 import cudf
+from cudf.core.subword_tokenizer import SubwordTokenizer
 import torch
 import torch.nn as nn
 from torch.utils.dlpack import to_dlpack
@@ -42,6 +43,8 @@ class BinarySequenceClassifier(SequenceClassifier):
         else:
             self._device = torch.device("cpu")
 
+        self._tokenizer = SubwordTokenizer(self._hashpath, do_lower_case=True)
+
     def predict(self, input_data, max_seq_len=128, batch_size=32, threshold=0.5):
         """
         Predict the class with the trained model
@@ -71,8 +74,8 @@ class BinarySequenceClassifier(SequenceClassifier):
         predict_dataset = Dataset(predict_gdf)
         predict_dataloader = DataLoader(predict_dataset, batchsize=batch_size)
 
-        preds = cudf.Series()
-        probs = cudf.Series()
+        preds_l = []
+        probs_l = []
 
         self._model.eval()
         for df in predict_dataloader.get_chunks():
@@ -82,11 +85,14 @@ class BinarySequenceClassifier(SequenceClassifier):
                     b_input_ids, token_type_ids=None, attention_mask=b_input_mask
                 )[0]
                 b_probs = torch.sigmoid(logits[:, 1])
-                b_preds = b_probs.ge(threshold)
+                b_preds = b_probs.ge(threshold).type(torch.int8)
 
             b_probs = cudf.io.from_dlpack(to_dlpack(b_probs))
-            b_preds = cudf.io.from_dlpack(to_dlpack(b_preds))
-            preds = preds.append(b_preds)
-            probs = probs.append(b_probs)
+            b_preds = cudf.io.from_dlpack(to_dlpack(b_preds)).astype("boolean")
+            preds_l.append(b_preds)
+            probs_l.append(b_probs)
+
+        preds = cudf.concat(preds_l)
+        probs = cudf.concat(probs_l)
 
         return preds, probs

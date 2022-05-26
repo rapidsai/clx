@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2018-2020, NVIDIA CORPORATION.
+# Copyright (c) 2018-2022, NVIDIA CORPORATION.
 ##########################################
 # CLX GPU build & testscript for CI      #
 ##########################################
@@ -20,12 +20,13 @@ export CUDA_REL=${CUDA_VERSION%.*}
 export CUDA_SHORT=${CUDA_REL//./}
 
 # Set home to the job's workspace
-export HOME=$WORKSPACE
+export HOME="$WORKSPACE"
 
 # Switch to project root; also root of repo checkout
-cd $WORKSPACE
+cd "$WORKSPACE"
 export GIT_DESCRIBE_TAG=`git describe --tags`
 export MINOR_VERSION=`echo $GIT_DESCRIBE_TAG | grep -o -E '([0-9]+\.[0-9]+)'`
+unset GIT_DESCRIBE_TAG
 
 ################################################################################
 # SETUP - Check environment
@@ -38,29 +39,14 @@ gpuci_logger "Activate conda env"
 . /opt/conda/etc/profile.d/conda.sh
 conda activate rapids
 
-gpuci_logger "Install conda dependenciess"
-gpuci_conda_retry install -y -c pytorch \
-    "rapids-build-env=$MINOR_VERSION.*" \
-    "rapids-notebook-env=$MINOR_VERSION.*" \
-    "cugraph=${MINOR_VERSION}" \
-    "cuml=${MINOR_VERSION}" \
-    "dask-cuda=${MINOR_VERSION}" \
+gpuci_logger "Install conda dependencies"
+gpuci_mamba_retry install -y \
     "cuxfilter=${MINOR_VERSION}" \
-    "pytorch=1.7.1" \
-    "torchvision" \
-    "python-confluent-kafka" \
-    "transformers=4.*" \
-    "seqeval=1.2.2" \
+    "faker" \
     "python-whois" \
-    "requests" \
-    "matplotlib" \
-    "faker"
+    "seqeval=1.2.2"
 
-# https://docs.rapids.ai/maintainers/depmgmt/
-# gpuci_conda_retry remove --force rapids-build-env rapids-notebook-env
-# gpuci_conda_retry install -y "your-pkg=1.0.0"
-
-gpuci_logger "Install cudatashader"
+pip install -U torch==1.11.0+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
 pip install "git+https://github.com/rapidsai/cudatashader.git"
 pip install "git+https://github.com/slashnext/SlashNext-URL-Analysis-and-Enrichment.git#egg=slashnext-phishing-ir&subdirectory=Python SDK/src"
 pip install mockito
@@ -77,14 +63,17 @@ conda config --show-sources
 conda list --show-channel-urls
 
 ################################################################################
-# BUILD - Build clx from source
+# BUILD - Build clx
 ################################################################################
 
-logger "Build clx..."
-$WORKSPACE/build.sh clean clx
+#TODO: Move boa installation to gpuci/rapidsai
+gpuci_mamba_retry install boa
 
-# FIX Added to deal with Anancoda SSL verification issues during conda builds
-conda config --set ssl_verify False
+gpuci_logger "Build and install clx..."
+cd "${WORKSPACE}"
+CONDA_BLD_DIR="${WORKSPACE}/.conda-bld"
+gpuci_conda_retry mambabuild --croot "${CONDA_BLD_DIR}" conda/recipes/clx
+gpuci_mamba_retry install -c "${CONDA_BLD_DIR}" clx
 
 ################################################################################
 # TEST - Test python package
@@ -96,10 +85,10 @@ trap "EXITCODE=1" ERR
 if hasArg --skip-tests; then
     gpuci_logger "Skipping Tests"
 else
-    cd ${WORKSPACE}/python
-    py.test --ignore=ci --cache-clear --junitxml=${WORKSPACE}/junit-clx.xml -v
-    ${WORKSPACE}/ci/gpu/test-notebooks.sh 2>&1 | tee nbtest.log
-    python ${WORKSPACE}/ci/utils/nbtestlog2junitxml.py nbtest.log
+    cd "$WORKSPACE/python"
+    py.test --ignore=ci --cache-clear --junitxml="$WORKSPACE/junit-clx.xml" -v
+    "$WORKSPACE/ci/gpu/test-notebooks.sh" 2>&1 | tee nbtest.log
+    python "$WORKSPACE/ci/utils/nbtestlog2junitxml.py" nbtest.log
 fi
 
 return "${EXITCODE}"

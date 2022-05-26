@@ -48,6 +48,6 @@ expected_output_df["domain"] = ["studytour.com.tw", "cnn.com"]
 
 
 def test_detector_dataset():
-    dataset = DGADataset(test_input_df)
+    dataset = DGADataset(test_input_df, 100)
     assert dataset.length == 2
     assert dataset.data.equals(expected_output_df)
