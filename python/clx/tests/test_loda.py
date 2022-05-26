@@ -57,17 +57,21 @@ def test_save_model(tmpdir):
     ld = Loda(n_random_cuts=10, n_bins=None)
     x = cupy.random.randint(0, 100, size=(200, 10))
     ld.fit(x)
-    ld.save_model(tmpdir + "clx_loda")
-    assert path.exists(tmpdir + "clx_loda.npz")
+    ipath = path.join(tmpdir, "clx_loda")
+    opath = path.join(tmpdir, "clx_loda.npz")
+    ld.save_model(ipath)
+    assert path.exists(opath)
 
 
 def test_load_model(tmpdir):
     ld = Loda(n_random_cuts=10, n_bins=None)
     x = cupy.random.randint(0, 100, size=(200, 10))
     ld.fit(x)
-    ld.save_model(tmpdir + "clx_loda")
-    assert path.exists(tmpdir + "clx_loda.npz")
+    ipath = path.join(tmpdir, "clx_loda")
+    opath = path.join(tmpdir, "clx_loda.npz")
+    ld.save_model(ipath)
+    assert path.exists(opath)
 
     # load model
-    ld = Loda.load_model(tmpdir + "clx_loda.npz")
+    ld = Loda.load_model(opath)
     assert isinstance(ld, Loda)
