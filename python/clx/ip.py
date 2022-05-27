@@ -21,11 +21,16 @@ def ip_to_int(values):
     Convert string column of IP addresses to integer values.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    :param values: IP addresses to be converted
-    :type values: cudf.Series
-    :return: Integer representations of IP addresses
-    :rtype: cudf.Series
+    Parameters
+    ----------
+    values : cudf.Series, IPv4 address
+        IP addresses to be converted
 
+    Returns
+    -------
+    rtype : cudf.Series, integer
+        Integer representations of IP addresses
+    
     Examples
     --------
     >>> import clx.ip
@@ -43,11 +48,16 @@ def int_to_ip(values):
     Convert integer column to IP addresses.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    :param values: Integers to be converted
-    :type values: cudf.Series
-    :return: IP addresses
-    :rtype: cudf.Series
+    Parameters
+    ----------
+    values : cudf.Series, integer
+        Integer representations of IP addresses
 
+    Returns
+    -------
+    rtype : cudf.Series, IPv4 address
+        IP addresses to be converted
+    
     Examples
     --------
     >>> import clx.ip
@@ -65,11 +75,16 @@ def is_ip(ips):
     Indicates whether each address is an ip string.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    :param ips: IP addresses
-    :type values: cudf.Series
-    :return: booleans
-    :rtype: cudf.Series
+    Parameters
+    ----------
+    ips : IPv4 address
+        IP addresses to be checked
 
+    Returns
+    -------
+    rtype : cudf.Series, booleans
+        Boolean values true or false
+    
     Examples
     --------
     >>> import clx.ip
@@ -88,11 +103,16 @@ def is_reserved(ips):
     Indicates whether each address is reserved.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    :param ips: IP addresses
-    :type values: cudf.Series
-    :return: booleans
-    :rtype: cudf.Series
+    Parameters
+    ----------
+    ips : IPv4 address
+        IP addresses to be checked
 
+    Returns
+    -------
+    rtype : cudf.Series, booleans
+        Boolean values true or false
+    
     Examples
     --------
     >>> import clx.ip
@@ -111,11 +131,16 @@ def is_loopback(ips):
     Indicates whether each address is loopback.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    :param ips: IP addresses
-    :type values: cudf.Series
-    :return: booleans
-    :rtype: cudf.Series
+    Parameters
+    ----------
+    ips : IPv4 address
+        IP addresses to be checked
 
+    Returns
+    -------
+    rtype : cudf.Series, booleans
+        Boolean values true or false
+    
     Examples
     --------
     >>> import clx.ip
@@ -134,11 +159,16 @@ def is_link_local(ips):
     Indicates whether each address is link local.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    :param ips: IP addresses
-    :type values: cudf.Series
-    :return: booleans
-    :rtype: cudf.Series
+    Parameters
+    ----------
+    ips : IPv4 address
+        IP addresses to be checked
 
+    Returns
+    -------
+    rtype : cudf.Series, booleans
+        Boolean values true or false
+    
     Examples
     --------
     >>> import clx.ip
@@ -157,11 +187,16 @@ def is_unspecified(ips):
     Indicates whether each address is unspecified.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    :param ips: IP addresses
-    :type values: cudf.Series
-    :return: booleans
-    :rtype: cudf.Series
+    Parameters
+    ----------
+    ips : IPv4 address
+        IP addresses to be checked
 
+    Returns
+    -------
+    rtype : cudf.Series, booleans
+        Boolean values true or false
+    
     Examples
     --------
     >>> import clx.ip
@@ -180,10 +215,15 @@ def is_multicast(ips):
     Indicates whether each address is multicast.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    :param ips: IP addresses
-    :type values: cudf.Series
-    :return: booleans
-    :rtype: cudf.Series
+    Parameters
+    ----------
+    ips : IPv4 address
+        IP addresses to be checked
+
+    Returns
+    -------
+    rtype : cudf.Series, booleans
+        Boolean values true or false
 
     Examples
     --------
@@ -203,10 +243,15 @@ def is_private(ips):
     Indicates whether each address is private.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    :param ips: IP addresses
-    :type values: cudf.Series
-    :return: booleans
-    :rtype: cudf.Series
+    Parameters
+    ----------
+    ips : IPv4 address
+        IP addresses to be checked
+
+    Returns
+    -------
+    rtype : cudf.Series, booleans
+        Boolean values true or false
 
     Examples
     --------
@@ -226,10 +271,15 @@ def is_global(ips):
     Indicates whether each address is global.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    :param ips: IP addresses
-    :type values: cudf.Series
-    :return: booleans
-    :rtype: cudf.Series
+    Parameters
+    ----------
+    ips : IPv4 address
+        IP addresses to be checked
+
+    Returns
+    -------
+    rtype : cudf.Series, booleans
+        Boolean values true or false
 
     Examples
     --------
@@ -260,13 +310,19 @@ def netmask(ips, prefixlen=16):
     Compute a column of netmasks for a column of IP addresses.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    :param ips: IP addresses
-    :type values: cudf.Series
-    :param prefixlen: Length of the network prefix, in bits, for IPv4 addresses
-    :type prefixlen: int
-    :return: netmasks
-    :rtype: cudf.Series
+    Parameters
+    ----------
+    ips : IPv4 address
+        IP addresses to be checked
+    prefixlen: integer
+        Length of the network prefix, in bits, for IPv4 addresses
 
+    Returns
+    -------
+    rtype : cudf.Series, netmask
+        Netmask ouput from set of IP address
+
+    
     Examples
     --------
     >>> import clx.ip
@@ -308,13 +364,18 @@ def hostmask(ips, prefixlen=16):
     Compute a column of hostmasks for a column of IP addresses.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    :param ips: IP addresses
-    :type values: cudf.Series
-    :param prefixlen: Length of the network prefix, in bits, for IPv4 addresses
-    :type prefixlen: int
-    :return: hostmasks
-    :rtype: cudf.Series
+    Parameters
+    ----------
+    ips : IPv4 address
+        IP addresses to be checked
+    prefixlen: integer
+        Length of the network prefix, in bits, for IPv4 addresses
 
+    Returns
+    -------
+    rtype : cudf.Series, hostmask
+        Hostmask ouput from set of IP address
+  
     Examples
     --------
     >>> import clx.ip
@@ -356,12 +417,17 @@ def mask(ips, masks):
     Apply a mask to a column of IP addresses.
     **Addresses must be IPv4. IPv6 not yet supported.**
 
-    :param ips: IP addresses
-    :type values: cudf.Series
-    :param masks: The host or subnet masks to be applied
-    :type masks: cudf.Series
-    :return: masked IP addresses
-    :rtype: cudf.Series
+    Parameters
+    ----------
+    ips : IPv4 address
+        IP addresses to be checked
+    masks: Subnet mask value
+        The host or subnet masks to be applied
+
+    Returns
+    -------
+    rtype : cudf.Series, masked IPv4 address
+        Masked IP address from list of IPs
 
     Examples
     --------
