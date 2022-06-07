@@ -1,6 +1,24 @@
-# clx 22.06.00 (Date TBD)
+# clx 22.06.00 (7 Jun 2022)
 
-Please see https://github.com/rapidsai/clx/releases/tag/v22.06.00a for the latest changes to this development branch.
+## 🐛 Bug Fixes
+
+- cyBERT and WEP fixes after upstream cuDF updates ([#487](https://github.com/rapidsai/clx/pull/487)) [@efajardo-nv](https://github.com/efajardo-nv)
+- Add transformers dependency and update notebooks ([#486](https://github.com/rapidsai/clx/pull/486)) [@bsuryadevara](https://github.com/bsuryadevara)
+- Update cybert_example_training.ipynb ([#469](https://github.com/rapidsai/clx/pull/469)) [@raykallen](https://github.com/raykallen)
+
+## 📖 Documentation
+
+- doc updates ([#489](https://github.com/rapidsai/clx/pull/489)) [@bsuryadevara](https://github.com/bsuryadevara)
+
+## 🛠️ Improvements
+
+- Simplify conda recipe ([#493](https://github.com/rapidsai/clx/pull/493)) [@Ethyling](https://github.com/Ethyling)
+- Use conda to build python packages during GPU tests ([#484](https://github.com/rapidsai/clx/pull/484)) [@Ethyling](https://github.com/Ethyling)
+- Remove `splunklib` directories ([#483](https://github.com/rapidsai/clx/pull/483)) [@efajardo-nv](https://github.com/efajardo-nv)
+- Use conda compilers ([#476](https://github.com/rapidsai/clx/pull/476)) [@Ethyling](https://github.com/Ethyling)
+- Build packages using mambabuild ([#472](https://github.com/rapidsai/clx/pull/472)) [@Ethyling](https://github.com/Ethyling)
+- Support Loda save and load operations. ([#448](https://github.com/rapidsai/clx/pull/448)) [@tzemicheal](https://github.com/tzemicheal)
+- Edit variable formatting for API document page ([#386](https://github.com/rapidsai/clx/pull/386)) [@msadang](https://github.com/msadang)
 
 # clx 22.04.00 (6 Apr 2022)
 
