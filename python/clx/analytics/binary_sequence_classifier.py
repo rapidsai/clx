@@ -74,8 +74,8 @@ class BinarySequenceClassifier(SequenceClassifier):
         predict_dataset = Dataset(predict_gdf)
         predict_dataloader = DataLoader(predict_dataset, batchsize=batch_size)
 
-        preds = cudf.Series()
-        probs = cudf.Series()
+        preds_l = []
+        probs_l = []
 
         self._model.eval()
         for df in predict_dataloader.get_chunks():
@@ -89,7 +89,10 @@ class BinarySequenceClassifier(SequenceClassifier):
 
             b_probs = cudf.io.from_dlpack(to_dlpack(b_probs))
             b_preds = cudf.io.from_dlpack(to_dlpack(b_preds)).astype("boolean")
-            preds = preds.append(b_preds)
-            probs = probs.append(b_probs)
+            preds_l.append(b_preds)
+            probs_l.append(b_probs)
+
+        preds = cudf.concat(preds_l)
+        probs = cudf.concat(probs_l)
 
         return preds, probs

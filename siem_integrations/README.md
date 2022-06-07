@@ -1,7 +1,5 @@
 # <div align="left"><img src="../img/rapids_logo.png" width="90px"/>&nbsp;CLX SIEM Integration</div>
 
-**NOTE:** For the latest stable [README.md](https://github.com/rapidsai/clx/blob/main/README.md) ensure you are on the `main` branch.
-
 [RAPIDS](https://rapids.ai) CLX [SIEM](https://en.wikipedia.org/wiki/Security_information_and_event_management) Integrations provide features that enable interoperability between SIEMs and a RAPIDS/CLX environment. Currently, this support includes `splunk2kafka`, enabling data integration between Splunk and CLX.
 
 ## Splunk2Kafka
@@ -15,15 +13,15 @@ Use this Splunk query template to send data to your Kafka instance.
 index="my-index" | export2kafka topic=my-topic broker=10.0.0.0:9092
 ```
 
-Additional query configuration options are detailed [here](https://github.com/rapidsai/clx/blob/main/splunk2kafka/export2kafka/README.md).
+Additional query configuration options are detailed [here](splunk2kafka/export2kafka/README.md).
 
 ### Install Splunk2Kafka
 
 Install the following applications into your Splunk instance by following the instructions linked below.
 In order to utilize splunk2kafka, a [running Kafka instance](https://kafka.apache.org/quickstart) is required.
 
-1. Install splunk_wrapper ([Instructions](https://github.com/rapidsai/clx/blob/main/splunk2kafka/splunk_wrapper/README.md))
-2. Install export2kafka ([Instructions](https://github.com/rapidsai/clx-siem-integration/blob/main/splunk2kafka/export2kafka/README.md))
+1. Install splunk_wrapper ([Instructions](splunk2kafka/splunk_wrapper/README.md))
+2. Install export2kafka ([Instructions](splunk2kafka/export2kafka/README.md))
 
 
 ## CLX Query
@@ -99,12 +97,13 @@ Download MovieLens stable benchmark [dataset](https://grouplens.org/datasets/mov
     ```aidl
     cp -R clx_query splunk/etc/apps
     ```
-3. Restart splunk application server to take effect on changes.
+3. Copy `splunklib` from [splunk-sdk-python](https://github.com/splunk/splunk-sdk-python) to splunk apps directory. Use tag version that matches your Splunk installation. *Note: Application was tested with Splunk 1.6.x*.
+4. Restart splunk application server to take effect on changes.
     ```aidl
     ./splunk/bin/splunk restart
     ``` 
-4. Login to Splunk GUI and launch CLX Query application. `Apps> Manage Apps> Clx Query> Launch App`
-5. Run sample query
+5. Login to Splunk GUI and launch CLX Query application. `Apps> Manage Apps> ClX Query> Launch App`
+6. Run sample query
     -  Get number of user_id's and their average rating in descending order for each genre and title. Consider movies only with rating greater than 2.5.
         ```
         | clx query="SELECT genres, title, avg(rating) as avg_rating, count(user_id) as user_cnt from (SELECT main.movies.title as title, main.movies.genres as genres, main.ratings.userId as user_id, main.ratings.rating as rating FROM main.movies INNER JOIN main.ratings ON (main.ratings.movieId = main.movies.movieId) WHERE main.ratings.rating > 2.5) as tmp GROUP BY genres, title ORDER BY user_cnt DESC, avg_rating DESC"
@@ -112,9 +111,9 @@ Download MovieLens stable benchmark [dataset](https://grouplens.org/datasets/mov
       
         ![clx_query_screeshot](/siem_integrations/clx_query/clx_query.png)
 
-### Know Issues
+### Known Issues
 1.  Columns not being inferred from CSV header [blazingsql-265](https://github.com/BlazingDB/blazingsql/issues/265).
 
 ## Contributing Guide
 
-Review the [CONTRIBUTING.md](https://github.com/rapidsai/clx/blob/main/CONTRIBUTING.md) file for information on how to contribute code and issues to the project.
+Review the [CONTRIBUTING.md](../CONTRIBUTING.md) file for information on how to contribute code and issues to the project.
