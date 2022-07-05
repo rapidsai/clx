@@ -6,9 +6,9 @@ from os import path
 import string
 from enum import Enum
 
-
 startingPatt = re.compile("^STARTING: ([\w\.\-]+)$")
-skippingPatt = re.compile("^SKIPPING: ([\w\.\-]+)\s*(\(([\w\.\-\ \,]+)\))?\s*$")
+skippingPatt = re.compile(
+    "^SKIPPING: ([\w\.\-]+)\s*(\(([\w\.\-\ \,]+)\))?\s*$")
 exitCodePatt = re.compile("^EXIT CODE: (\d+)$")
 folderPatt = re.compile("^FOLDER: ([\w\.\-]+)$")
 timePatt = re.compile("^real\s+([\d\.ms]+)$")
@@ -36,12 +36,8 @@ def makeFailureElement(outputLines):
 
 
 def setFileNameAttr(attrDict, fileName):
-    attrDict.update(file=fileName,
-                    classname="",
-                    line="",
-                    name="",
-                    time=""
-                   )
+    attrDict.update(file=fileName, classname="", line="", name="", time="")
+
 
 def setClassNameAttr(attrDict, className):
     attrDict["classname"] = className
@@ -97,7 +93,8 @@ def parseLog(logFile, testSuiteElement):
                     setTimeAttr(attrDict, "0m0s")
                     skippedElement = makeTestCaseElement(attrDict)
                     message = m.group(3) or ""
-                    skippedElement.append(Element("skipped", message=message, type=""))
+                    skippedElement.append(
+                        Element("skipped", message=message, type=""))
                     testSuiteElement.append(skippedElement)
                     incrNumAttr(testSuiteElement, "skipped")
                     incrNumAttr(testSuiteElement, "tests")
@@ -159,4 +156,5 @@ if __name__ == "__main__":
     testSuiteElement = Element("testsuite", name="nbtest", hostname="")
     parseLog(sys.argv[1], testSuiteElement)
     testSuitesElement.append(testSuiteElement)
-    ElementTree(testSuitesElement).write(sys.argv[1]+".xml", xml_declaration=True)
+    ElementTree(testSuitesElement).write(sys.argv[1] + ".xml",
+                                         xml_declaration=True)

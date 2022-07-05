@@ -1,7 +1,8 @@
 import logging
+from abc import ABC, abstractmethod
+
 import torch
 import torch.nn as nn
-from abc import ABC, abstractmethod
 
 log = logging.getLogger(__name__)
 
@@ -9,6 +10,7 @@ GPU_COUNT = torch.cuda.device_count()
 
 
 class Detector(ABC):
+
     def __init__(self, lr=0.001):
         self.lr = lr
         self._model = None
@@ -32,7 +34,12 @@ class Detector(ABC):
         pass
 
     @abstractmethod
-    def train_model(self, training_data, labels, batch_size=1000, epochs=1, train_size=0.7):
+    def train_model(self,
+                    training_data,
+                    labels,
+                    batch_size=1000,
+                    epochs=1,
+                    train_size=0.7):
         pass
 
     @abstractmethod
@@ -63,7 +70,8 @@ class Detector(ABC):
 
     def _save_checkpoint(self, checkpoint, file_path):
         torch.save(checkpoint, file_path)
-        log.info("Pretrained model checkpoint saved to location: '{}'".format(file_path))
+        log.info("Pretrained model checkpoint saved to location: '{}'".format(
+            file_path))
 
     def _set_parallelism(self):
         if GPU_COUNT > 1:
@@ -74,9 +82,9 @@ class Detector(ABC):
             self._set_model2cuda()
 
     def _set_optimizer(self):
-        self._optimizer = torch.optim.RMSprop(
-            self.model.parameters(), self.lr, weight_decay=0.0
-        )
+        self._optimizer = torch.optim.RMSprop(self.model.parameters(),
+                                              self.lr,
+                                              weight_decay=0.0)
 
     def _set_model2cuda(self):
         if torch.cuda.is_available():

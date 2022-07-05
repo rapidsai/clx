@@ -20,16 +20,12 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
+from cudf.core.subword_tokenizer import SubwordTokenizer
 from torch.nn import functional as F
 from torch.utils.data import DataLoader, TensorDataset
-from transformers import (
-    BertForTokenClassification,
-    DistilBertForTokenClassification,
-    ElectraForTokenClassification,
-)
-
-from cudf.core.subword_tokenizer import SubwordTokenizer
-
+from transformers import (BertForTokenClassification,
+                          DistilBertForTokenClassification,
+                          ElectraForTokenClassification)
 
 log = logging.getLogger(__name__)
 
@@ -55,7 +51,8 @@ class Cybert:
     def __init__(self):
         self._model = None
         self._label_map = {}
-        resources_dir = "%s/resources" % os.path.dirname(os.path.realpath(__file__))
+        resources_dir = "%s/resources" % os.path.dirname(
+            os.path.realpath(__file__))
         vocabpath = "%s/bert-base-cased-vocab.txt" % resources_dir
         self._vocab_lookup = {}
         with open(vocabpath) as f:
@@ -86,7 +83,8 @@ class Cybert:
         model_arch = config["architectures"][0]
         self._label_map = {int(k): v for k, v in config["id2label"].items()}
         self._model = ARCH_MAPPING[model_arch].from_pretrained(
-            model_filepath, config=config_filepath,
+            model_filepath,
+            config=config_filepath,
         )
         self._model.cuda()
         self._model.eval()
@@ -159,7 +157,9 @@ class Cybert:
         """
         input_ids, attention_masks, meta_data = self.preprocess(raw_data_col)
         dataset = TensorDataset(input_ids, attention_masks)
-        dataloader = DataLoader(dataset=dataset, shuffle=False, batch_size=batch_size)
+        dataloader = DataLoader(dataset=dataset,
+                                shuffle=False,
+                                batch_size=batch_size)
         confidences_list = []
         labels_list = []
         for step, batch in enumerate(dataloader):
@@ -168,7 +168,8 @@ class Cybert:
                 logits = self._model(in_ids, att_masks)[0]
             logits = F.softmax(logits, dim=2)
             confidences, labels = torch.max(logits, 2)
-            confidences_list.extend(confidences.detach().cpu().numpy().tolist())
+            confidences_list.extend(
+                confidences.detach().cpu().numpy().tolist())
             labels_list.extend(labels.detach().cpu().numpy().tolist())
         infer_pdf = pd.DataFrame(meta_data.cpu()).astype(int)
         infer_pdf.columns = ["doc", "start", "stop"]
@@ -189,26 +190,25 @@ class Cybert:
     def __postprocess(self, infer_pdf):
         # cut overlapping edges
         infer_pdf["confidences"] = infer_pdf.apply(
-            lambda row: row["confidences"][row["start"]:row["stop"]], axis=1
-        )
+            lambda row: row["confidences"][row["start"]:row["stop"]], axis=1)
 
         infer_pdf["labels"] = infer_pdf.apply(
-            lambda row: row["labels"][row["start"]:row["stop"]], axis=1
-        )
+            lambda row: row["labels"][row["start"]:row["stop"]], axis=1)
 
         infer_pdf["token_ids"] = infer_pdf.apply(
-            lambda row: row["token_ids"][row["start"]:row["stop"]], axis=1
-        )
+            lambda row: row["token_ids"][row["start"]:row["stop"]], axis=1)
 
         # aggregated logs
-        infer_pdf = infer_pdf.groupby("doc").agg(
-            {"token_ids": "sum", "confidences": "sum", "labels": "sum"}
-        )
+        infer_pdf = infer_pdf.groupby("doc").agg({
+            "token_ids": "sum",
+            "confidences": "sum",
+            "labels": "sum"
+        })
 
         # parse_by_label
-        parsed_dfs = infer_pdf.apply(
-            lambda row: self.__get_label_dicts(row), axis=1, result_type="expand"
-        )
+        parsed_dfs = infer_pdf.apply(lambda row: self.__get_label_dicts(row),
+                                     axis=1,
+                                     result_type="expand")
         parsed_df = pd.DataFrame(parsed_dfs[0].tolist())
         confidence_df = pd.DataFrame(parsed_dfs[1].tolist())
         if "X" in confidence_df.columns:
@@ -222,9 +222,9 @@ class Cybert:
     def __get_label_dicts(self, row):
         token_dict = defaultdict(str)
         confidence_dict = defaultdict(list)
-        for label, confidence, token_id in zip(
-            row["labels"], row["confidences"], row["token_ids"]
-        ):
+        for label, confidence, token_id in zip(row["labels"],
+                                               row["confidences"],
+                                               row["token_ids"]):
             text_token = self._vocab_lookup[token_id]
             if text_token[:2] != "##":
                 # if not a subword use the current label, else use previous
@@ -232,24 +232,20 @@ class Cybert:
                 new_confidence = confidence
             if self._label_map[new_label] in token_dict:
                 token_dict[self._label_map[new_label]] = (
-                    token_dict[self._label_map[new_label]] + " " + text_token
-                )
+                    token_dict[self._label_map[new_label]] + " " + text_token)
             else:
                 token_dict[self._label_map[new_label]] = text_token
             confidence_dict[self._label_map[label]].append(new_confidence)
         return token_dict, confidence_dict
 
     def __decode_cleanup(self, df):
-        return (
-            df.replace(" ##", "", regex=True)
-            .replace(" : ", ":", regex=True)
-            .replace("\[ ", "[", regex=True)
-            .replace(" ]", "]", regex=True)
-            .replace(" /", "/", regex=True)
-            .replace("/ ", "/", regex=True)
-            .replace(" - ", "-", regex=True)
-            .replace(" \( ", " (", regex=True)
-            .replace(" \) ", ") ", regex=True)
-            .replace("\+ ", "+", regex=True)
-            .replace(" . ", ".", regex=True)
-        )
+        return (df.replace(" ##", "", regex=True).replace(
+            " : ", ":", regex=True).replace("\[ ", "[", regex=True).replace(
+                " ]", "]", regex=True).replace(" /", "/", regex=True).replace(
+                    "/ ", "/",
+                    regex=True).replace(" - ", "-", regex=True).replace(
+                        " \( ", " (",
+                        regex=True).replace(" \) ", ") ", regex=True).replace(
+                            "\+ ", "+", regex=True).replace(" . ",
+                                                            ".",
+                                                            regex=True))

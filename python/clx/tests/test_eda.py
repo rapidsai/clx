@@ -18,7 +18,6 @@ import cudf
 import cuxfilter
 import pandas as pd
 import pytest
-
 from clx.eda import EDA
 
 
@@ -36,12 +35,31 @@ def test_eda_summary_stats(test_dataframe):
     """Test EDA Summary statistics"""
     expected_output = {
         "SummaryStatistics": {
-            "a": {"dtype": "int64", "summary": {"unique": "4", "total": "4"}},
-            "b": {"dtype": "object", "summary": {"unique": "3", "total": "4"}},
-            "c": {"dtype": "bool", "summary": {"true_percent": "0.75"}},
+            "a": {
+                "dtype": "int64",
+                "summary": {
+                    "unique": "4",
+                    "total": "4"
+                }
+            },
+            "b": {
+                "dtype": "object",
+                "summary": {
+                    "unique": "3",
+                    "total": "4"
+                }
+            },
+            "c": {
+                "dtype": "bool",
+                "summary": {
+                    "true_percent": "0.75"
+                }
+            },
             "d": {
                 "dtype": "datetime64[ns]",
-                "summary": {"timespan": "60 days, 2880 hours, 0 minutes, 0 seconds"},
+                "summary": {
+                    "timespan": "60 days, 2880 hours, 0 minutes, 0 seconds"
+                },
             },
         }
     }
@@ -57,12 +75,31 @@ def test_eda_save_analysis(tmpdir, test_dataframe):
     eda = EDA(test_dataframe)
     eda.save_analysis(fdir)
     expected_output = {
-        "a": {"dtype": "int64", "summary": {"unique": "4", "total": "4"}},
-        "b": {"dtype": "object", "summary": {"unique": "3", "total": "4"}},
-        "c": {"dtype": "bool", "summary": {"true_percent": "0.75"}},
+        "a": {
+            "dtype": "int64",
+            "summary": {
+                "unique": "4",
+                "total": "4"
+            }
+        },
+        "b": {
+            "dtype": "object",
+            "summary": {
+                "unique": "3",
+                "total": "4"
+            }
+        },
+        "c": {
+            "dtype": "bool",
+            "summary": {
+                "true_percent": "0.75"
+            }
+        },
         "d": {
             "dtype": "datetime64[ns]",
-            "summary": {"timespan": "60 days, 2880 hours, 0 minutes, 0 seconds"},
+            "summary": {
+                "timespan": "60 days, 2880 hours, 0 minutes, 0 seconds"
+            },
         },
     }
     with open(fname) as f:

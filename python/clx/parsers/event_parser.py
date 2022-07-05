@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import cudf
 import logging
-import yaml
-
 from abc import ABC, abstractmethod
+
+import cudf
+import yaml
 
 log = logging.getLogger(__name__)
 
@@ -72,7 +72,8 @@ class EventParser(ABC):
         :return: parsed information.
         :rtype: cudf.DataFrame
         """
-        log.debug("Parsing raw events. Event type: " + self.event_name + " DataFrame shape: " + str(dataframe.shape))
+        log.debug("Parsing raw events. Event type: " + self.event_name +
+                  " DataFrame shape: " + str(dataframe.shape))
 
         parsed_gdf = cudf.DataFrame({col: [""] for col in self.columns})
         parsed_gdf = parsed_gdf[:0]

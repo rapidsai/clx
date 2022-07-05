@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import cudf
 import logging
 import time
-from confluent_kafka import KafkaError
+
+import cudf
 from clx.io.reader.reader import Reader
+from confluent_kafka import KafkaError
 
 log = logging.getLogger(__name__)
 
@@ -29,6 +30,7 @@ class KafkaReader(Reader):
     :param consumer: Kafka consumer
     :param time_window: Max window of time that queued events will wait to be pushed to workflow
     """
+
     def __init__(self, batch_size, consumer, time_window=30):
         self._batch_size = batch_size
         self._consumer = consumer
@@ -58,12 +60,11 @@ class KafkaReader(Reader):
         try:
             while running:
                 # First check if batch size or time window has been exceeded
-                if (
-                    rec_cnt >= self._batch_size or (time.time() - current_time) >= self.time_window
-                ):
-                    log.debug(
-                        "Exceeded record count (" + str(rec_cnt) + ") or time window (" + str(time.time() - current_time) + ")"
-                    )
+                if (rec_cnt >= self._batch_size
+                        or (time.time() - current_time) >= self.time_window):
+                    log.debug("Exceeded record count (" + str(rec_cnt) +
+                              ") or time window (" +
+                              str(time.time() - current_time) + ")")
                     running = False
                 # Else poll next message in kafka queue
                 else:
@@ -84,7 +85,9 @@ class KafkaReader(Reader):
             df = cudf.DataFrame()
             if len(events) > 0:
                 df["Raw"] = events
-            log.debug("Kafka reader batch aggregation complete. Dataframe size = " + str(df.shape))
+            log.debug(
+                "Kafka reader batch aggregation complete. Dataframe size = " +
+                str(df.shape))
             return df
         except Exception:
             log.error("Error fetching data from kafka")

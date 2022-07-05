@@ -15,9 +15,10 @@
 # ref: https://docs.dnsdb.info/dnsdb-api/
 
 import json
-import requests
-import urllib
 import logging
+import urllib
+
+import requests
 
 log = logging.getLogger(__name__)
 
@@ -33,13 +34,24 @@ class FarsightLookupClient(object):
     :param http_proxy: HTTP proxy
     :param https_proxy: HTTPS proxy
     """
-    def __init__(self, server, apikey, limit=None, http_proxy=None, https_proxy=None):
+
+    def __init__(self,
+                 server,
+                 apikey,
+                 limit=None,
+                 http_proxy=None,
+                 https_proxy=None):
         self.server = server
         self.headers = {"Accept": "application/json", "X-Api-Key": apikey}
         self.limit = limit
         self.proxy_args = self.__get_proxy_args(http_proxy, https_proxy)
 
-    def query_rrset(self, oname, rrtype=None, bailiwick=None, before=None, after=None):
+    def query_rrset(self,
+                    oname,
+                    rrtype=None,
+                    bailiwick=None,
+                    before=None,
+                    after=None):
         """
         Batch version of querying DNSDB by given domain name and time ranges.
 
@@ -80,7 +92,11 @@ class FarsightLookupClient(object):
             path = "rrset/name/%s" % quoted_name
         return self.__query(path, before, after)
 
-    def query_rdata_name(self, rdata_name, rrtype=None, before=None, after=None):
+    def query_rdata_name(self,
+                         rdata_name,
+                         rrtype=None,
+                         before=None,
+                         after=None):
         """
         Query matches only a single DNSDB record of given owner name and time ranges.
 
@@ -140,7 +156,9 @@ class FarsightLookupClient(object):
         """
         submit http get request
         """
-        response = requests.get(url, headers=self.headers, proxies=self.proxy_args)
+        response = requests.get(url,
+                                headers=self.headers,
+                                proxies=self.proxy_args)
         return response
 
     # queries dnsdb.

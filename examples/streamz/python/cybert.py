@@ -13,14 +13,15 @@
 # limitations under the License.
 
 import time
-import dask
+
 import cudf
+import dask
 import pandas as pd
-from clx_streamz_tools import utils
-from clx_streamz_tools import streamz_workflow
+from clx_streamz_tools import streamz_workflow, utils
 
 
 class CybertWorkflow(streamz_workflow.StreamzWorkflow):
+
     def inference(self, messages):
         # Messages will be received and run through cyBERT inferencing
         worker = dask.distributed.get_worker()
@@ -35,7 +36,8 @@ class CybertWorkflow(streamz_workflow.StreamzWorkflow):
 
         result_size = df.shape[0]
         print("Processing batch size: " + str(result_size))
-        parsed_df, confidence_df = worker.data["cybert"].inference(df["stream"])
+        parsed_df, confidence_df = worker.data["cybert"].inference(
+            df["stream"])
         confidence_df = confidence_df.add_suffix("_confidence")
         parsed_df = pd.concat([parsed_df, confidence_df], axis=1)
         return (parsed_df, batch_start_time, result_size)
@@ -46,14 +48,9 @@ class CybertWorkflow(streamz_workflow.StreamzWorkflow):
 
         worker = dask.distributed.get_worker()
         cy = Cybert()
-        print(
-            "Initializing Dask worker: "
-            + str(worker)
-            + " with cybert model. Model File: "
-            + str(self.args.model)
-            + " Label Map: "
-            + str(self.args.label_map)
-        )
+        print("Initializing Dask worker: " + str(worker) +
+              " with cybert model. Model File: " + str(self.args.model) +
+              " Label Map: " + str(self.args.label_map))
         cy.load_model(self.args.model, self.args.label_map)
         # this dict can be used for adding more objects to distributed dask worker
         obj_dict = {"cybert": cy}

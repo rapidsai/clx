@@ -30,7 +30,8 @@ def setup(input_topics, output_topic, bootstrap_server):
     all_topics = ["input", "cyber-enriched-data"]
     create_kafka_topics(all_topics, bootstrap_server)
     global test_workflow
-    test_workflow = create_workflow(input_topics, output_topic, bootstrap_server)
+    test_workflow = create_workflow(input_topics, output_topic,
+                                    bootstrap_server)
     log.info("Test setup complete.")
 
 
@@ -43,7 +44,8 @@ def create_kafka_topics(topics, bootstrap_server):
     # Create Kafka topics
     kafka_admin = AdminClient({"bootstrap.servers": bootstrap_server})
     kafka_topics = [
-        NewTopic(topic, num_partitions=1, replication_factor=1) for topic in topics
+        NewTopic(topic, num_partitions=1, replication_factor=1)
+        for topic in topics
     ]
     fs = kafka_admin.create_topics(kafka_topics)
     log.info("Kafka topics created... " + str(fs))
@@ -70,9 +72,9 @@ def create_workflow(input_topics, output_topic, bootstrap_server):
         "publisher_kafka_topic": output_topic,
         "output_delimiter": ",",
     }
-    workflow = netflow_workflow.NetflowWorkflow(
-        source=source, destination=dest, name="my-kafka-workflow"
-    )
+    workflow = netflow_workflow.NetflowWorkflow(source=source,
+                                                destination=dest,
+                                                name="my-kafka-workflow")
     log.info("Workflow created... " + workflow.name)
     return workflow
 
@@ -89,7 +91,10 @@ def send_test_data(bootstrap_server, topic):
     """
     Sends test messages to the provided kafka bootstrap server and kafka topic
     """
-    producer_conf = {"bootstrap.servers": bootstrap_server, "session.timeout.ms": 10000}
+    producer_conf = {
+        "bootstrap.servers": bootstrap_server,
+        "session.timeout.ms": 10000
+    }
     producer = Producer(producer_conf)
     log.info("Kafka producer created.")
     for message in test_messages:
@@ -108,14 +113,15 @@ def verify(bootstrap_server, output_topic):
         "bootstrap.servers": bootstrap_server,
         "group.id": "int-test",
         "session.timeout.ms": 10000,
-        "default.topic.config": {"auto.offset.reset": "earliest"},
+        "default.topic.config": {
+            "auto.offset.reset": "earliest"
+        },
     }
     consumer = Consumer(consumer_conf)
     consumer.subscribe([output_topic])
     # Adding extra iteration would allow consumer to prepare and start polling messages.
     expected_messages = set(
-        ["{0},netflow_enriched".format(msg) for msg in test_messages]
-    )
+        ["{0},netflow_enriched".format(msg) for msg in test_messages])
     start_time = time.time()
     while expected_messages:
         enriched_msg = consumer.poll(timeout=1.0)
@@ -134,9 +140,9 @@ def main():
     setup(input_test_topics, output_test_topic, kafka_bootstrap_server)
     # Start thread for running workflow
     global test_workflow
-    t_run_workflow = threading.Thread(
-        target=run_workflow, args=(test_workflow,), name="t_run_workflow"
-    )
+    t_run_workflow = threading.Thread(target=run_workflow,
+                                      args=(test_workflow, ),
+                                      name="t_run_workflow")
     t_run_workflow.daemon = True
     t_run_workflow.start()
     time.sleep(15)

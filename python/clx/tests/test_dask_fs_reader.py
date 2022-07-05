@@ -16,13 +16,11 @@ import cudf
 import pytest
 from clx.io.reader.dask_fs_reader import DaskFileSystemReader
 
-expected_df = cudf.DataFrame(
-    {
-        "firstname": ["Emma", "Ava", "Sophia"],
-        "lastname": ["Olivia", "Isabella", "Charlotte"],
-        "gender": ["F", "F", "F"],
-    }
-)
+expected_df = cudf.DataFrame({
+    "firstname": ["Emma", "Ava", "Sophia"],
+    "lastname": ["Olivia", "Isabella", "Charlotte"],
+    "gender": ["F", "F", "F"],
+})
 
 
 @pytest.mark.parametrize("expected_df", [expected_df])
@@ -68,11 +66,7 @@ def test_fetch_data_parquet(tmpdir, expected_df):
 def test_fetch_data_orc(tmpdir, expected_df):
     fname = str(tmpdir.mkdir("tmp_test_fs_reader").join("person.orc"))
     cudf.io.orc.to_orc(expected_df, fname)
-    config = {
-        "type": "dask_fs",
-        "input_path": fname,
-        "input_format": "orc"
-    }
+    config = {"type": "dask_fs", "input_path": fname, "input_format": "orc"}
 
     reader = DaskFileSystemReader(config)
     fetched_df = reader.fetch_data().compute()

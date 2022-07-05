@@ -12,14 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
 import cudf
-
+import pytest
 from clx.io.factory.factory import Factory
-from clx.io.reader.kafka_reader import KafkaReader
-from clx.io.writer.kafka_writer import KafkaWriter
 from clx.io.reader.fs_reader import FileSystemReader
+from clx.io.reader.kafka_reader import KafkaReader
 from clx.io.writer.fs_writer import FileSystemWriter
+from clx.io.writer.kafka_writer import KafkaWriter
 
 kafka_config = {
     "kafka_brokers": "localhost:9092",
@@ -46,13 +45,11 @@ fs_writer_config = {
     "output_format": "text",
 }
 
-expected_df = cudf.DataFrame(
-    {
-        "firstname": ["Emma", "Ava", "Sophia"],
-        "lastname": ["Olivia", "Isabella", "Charlotte"],
-        "gender": ["F", "F", "F"],
-    }
-)
+expected_df = cudf.DataFrame({
+    "firstname": ["Emma", "Ava", "Sophia"],
+    "lastname": ["Olivia", "Isabella", "Charlotte"],
+    "gender": ["F", "F", "F"],
+})
 
 
 @pytest.mark.parametrize("kafka_config", [kafka_config])

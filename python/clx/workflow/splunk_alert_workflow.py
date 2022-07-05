@@ -13,16 +13,19 @@
 # limitations under the License.
 
 import logging
-import clx
+
 import clx.analytics.stats
 import cudf
-from clx.workflow.workflow import Workflow
 from clx.parsers.splunk_notable_parser import SplunkNotableParser
+from clx.workflow.workflow import Workflow
+
+import clx
 
 log = logging.getLogger(__name__)
 
 
 class SplunkAlertWorkflow(Workflow):
+
     def __init__(
         self,
         name,
@@ -48,9 +51,8 @@ class SplunkAlertWorkflow(Workflow):
     @interval.setter
     def interval(self, interval):
         if interval != "day" and interval != "hour":
-            raise Exception(
-                "interval='" + interval + "': interval must be set to 'day' or 'hour'"
-            )
+            raise Exception("interval='" + interval +
+                            "': interval must be set to 'day' or 'hour'")
         else:
             self._interval = interval
 
@@ -85,16 +87,12 @@ class SplunkAlertWorkflow(Workflow):
             alerts_gdf[interval] = alerts_gdf.time.applymap(self.__round2hour)
 
         # Group alerts by interval and pivot table
-        day_rule_df = (
-            alerts_gdf[["rule", interval, "time"]]
-            .groupby(["rule", interval])
-            .count()
-            .reset_index()
-        )
+        day_rule_df = (alerts_gdf[["rule", interval,
+                                   "time"]].groupby(["rule", interval
+                                                     ]).count().reset_index())
         day_rule_df.columns = ["rule", interval, "count"]
-        day_rule_piv = self.__pivot_table(
-            day_rule_df, interval, "rule", "count"
-        ).fillna(0)
+        day_rule_piv = self.__pivot_table(day_rule_df, interval, "rule",
+                                          "count").fillna(0)
 
         # Calculate rolling zscore
         r_zscores = cudf.DataFrame()

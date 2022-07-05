@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 Example Usage: python run_dga_training.py \
                     --training-data benign_and_dga_domains.csv \
@@ -19,11 +18,11 @@ Example Usage: python run_dga_training.py \
                     --batch-size 10000 \
                     --epochs 2
 """
-import os
-import cudf
-import torch
 import argparse
+import os
 from datetime import datetime
+
+import cudf
 from clx.analytics.dga_detector import DGADetector
 
 LR = 0.001
@@ -31,6 +30,7 @@ N_LAYERS = 4
 CHAR_VOCAB = 128
 HIDDEN_SIZE = 100
 N_DOMAIN_TYPE = 2
+
 
 def main():
     epochs = int(args["epochs"])
@@ -49,26 +49,33 @@ def main():
         hidden_size=HIDDEN_SIZE,
         n_domain_type=N_DOMAIN_TYPE,
     )
-    dd.train_model(train_data, labels, batch_size=batch_size, epochs=epochs, train_size=0.7)
-    
+    dd.train_model(train_data,
+                   labels,
+                   batch_size=batch_size,
+                   epochs=epochs,
+                   train_size=0.7)
+
     if not os.path.exists(output_dir):
         print("Creating directory '{}'".format(output_dir))
         os.makedirs(output_dir)
     now = datetime.now()
-    model_filename = "rnn_classifier_{}.bin".format(now.strftime("%Y-%m-%d_%H_%M_%S"))
+    model_filename = "rnn_classifier_{}.bin".format(
+        now.strftime("%Y-%m-%d_%H_%M_%S"))
     model_filepath = os.path.join(output_dir, model_filename)
     print("Saving trained model to location '{}'".format(model_filepath))
     dd.save_model(model_filepath)
 
+
 def parse_cmd_args():
     # construct the argument parse and parse the arguments
-    ap = argparse.ArgumentParser(description="DGA detection model training script")
-    ap.add_argument(
-        "--training-data", required=True, help="CSV with domain and type fields"
-    )
-    ap.add_argument(
-        "--output-dir", required=True, help="output directory to save new model files"
-    )
+    ap = argparse.ArgumentParser(
+        description="DGA detection model training script")
+    ap.add_argument("--training-data",
+                    required=True,
+                    help="CSV with domain and type fields")
+    ap.add_argument("--output-dir",
+                    required=True,
+                    help="output directory to save new model files")
     ap.add_argument(
         "--batch-size",
         required=True,
@@ -77,7 +84,8 @@ def parse_cmd_args():
     ap.add_argument(
         "--epochs",
         required=True,
-        help="One epoch is when an entire dataset is passed forward and backward through the neural network only once",
+        help=
+        "One epoch is when an entire dataset is passed forward and backward through the neural network only once",
     )
     args = vars(ap.parse_args())
     return args

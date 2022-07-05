@@ -1,14 +1,14 @@
 import logging
 
 import cudf
-from cudf.core.subword_tokenizer import SubwordTokenizer
 import cupy
 import torch
 import torch.nn as nn
-from torch.utils.dlpack import to_dlpack
 from clx.analytics.sequence_classifier import SequenceClassifier
 from clx.utils.data.dataloader import DataLoader
 from clx.utils.data.dataset import Dataset
+from cudf.core.subword_tokenizer import SubwordTokenizer
+from torch.utils.dlpack import to_dlpack
 from transformers import AutoModelForSequenceClassification
 
 log = logging.getLogger(__name__)
@@ -37,7 +37,8 @@ class MulticlassSequenceClassifier(SequenceClassifier):
 
         >>> sc.init_model(model_path, num_labels=4) # locally saved model
         """
-        self._model = AutoModelForSequenceClassification.from_pretrained(model_or_path, num_labels=num_labels)
+        self._model = AutoModelForSequenceClassification.from_pretrained(
+            model_or_path, num_labels=num_labels)
 
         if torch.cuda.is_available():
             self._device = torch.device("cuda")
@@ -81,11 +82,12 @@ class MulticlassSequenceClassifier(SequenceClassifier):
 
         self._model.eval()
         for df in predict_dataloader.get_chunks():
-            b_input_ids, b_input_mask = self._bert_uncased_tokenize(df["text"], max_seq_len)
+            b_input_ids, b_input_mask = self._bert_uncased_tokenize(
+                df["text"], max_seq_len)
             with torch.no_grad():
-                logits = self._model(
-                    b_input_ids, token_type_ids=None, attention_mask=b_input_mask
-                )[0]
+                logits = self._model(b_input_ids,
+                                     token_type_ids=None,
+                                     attention_mask=b_input_mask)[0]
 
             logits = logits.type(torch.DoubleTensor).to(self._device)
             logits = cupy.fromDlpack(to_dlpack(logits))

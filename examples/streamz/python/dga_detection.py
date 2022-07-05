@@ -13,12 +13,13 @@
 # limitations under the License.
 
 import time
+
 import dask
-from clx_streamz_tools import utils
-from clx_streamz_tools import streamz_workflow
+from clx_streamz_tools import streamz_workflow, utils
 
 
 class DGADetectionWorkflow(streamz_workflow.StreamzWorkflow):
+
     def inference(self, messages_df):
         # Messages will be received and run through DGA inferencing
         worker = dask.distributed.get_worker()
@@ -36,12 +37,8 @@ class DGADetectionWorkflow(streamz_workflow.StreamzWorkflow):
 
         worker = dask.distributed.get_worker()
         dd = DGADetector()
-        print(
-            "Initializing Dask worker: "
-            + str(worker)
-            + " with dga model. Model File: "
-            + str(self.args.model)
-        )
+        print("Initializing Dask worker: " + str(worker) +
+              " with dga model. Model File: " + str(self.args.model))
         dd.load_model(self.args.model)
         # this dict can be used for adding more objects to distributed dask worker
         obj_dict = {"dga_detector": dd}

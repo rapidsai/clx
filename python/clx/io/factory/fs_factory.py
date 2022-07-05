@@ -18,6 +18,7 @@ from clx.io.writer.fs_writer import FileSystemWriter
 
 
 class FileSystemFactory(AbstractFactory):
+
     def __init__(self, config):
         """
         Constructor method

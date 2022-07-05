@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import cudf
 import logging
 import os
 
+import cudf
 from clx.io.writer.file_writer import FileWriter
 
 log = logging.getLogger(__name__)
@@ -62,7 +62,8 @@ class FileSystemWriter(FileWriter):
         elif "json" == output_format:
             cudf.io.json.to_json(df, filepath, **kwargs)
         else:
-            raise NotImplementedError("%s is not a supported output_format" % (output_format))
+            raise NotImplementedError("%s is not a supported output_format" %
+                                      (output_format))
 
     def close(self):
         """

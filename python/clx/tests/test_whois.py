@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
 import datetime
+
+import pytest
 import whois
 from clx.osi.whois import WhoIsLookupClient
 from mockito import when
-
 
 domains = ["nvidia.com"]
 datetime_1 = datetime.datetime(2020, 5, 17)
@@ -25,8 +25,10 @@ datetime_2 = datetime.datetime(2020, 5, 18)
 client = WhoIsLookupClient()
 
 response = {
-    "domain_name": "NVIDIA.COM",
-    "registrar": "Safenames Ltd",
+    "domain_name":
+    "NVIDIA.COM",
+    "registrar":
+    "Safenames Ltd",
     "emails": [
         "abuse@safenames.net",
         "wadmpfvzi5ei@idp.email",
@@ -40,10 +42,14 @@ response = {
 @pytest.mark.parametrize("domains", [domains])
 def test_whois(client, domains):
     expected_output = [{
-        "domain_name": "NVIDIA.COM",
-        "registrar": "Safenames Ltd",
-        "emails": "abuse@safenames.net,wadmpfvzi5ei@idp.email,hostmaster@safenames.net",
-        "updated_date": "05-17-2020 00:00:00,05-18-2020 00:00:00",
+        "domain_name":
+        "NVIDIA.COM",
+        "registrar":
+        "Safenames Ltd",
+        "emails":
+        "abuse@safenames.net,wadmpfvzi5ei@idp.email,hostmaster@safenames.net",
+        "updated_date":
+        "05-17-2020 00:00:00,05-18-2020 00:00:00",
     }]
     when(whois).whois(...).thenReturn(response)
     actual_output = client.whois(domains)

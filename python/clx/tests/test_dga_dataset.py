@@ -17,9 +17,10 @@ from clx.analytics.dga_dataset import DGADataset
 
 test_domains_len = 2
 test_batchsize = 1
-test_input_df = cudf.DataFrame(
-    {"domain": ["studytour.com.tw", "cnn.com"], "type": [1, 1]}
-)
+test_input_df = cudf.DataFrame({
+    "domain": ["studytour.com.tw", "cnn.com"],
+    "type": [1, 1]
+})
 
 expected_output_df = cudf.DataFrame(
     {
@@ -41,8 +42,7 @@ expected_output_df = cudf.DataFrame(
         15: [119, 0],
         "len": [16, 7],
     },
-    dtype="int32"
-)
+    dtype="int32")
 expected_output_df["type"] = [1, 1]
 expected_output_df["domain"] = ["studytour.com.tw", "cnn.com"]
 

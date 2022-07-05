@@ -11,15 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import cudf
-from clx.utils.data.dataloader import DataLoader
-from clx.analytics.dga_detector import DGADetector
-from clx.analytics.dga_dataset import DGADataset
-from clx.analytics.model.rnn_classifier import RNNClassifier
-import torch
-from os import path
-from faker import Faker
 import random
+from os import path
+
+import cudf
+import torch
+from clx.analytics.dga_dataset import DGADataset
+from clx.analytics.dga_detector import DGADetector
+from clx.analytics.model.rnn_classifier import RNNClassifier
+from clx.utils.data.dataloader import DataLoader
+from faker import Faker
 
 dd = DGADetector()
 dd.init_model()
@@ -32,7 +33,8 @@ def test_train_model():
         Faker.seed(0)
         domain_col = [fake.dga() for _ in range(200)]
         label_col = [random.randint(0, 1) for _ in range(200)]
-        train_gdf = cudf.DataFrame(list(zip(domain_col, label_col)), columns=["domain", "label"])
+        train_gdf = cudf.DataFrame(list(zip(domain_col, label_col)),
+                                   columns=["domain", "label"])
 
         # train model
         dd.train_model(train_gdf["domain"], train_gdf["label"], batch_size=2)
@@ -45,7 +47,10 @@ def test_train_model():
 
 def test_evaluate_model():
     if torch.cuda.is_available():
-        test_df = cudf.DataFrame({"domain": ["cnn.com", "bakercityherald.com"], "type": [1, 0]})
+        test_df = cudf.DataFrame({
+            "domain": ["cnn.com", "bakercityherald.com"],
+            "type": [1, 0]
+        })
         truncate = 100
         dataset = DGADataset(test_df, truncate)
         dataloader = DataLoader(dataset, batchsize=2)

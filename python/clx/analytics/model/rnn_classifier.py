@@ -7,9 +7,13 @@ DROPOUT = 0.0
 
 
 class RNNClassifier(nn.Module):
-    def __init__(
-        self, input_size, hidden_size, output_size, n_layers, bidirectional=True
-    ):
+
+    def __init__(self,
+                 input_size,
+                 hidden_size,
+                 output_size,
+                 n_layers,
+                 bidirectional=True):
         super(RNNClassifier, self).__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
@@ -40,7 +44,8 @@ class RNNClassifier(nn.Module):
         embedded = self.embedding(input)
 
         # Pack them up nicely
-        gru_input = pack_padded_sequence(embedded, seq_lengths.data.cpu().numpy())
+        gru_input = pack_padded_sequence(embedded,
+                                         seq_lengths.data.cpu().numpy())
 
         # To compact weights again call flatten_parameters().
         self.gru.flatten_parameters()
@@ -53,9 +58,8 @@ class RNNClassifier(nn.Module):
         return fc_output
 
     def _init_hidden(self, batch_size):
-        hidden = torch.zeros(
-            self.n_layers * self.n_directions, batch_size, self.hidden_size
-        )
+        hidden = torch.zeros(self.n_layers * self.n_directions, batch_size,
+                             self.hidden_size)
         # creating variable
         if torch.cuda.is_available():
             return hidden.cuda()

@@ -12,10 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import numpy as np
-
-import cudf
 import clx.parsers.zeek as zeek
+import cudf
+import numpy as np
 
 
 def test_parse_log_file(tmpdir):
@@ -81,7 +80,8 @@ def test_parse_log_file(tmpdir):
     assert parsed["id.resp_p"].equals(actual["id.resp_p"])
     assert parsed["proto"].equals(actual["proto"])
     assert parsed["service"].equals(actual["service"])
-    assert np.allclose(parsed["duration"].values_host, actual["duration"].values_host)
+    assert np.allclose(parsed["duration"].values_host,
+                       actual["duration"].values_host)
     assert parsed["orig_bytes"].equals(actual["orig_bytes"])
     assert parsed["resp_bytes"].equals(actual["resp_bytes"])
     assert parsed["conn_state"].equals(actual["conn_state"])

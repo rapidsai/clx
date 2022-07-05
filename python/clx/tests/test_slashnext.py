@@ -14,8 +14,8 @@
 
 # ref: https://github.com/slashnext/SlashNext-URL-Analysis-and-Enrichment/tree/master/Python%20SDK
 import pytest
-from mockito import when
 from clx.osi.slashnext import SlashNextClient
+from mockito import when
 
 api_key = "dummy-api-key"
 ok_status = "ok"
@@ -43,8 +43,7 @@ def test2_verify_connection(tmpdir):
     slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).test().thenReturn(("error", "Failed"))
     expected_exception = Exception(
-        "Connection to SlashNext cloud failed due to Failed."
-    )
+        "Connection to SlashNext cloud failed due to Failed.")
     with pytest.raises(Exception) as actual_exception:
         slashnext.verify_connection()
         assert actual_exception == expected_exception
@@ -53,8 +52,7 @@ def test2_verify_connection(tmpdir):
 def test_host_reputation(tmpdir):
     slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
-        (ok_status, ok_details, eval(host_reputation_resp_str))
-    )
+        (ok_status, ok_details, eval(host_reputation_resp_str)))
     host = "google.com"
     resp_list = slashnext.host_reputation(host)
     assert resp_list[0]["errorNo"] == 0
@@ -65,8 +63,7 @@ def test_host_reputation(tmpdir):
 def test_host_report(tmpdir):
     slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
-        (ok_status, ok_details, eval(host_report_resp_str))
-    )
+        (ok_status, ok_details, eval(host_report_resp_str)))
     host = "google.com"
     resp_list = slashnext.host_report(host)
     assert resp_list[0]["errorNo"] == 0
@@ -81,8 +78,7 @@ def test_host_report(tmpdir):
 def test_host_urls(tmpdir):
     slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
-        (ok_status, ok_details, eval(host_urls_resp_str))
-    )
+        (ok_status, ok_details, eval(host_urls_resp_str)))
     host = "blueheaventravel.com"
     resp_list = slashnext.host_urls(host, limit=1)
     assert len(resp_list) == 1
@@ -94,8 +90,7 @@ def test_host_urls(tmpdir):
 def test_url_scan(tmpdir):
     slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
-        (ok_status, ok_details, eval(url_scan_resp_str))
-    )
+        (ok_status, ok_details, eval(url_scan_resp_str)))
     url = "http://ajeetenterprises.in/js/kbrad/drive/index.php"
     resp_list = slashnext.url_scan(url, extended_info=False)
     assert resp_list[0]["errorNo"] == 0
@@ -106,8 +101,7 @@ def test_url_scan(tmpdir):
 def test_url_scan_sync(tmpdir):
     slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
-        (ok_status, ok_details, eval(url_scan_sync_resp_str))
-    )
+        (ok_status, ok_details, eval(url_scan_sync_resp_str)))
     url = "http://ajeetenterprises.in/js/kbrad/drive/index.php"
     resp_list = slashnext.url_scan_sync(url, extended_info=False, timeout=10)
     assert len(resp_list) == 1
@@ -119,8 +113,7 @@ def test_url_scan_sync(tmpdir):
 def test_scan_report(tmpdir):
     slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
-        (ok_status, ok_details, eval(scan_report_resp_str))
-    )
+        (ok_status, ok_details, eval(scan_report_resp_str)))
     scanid = "ace21670-7e20-49f2-ba57-755a7458c8a3"
     resp_list = slashnext.scan_report(scanid, extended_info=False)
     assert len(resp_list) == 1
@@ -132,8 +125,7 @@ def test_scan_report(tmpdir):
 def test_download_screenshot(tmpdir):
     slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
-        (ok_status, ok_details, eval(download_screenshot_rsp_str))
-    )
+        (ok_status, ok_details, eval(download_screenshot_rsp_str)))
     scanid = "ace21670-7e20-49f2-ba57-755a7458c8a3"
     resp_list = slashnext.download_screenshot(scanid, resolution="medium")
     assert len(resp_list) == 1
@@ -147,8 +139,7 @@ def test_download_screenshot(tmpdir):
 def test_download_html(tmpdir):
     slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
-        (ok_status, ok_details, eval(download_html_rsp_str))
-    )
+        (ok_status, ok_details, eval(download_html_rsp_str)))
     scanid = "ace21670-7e20-49f2-ba57-755a7458c8a3"
     resp_list = slashnext.download_html(scanid)
     assert len(resp_list) == 1
@@ -162,8 +153,7 @@ def test_download_html(tmpdir):
 def test_download_text(tmpdir):
     slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
-        (ok_status, ok_details, eval(download_text_rsp_str))
-    )
+        (ok_status, ok_details, eval(download_text_rsp_str)))
     scanid = "ace21670-7e20-49f2-ba57-755a7458c8a3"
     resp_list = slashnext.scan_report(scanid)
     assert len(resp_list) == 1
@@ -176,8 +166,7 @@ def test_download_text(tmpdir):
 def test_api_quota(tmpdir):
     slashnext = SlashNextClient(api_key, tmpdir)
     when(slashnext.conn).execute(...).thenReturn(
-        (ok_status, ok_details, eval(api_quota_resp_str))
-    )
+        (ok_status, ok_details, eval(api_quota_resp_str)))
     resp_list = slashnext.api_quota()
     assert resp_list[0]["errorNo"] == 0
     assert resp_list[0]["errorMsg"] == "Success"

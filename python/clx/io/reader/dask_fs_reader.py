@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import dask_cudf
 import logging
+
+import dask_cudf
 from clx.io.reader.file_reader import FileReader
 
 log = logging.getLogger(__name__)
@@ -25,6 +26,7 @@ class DaskFileSystemReader(FileReader):
 
     :param config: dictionary object of config values for **type**, **input_format**, **input_path**, and dask reader optional keyword args
     """
+
     def __init__(self, config):
         self._config = config
         self._has_data = True
@@ -50,7 +52,8 @@ class DaskFileSystemReader(FileReader):
         elif "json" == input_format:
             df = dask_cudf.read_json(filepath, **kwargs)
         else:
-            raise NotImplementedError("%s is not a supported input_format" % (input_format))
+            raise NotImplementedError("%s is not a supported input_format" %
+                                      (input_format))
 
         self.has_data = False
         return df

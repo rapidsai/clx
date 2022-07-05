@@ -11,9 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from os import path
+
 import cupy
 from clx.analytics.loda import Loda
-from os import path
 
 
 def test_fit():
@@ -21,10 +22,7 @@ def test_fit():
     x = cupy.random.randint(0, 100, size=(200, 10))
     ld.fit(x)
     assert ld._histograms is not None
-    assert isinstance(
-        ld._histograms,
-        cupy.ndarray
-    )
+    assert isinstance(ld._histograms, cupy.ndarray)
     assert cupy.all(ld._histograms > 0)
 
 
@@ -34,10 +32,7 @@ def test_score():
     ld.fit(x)
     scores = ld.score(x)
     assert scores is not None
-    assert isinstance(
-        scores,
-        cupy.ndarray
-    )
+    assert isinstance(scores, cupy.ndarray)
     assert cupy.all(scores > 0)
 
 
@@ -47,10 +42,7 @@ def test_explain():
     ld.fit(x)
     explanation = ld.explain(x[0])
     assert explanation is not None
-    assert isinstance(
-        explanation,
-        cupy.ndarray
-    )
+    assert isinstance(explanation, cupy.ndarray)
 
 
 def test_save_model(tmpdir):

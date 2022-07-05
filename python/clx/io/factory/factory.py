@@ -14,9 +14,9 @@
 
 import logging
 
-from clx.io.factory.kafka_factory import KafkaFactory
-from clx.io.factory.fs_factory import FileSystemFactory
 from clx.io.factory.dask_fs_factory import DaskFileSystemFactory
+from clx.io.factory.fs_factory import FileSystemFactory
+from clx.io.factory.kafka_factory import KafkaFactory
 
 log = logging.getLogger(__name__)
 
@@ -34,6 +34,7 @@ class Factory:
         return Factory.__cls_dict
 
     class InstanceGenerator(object):
+
         def __init__(self, func):
             self.func = func
 
@@ -55,8 +56,7 @@ class Factory:
         else:
             raise KeyError(
                 "Dictionary doesn't have { %s } corresponding component class."
-                % (io_comp)
-            )
+                % (io_comp))
 
     @staticmethod
     def get_reader(io_comp, config):

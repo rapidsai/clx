@@ -13,13 +13,14 @@
 # limitations under the License.
 
 import time
-import dask
+
 import cudf
-from clx_streamz_tools import utils
-from clx_streamz_tools import streamz_workflow
+import dask
+from clx_streamz_tools import streamz_workflow, utils
 
 
 class PhisingDetectionWorkflow(streamz_workflow.StreamzWorkflow):
+
     def inference(messages):
         # Messages will be received and run through sequence classifier inferencing
         worker = dask.distributed.get_worker()
@@ -38,18 +39,15 @@ class PhisingDetectionWorkflow(streamz_workflow.StreamzWorkflow):
         results_gdf = cudf.DataFrame({"pred": pred, "prob": prob})
         return (results_gdf, batch_start_time, result_size)
 
-    def worker_init():
+    def worker_init(self):
         # Initialization for each dask worker
         from clx.analytics.sequence_classifier import SequenceClassifier
 
         worker = dask.distributed.get_worker()
         seq_classifier = SequenceClassifier()
-        print(
-            "Initializing Dask worker: "
-            + str(worker)
-            + " with sequence classifier model. Model File: "
-            + str(self.args.model)
-        )
+        print("Initializing Dask worker: " + str(worker) +
+              " with sequence classifier model. Model File: " +
+              str(self.args.model))
         seq_classifier.init_model(self.args.model)
         # this dict can be used for adding more objects to distributed dask worker
         obj_dict = {"seq_classifier": seq_classifier}

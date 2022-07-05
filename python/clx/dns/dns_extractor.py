@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-import cudf
 import logging
+import os
+
+import cudf
 
 log = logging.getLogger(__name__)
 
@@ -52,13 +53,13 @@ class DnsVarsProvider:
 
     def __load_suffix_df(self):
         suffix_list_path = "%s/resources/suffix_list.txt" % os.path.dirname(
-            os.path.realpath(__file__)
-        )
+            os.path.realpath(__file__))
         log.info("Read suffix data at location %s." % (suffix_list_path))
         # Read suffix list csv file
-        suffix_df = cudf.io.csv.read_csv(
-            suffix_list_path, names=["suffix"], header=None, dtype=["str"]
-        )
+        suffix_df = cudf.io.csv.read_csv(suffix_list_path,
+                                         names=["suffix"],
+                                         header=None,
+                                         dtype=["str"])
         log.info("Read suffix data is finished")
         suffix_df = suffix_df[suffix_df["suffix"].str.contains("^[^//]+$")]
         return suffix_df
@@ -94,9 +95,9 @@ def extract_hostnames(url_series):
     Name: 0, dtype: object
     """
 
-    hostnames = url_series.str.extract("([\\w]+[\\.].*[^/]|[\\-\\w]+[\\.].*[^/])")[
-        0
-    ].str.extract("([\\w\\.\\-]+)")[0]
+    hostnames = url_series.str.extract(
+        "([\\w]+[\\.].*[^/]|[\\-\\w]+[\\.].*[^/])")[0].str.extract(
+            "([\\w\\.\\-]+)")[0]
     return hostnames
 
 
@@ -133,11 +134,8 @@ def generate_tld_cols(hostname_split_df, hostnames, col_len):
     hostname_split_df["tld" + str(col_len)] = hostname_split_df[col_len]
     # Add all other elements of hostname_split_df
     for j in range(col_len - 1, 0, -1):
-        hostname_split_df["tld" + str(j)] = (
-            hostname_split_df[j]
-            .str.cat(hostname_split_df["tld" + str(j + 1)], sep=".")
-            .str.rstrip(".")
-        )
+        hostname_split_df["tld" + str(j)] = (hostname_split_df[j].str.cat(
+            hostname_split_df["tld" + str(j + 1)], sep=".").str.rstrip("."))
     # Assign hostname to tld0, to handle received input is just domain name.
     hostname_split_df["tld0"] = hostnames
     return hostname_split_df
@@ -146,7 +144,8 @@ def generate_tld_cols(hostname_split_df, hostnames, col_len):
 def _handle_unknown_suffix(unknown_suffix_df, col_dict):
     if col_dict["hostname"]:
         unknown_suffix_df = unknown_suffix_df[["idx", "tld0"]]
-        unknown_suffix_df = unknown_suffix_df.rename(columns={"tld0": "hostname"})
+        unknown_suffix_df = unknown_suffix_df.rename(
+            columns={"tld0": "hostname"})
     else:
         unknown_suffix_df = unknown_suffix_df[["idx"]]
 
@@ -193,7 +192,8 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict):
             joined_recs_df = merged_df[~merged_df["dummy"].isna()]
             if not joined_recs_df.empty:
                 if col_dict["hostname"]:
-                    joined_recs_df = joined_recs_df.rename(columns={"tld0": "hostname"})
+                    joined_recs_df = joined_recs_df.rename(
+                        columns={"tld0": "hostname"})
                     cols_keep.append("hostname")
                 if col_dict["subdomain"]:
                     cols_keep.append("subdomain")
@@ -201,18 +201,18 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict):
                     if col_pos > 0:
                         for idx in range(0, col_pos):
                             joined_recs_df["subdomain"] = joined_recs_df[
-                                "subdomain"
-                            ].str.cat(joined_recs_df[idx], sep=".")
+                                "subdomain"].str.cat(joined_recs_df[idx],
+                                                     sep=".")
                         joined_recs_df["subdomain"] = (
-                            joined_recs_df["subdomain"]
-                            .str.replace(".^", "")
-                            .str.lstrip(".")
-                        )
+                            joined_recs_df["subdomain"].str.replace(
+                                ".^", "").str.lstrip("."))
                 if col_dict["domain"]:
-                    joined_recs_df = joined_recs_df.rename(columns={col_pos: "domain"})
+                    joined_recs_df = joined_recs_df.rename(
+                        columns={col_pos: "domain"})
                     cols_keep.append("domain")
                 if col_dict["suffix"]:
-                    joined_recs_df = joined_recs_df.rename(columns={tld_col: "suffix"})
+                    joined_recs_df = joined_recs_df.rename(
+                        columns={tld_col: "suffix"})
                     cols_keep.append("suffix")
                 joined_recs_df = joined_recs_df[cols_keep]
                 # Concat current iteration result to previous iteration result.
@@ -227,7 +227,8 @@ def _extract_tld(input_df, suffix_df, col_len, col_dict):
                 # Handles scenario when some records with last tld column matches to suffix list but not all.
                 else:
                     merged_df = merged_df[merged_df["dummy"].isna()]
-                    unknown_suffix_df = _handle_unknown_suffix(merged_df, col_dict)
+                    unknown_suffix_df = _handle_unknown_suffix(
+                        merged_df, col_dict)
                     tmp_dfs.append(unknown_suffix_df)
             # Handles scenario when all records with last tld column doesn't match to suffix list.
             elif i == col_len and not merged_df.empty:
@@ -255,9 +256,8 @@ def _verify_req_cols(req_cols, allowed_output_cols):
     """
     if req_cols is not None:
         if not req_cols.issubset(allowed_output_cols):
-            raise ValueError(
-                "Given req_cols must be subset of %s" % (allowed_output_cols)
-            )
+            raise ValueError("Given req_cols must be subset of %s" %
+                             (allowed_output_cols))
     else:
         req_cols = allowed_output_cols
     return req_cols
@@ -312,14 +312,16 @@ def parse_url(url_series, req_cols=None):
     hostname_split_df = hostnames.str.findall("([^.]+)")
     col_len = len(hostname_split_df.columns) - 1
     log.info("Generating tld columns...")
-    hostname_split_df = generate_tld_cols(hostname_split_df, hostnames, col_len)
+    hostname_split_df = generate_tld_cols(hostname_split_df, hostnames,
+                                          col_len)
     log.info("Successfully generated tld columns.")
     # remove hostnames since they are available in hostname_split_df
     del hostnames
     # Assign input index to idx column.
     hostname_split_df["idx"] = url_index
     log.info("Extracting tld...")
-    output_df = _extract_tld(hostname_split_df, sv.suffix_df, col_len, col_dict)
+    output_df = _extract_tld(hostname_split_df, sv.suffix_df, col_len,
+                             col_dict)
     # Sort index based on given input index order.
     output_df = output_df.sort_values("idx", ascending=True)
     # Drop temp columns.

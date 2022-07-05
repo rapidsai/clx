@@ -68,8 +68,7 @@ class KafkaWriter:
             gdf[col] = gdf[col].astype("str").fillna("")
             gdf[col] = gdf[col].astype("str").str.rstrip()
             gdf[self.output_colname] = gdf[self.output_colname].str.cat(
-                gdf[col], sep=self.delimiter
-            )
+                gdf[col], sep=self.delimiter)
         return gdf
 
     def close(self):

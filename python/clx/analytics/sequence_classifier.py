@@ -1,17 +1,16 @@
 import logging
 import os
+from abc import ABC, abstractmethod
 
 import cudf
-from cudf.core.subword_tokenizer import SubwordTokenizer
-
 import cupy
 import torch
 from clx.utils.data.dataloader import DataLoader
 from clx.utils.data.dataset import Dataset
+from cudf.core.subword_tokenizer import SubwordTokenizer
+from torch.optim import AdamW
 from torch.utils.dlpack import to_dlpack
 from tqdm import trange
-from torch.optim import AdamW
-from abc import ABC, abstractmethod
 
 log = logging.getLogger(__name__)
 
@@ -28,7 +27,11 @@ class SequenceClassifier(ABC):
         self._hashpath = self._get_hash_table_path()
 
     @abstractmethod
-    def predict(self, input_data, max_seq_len=128, batch_size=32, threshold=0.5):
+    def predict(self,
+                input_data,
+                max_seq_len=128,
+                batch_size=32,
+                threshold=0.5):
         pass
 
     def train_model(
@@ -74,14 +77,18 @@ class SequenceClassifier(ABC):
         self._tokenizer = SubwordTokenizer(self._hashpath, do_lower_case=True)
 
         for _ in trange(epochs, desc="Epoch"):
-            tr_loss = 0   # Tracking variables
+            tr_loss = 0  # Tracking variables
             nb_tr_examples, nb_tr_steps = 0, 0
             for df in train_dataloader.get_chunks():
-                b_input_ids, b_input_mask = self._bert_uncased_tokenize(df["text"], max_seq_len)
+                b_input_ids, b_input_mask = self._bert_uncased_tokenize(
+                    df["text"], max_seq_len)
 
                 b_labels = torch.tensor(df["label"].to_numpy())
                 self._optimizer.zero_grad()  # Clear out the gradients
-                loss = self._model(b_input_ids, token_type_ids=None, attention_mask=b_input_mask, labels=b_labels)[0]  # forwardpass
+                loss = self._model(b_input_ids,
+                                   token_type_ids=None,
+                                   attention_mask=b_input_mask,
+                                   labels=b_labels)[0]  # forwardpass
 
                 loss.sum().backward()
                 self._optimizer.step()  # update parameters
@@ -91,7 +98,11 @@ class SequenceClassifier(ABC):
 
             print("Train loss: {}".format(tr_loss / nb_tr_steps))
 
-    def evaluate_model(self, test_data, labels, max_seq_len=128, batch_size=32):
+    def evaluate_model(self,
+                       test_data,
+                       labels,
+                       max_seq_len=128,
+                       batch_size=32):
         """
         Evaluate trained model
 
@@ -121,12 +132,13 @@ class SequenceClassifier(ABC):
         eval_accuracy = 0
         nb_eval_steps = 0
         for df in test_dataloader.get_chunks():
-            b_input_ids, b_input_mask = self._bert_uncased_tokenize(df["text"], max_seq_len)
+            b_input_ids, b_input_mask = self._bert_uncased_tokenize(
+                df["text"], max_seq_len)
             b_labels = torch.tensor(df["label"].to_numpy())
             with torch.no_grad():
-                logits = self._model(
-                    b_input_ids, token_type_ids=None, attention_mask=b_input_mask
-                )[0]
+                logits = self._model(b_input_ids,
+                                     token_type_ids=None,
+                                     attention_mask=b_input_mask)[0]
 
             logits = logits.type(torch.DoubleTensor).to(self._device)
             logits = cupy.fromDlpack(to_dlpack(logits))
@@ -172,9 +184,7 @@ class SequenceClassifier(ABC):
         >>> sc.save_checkpoint(PATH)
         """
 
-        checkpoint = {
-            "state_dict": self._model.module.state_dict()
-        }
+        checkpoint = {"state_dict": self._model.module.state_dict()}
         torch.save(checkpoint, file_path)
 
     def load_checkpoint(self, file_path):
@@ -195,8 +205,7 @@ class SequenceClassifier(ABC):
 
     def _get_hash_table_path(self):
         hash_table_path = "%s/resources/bert-base-uncased-hash.txt" % os.path.dirname(
-            os.path.realpath(__file__)
-        )
+            os.path.realpath(__file__))
         return hash_table_path
 
     def _config_optimizer(self, learning_rate):
@@ -205,15 +214,19 @@ class SequenceClassifier(ABC):
         optimizer_grouped_parameters = [
             {
                 "params": [
-                    p for n, p in param_optimizer if not any(nd in n for nd in no_decay)
+                    p for n, p in param_optimizer
+                    if not any(nd in n for nd in no_decay)
                 ],
-                "weight_decay_rate": 0.01,
+                "weight_decay_rate":
+                0.01,
             },
             {
                 "params": [
-                    p for n, p in param_optimizer if any(nd in n for nd in no_decay)
+                    p for n, p in param_optimizer
+                    if any(nd in n for nd in no_decay)
                 ],
-                "weight_decay_rate": 0.0,
+                "weight_decay_rate":
+                0.0,
             },
         ]
         self._optimizer = AdamW(optimizer_grouped_parameters, learning_rate)
@@ -233,4 +246,5 @@ class SequenceClassifier(ABC):
                                  truncation=True,
                                  add_special_tokens=True,
                                  return_tensors="pt")
-        return output['input_ids'].type(torch.long), output['attention_mask'].type(torch.long)
+        return output['input_ids'].type(
+            torch.long), output['attention_mask'].type(torch.long)

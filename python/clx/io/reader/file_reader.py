@@ -13,10 +13,12 @@
 # limitations under the License.
 
 from abc import abstractmethod
+
 from clx.io.reader.reader import Reader
 
 
 class FileReader(Reader):
+
     @property
     def has_data(self):
         return self._has_data

@@ -13,11 +13,9 @@
 # limitations under the License.
 
 import pytest
-
-from confluent_kafka import Consumer
-from confluent_kafka import Message, KafkaError
-from mockito import when, mock, verify
 from clx.io.reader.kafka_reader import KafkaReader
+from confluent_kafka import Consumer, KafkaError, Message
+from mockito import mock, verify, when
 
 batch_size = 100
 message = mock(Message)
@@ -31,7 +29,8 @@ def test_read_data(batch_size):
     consumer = mock(Consumer)
     reader = KafkaReader(batch_size, consumer)
     # Return msg = None 1 time, then return a valid message moving forward
-    when(reader.consumer).poll(timeout=1.0).thenReturn(None).thenReturn(message)
+    when(
+        reader.consumer).poll(timeout=1.0).thenReturn(None).thenReturn(message)
     # Always return no message error
     when(message).error().thenReturn(None)
     df = reader.fetch_data()

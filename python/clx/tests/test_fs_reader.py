@@ -16,13 +16,11 @@ import cudf
 import pytest
 from clx.io.reader.fs_reader import FileSystemReader
 
-expected_df = cudf.DataFrame(
-    {
-        "firstname": ["Emma", "Ava", "Sophia"],
-        "lastname": ["Olivia", "Isabella", "Charlotte"],
-        "gender": ["F", "F", "F"],
-    }
-)
+expected_df = cudf.DataFrame({
+    "firstname": ["Emma", "Ava", "Sophia"],
+    "lastname": ["Olivia", "Isabella", "Charlotte"],
+    "gender": ["F", "F", "F"],
+})
 
 
 @pytest.mark.parametrize("expected_df", [expected_df])
@@ -51,11 +49,7 @@ def test_fetch_data_parquet(tmpdir, expected_df):
     fname = tmpdir.mkdir("tmp_test_fs_reader").join("person.parquet")
     cudf.io.parquet.to_parquet(expected_df, fname)
 
-    config = {
-        "type": "fs",
-        "input_path": fname,
-        "input_format": "parquet"
-    }
+    config = {"type": "fs", "input_path": fname, "input_format": "parquet"}
 
     reader = FileSystemReader(config)
     fetched_df = reader.fetch_data()
@@ -67,11 +61,7 @@ def test_fetch_data_parquet(tmpdir, expected_df):
 def test_fetch_data_orc(tmpdir, expected_df):
     fname = str(tmpdir.mkdir("tmp_test_fs_reader").join("person.orc"))
     cudf.io.orc.to_orc(expected_df, fname)
-    config = {
-        "type": "fs",
-        "input_path": fname,
-        "input_format": "orc"
-    }
+    config = {"type": "fs", "input_path": fname, "input_format": "orc"}
 
     reader = FileSystemReader(config)
     fetched_df = reader.fetch_data()

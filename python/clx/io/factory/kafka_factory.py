@@ -14,17 +14,16 @@
 
 import logging
 
-from confluent_kafka import Consumer
-from confluent_kafka import Producer
-
 from clx.io.factory.abstract_factory import AbstractFactory
 from clx.io.reader.kafka_reader import KafkaReader
 from clx.io.writer.kafka_writer import KafkaWriter
+from confluent_kafka import Consumer, Producer
 
 log = logging.getLogger(__name__)
 
 
 class KafkaFactory(AbstractFactory):
+
     def __init__(self, config):
         """
         Constructor method
@@ -67,13 +66,14 @@ class KafkaFactory(AbstractFactory):
             "bootstrap.servers": self.config["kafka_brokers"],
             "group.id": self.config["group_id"],
             "session.timeout.ms": 10000,
-            "default.topic.config": {"auto.offset.reset": "largest"},
+            "default.topic.config": {
+                "auto.offset.reset": "largest"
+            },
         }
 
         c = Consumer(consumer_conf)
-        c.subscribe(
-            self.config["consumer_kafka_topics"], on_assign=self.print_assignment
-        )
+        c.subscribe(self.config["consumer_kafka_topics"],
+                    on_assign=self.print_assignment)
         log.info("created kafka consumer instance")
         return c
 

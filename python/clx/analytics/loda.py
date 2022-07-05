@@ -37,7 +37,7 @@ class Loda:
         """
         nrows, n_components = train_data.shape
         if not self._n_bins:
-            self._n_bins = int(1 * (nrows ** 1) * (cp.log(nrows) ** -1))
+            self._n_bins = int(1 * (nrows**1) * (cp.log(nrows)**-1))
         n_nonzero_components = cp.sqrt(n_components)
         n_zero_components = n_components - cp.int(n_nonzero_components)
 
@@ -81,7 +81,8 @@ class Loda:
         for i in range(self._n_random_cuts):
             projected_data = self._projections[i, :].dot(input_data.T)
             inds = cp.searchsorted(self._limits[i, :self._n_bins - 1],
-                                   projected_data, side='left')
+                                   projected_data,
+                                   side='left')
             pred_scores[:, 0] += -self._weights[i] * cp.log(
                 self._histograms[i, inds])
         pred_scores /= self._n_random_cuts
@@ -115,8 +116,8 @@ class Loda:
                 self._projections[:, feature] != 0)[0]
             index_not_selected_feature = cp.where(
                 self._projections[:, feature] == 0)[0]
-            scores_with_feature = self._instance_score(
-                anomaly, index_selected_feature)
+            scores_with_feature = self._instance_score(anomaly,
+                                                       index_selected_feature)
             scores_without_feature = self._instance_score(
                 anomaly, index_not_selected_feature)
             ranked_feature_importance[feature, 0] = self._t_test(
@@ -125,10 +126,10 @@ class Loda:
         if scaled:
             assert cp.max(ranked_feature_importance) != cp.min(
                 ranked_feature_importance)
-            normalized_score = (ranked_feature_importance - cp.min(
-                ranked_feature_importance)) / (
-                cp.max(ranked_feature_importance) - cp.min(
-                    ranked_feature_importance))
+            normalized_score = (ranked_feature_importance -
+                                cp.min(ranked_feature_importance)) / (
+                                    cp.max(ranked_feature_importance) -
+                                    cp.min(ranked_feature_importance))
             return normalized_score
         else:
             return ranked_feature_importance
@@ -144,7 +145,8 @@ class Loda:
         for i in projection_index:
             projected_data = self._projections[i, :].dot(x.T)
             inds = cp.searchsorted(self._limits[i, :self._n_bins - 1],
-                                   projected_data, side='left')
+                                   projected_data,
+                                   side='left')
             pred_scores[:, i] = -self._weights[i] * cp.log(
                 self._histograms[i, inds])
         return pred_scores
@@ -164,8 +166,10 @@ class Loda:
         :param file_path: File path to save model.
         :type file_path: string
         """
-        cp.savez_compressed(file_path, histograms=self._histograms,
-                            limits=self._limits, projections=self._projections)
+        cp.savez_compressed(file_path,
+                            histograms=self._histograms,
+                            limits=self._limits,
+                            projections=self._projections)
 
     @classmethod
     def load_model(cls, file_path):

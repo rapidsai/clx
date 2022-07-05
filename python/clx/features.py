@@ -47,10 +47,9 @@ def binary(dataframe, entity_id, feature_id):
     if entity_id and feature_id not in dataframe.columns:
         raise Exception(
             "{0} and {1} must be column names in the input dataframe".format(
-                entity_id, feature_id
-            )
-        )
-    df_grouped = dataframe.groupby([entity_id, feature_id]).count().reset_index()
+                entity_id, feature_id))
+    df_grouped = dataframe.groupby([entity_id,
+                                    feature_id]).count().reset_index()
     df_output = df_grouped.pivot(index=entity_id, columns=feature_id).fillna(0)
     df_output[df_output != 0] = 1
     return df_output
@@ -90,16 +89,11 @@ def frequency(dataframe, entity_id, feature_id):
     if entity_id and feature_id not in dataframe.columns:
         raise Exception(
             "{0} and {1} must be column names in the input dataframe".format(
-                entity_id, feature_id
-            )
-        )
-    df_grouped = (
-        dataframe.groupby([entity_id, feature_id])
-        .count()
-        .reset_index()
-        .set_index(entity_id)
-    )
-    df_grouped = dataframe.groupby([entity_id, feature_id]).count().reset_index()
+                entity_id, feature_id))
+    df_grouped = (dataframe.groupby(
+        [entity_id, feature_id]).count().reset_index().set_index(entity_id))
+    df_grouped = dataframe.groupby([entity_id,
+                                    feature_id]).count().reset_index()
     df_output = df_grouped.pivot(index=entity_id, columns=feature_id).fillna(0)
     sum_col = df_output.sum(axis=1)
     for col in df_output.columns:

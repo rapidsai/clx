@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import cudf
 import os
+
+import cudf
 
 
 class Resources:
@@ -39,17 +40,14 @@ class Resources:
 
     def _load_iana_lookup_df(self):
         iana_path = "%s/resources/iana_port_lookup.csv" % os.path.dirname(
-            os.path.realpath(__file__)
-        )
+            os.path.realpath(__file__))
         colNames = ["port", "service"]
         colTypes = ["int64", "str"]
-        iana_lookup_df = cudf.read_csv(
-            iana_path,
-            delimiter=',',
-            names=colNames,
-            dtype=colTypes,
-            skiprows=1
-        )
+        iana_lookup_df = cudf.read_csv(iana_path,
+                                       delimiter=',',
+                                       names=colNames,
+                                       dtype=colTypes,
+                                       skiprows=1)
         iana_lookup_df = iana_lookup_df.dropna()
         iana_lookup_df = iana_lookup_df.groupby(["port"]).min().reset_index()
 
@@ -113,6 +111,9 @@ def major_ports(addr_col, port_col, min_conns=1, eph_min=10000):
 
     gdf.loc[gdf["port"] >= eph_min, "service"] = "ephemeral"
 
-    gdf = gdf.groupby(["addr", "port", "service"], dropna=False, as_index=False, sort=True).sum()
+    gdf = gdf.groupby(["addr", "port", "service"],
+                      dropna=False,
+                      as_index=False,
+                      sort=True).sum()
 
     return gdf

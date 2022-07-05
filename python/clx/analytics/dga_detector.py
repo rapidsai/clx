@@ -1,14 +1,15 @@
+import logging
+
 import cudf
 import torch
-import logging
-from tqdm import trange
-from torch.utils.dlpack import from_dlpack
-from clx.utils.data import utils
 from clx.analytics.detector import Detector
-from clx.utils.data.dataloader import DataLoader
 from clx.analytics.dga_dataset import DGADataset
 from clx.analytics.model.rnn_classifier import RNNClassifier
+from clx.utils.data import utils
+from clx.utils.data.dataloader import DataLoader
 from cuml.model_selection import train_test_split
+from torch.utils.dlpack import from_dlpack
+from tqdm import trange
 
 log = logging.getLogger(__name__)
 
@@ -19,7 +20,11 @@ class DGADetector(Detector):
     to distinguish legitimate and DGA domain names.
     """
 
-    def init_model(self, char_vocab=128, hidden_size=100, n_domain_type=2, n_layers=3):
+    def init_model(self,
+                   char_vocab=128,
+                   hidden_size=100,
+                   n_domain_type=2,
+                   n_layers=3):
         """This function instantiates RNNClassifier model to train. And also optimizes to scale it and keep running on parallelism.
 
         :param char_vocab: Vocabulary size is set to 128 ASCII characters.
@@ -32,7 +37,8 @@ class DGADetector(Detector):
         :type n_layers: int
         """
         if self.model is None:
-            model = RNNClassifier(char_vocab, hidden_size, n_domain_type, n_layers)
+            model = RNNClassifier(char_vocab, hidden_size, n_domain_type,
+                                  n_layers)
             self.leverage_model(model)
 
     def load_checkpoint(self, file_path):
@@ -67,9 +73,13 @@ class DGADetector(Detector):
         }
         super()._save_checkpoint(checkpoint, file_path)
 
-    def train_model(
-        self, train_data, labels, batch_size=1000, epochs=5, train_size=0.7, truncate=100
-    ):
+    def train_model(self,
+                    train_data,
+                    labels,
+                    batch_size=1000,
+                    epochs=5,
+                    train_size=0.7,
+                    truncate=100):
         """This function is used for training RNNClassifier model with a given training dataset. It returns total loss to determine model prediction accuracy.
 
         :param train_data: Training data
@@ -98,8 +108,7 @@ class DGADetector(Detector):
 
         self.model.train()
         train_dataloader, test_dataloader = self._preprocess_data(
-            train_data, labels, batch_size, train_size, truncate
-        )
+            train_data, labels, batch_size, train_size, truncate)
 
         for _ in trange(epochs, desc="Epoch"):
             total_loss = 0
@@ -115,14 +124,13 @@ class DGADetector(Detector):
                     total_loss += loss
                     i = i + 1
                     if i % 10 == 0:
-                        log.info(
-                            "[{}/{} ({:.0f}%)]\tLoss: {:.2f}".format(
-                                i * domains_len,
-                                train_dataloader.dataset_len,
-                                100.0 * i * domains_len / train_dataloader.dataset_len,
-                                total_loss / i * domains_len,
-                            )
-                        )
+                        log.info("[{}/{} ({:.0f}%)]\tLoss: {:.2f}".format(
+                            i * domains_len,
+                            train_dataloader.dataset_len,
+                            100.0 * i * domains_len /
+                            train_dataloader.dataset_len,
+                            total_loss / i * domains_len,
+                        ))
             self.evaluate_model(test_dataloader)
 
     def predict(self, domains, probability=False, truncate=100):
@@ -223,11 +231,8 @@ class DGADetector(Detector):
             pred = output.data.max(1, keepdim=True)[1]
             correct += pred.eq(target.data.view_as(pred)).cpu().sum()
         accuracy = float(correct) / dataloader.dataset_len
-        log.info(
-            "Test set accuracy: {}/{} ({})\n".format(
-                correct, dataloader.dataset_len, accuracy
-            )
-        )
+        log.info("Test set accuracy: {}/{} ({})\n".format(
+            correct, dataloader.dataset_len, accuracy))
         return accuracy
 
     def _get_loss(self, model_result, types_tensor):
@@ -243,13 +248,13 @@ class DGADetector(Detector):
         """
         return tensor.cuda()
 
-    def _preprocess_data(self, train_data, labels, batch_size, train_size, truncate):
+    def _preprocess_data(self, train_data, labels, batch_size, train_size,
+                         truncate):
         train_gdf = cudf.DataFrame()
         train_gdf["domain"] = train_data
         train_gdf["type"] = labels
         domain_train, domain_test, type_train, type_test = train_test_split(
-            train_gdf, "type", train_size=train_size
-        )
+            train_gdf, "type", train_size=train_size)
         test_df = self._create_df(domain_test, type_test)
         train_df = self._create_df(domain_train, type_train)
 

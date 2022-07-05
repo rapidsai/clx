@@ -14,6 +14,7 @@
 
 import logging
 import os
+
 import cudf
 from clx.parsers.event_parser import EventParser
 
@@ -30,9 +31,8 @@ class WindowsEventParser(EventParser):
     EVENT_NAME = "windows event"
 
     def __init__(self, interested_eventcodes=None):
-        regex_filepath = (
-            os.path.dirname(os.path.abspath(__file__)) + "/" + self.REGEX_FILE
-        )
+        regex_filepath = (os.path.dirname(os.path.abspath(__file__)) + "/" +
+                          self.REGEX_FILE)
         self.interested_eventcodes = interested_eventcodes
         self.event_regex = self._load_regex_yaml(regex_filepath)
         EventParser.__init__(self, self.get_columns(), self.EVENT_NAME)
@@ -52,11 +52,11 @@ class WindowsEventParser(EventParser):
         output_chunks = []
         for eventcode in self.event_regex.keys():
             pattern = "eventcode=%s" % (eventcode)
-            input_chunk = self.filter_by_pattern(dataframe, raw_column, pattern)
+            input_chunk = self.filter_by_pattern(dataframe, raw_column,
+                                                 pattern)
             if not input_chunk.empty:
-                temp = self.parse_raw_event(
-                    input_chunk, raw_column, self.event_regex[eventcode]
-                )
+                temp = self.parse_raw_event(input_chunk, raw_column,
+                                            self.event_regex[eventcode])
                 if not temp.empty:
                     output_chunks.append(temp)
         parsed_dataframe = cudf.concat(output_chunks)
@@ -74,13 +74,8 @@ class WindowsEventParser(EventParser):
         :return: Clean raw information.
         :rtype: cudf.DataFrame
         """
-        dataframe[raw_column] = (
-            dataframe[raw_column]
-            .str.lower()
-            .str.replace("\\\\t", "")
-            .str.replace("\\\\r", "")
-            .str.replace("\\\\n", "|")
-        )
+        dataframe[raw_column] = (dataframe[raw_column].str.lower().str.replace(
+            "\\\\t", "").str.replace("\\\\r", "").str.replace("\\\\n", "|"))
         return dataframe
 
     def _load_regex_yaml(self, yaml_file):
@@ -91,8 +86,7 @@ class WindowsEventParser(EventParser):
                 if eventcode not in event_regex:
                     raise KeyError(
                         "Regex for eventcode %s is not available in the config file. Please choose from %s"
-                        % (eventcode, list(event_regex.keys()))
-                    )
+                        % (eventcode, list(event_regex.keys())))
                 required_event_regex[eventcode] = event_regex[eventcode]
             return required_event_regex
         return event_regex

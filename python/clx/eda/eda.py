@@ -16,9 +16,8 @@ import json
 import os
 
 import cuxfilter
-from cuxfilter.layouts import feature_and_double_base
-
 from clx.eda.summary_stats import SummaryStatistics
+from cuxfilter.layouts import feature_and_double_base
 
 
 class EDA:
@@ -75,7 +74,8 @@ class EDA:
 
     def __init__(self, dataframe):
         self.__dataframe = dataframe
-        self.__analysis, self.__module_ref = self.__generate_analysis(dataframe)
+        self.__analysis, self.__module_ref = self.__generate_analysis(
+            dataframe)
 
     @property
     def analysis(self):

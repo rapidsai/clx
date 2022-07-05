@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import logging
-from clx.utils.data.dataset import Dataset
+
 from clx.utils.data import utils
+from clx.utils.data.dataset import Dataset
 
 log = logging.getLogger(__name__)
 

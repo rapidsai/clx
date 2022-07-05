@@ -16,9 +16,10 @@ import cudf
 from clx.utils.data import utils
 
 test_domains_len = 2
-test_input_df = cudf.DataFrame(
-    {"domain": ["studytour.com.tw", "cnn.com"], "type": [1, 1]}
-)
+test_input_df = cudf.DataFrame({
+    "domain": ["studytour.com.tw", "cnn.com"],
+    "type": [1, 1]
+})
 expected_output_df = cudf.DataFrame(
     {
         0: [115, 99],
@@ -39,8 +40,7 @@ expected_output_df = cudf.DataFrame(
         15: [119, 0],
         "len": [16, 7]
     },
-    dtype="int32"
-)
+    dtype="int32")
 expected_output_df["type"] = [1, 1]
 expected_output_df["domain"] = ["studytour.com.tw", "cnn.com"]
 

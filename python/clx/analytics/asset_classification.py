@@ -1,11 +1,12 @@
-import cudf
-from cuml.model_selection import train_test_split
-import torch
-import torch.optim as torch_optim
-import torch.nn.functional as F
 import logging
-from torch.utils.dlpack import from_dlpack
+
+import cudf
+import torch
+import torch.nn.functional as F
+import torch.optim as torch_optim
 from clx.analytics.model.tabular_model import TabularModel
+from cuml.model_selection import train_test_split
+from torch.utils.dlpack import from_dlpack
 
 log = logging.getLogger(__name__)
 
@@ -22,7 +23,13 @@ class AssetClassification:
     :param use_bn: use batch normalization
     """
 
-    def __init__(self, layers=[200, 100], drops=[0.001, 0.01], emb_drop=0.04, is_reg=False, is_multi=True, use_bn=True):
+    def __init__(self,
+                 layers=[200, 100],
+                 drops=[0.001, 0.01],
+                 emb_drop=0.04,
+                 is_reg=False,
+                 is_multi=True,
+                 use_bn=True):
         self._layers = layers
         self._drops = drops
         self._emb_drop = emb_drop
@@ -36,7 +43,15 @@ class AssetClassification:
         self._cont_cols = None
         self._device = torch.device('cuda')
 
-    def train_model(self, train_gdf, cat_cols, cont_cols, label_col, batch_size, epochs, lr=0.01, wd=0.0):
+    def train_model(self,
+                    train_gdf,
+                    cat_cols,
+                    cont_cols,
+                    label_col,
+                    batch_size,
+                    epochs,
+                    lr=0.01,
+                    wd=0.0):
         """
         This function is used for training fastai tabular model with a given training dataset.
 
@@ -70,7 +85,9 @@ class AssetClassification:
         self._cont_cols = cont_cols
 
         # train/test split
-        X, val_X, Y, val_Y = train_test_split(train_gdf, label_col, train_size=0.9)
+        X, val_X, Y, val_Y = train_test_split(train_gdf,
+                                              label_col,
+                                              train_size=0.9)
         val_X.index = val_Y.index
         X.index = Y.index
 
@@ -85,7 +102,8 @@ class AssetClassification:
         val_X[label_col] = val_Y
 
         # Embedding
-        embedding_sizes = [(n_categories, min(100, (n_categories + 1) // 2)) for _, n_categories in embedded_cols.items()]
+        embedding_sizes = [(n_categories, min(100, (n_categories + 1) // 2))
+                           for _, n_categories in embedded_cols.items()]
 
         n_cont = len(cont_cols)
         out_sz = train_gdf[label_col].nunique()
@@ -94,13 +112,17 @@ class AssetClassification:
         train_part_dfs = self._get_partitioned_dfs(X, batch_size)
         val_part_dfs = self._get_partitioned_dfs(val_X, batch_size)
 
-        self._model = TabularModel(embedding_sizes, n_cont, out_sz, self._layers, self._drops, self._emb_drop, self._is_reg, self._is_multi, self._use_bn)
+        self._model = TabularModel(embedding_sizes, n_cont, out_sz,
+                                   self._layers, self._drops, self._emb_drop,
+                                   self._is_reg, self._is_multi, self._use_bn)
         self._to_device(self._model, self._device)
         self._config_optimizer()
         for i in range(epochs):
-            loss = self._train(self._model, self._optimizer, train_part_dfs, cat_cols, cont_cols, label_col)
+            loss = self._train(self._model, self._optimizer, train_part_dfs,
+                               cat_cols, cont_cols, label_col)
             print("training loss: ", loss)
-            self._val_loss(self._model, val_part_dfs, cat_cols, cont_cols, label_col)
+            self._val_loss(self._model, val_part_dfs, cat_cols, cont_cols,
+                           label_col)
 
     def predict(self, gdf, cat_cols, cont_cols):
         """
@@ -180,7 +202,8 @@ class AssetClassification:
         self._model = torch.load(fname)
 
     def _config_optimizer(self, lr=0.001, wd=0.0):
-        parameters = filter(lambda p: p.requires_grad, self._model.parameters())
+        parameters = filter(lambda p: p.requires_grad,
+                            self._model.parameters())
         self._optimizer = torch_optim.Adam(parameters, lr=lr, weight_decay=wd)
 
     def _get_partitioned_dfs(self, df, batch_size):
@@ -255,7 +278,8 @@ class AssetClassification:
 
             pred = torch.max(out, 1)[1]
             correct += (pred == val_label).float().sum().item()
-        print("valid loss %.3f and accuracy %.3f" % (sum_loss / total, correct / total))
+        print("valid loss %.3f and accuracy %.3f" %
+              (sum_loss / total, correct / total))
 
         return sum_loss / total, correct / total
 
