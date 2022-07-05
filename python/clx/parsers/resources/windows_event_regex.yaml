@@ -360,7 +360,7 @@
   account_information_account_name: 'account name:([a-z0-9@._]+)'
   account_information_account_domain: 'account domain:([a-z0-9@._]+)'
   service_information_service_name: 'service name:([a-z0-9@._]+)'
-  service_information_service_id: 'service id:([a-z0-9_]+)'
+  service_information_service_id: 'service id:([a-z0-9_]+'
   network_information_client_address: 'client address:([\w\.\:]+)'
   network_information_client_port: 'client port:([\w]+)'
   additional_information_ticket_options: 'ticket options:([\w]+)'
