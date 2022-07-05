@@ -34,8 +34,7 @@ class BinarySequenceClassifier(SequenceClassifier):
 
         >>> sc.init_model(model_path) # locally saved model
         """
-        self._model = AutoModelForSequenceClassification.from_pretrained(
-            model_or_path)
+        self._model = AutoModelForSequenceClassification.from_pretrained(model_or_path)
 
         if torch.cuda.is_available():
             self._device = torch.device("cuda")
@@ -46,11 +45,7 @@ class BinarySequenceClassifier(SequenceClassifier):
 
         self._tokenizer = SubwordTokenizer(self._hashpath, do_lower_case=True)
 
-    def predict(self,
-                input_data,
-                max_seq_len=128,
-                batch_size=32,
-                threshold=0.5):
+    def predict(self, input_data, max_seq_len=128, batch_size=32, threshold=0.5):
         """
         Predict the class with the trained model
 
@@ -85,11 +80,12 @@ class BinarySequenceClassifier(SequenceClassifier):
         self._model.eval()
         for df in predict_dataloader.get_chunks():
             b_input_ids, b_input_mask = self._bert_uncased_tokenize(
-                df["text"], max_seq_len)
+                df["text"], max_seq_len
+            )
             with torch.no_grad():
-                logits = self._model(b_input_ids,
-                                     token_type_ids=None,
-                                     attention_mask=b_input_mask)[0]
+                logits = self._model(
+                    b_input_ids, token_type_ids=None, attention_mask=b_input_mask
+                )[0]
                 b_probs = torch.sigmoid(logits[:, 1])
                 b_preds = b_probs.ge(threshold).type(torch.int8)
 

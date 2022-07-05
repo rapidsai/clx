@@ -16,11 +16,13 @@ import cudf
 import pytest
 from clx.io.reader.fs_reader import FileSystemReader
 
-expected_df = cudf.DataFrame({
-    "firstname": ["Emma", "Ava", "Sophia"],
-    "lastname": ["Olivia", "Isabella", "Charlotte"],
-    "gender": ["F", "F", "F"],
-})
+expected_df = cudf.DataFrame(
+    {
+        "firstname": ["Emma", "Ava", "Sophia"],
+        "lastname": ["Olivia", "Isabella", "Charlotte"],
+        "gender": ["F", "F", "F"],
+    }
+)
 
 
 @pytest.mark.parametrize("expected_df", [expected_df])
@@ -36,7 +38,7 @@ def test_fetch_data_csv(tmpdir, expected_df):
         "usecols": ["firstname", "lastname", "gender"],
         "dtype": ["str", "str", "str"],
         "header": 0,
-        "input_format": "csv"
+        "input_format": "csv",
     }
     reader = FileSystemReader(config)
     fetched_df = reader.fetch_data()
@@ -77,7 +79,7 @@ def test_fetch_data_json(tmpdir, expected_df):
         "type": "fs",
         "input_path": fname,
         "orient": "records",
-        "input_format": "json"
+        "input_format": "json",
     }
 
     reader = FileSystemReader(config)

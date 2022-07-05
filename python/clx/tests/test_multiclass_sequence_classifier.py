@@ -17,8 +17,7 @@ from os import path
 import cudf
 import torch
 import transformers
-from clx.analytics.multiclass_sequence_classifier import \
-    MulticlassSequenceClassifier
+from clx.analytics.multiclass_sequence_classifier import MulticlassSequenceClassifier
 from cuml.model_selection import train_test_split
 from faker import Faker
 
@@ -32,12 +31,12 @@ def test_train_model():
         fake = Faker()
         email_col = [fake.text() for _ in range(200)]
         label_col = [random.randint(0, 2) for _ in range(200)]
-        emails_gdf = cudf.DataFrame(list(zip(email_col, label_col)),
-                                    columns=["email", "label"])
-        X_train, X_test, y_train, y_test = train_test_split(emails_gdf,
-                                                            "label",
-                                                            train_size=0.8,
-                                                            random_state=10)
+        emails_gdf = cudf.DataFrame(
+            list(zip(email_col, label_col)), columns=["email", "label"]
+        )
+        X_train, X_test, y_train, y_test = train_test_split(
+            emails_gdf, "label", train_size=0.8, random_state=10
+        )
         sc.train_model(
             X_train["email"],
             y_train,
@@ -48,8 +47,7 @@ def test_train_model():
         )
         assert isinstance(
             sc._model.module,
-            transformers.models.bert.modeling_bert.
-            BertForSequenceClassification,
+            transformers.models.bert.modeling_bert.BertForSequenceClassification,
         )
 
 
@@ -57,10 +55,7 @@ def test_evaluate_model():
     if torch.cuda.is_available():
         X_test = cudf.Series(["email 1", "email 2"])
         y_test = cudf.Series([0, 0])
-        accuracy = sc.evaluate_model(X_test,
-                                     y_test,
-                                     max_seq_len=128,
-                                     batch_size=32)
+        accuracy = sc.evaluate_model(X_test, y_test, max_seq_len=128, batch_size=32)
         assert accuracy >= 0.0 and accuracy <= 1.0
 
 
@@ -81,8 +76,8 @@ def test_save_model(tmpdir):
 def test_save_checkpoint(tmpdir):
     if torch.cuda.is_available():
         fname = str(
-            tmpdir.mkdir("tmp_test_sequence_classifier").join(
-                "sc_checkpoint.tar"))
+            tmpdir.mkdir("tmp_test_sequence_classifier").join("sc_checkpoint.tar")
+        )
         sc.save_checkpoint(fname)
         assert path.exists(fname)
 
@@ -90,13 +85,12 @@ def test_save_checkpoint(tmpdir):
 def test_load_checkpoint(tmpdir):
     if torch.cuda.is_available():
         fname = str(
-            tmpdir.mkdir("tmp_test_sequence_classifier").join(
-                "sc_checkpoint.tar"))
+            tmpdir.mkdir("tmp_test_sequence_classifier").join("sc_checkpoint.tar")
+        )
         sc.save_checkpoint(fname)
         assert path.exists(fname)
         sc.load_checkpoint(fname)
         assert isinstance(
             sc._model.module,
-            transformers.models.bert.modeling_bert.
-            BertForSequenceClassification,
+            transformers.models.bert.modeling_bert.BertForSequenceClassification,
         )

@@ -93,11 +93,9 @@ def es_sink(config, parsed_df):
     parsed_df["_index"] = config["index"]
     json_str = parsed_df.to_json(orient="records")
     docs = json.loads(json_str)
-    pb = helpers.parallel_bulk(es_client,
-                               docs,
-                               chunk_size=10000,
-                               thread_count=10,
-                               queue_size=10)
+    pb = helpers.parallel_bulk(
+        es_client, docs, chunk_size=10000, thread_count=10, queue_size=10
+    )
     deque(pb, maxlen=0)
 
 
@@ -175,8 +173,9 @@ def init_dask_workers(worker, config, obj_dict=None):
         if "username" in es_conf and "password" in es_conf:
             es_client = Elasticsearch(
                 [
-                    es_conf["url"].format(es_conf["username"],
-                                          es_conf["password"], es_conf["port"])
+                    es_conf["url"].format(
+                        es_conf["username"], es_conf["password"], es_conf["port"]
+                    )
                 ],
                 use_ssl=True,
                 verify_certs=True,
@@ -184,16 +183,16 @@ def init_dask_workers(worker, config, obj_dict=None):
             )
         else:
             es_client = Elasticsearch(
-                [{
-                    "host": config["elasticsearch_conf"]["url"]
-                }],
+                [{"host": config["elasticsearch_conf"]["url"]}],
                 port=config["elasticsearch_conf"]["port"],
             )
         worker.data["sink"] = es_client
     elif sink == SINK_FS:
         print(
             "Streaming process will write the output to location '{}'".format(
-                config["output_dir"]))
+                config["output_dir"]
+            )
+        )
     else:
         print(
             "No valid sink provided in the configuration file. Please provide kafka/elasticsearch/filsesystem"
@@ -220,13 +219,15 @@ def parse_arguments():
     """
     Parse script arguments
     """
-    parser = argparse.ArgumentParser(description="Streamz and Dask. \
+    parser = argparse.ArgumentParser(
+        description="Streamz and Dask. \
                      Data will be read from the input kafka topic, \
-                     processed using clx streamz workflows.")
+                     processed using clx streamz workflows."
+    )
     required_args = parser.add_argument_group("required arguments")
-    required_args.add_argument("-c",
-                               "--conf",
-                               help="Source and Sink configuration filepath")
+    required_args.add_argument(
+        "-c", "--conf", help="Source and Sink configuration filepath"
+    )
     parser.add_argument("-m", "--model", help="Model filepath")
     parser.add_argument("-l", "--label_map", help="Label map filepath")
     parser.add_argument(
@@ -235,13 +236,12 @@ def parse_arguments():
         type=int,
         help="Max batch size to read from kafka",
     )
-    required_args.add_argument("--poll_interval",
-                               type=str,
-                               help="Polling interval (ex: 60s)")
+    required_args.add_argument(
+        "--poll_interval", type=str, help="Polling interval (ex: 60s)"
+    )
     parser.add_argument(
         "--benchmark",
-        help=
-        "Captures benchmark, including throughput estimates, with provided avg log size in KB. (ex: 500 or 0.1)",
+        help="Captures benchmark, including throughput estimates, with provided avg log size in KB. (ex: 500 or 0.1)",
         type=float,
     )
     args = parser.parse_args()

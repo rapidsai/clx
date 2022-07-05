@@ -39,17 +39,15 @@ fs_reader_config = {
     "input_format": "text",
 }
 
-fs_writer_config = {
-    "type": "fs",
-    "output_path": "test_output",
-    "output_format": "text",
-}
+fs_writer_config = {"type": "fs", "output_path": "test_output", "output_format": "text"}
 
-expected_df = cudf.DataFrame({
-    "firstname": ["Emma", "Ava", "Sophia"],
-    "lastname": ["Olivia", "Isabella", "Charlotte"],
-    "gender": ["F", "F", "F"],
-})
+expected_df = cudf.DataFrame(
+    {
+        "firstname": ["Emma", "Ava", "Sophia"],
+        "lastname": ["Olivia", "Isabella", "Charlotte"],
+        "gender": ["F", "F", "F"],
+    }
+)
 
 
 @pytest.mark.parametrize("kafka_config", [kafka_config])

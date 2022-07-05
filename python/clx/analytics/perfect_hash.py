@@ -11,21 +11,20 @@ PRIME = np.uint64(281474976710677)
 A_SECOND_LEVEL_POW = np.uint8(48)
 B_SECOND_LEVEL_POW = np.uint8(7)
 
-A_LBOUND_SECOND_LEVEL_HASH = 2**16
-A_HBOUND_SECOND_LEVEL_HASH = 2**A_SECOND_LEVEL_POW
+A_LBOUND_SECOND_LEVEL_HASH = 2 ** 16
+A_HBOUND_SECOND_LEVEL_HASH = 2 ** A_SECOND_LEVEL_POW
 
 B_LBOUND_SECOND_LEVEL_HASH = 0
-B_HBOUND_SECOND_LEVEL_HASH = 2**B_SECOND_LEVEL_POW
+B_HBOUND_SECOND_LEVEL_HASH = 2 ** B_SECOND_LEVEL_POW
 
 # Extremely generous and should not ever happen. This limit is imposed
 # To ensure we can bit pack all the information needed for the bin hash
 # functions - a, b and table size
-MAX_SIZE_FOR_INITIAL_BIN = 2**8 - 1
+MAX_SIZE_FOR_INITIAL_BIN = 2 ** 8 - 1
 
-#Shifts for bit packing
+# Shifts for bit packing
 A_SECOND_LEVEL_SHIFT_AMT = np.uint8(64 - A_SECOND_LEVEL_POW)
-B_SECOND_LEVEL_SHIFT_AMT = np.uint8(64 - A_SECOND_LEVEL_POW -
-                                    B_SECOND_LEVEL_POW)
+B_SECOND_LEVEL_SHIFT_AMT = np.uint8(64 - A_SECOND_LEVEL_POW - B_SECOND_LEVEL_POW)
 BITS_FOR_INNER_TABLE_SIZE = np.uint8(8)
 
 NOT_FOUND = -1
@@ -63,7 +62,7 @@ def make_bins(data, num_bins, a, b):
 
 
 def new_bin_length(orig_length, compact):
-    return int(orig_length) if compact else orig_length**2
+    return int(orig_length) if compact else orig_length ** 2
 
 
 def get_space_util(bins, init_bins, compact):
@@ -72,16 +71,15 @@ def get_space_util(bins, init_bins, compact):
 
 def pick_initial_a_b(data, max_constant, init_bins, compact):
     while True:
-        a = np.random.randint(2**12, 2**15)
-        b = np.random.randint(2**12, 2**15)
+        a = np.random.randint(2 ** 12, 2 ** 15)
+        b = np.random.randint(2 ** 12, 2 ** 15)
         bins = make_bins(data, init_bins, a, b)
         score = get_space_util(bins, init_bins, compact) / len(data)
 
         longest = new_bin_length(longest_bin_length(bins), compact)
 
         if score <= max_constant and longest <= MAX_SIZE_FOR_INITIAL_BIN:
-            print(
-                "Attempting to build table using {:.6f}n space".format(score))
+            print("Attempting to build table using {:.6f}n space".format(score))
             print("Longest bin was {}".format(longest))
             break
 
@@ -95,10 +93,8 @@ def find_hash_for_internal(hash_bin, compact):
     new_length = new_bin_length(len(hash_bin), compact)
 
     while True:
-        a = np.random.randint(A_LBOUND_SECOND_LEVEL_HASH,
-                              A_HBOUND_SECOND_LEVEL_HASH)
-        b = np.random.randint(B_LBOUND_SECOND_LEVEL_HASH,
-                              B_HBOUND_SECOND_LEVEL_HASH)
+        a = np.random.randint(A_LBOUND_SECOND_LEVEL_HASH, A_HBOUND_SECOND_LEVEL_HASH)
+        b = np.random.randint(B_LBOUND_SECOND_LEVEL_HASH, B_HBOUND_SECOND_LEVEL_HASH)
         bins = make_bins(hash_bin, new_length, a, b)
 
         max_length = len(max(bins, key=len))
@@ -110,14 +106,15 @@ def find_hash_for_internal(hash_bin, compact):
 def perfect_hash(integers, max_constant, compact):
     num_top_level_bins = len(integers) // 4
 
-    init_bins, init_a, init_b = pick_initial_a_b(integers, max_constant,
-                                                 num_top_level_bins, compact)
+    init_bins, init_a, init_b = pick_initial_a_b(
+        integers, max_constant, num_top_level_bins, compact
+    )
     flattened_bins = []
 
-    internal_table_coeffs = np.zeros(shape=[num_top_level_bins],
-                                     dtype=np.uint64)
-    offset_into_flattened_table = np.zeros(shape=[num_top_level_bins + 1],
-                                           dtype=np.uint64)
+    internal_table_coeffs = np.zeros(shape=[num_top_level_bins], dtype=np.uint64)
+    offset_into_flattened_table = np.zeros(
+        shape=[num_top_level_bins + 1], dtype=np.uint64
+    )
 
     max_bin_length = 0
     for i, b in enumerate(init_bins):
@@ -125,18 +122,30 @@ def perfect_hash(integers, max_constant, compact):
         internal_table, coeff_a, coeff_b = find_hash_for_internal(b, compact)
         bin_length = len(internal_table)
         max_bin_length = max(bin_length, max_bin_length)
-        internal_table_coeffs[
-            i] = coeff_a << A_SECOND_LEVEL_SHIFT_AMT | coeff_b << B_SECOND_LEVEL_SHIFT_AMT | bin_length
-        offset_into_flattened_table[
-            i + 1] = offset_into_flattened_table[i] + bin_length
+        internal_table_coeffs[i] = (
+            coeff_a << A_SECOND_LEVEL_SHIFT_AMT
+            | coeff_b << B_SECOND_LEVEL_SHIFT_AMT
+            | bin_length
+        )
+        offset_into_flattened_table[i + 1] = offset_into_flattened_table[i] + bin_length
         flattened_bins.extend(internal_table)
 
-    print("Final table size {} elements compared to {} for original".format(
-        len(flattened_bins), len(integers)))
+    print(
+        "Final table size {} elements compared to {} for original".format(
+            len(flattened_bins), len(integers)
+        )
+    )
 
     print("Max bin length was", max_bin_length)
 
-    return init_a, init_b, num_top_level_bins, flattened_bins, internal_table_coeffs, offset_into_flattened_table
+    return (
+        init_a,
+        init_b,
+        num_top_level_bins,
+        flattened_bins,
+        internal_table_coeffs,
+        offset_into_flattened_table,
+    )
 
 
 def pack_keys_and_values(flattened_hash_table, original_dict):
@@ -159,12 +168,9 @@ def load_vocab_dict(path):
     return vocab
 
 
-def hash_vocab(path,
-               store_path,
-               compact,
-               unk_tok="[UNK]",
-               first_token="[CLS]",
-               sep_token="[SEP]"):
+def hash_vocab(
+    path, store_path, compact, unk_tok="[UNK]", first_token="[CLS]", sep_token="[SEP]"
+):
     vocab = load_vocab_dict(path)
     keys = list(map(sdbm_hash, vocab.keys()))
 
@@ -176,25 +182,52 @@ def hash_vocab(path,
                                            Can be extended to use random hashes if needed"
 
     outer_a, outer_b, num_outer_bins, hash_table, inner_table_coeffs, offsets_into_ht = perfect_hash(
-        keys, 10, compact)
+        keys, 10, compact
+    )
 
     pack_keys_and_values(hash_table, hashed_vocab)
-    store_func(store_path, outer_a, outer_b, num_outer_bins, hash_table,
-               inner_table_coeffs, offsets_into_ht, vocab[unk_tok],
-               vocab[first_token], vocab[sep_token])
+    store_func(
+        store_path,
+        outer_a,
+        outer_b,
+        num_outer_bins,
+        hash_table,
+        inner_table_coeffs,
+        offsets_into_ht,
+        vocab[unk_tok],
+        vocab[first_token],
+        vocab[sep_token],
+    )
 
     for key, value in hashed_vocab.items():
-        val = retrieve(key, outer_a, outer_b, num_outer_bins, hash_table,
-                       inner_table_coeffs, offsets_into_ht)
+        val = retrieve(
+            key,
+            outer_a,
+            outer_b,
+            num_outer_bins,
+            hash_table,
+            inner_table_coeffs,
+            offsets_into_ht,
+        )
         assert val == value, "Incorrect value found. Got {} expected {}".format(
-            val, value)
+            val, value
+        )
 
     print("All present tokens return correct value.")
 
 
-def store_func(out_name, outer_a, outer_b, num_outer_bins, hash_table,
-               inner_table_coeffs, offsets_into_ht, unk_tok_id, first_token_id,
-               sep_token_id):
+def store_func(
+    out_name,
+    outer_a,
+    outer_b,
+    num_outer_bins,
+    hash_table,
+    inner_table_coeffs,
+    offsets_into_ht,
+    unk_tok_id,
+    first_token_id,
+    sep_token_id,
+):
 
     with open(out_name, mode="w+") as f:
         f.write("{}\n".format(outer_a))
@@ -202,15 +235,19 @@ def store_func(out_name, outer_a, outer_b, num_outer_bins, hash_table,
         f.write("{}\n".format(num_outer_bins))
         f.writelines(
             "{} {}\n".format(coeff, offset)
-            for coeff, offset in zip(inner_table_coeffs, offsets_into_ht))
+            for coeff, offset in zip(inner_table_coeffs, offsets_into_ht)
+        )
         f.write("{}\n".format(len(hash_table)))
         f.writelines("{}\n".format(kv) for kv in hash_table)
-        f.writelines("{}\n".format(tok_id)
-                     for tok_id in [unk_tok_id, first_token_id, sep_token_id])
+        f.writelines(
+            "{}\n".format(tok_id)
+            for tok_id in [unk_tok_id, first_token_id, sep_token_id]
+        )
 
 
-def retrieve(k, outer_a, outer_b, num_outer_bins, hash_table,
-             inner_table_coeffs, offsets_into_ht):
+def retrieve(
+    k, outer_a, outer_b, num_outer_bins, hash_table, inner_table_coeffs, offsets_into_ht
+):
 
     bin_hash = hash_func(k, outer_a, outer_b, num_outer_bins)
     start_offset_in_ht = offsets_into_ht[bin_hash]
@@ -220,7 +257,8 @@ def retrieve(k, outer_a, outer_b, num_outer_bins, hash_table,
 
     inner_a = inner_table_values >> A_SECOND_LEVEL_SHIFT_AMT
     inner_b = (inner_table_values >> B_SECOND_LEVEL_SHIFT_AMT) & (
-        (one << B_SECOND_LEVEL_POW) - one)
+        (one << B_SECOND_LEVEL_POW) - one
+    )
     size = inner_table_values & ((one << BITS_FOR_INNER_TABLE_SIZE) - one)
 
     inner_offset = hash_func(k, inner_a, inner_b, size)
@@ -235,15 +273,14 @@ def retrieve(k, outer_a, outer_b, num_outer_bins, hash_table,
 def sdbm_pop(h, last_val):
     mod_inverse = 24320495251391
     mask = (1 << 48) - 1
-    return (((mod_inverse * h) & mask) - ((mod_inverse * last_val) & mask)
-            & mask)
+    return ((mod_inverse * h) & mask) - ((mod_inverse * last_val) & mask) & mask
 
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description=
-        "Construct a perfect hash table for the given vocabulary file")
+        description="Construct a perfect hash table for the given vocabulary file"
+    )
 
     parser.add_argument(
         "--vocab",
@@ -251,18 +288,22 @@ if __name__ == "__main__":
         required=True,
         dest="vocab",
         type=str,
-        help="The path to the bert vocabulary file. Normally called vocab.txt")
-    parser.add_argument("--output",
-                        "-o",
-                        required=True,
-                        dest="output",
-                        type=str,
-                        help="The location to store the output")
+        help="The path to the bert vocabulary file. Normally called vocab.txt",
+    )
+    parser.add_argument(
+        "--output",
+        "-o",
+        required=True,
+        dest="output",
+        type=str,
+        help="The location to store the output",
+    )
     parser.add_argument(
         "--compact",
         action="store_true",
         dest="compact",
-        help="If set, minimizes space at the expense of longer preprocessing.")
+        help="If set, minimizes space at the expense of longer preprocessing.",
+    )
     parser.set_defaults(compact=False)
     ns = parser.parse_args()
 

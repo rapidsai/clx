@@ -27,11 +27,7 @@ class SequenceClassifier(ABC):
         self._hashpath = self._get_hash_table_path()
 
     @abstractmethod
-    def predict(self,
-                input_data,
-                max_seq_len=128,
-                batch_size=32,
-                threshold=0.5):
+    def predict(self, input_data, max_seq_len=128, batch_size=32, threshold=0.5):
         pass
 
     def train_model(
@@ -81,14 +77,19 @@ class SequenceClassifier(ABC):
             nb_tr_examples, nb_tr_steps = 0, 0
             for df in train_dataloader.get_chunks():
                 b_input_ids, b_input_mask = self._bert_uncased_tokenize(
-                    df["text"], max_seq_len)
+                    df["text"], max_seq_len
+                )
 
                 b_labels = torch.tensor(df["label"].to_numpy())
                 self._optimizer.zero_grad()  # Clear out the gradients
-                loss = self._model(b_input_ids,
-                                   token_type_ids=None,
-                                   attention_mask=b_input_mask,
-                                   labels=b_labels)[0]  # forwardpass
+                loss = self._model(
+                    b_input_ids,
+                    token_type_ids=None,
+                    attention_mask=b_input_mask,
+                    labels=b_labels,
+                )[
+                    0
+                ]  # forwardpass
 
                 loss.sum().backward()
                 self._optimizer.step()  # update parameters
@@ -98,11 +99,7 @@ class SequenceClassifier(ABC):
 
             print("Train loss: {}".format(tr_loss / nb_tr_steps))
 
-    def evaluate_model(self,
-                       test_data,
-                       labels,
-                       max_seq_len=128,
-                       batch_size=32):
+    def evaluate_model(self, test_data, labels, max_seq_len=128, batch_size=32):
         """
         Evaluate trained model
 
@@ -133,12 +130,13 @@ class SequenceClassifier(ABC):
         nb_eval_steps = 0
         for df in test_dataloader.get_chunks():
             b_input_ids, b_input_mask = self._bert_uncased_tokenize(
-                df["text"], max_seq_len)
+                df["text"], max_seq_len
+            )
             b_labels = torch.tensor(df["label"].to_numpy())
             with torch.no_grad():
-                logits = self._model(b_input_ids,
-                                     token_type_ids=None,
-                                     attention_mask=b_input_mask)[0]
+                logits = self._model(
+                    b_input_ids, token_type_ids=None, attention_mask=b_input_mask
+                )[0]
 
             logits = logits.type(torch.DoubleTensor).to(self._device)
             logits = cupy.fromDlpack(to_dlpack(logits))
@@ -205,7 +203,8 @@ class SequenceClassifier(ABC):
 
     def _get_hash_table_path(self):
         hash_table_path = "%s/resources/bert-base-uncased-hash.txt" % os.path.dirname(
-            os.path.realpath(__file__))
+            os.path.realpath(__file__)
+        )
         return hash_table_path
 
     def _config_optimizer(self, learning_rate):
@@ -214,19 +213,15 @@ class SequenceClassifier(ABC):
         optimizer_grouped_parameters = [
             {
                 "params": [
-                    p for n, p in param_optimizer
-                    if not any(nd in n for nd in no_decay)
+                    p for n, p in param_optimizer if not any(nd in n for nd in no_decay)
                 ],
-                "weight_decay_rate":
-                0.01,
+                "weight_decay_rate": 0.01,
             },
             {
                 "params": [
-                    p for n, p in param_optimizer
-                    if any(nd in n for nd in no_decay)
+                    p for n, p in param_optimizer if any(nd in n for nd in no_decay)
                 ],
-                "weight_decay_rate":
-                0.0,
+                "weight_decay_rate": 0.0,
             },
         ]
         self._optimizer = AdamW(optimizer_grouped_parameters, learning_rate)
@@ -240,11 +235,15 @@ class SequenceClassifier(ABC):
         """
         converts cudf.Series of strings to two torch tensors- token ids and attention mask with padding
         """
-        output = self._tokenizer(strings,
-                                 max_length=max_length,
-                                 max_num_rows=len(strings),
-                                 truncation=True,
-                                 add_special_tokens=True,
-                                 return_tensors="pt")
-        return output['input_ids'].type(
-            torch.long), output['attention_mask'].type(torch.long)
+        output = self._tokenizer(
+            strings,
+            max_length=max_length,
+            max_num_rows=len(strings),
+            truncation=True,
+            add_special_tokens=True,
+            return_tensors="pt",
+        )
+        return (
+            output["input_ids"].type(torch.long),
+            output["attention_mask"].type(torch.long),
+        )

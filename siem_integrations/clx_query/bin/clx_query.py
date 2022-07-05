@@ -12,21 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import logging
 import re
-import sys, requests, json
+import sys
+
+import requests
+import splunklib.client as client
 from splunklib.searchcommands import (
-    dispatch,
-    GeneratingCommand,
     Configuration,
+    GeneratingCommand,
     Option,
+    dispatch,
     validators,
 )
-import splunklib.client as client
 
 log = logging.getLogger(__name__)
 
 REGEX_PATTERN = r"([LIMIT|limit]+.[0-9]+$)"
+
 
 @Configuration()
 class ClxQuery(GeneratingCommand):
@@ -40,13 +44,13 @@ class ClxQuery(GeneratingCommand):
 
         url = self.construct_url(clx_config)
         has_query_limit = re.findall(REGEX_PATTERN, self.query)
-        
-        payload = {'query': self.query}
+
+        payload = {"query": self.query}
         if not has_query_limit and clx_config["clx_query_limit"]:
-           self.query = "%s LIMIT %s" %(self.query, clx_config["clx_query_limit"])
-           payload = {'query': self.query}
+            self.query = "%s LIMIT %s" % (self.query, clx_config["clx_query_limit"])
+            payload = {"query": self.query}
         response = requests.post(url, data=payload)
-        
+
         if response.status_code != 200:
             yield {"ERROR": response.content}
         else:
@@ -58,7 +62,7 @@ class ClxQuery(GeneratingCommand):
         url = "http://%s:%s/%s/" % (
             config["clx_hostname"],
             config["clx_port"],
-        'clxquery'
+            "clxquery",
         )
         return url
 

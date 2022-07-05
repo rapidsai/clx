@@ -40,14 +40,13 @@ class Resources:
 
     def _load_iana_lookup_df(self):
         iana_path = "%s/resources/iana_port_lookup.csv" % os.path.dirname(
-            os.path.realpath(__file__))
+            os.path.realpath(__file__)
+        )
         colNames = ["port", "service"]
         colTypes = ["int64", "str"]
-        iana_lookup_df = cudf.read_csv(iana_path,
-                                       delimiter=',',
-                                       names=colNames,
-                                       dtype=colTypes,
-                                       skiprows=1)
+        iana_lookup_df = cudf.read_csv(
+            iana_path, delimiter=",", names=colNames, dtype=colTypes, skiprows=1
+        )
         iana_lookup_df = iana_lookup_df.dropna()
         iana_lookup_df = iana_lookup_df.groupby(["port"]).min().reset_index()
 
@@ -93,7 +92,7 @@ def major_ports(addr_col, port_col, min_conns=1, eph_min=10000):
     cnt_avg_gdf = cnt_avg_gdf.rename(columns={"conns": "avg"})
 
     # Merge averages to dataframe
-    gdf = gdf.merge(cnt_avg_gdf, on=['addr'], how='left')
+    gdf = gdf.merge(cnt_avg_gdf, on=["addr"], how="left")
 
     # Filter out all ip-port pairs below average
     gdf = gdf[gdf.conns >= gdf.avg]
@@ -101,19 +100,18 @@ def major_ports(addr_col, port_col, min_conns=1, eph_min=10000):
     if min_conns > 1:
         gdf = gdf[gdf.conns >= min_conns]
 
-    gdf = gdf.drop(['avg'], axis=1)
+    gdf = gdf.drop(["avg"], axis=1)
 
     resources = Resources.get_instance()
     iana_lookup_df = resources.iana_lookup_df
 
     # Add IANA service names to node lists
-    gdf = gdf.merge(iana_lookup_df, on=['port'], how='left')
+    gdf = gdf.merge(iana_lookup_df, on=["port"], how="left")
 
     gdf.loc[gdf["port"] >= eph_min, "service"] = "ephemeral"
 
-    gdf = gdf.groupby(["addr", "port", "service"],
-                      dropna=False,
-                      as_index=False,
-                      sort=True).sum()
+    gdf = gdf.groupby(
+        ["addr", "port", "service"], dropna=False, as_index=False, sort=True
+    ).sum()
 
     return gdf

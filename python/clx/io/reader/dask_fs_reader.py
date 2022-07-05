@@ -52,8 +52,9 @@ class DaskFileSystemReader(FileReader):
         elif "json" == input_format:
             df = dask_cudf.read_json(filepath, **kwargs)
         else:
-            raise NotImplementedError("%s is not a supported input_format" %
-                                      (input_format))
+            raise NotImplementedError(
+                "%s is not a supported input_format" % (input_format)
+            )
 
         self.has_data = False
         return df

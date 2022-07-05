@@ -25,10 +25,8 @@ datetime_2 = datetime.datetime(2020, 5, 18)
 client = WhoIsLookupClient()
 
 response = {
-    "domain_name":
-    "NVIDIA.COM",
-    "registrar":
-    "Safenames Ltd",
+    "domain_name": "NVIDIA.COM",
+    "registrar": "Safenames Ltd",
     "emails": [
         "abuse@safenames.net",
         "wadmpfvzi5ei@idp.email",
@@ -41,16 +39,14 @@ response = {
 @pytest.mark.parametrize("client", [client])
 @pytest.mark.parametrize("domains", [domains])
 def test_whois(client, domains):
-    expected_output = [{
-        "domain_name":
-        "NVIDIA.COM",
-        "registrar":
-        "Safenames Ltd",
-        "emails":
-        "abuse@safenames.net,wadmpfvzi5ei@idp.email,hostmaster@safenames.net",
-        "updated_date":
-        "05-17-2020 00:00:00,05-18-2020 00:00:00",
-    }]
+    expected_output = [
+        {
+            "domain_name": "NVIDIA.COM",
+            "registrar": "Safenames Ltd",
+            "emails": "abuse@safenames.net,wadmpfvzi5ei@idp.email,hostmaster@safenames.net",
+            "updated_date": "05-17-2020 00:00:00,05-18-2020 00:00:00",
+        }
+    ]
     when(whois).whois(...).thenReturn(response)
     actual_output = client.whois(domains)
     assert actual_output[0]["domain_name"] == "NVIDIA.COM"

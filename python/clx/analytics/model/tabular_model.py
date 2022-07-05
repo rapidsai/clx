@@ -6,12 +6,12 @@ import torch.nn as nn
 class TabularModel(nn.Module):
     "Basic model for tabular data"
 
-    def __init__(self, emb_szs, n_cont, out_sz, layers, drops, emb_drop,
-                 use_bn, is_reg, is_multi):
+    def __init__(
+        self, emb_szs, n_cont, out_sz, layers, drops, emb_drop, use_bn, is_reg, is_multi
+    ):
         super().__init__()
 
-        self.embeds = nn.ModuleList(
-            [nn.Embedding(ni, nf) for ni, nf in emb_szs])
+        self.embeds = nn.ModuleList([nn.Embedding(ni, nf) for ni, nf in emb_szs])
         self.emb_drop = nn.Dropout(emb_drop)
         self.bn_cont = nn.BatchNorm1d(n_cont)
         n_emb = sum(e.embedding_dim for e in self.embeds)
@@ -20,12 +20,11 @@ class TabularModel(nn.Module):
         actns = [nn.ReLU(inplace=True)] * (len(sizes) - 2) + [None]
         layers = []
         for i, (n_in, n_out, dp, act) in enumerate(
-                zip(sizes[:-1], sizes[1:], [0.] + drops, actns)):
-            layers += self._bn_drop_lin(n_in,
-                                        n_out,
-                                        bn=use_bn and i != 0,
-                                        p=dp,
-                                        actn=act)
+            zip(sizes[:-1], sizes[1:], [0.0] + drops, actns)
+        ):
+            layers += self._bn_drop_lin(
+                n_in, n_out, bn=use_bn and i != 0, p=dp, actn=act
+            )
         self.layers = nn.Sequential(*layers)
 
     def forward(self, x_cat, x_cont):

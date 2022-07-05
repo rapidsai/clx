@@ -16,11 +16,13 @@ import cudf
 import pytest
 from clx.io.reader.dask_fs_reader import DaskFileSystemReader
 
-expected_df = cudf.DataFrame({
-    "firstname": ["Emma", "Ava", "Sophia"],
-    "lastname": ["Olivia", "Isabella", "Charlotte"],
-    "gender": ["F", "F", "F"],
-})
+expected_df = cudf.DataFrame(
+    {
+        "firstname": ["Emma", "Ava", "Sophia"],
+        "lastname": ["Olivia", "Isabella", "Charlotte"],
+        "gender": ["F", "F", "F"],
+    }
+)
 
 
 @pytest.mark.parametrize("expected_df", [expected_df])
@@ -53,7 +55,7 @@ def test_fetch_data_parquet(tmpdir, expected_df):
         "columns": ["firstname", "lastname", "gender"],
         "input_format": "parquet",
         "gather_statistics": False,
-        "split_row_groups": False
+        "split_row_groups": False,
     }
 
     reader = DaskFileSystemReader(config)

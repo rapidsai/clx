@@ -17,7 +17,6 @@ from clx.io.reader.dask_fs_reader import DaskFileSystemReader
 
 
 class DaskFileSystemFactory(AbstractFactory):
-
     def __init__(self, config):
         """
         Constructor method

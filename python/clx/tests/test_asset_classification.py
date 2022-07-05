@@ -37,9 +37,22 @@ label = [random.randint(0, 6) for _ in range(9000)]
 
 train_pd = pd.DataFrame(
     list(
-        zip(column1, column2, column3, column4, column5, column6, column7,
-            column8, column9, column10, label)),
-    columns=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "label"])
+        zip(
+            column1,
+            column2,
+            column3,
+            column4,
+            column5,
+            column6,
+            column7,
+            column8,
+            column9,
+            column10,
+            label,
+        )
+    ),
+    columns=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "label"],
+)
 train_gdf = cudf.from_pandas(train_pd)
 
 batch_size = 6
@@ -55,8 +68,7 @@ def test_train_model_mixed_cat_cont(tmpdir, train_gdf):
     ac = AssetClassification()
     ac.train_model(train_gdf, cat_cols, cont_cols, "label", batch_size, epochs)
     if torch.cuda.is_available():
-        assert isinstance(ac._model,
-                          clx.analytics.model.tabular_model.TabularModel)
+        assert isinstance(ac._model, clx.analytics.model.tabular_model.TabularModel)
 
 
 @pytest.mark.parametrize("train_gdf", [train_gdf])
@@ -67,8 +79,7 @@ def test_train_model_all_cat(tmpdir, train_gdf):
     ac = AssetClassification()
     ac.train_model(train_gdf, cat_cols, cont_cols, "label", batch_size, epochs)
     if torch.cuda.is_available():
-        assert isinstance(ac._model,
-                          clx.analytics.model.tabular_model.TabularModel)
+        assert isinstance(ac._model, clx.analytics.model.tabular_model.TabularModel)
 
 
 @pytest.mark.parametrize("train_gdf", [train_gdf])
@@ -80,8 +91,7 @@ def test_train_model_all_cont(tmpdir, train_gdf):
     ac = AssetClassification()
     ac.train_model(train_gdf, cat_cols, cont_cols, "label", batch_size, epochs)
     if torch.cuda.is_available():
-        assert isinstance(ac._model,
-                          clx.analytics.model.tabular_model.TabularModel)
+        assert isinstance(ac._model, clx.analytics.model.tabular_model.TabularModel)
 
 
 @pytest.mark.parametrize("train_gdf", [train_gdf])
@@ -90,8 +100,7 @@ def test_predict(tmpdir, train_gdf):
         cat_cols = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
         cont_cols = []
         ac = AssetClassification()
-        ac.train_model(train_gdf, cat_cols, cont_cols, "label", batch_size,
-                       epochs)
+        ac.train_model(train_gdf, cat_cols, cont_cols, "label", batch_size, epochs)
         # predict
         test_gdf = train_gdf.head()
         test_gdf.drop("label", axis=1)
@@ -106,8 +115,7 @@ def test_save_model(tmpdir):
         cat_cols = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
         cont_cols = []
         ac = AssetClassification()
-        ac.train_model(train_gdf, cat_cols, cont_cols, "label", batch_size,
-                       epochs)
+        ac.train_model(train_gdf, cat_cols, cont_cols, "label", batch_size, epochs)
         # save model
         ac.save_model(str(tmpdir.join("clx_ac.mdl")))
         assert path.exists(str(tmpdir.join("clx_ac.mdl")))
@@ -118,16 +126,14 @@ def test_load_model(tmpdir):
         cat_cols = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
         cont_cols = []
         ac = AssetClassification()
-        ac.train_model(train_gdf, cat_cols, cont_cols, "label", batch_size,
-                       epochs)
+        ac.train_model(train_gdf, cat_cols, cont_cols, "label", batch_size, epochs)
         # save model
         ac.save_model(str(tmpdir.join("clx_ac.mdl")))
         assert path.exists(str(tmpdir.join("clx_ac.mdl")))
         # load model
         ac2 = AssetClassification()
         ac2.load_model(str(tmpdir.join("clx_ac.mdl")))
-        assert isinstance(ac2._model,
-                          clx.analytics.model.tabular_model.TabularModel)
+        assert isinstance(ac2._model, clx.analytics.model.tabular_model.TabularModel)
 
 
 def normalize_conts(gdf):

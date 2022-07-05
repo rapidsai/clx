@@ -71,12 +71,12 @@ class Workflow(ABC):
         # If source or destination are passed in as parameters, update source and dest configurations.
         if source:
             self._source = source
-            self._io_reader = Factory.get_reader(self._source["type"],
-                                                 self._source)
+            self._io_reader = Factory.get_reader(self._source["type"], self._source)
         if destination:
             self._destination = destination
-            self._io_writer = Factory.get_writer(self._destination["type"],
-                                                 self._destination)
+            self._io_writer = Factory.get_writer(
+                self._destination["type"], self._destination
+            )
 
     def _get_default_filepath(self, workflow_name):
         home_dir = os.getenv("HOME")
@@ -100,18 +100,17 @@ class Workflow(ABC):
 
     def _set_workflow_config(self, yaml_file):
         # Receives a yaml file path with Workflow configurations and sets appropriate values for properties in this class
-        log.info(
-            "Setting configurations from config file {0}".format(yaml_file))
+        log.info("Setting configurations from config file {0}".format(yaml_file))
         try:
             config = None
             with open(yaml_file, "r") as ymlfile:
                 config = yaml.load(ymlfile, Loader=Loader)
             self._source = config["source"]
             self._destination = config["destination"]
-            self._io_reader = Factory.get_reader(self._source["type"],
-                                                 self._source)
-            self._io_writer = Factory.get_writer(self._destination["type"],
-                                                 self._destination)
+            self._io_reader = Factory.get_reader(self._source["type"], self._source)
+            self._io_writer = Factory.get_writer(
+                self._destination["type"], self._destination
+            )
             # Set attributes for custom workflow properties
             for key in config.keys():
                 if key not in self.DEFAULT_PARAMS:
@@ -119,8 +118,10 @@ class Workflow(ABC):
 
         except Exception:
             log.error(
-                "Error creating I/O reader and writer. Please check configurations in workflow config file at {0}"
-                .format(yaml_file))
+                "Error creating I/O reader and writer. Please check configurations in workflow config file at {0}".format(
+                    yaml_file
+                )
+            )
             raise
 
     @property
@@ -158,8 +159,9 @@ class Workflow(ABC):
         :param destination: dict of configuration parameters for the destination (writer)
         """
         self._destination = destination
-        self._io_writer = Factory.get_writer(self.source["destination"],
-                                             self.destination)
+        self._io_writer = Factory.get_writer(
+            self.source["destination"], self.destination
+        )
 
     def _get_parser(self, parser_config):
         """TODO: Private helper function that fetches a specific parser based upon configuration"""
@@ -172,14 +174,13 @@ class Workflow(ABC):
         """
         log.info("Running workflow {0}.".format(self.name))
         try:
-            while (self._io_reader.has_data):
-                dataframe = (self._io_reader.fetch_data())
+            while self._io_reader.has_data:
+                dataframe = self._io_reader.fetch_data()
                 enriched_dataframe = self.workflow(dataframe)
                 if enriched_dataframe and not enriched_dataframe.empty:
                     self._io_writer.write_data(enriched_dataframe)
                 else:
-                    log.info(
-                        "Dataframe is empty. Workflow processing skipped.")
+                    log.info("Dataframe is empty. Workflow processing skipped.")
         except KeyboardInterrupt:
             logging.info("User aborted workflow")
             self.stop_workflow()

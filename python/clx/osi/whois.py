@@ -22,9 +22,7 @@ log = logging.getLogger(__name__)
 
 class WhoIsLookupClient(object):
 
-    str_arr_keys = [
-        "domain_name", "name_servers", "status", "emails", "dnssec"
-    ]
+    str_arr_keys = ["domain_name", "name_servers", "status", "emails", "dnssec"]
     datetime_arr_keys = ["creation_date", "updated_date", "expiration_date"]
     """
     Wrapper class to query WhoIs API.

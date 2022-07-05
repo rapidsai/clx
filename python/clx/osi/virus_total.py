@@ -73,10 +73,7 @@ class VirusTotalClient(object):
         if file_size_mb > 32:
             resp = self.scan_big_file(files)
         else:
-            resp = self.__post(url,
-                               params=params,
-                               files=files,
-                               proxies=self.proxies)
+            resp = self.__post(url, params=params, files=files, proxies=self.proxies)
         return resp
 
     def __get_file_size(self, file):
@@ -100,9 +97,9 @@ class VirusTotalClient(object):
         {'status_code': 200, 'json_resp': {'scan_id': ...}}
         """
         params = {"apikey": self.api_key, "resource": ",".join(*resource)}
-        resp = self.__post(self.vt_endpoint_dict["file_rescan"],
-                           params=params,
-                           proxies=self.proxies)
+        resp = self.__post(
+            self.vt_endpoint_dict["file_rescan"], params=params, proxies=self.proxies
+        )
         return resp
 
     def file_report(self, *resource):
@@ -123,9 +120,9 @@ class VirusTotalClient(object):
         {'status_code': 200, 'json_resp': {'scans': {'Bkav': {'detected': True, 'version': '1.3.0.9899', 'result': 'W32.AIDetectVM.malware1'...}}
         """
         params = {"apikey": self.api_key, "resource": ",".join(*resource)}
-        resp = self.__get(self.vt_endpoint_dict["file_report"],
-                          params=params,
-                          proxies=self.proxies)
+        resp = self.__get(
+            self.vt_endpoint_dict["file_report"], params=params, proxies=self.proxies
+        )
         return resp
 
     def url_scan(self, *url):
@@ -144,9 +141,9 @@ class VirusTotalClient(object):
         {'status_code': 200, 'json_resp': {'permalink': 'https://www.virustotal.com/gui/url/...}}
         """
         params = {"apikey": self.api_key, "url": "\n".join(*url)}
-        resp = self.__post(self.vt_endpoint_dict["url_scan"],
-                           params=params,
-                           proxies=self.proxies)
+        resp = self.__post(
+            self.vt_endpoint_dict["url_scan"], params=params, proxies=self.proxies
+        )
         return resp
 
     def url_report(self, *resource):
@@ -166,9 +163,9 @@ class VirusTotalClient(object):
         {'status_code': 200, 'json_resp': {'scan_id': 'a354494a73382ea0b4bc47f4c9e8d6c578027cd4598196dc88f05a22b5817293-1605914280'...}
         """
         params = {"apikey": self.api_key, "resource": "\n".join(*resource)}
-        resp = self.__post(self.vt_endpoint_dict["url_report"],
-                           params=params,
-                           proxies=self.proxies)
+        resp = self.__post(
+            self.vt_endpoint_dict["url_report"], params=params, proxies=self.proxies
+        )
         return resp
 
     def ipaddress_report(self, ip):
@@ -188,9 +185,9 @@ class VirusTotalClient(object):
         {'status_code': 200, 'json_resp': {'asn': 25532, 'undetected_urls...}}
         """
         params = {"apikey": self.api_key, "ip": ip}
-        resp = self.__get(self.vt_endpoint_dict["ip_report"],
-                          params=params,
-                          proxies=self.proxies)
+        resp = self.__get(
+            self.vt_endpoint_dict["ip_report"], params=params, proxies=self.proxies
+        )
         return resp
 
     def domain_report(self, domain):
@@ -210,9 +207,9 @@ class VirusTotalClient(object):
         {'status_code': 200, 'json_resp': {'BitDefender category': 'parked', 'undetected_downloaded_samples'...}}
         """
         params = {"apikey": self.api_key, "domain": domain}
-        resp = self.__get(self.vt_endpoint_dict["domain_report"],
-                          params=params,
-                          proxies=self.proxies)
+        resp = self.__get(
+            self.vt_endpoint_dict["domain_report"], params=params, proxies=self.proxies
+        )
         return resp
 
     def put_comment(self, resource, comment):
@@ -231,14 +228,10 @@ class VirusTotalClient(object):
         >>> client.put_comment("75efd85cf6f8a962fe016787a7f57206ea9263086ee496fc62e3fc56734d4b53", "This is a test comment")
         {'status_code': 200, 'json_resp': {'response_code': 0, 'verbose_msg': 'Duplicate comment'}}
         """
-        params = {
-            "apikey": self.api_key,
-            "resource": resource,
-            "comment": comment
-        }
-        resp = self.__post(self.vt_endpoint_dict["put_comment"],
-                           params=params,
-                           proxies=self.proxies)
+        params = {"apikey": self.api_key, "resource": resource, "comment": comment}
+        resp = self.__post(
+            self.vt_endpoint_dict["put_comment"], params=params, proxies=self.proxies
+        )
         return resp
 
     def scan_big_file(self, files):
@@ -258,8 +251,7 @@ class VirusTotalClient(object):
         {'status_code': 200, 'json_resp': {'scan_id': '0204e88255a0bd7807547e9186621f0478a6bb2c43e795fb5e6934e5cda0e1f6-1605914572', 'sha1': '70c0942965354dbb132c05458866b96709e37f44'...}
         """
         params = {"apikey": self.api_key}
-        upload_url_json = self.__get(self.vt_endpoint_dict["upload_url"],
-                                     params=params)
+        upload_url_json = self.__get(self.vt_endpoint_dict["upload_url"], params=params)
         upload_url = upload_url_json["upload_url"]
         resp = requests.post(upload_url, files=files)
         return self.__validate_response(resp)
@@ -290,6 +282,6 @@ class VirusTotalClient(object):
         if response.status_code == 200:
             json_resp = json.loads(response.text)
             return dict(status_code=response.status_code, json_resp=json_resp)
-        return dict(status_code=response.status_code,
-                    error=response.text,
-                    resp=response.content)
+        return dict(
+            status_code=response.status_code, error=response.text, resp=response.content
+        )

@@ -21,7 +21,7 @@ def to_periodogram(signal):
     FFT_data = cp.fft.fft(signal_cp_std)
 
     # create periodogram
-    prdg = (1 / len(signal)) * ((cp.absolute(FFT_data))**2)
+    prdg = (1 / len(signal)) * ((cp.absolute(FFT_data)) ** 2)
 
     return prdg
 
@@ -39,8 +39,9 @@ def filter_periodogram(prdg, p_value):
     """
 
     filtered_prdg = cp.copy(prdg)
-    filtered_prdg[filtered_prdg < (cp.mean(filtered_prdg) * (-1) *
-                                   (cp.log(p_value)))] = 0
+    filtered_prdg[
+        filtered_prdg < (cp.mean(filtered_prdg) * (-1) * (cp.log(p_value)))
+    ] = 0
 
     return filtered_prdg
 

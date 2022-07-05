@@ -21,22 +21,19 @@ from clx.workflow.workflow import Workflow
 from cudf import DataFrame
 from mockito import spy, verify, when
 
-input_df = cudf.DataFrame({
-    "firstname": ["Emma", "Ava", "Sophia"],
-    "lastname": ["Olivia", "Isabella", "Charlotte"],
-    "gender": ["F", "F", "F"],
-})
+input_df = cudf.DataFrame(
+    {
+        "firstname": ["Emma", "Ava", "Sophia"],
+        "lastname": ["Olivia", "Isabella", "Charlotte"],
+        "gender": ["F", "F", "F"],
+    }
+)
 
 empty_df = DataFrame()
 
 
 class TestWorkflowImpl(Workflow):
-
-    def __init__(self,
-                 name,
-                 source=None,
-                 destination=None,
-                 custom_workflow_param=None):
+    def __init__(self, name, source=None, destination=None, custom_workflow_param=None):
         self.custom_workflow_param = custom_workflow_param
         Workflow.__init__(self, name, source, destination)
 
@@ -65,7 +62,7 @@ def set_workflow_config():
         "type": "fs",
         "output_format": "csv",
         "output_path": "/path/to/output",
-        "index": False
+        "index": False,
     }
     workflow_config = {
         "source": source,
@@ -82,8 +79,7 @@ def mock_env_home(monkeypatch):
 
 
 @pytest.mark.parametrize("input_df", [input_df])
-def test_workflow_parameters(tmpdir, mock_env_home, set_workflow_config,
-                             input_df):
+def test_workflow_parameters(tmpdir, mock_env_home, set_workflow_config, input_df):
     """Tests the initialization and running of a workflow with passed in parameters"""
     source = set_workflow_config[1]
     destination = set_workflow_config[2]
@@ -173,10 +169,13 @@ def test_workflow_no_data(tmpdir, mock_env_home, set_workflow_config):
 
     # Create new workflow with source and destination configurations
     test_workflow = spy(
-        TestWorkflowImpl(source=source,
-                         destination=destination,
-                         name="test-workflow-no-data",
-                         custom_workflow_param="test_param"))
+        TestWorkflowImpl(
+            source=source,
+            destination=destination,
+            name="test-workflow-no-data",
+            custom_workflow_param="test_param",
+        )
+    )
     test_workflow.run_workflow()
 
     # Verify workflow not run
@@ -202,10 +201,13 @@ def test_workflow_no_enriched_data(tmpdir, mock_env_home, set_workflow_config):
 
     # Create new workflow with source and destination configurations
     test_workflow = spy(
-        TestWorkflowImpl(source=source,
-                         destination=destination,
-                         name="test-workflow-no-data",
-                         custom_workflow_param="test_param"))
+        TestWorkflowImpl(
+            source=source,
+            destination=destination,
+            name="test-workflow-no-data",
+            custom_workflow_param="test_param",
+        )
+    )
     io_writer = spy(test_workflow._io_writer)
 
     # Return empty dataframe when workflow runs
@@ -236,9 +238,8 @@ def test_benchmark_decorator(tmpdir, mock_env_home, set_workflow_config):
     destination["output_path"] = output_path
     # Create new workflow with source and destination configurations
     tb = spy(
-        TestWorkflowImpl(source=source,
-                         destination=destination,
-                         name="test-workflow"))
+        TestWorkflowImpl(source=source, destination=destination, name="test-workflow")
+    )
     benchmarked_func(tb.run_workflow)
 
     # Verify that run_workflow was not called, instead expect that benchmark wrapper function will be called

@@ -34,6 +34,6 @@ class DGADataset(Dataset):
         super().__init__(df)
 
     def __preprocess(self, df, truncate):
-        df['domain'] = df['domain'].str.slice_replace(truncate, repl='')
-        df = utils.str2ascii(df, 'domain')
+        df["domain"] = df["domain"].str.slice_replace(truncate, repl="")
+        df = utils.str2ascii(df, "domain")
         return df

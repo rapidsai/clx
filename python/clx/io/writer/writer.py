@@ -16,7 +16,6 @@ from abc import ABC, abstractmethod
 
 
 class Writer(ABC):
-
     @abstractmethod
     def close(self):
         pass

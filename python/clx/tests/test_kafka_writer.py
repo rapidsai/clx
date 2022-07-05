@@ -17,11 +17,13 @@ import pytest
 from clx.io.writer.kafka_writer import KafkaWriter
 from mockito import mock, verify, when
 
-input_df = cudf.DataFrame({
-    "firstname": ["Emma", "Ava", "Sophia"],
-    "lastname": ["Olivia", "Isabella", "Charlotte"],
-    "gender": ["F", "F", "F"],
-})
+input_df = cudf.DataFrame(
+    {
+        "firstname": ["Emma", "Ava", "Sophia"],
+        "lastname": ["Olivia", "Isabella", "Charlotte"],
+        "gender": ["F", "F", "F"],
+    }
+)
 kafka_topic = "publisher_topic_t1"
 batch_size = 100
 delimiter = ","

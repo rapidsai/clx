@@ -37,7 +37,7 @@ class Loda:
         """
         nrows, n_components = train_data.shape
         if not self._n_bins:
-            self._n_bins = int(1 * (nrows**1) * (cp.log(nrows)**-1))
+            self._n_bins = int(1 * (nrows ** 1) * (cp.log(nrows) ** -1))
         n_nonzero_components = cp.sqrt(n_components)
         n_zero_components = n_components - cp.int(n_nonzero_components)
 
@@ -46,10 +46,11 @@ class Loda:
         self._limits = cp.zeros((self._n_random_cuts, self._n_bins + 1))
         for i in range(self._n_random_cuts):
             rands = cp.random.permutation(n_components)[:n_zero_components]
-            self._projections[i, rands] = 0.
+            self._projections[i, rands] = 0.0
             projected_data = self._projections[i, :].dot(train_data.T)
             self._histograms[i, :], self._limits[i, :] = cp.histogram(
-                projected_data, bins=self._n_bins, density=False)
+                projected_data, bins=self._n_bins, density=False
+            )
             self._histograms[i, :] += 1e-12
             self._histograms[i, :] /= cp.sum(self._histograms[i, :])
 
@@ -80,11 +81,10 @@ class Loda:
         pred_scores = cp.zeros([input_data.shape[0], 1])
         for i in range(self._n_random_cuts):
             projected_data = self._projections[i, :].dot(input_data.T)
-            inds = cp.searchsorted(self._limits[i, :self._n_bins - 1],
-                                   projected_data,
-                                   side='left')
-            pred_scores[:, 0] += -self._weights[i] * cp.log(
-                self._histograms[i, inds])
+            inds = cp.searchsorted(
+                self._limits[i, : self._n_bins - 1], projected_data, side="left"
+            )
+            pred_scores[:, 0] += -self._weights[i] * cp.log(self._histograms[i, inds])
         pred_scores /= self._n_random_cuts
         return pred_scores.ravel()
 
@@ -112,24 +112,23 @@ class Loda:
 
         for feature in range(anomaly.shape[1]):
             # find all projections without the feature j and with feature j
-            index_selected_feature = cp.where(
-                self._projections[:, feature] != 0)[0]
-            index_not_selected_feature = cp.where(
-                self._projections[:, feature] == 0)[0]
-            scores_with_feature = self._instance_score(anomaly,
-                                                       index_selected_feature)
+            index_selected_feature = cp.where(self._projections[:, feature] != 0)[0]
+            index_not_selected_feature = cp.where(self._projections[:, feature] == 0)[0]
+            scores_with_feature = self._instance_score(anomaly, index_selected_feature)
             scores_without_feature = self._instance_score(
-                anomaly, index_not_selected_feature)
+                anomaly, index_not_selected_feature
+            )
             ranked_feature_importance[feature, 0] = self._t_test(
-                scores_with_feature, scores_without_feature)
+                scores_with_feature, scores_without_feature
+            )
 
         if scaled:
             assert cp.max(ranked_feature_importance) != cp.min(
-                ranked_feature_importance)
-            normalized_score = (ranked_feature_importance -
-                                cp.min(ranked_feature_importance)) / (
-                                    cp.max(ranked_feature_importance) -
-                                    cp.min(ranked_feature_importance))
+                ranked_feature_importance
+            )
+            normalized_score = (
+                ranked_feature_importance - cp.min(ranked_feature_importance)
+            ) / (cp.max(ranked_feature_importance) - cp.min(ranked_feature_importance))
             return normalized_score
         else:
             return ranked_feature_importance
@@ -144,11 +143,10 @@ class Loda:
         pred_scores = cp.zeros([x.shape[0], len(projection_index)])
         for i in projection_index:
             projected_data = self._projections[i, :].dot(x.T)
-            inds = cp.searchsorted(self._limits[i, :self._n_bins - 1],
-                                   projected_data,
-                                   side='left')
-            pred_scores[:, i] = -self._weights[i] * cp.log(
-                self._histograms[i, inds])
+            inds = cp.searchsorted(
+                self._limits[i, : self._n_bins - 1], projected_data, side="left"
+            )
+            pred_scores[:, i] = -self._weights[i] * cp.log(self._histograms[i, inds])
         return pred_scores
 
     def _t_test(self, with_sample, without_sample):
@@ -157,8 +155,10 @@ class Loda:
             t_j: \frac{\mu_j - \bar{\mu_j}}{\sqrt{\frac{s^2_j}{\norm{I_j}} +
             \frac{\bar{s^2_j}}{\norm{\bar{I_j}}}}}
         """
-        return (cp.mean(with_sample) - cp.mean(without_sample)) /\
-            cp.sqrt(cp.var(with_sample)**2 / len(with_sample) + cp.var(without_sample)**2 / len(without_sample))
+        return (cp.mean(with_sample) - cp.mean(without_sample)) / cp.sqrt(
+            cp.var(with_sample) ** 2 / len(with_sample)
+            + cp.var(without_sample) ** 2 / len(without_sample)
+        )
 
     def save_model(self, file_path):
         """ This function save model to given location.
@@ -166,10 +166,12 @@ class Loda:
         :param file_path: File path to save model.
         :type file_path: string
         """
-        cp.savez_compressed(file_path,
-                            histograms=self._histograms,
-                            limits=self._limits,
-                            projections=self._projections)
+        cp.savez_compressed(
+            file_path,
+            histograms=self._histograms,
+            limits=self._limits,
+            projections=self._projections,
+        )
 
     @classmethod
     def load_model(cls, file_path):
@@ -179,9 +181,9 @@ class Loda:
         """
 
         model = cp.load(file_path)
-        histograms = model['histograms']
-        projections = model['projections']
-        limits = model['limits']
+        histograms = model["histograms"]
+        projections = model["projections"]
+        limits = model["limits"]
         n_random_cuts = histograms.shape[0]
         n_bins = histograms.shape[1]
         loda = Loda(n_random_cuts=n_random_cuts, n_bins=n_bins)

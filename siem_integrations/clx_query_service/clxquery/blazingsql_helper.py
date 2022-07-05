@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from dask_cuda import LocalCUDACluster
-from dask.distributed import Client
-from blazingsql import BlazingContext
 import logging
+
+from blazingsql import BlazingContext
+from dask.distributed import Client
+from dask_cuda import LocalCUDACluster
 
 log = logging.getLogger(__name__)
 """
@@ -27,7 +28,7 @@ class BlazingSQLHelper:
     def __init__(self):
         cluster = LocalCUDACluster()
         client = Client(cluster)
-        self._bc = BlazingContext(dask_client = client, network_interface = 'lo')
+        self._bc = BlazingContext(dask_client=client, network_interface="lo")
 
     """This function runs blazingSQL query. 
     

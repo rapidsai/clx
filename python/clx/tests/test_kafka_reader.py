@@ -29,8 +29,7 @@ def test_read_data(batch_size):
     consumer = mock(Consumer)
     reader = KafkaReader(batch_size, consumer)
     # Return msg = None 1 time, then return a valid message moving forward
-    when(
-        reader.consumer).poll(timeout=1.0).thenReturn(None).thenReturn(message)
+    when(reader.consumer).poll(timeout=1.0).thenReturn(None).thenReturn(message)
     # Always return no message error
     when(message).error().thenReturn(None)
     df = reader.fetch_data()

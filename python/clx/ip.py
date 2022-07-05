@@ -332,17 +332,14 @@ def netmask(ips, prefixlen=16):
     1    255.255.0.0
     Name: net_mask, dtype: object
     """
-    _ALL_ONES = (2**32) - 1
+    _ALL_ONES = (2 ** 32) - 1
     mask_int = _ALL_ONES ^ (_ALL_ONES >> prefixlen)
     df = cudf.DataFrame()
     df["idx"] = ips.index
     x = df.apply_rows(
         _netmask_kernel,
         incols=["idx"],
-        outcols=dict(out1=np.int64,
-                     out2=np.int64,
-                     out3=np.int64,
-                     out4=np.int64),
+        outcols=dict(out1=np.int64, out2=np.int64, out3=np.int64, out4=np.int64),
         kwargs=dict(kwarg1=mask_int),
     )
 
@@ -350,10 +347,9 @@ def netmask(ips, prefixlen=16):
     out2 = x["out2"].astype(str)
     out3 = x["out3"].astype(str)
     out4 = x["out4"].astype(str)
-    df["net_mask"] = out1.str.cat(out2,
-                                  sep=".").str.cat(out3,
-                                                   sep=".").str.cat(out4,
-                                                                    sep=".")
+    df["net_mask"] = (
+        out1.str.cat(out2, sep=".").str.cat(out3, sep=".").str.cat(out4, sep=".")
+    )
     return df["net_mask"]
 
 
@@ -391,17 +387,14 @@ def hostmask(ips, prefixlen=16):
     1    0.0.255.255
     Name: hostmask, dtype: object
     """
-    _ALL_ONES = (2**32) - 1
+    _ALL_ONES = (2 ** 32) - 1
     host_mask_int = int(_ALL_ONES ^ (_ALL_ONES >> prefixlen)) ^ _ALL_ONES
     df = cudf.DataFrame()
     df["idx"] = ips.index
     x = df.apply_rows(
         _hostmask_kernel,
         incols=["idx"],
-        outcols=dict(out1=np.int64,
-                     out2=np.int64,
-                     out3=np.int64,
-                     out4=np.int64),
+        outcols=dict(out1=np.int64, out2=np.int64, out3=np.int64, out4=np.int64),
         kwargs=dict(kwarg1=host_mask_int),
     )
 
@@ -409,10 +402,9 @@ def hostmask(ips, prefixlen=16):
     out2 = x["out2"].astype(str)
     out3 = x["out3"].astype(str)
     out4 = x["out4"].astype(str)
-    df["hostmask"] = out1.str.cat(out2,
-                                  sep=".").str.cat(out3,
-                                                   sep=".").str.cat(out4,
-                                                                    sep=".")
+    df["hostmask"] = (
+        out1.str.cat(out2, sep=".").str.cat(out3, sep=".").str.cat(out4, sep=".")
+    )
     return df["hostmask"]
 
 
@@ -460,10 +452,7 @@ def mask(ips, masks):
     x = df.apply_rows(
         _mask_kernel,
         incols=["masked_ip_int"],
-        outcols=dict(out1=np.int64,
-                     out2=np.int64,
-                     out3=np.int64,
-                     out4=np.int64),
+        outcols=dict(out1=np.int64, out2=np.int64, out3=np.int64, out4=np.int64),
         kwargs=dict(kwarg1=0),
     )
 
@@ -471,7 +460,7 @@ def mask(ips, masks):
     out2 = x["out2"].astype(str)
     out3 = x["out3"].astype(str)
     out4 = x["out4"].astype(str)
-    df["mask"] = out1.str.cat(out2, sep=".").str.cat(out3,
-                                                     sep=".").str.cat(out4,
-                                                                      sep=".")
+    df["mask"] = (
+        out1.str.cat(out2, sep=".").str.cat(out3, sep=".").str.cat(out4, sep=".")
+    )
     return df["mask"]

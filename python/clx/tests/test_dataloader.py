@@ -16,30 +16,24 @@ from clx.utils.data.dataloader import DataLoader
 from clx.utils.data.dataset import Dataset
 
 test_batchsize = 2
-test_df = cudf.DataFrame({
-    "domain": [
-        "studytour.com.tw",
-        "cnn.com",
-        "bakercityherald.com",
-        "bankmobile.com",
-    ],
-    "type": [1, 1, 0, 1],
-})
-expected_part_df1 = cudf.DataFrame({
-    "domain": [
-        "studytour.com.tw",
-        "cnn.com",
-    ],
-    "type": [1, 1],
-})
+test_df = cudf.DataFrame(
+    {
+        "domain": [
+            "studytour.com.tw",
+            "cnn.com",
+            "bakercityherald.com",
+            "bankmobile.com",
+        ],
+        "type": [1, 1, 0, 1],
+    }
+)
+expected_part_df1 = cudf.DataFrame(
+    {"domain": ["studytour.com.tw", "cnn.com"], "type": [1, 1]}
+)
 
-expected_part_df2 = cudf.DataFrame({
-    "domain": [
-        "bakercityherald.com",
-        "bankmobile.com",
-    ],
-    "type": [0, 1],
-})
+expected_part_df2 = cudf.DataFrame(
+    {"domain": ["bakercityherald.com", "bankmobile.com"], "type": [0, 1]}
+)
 dataset = Dataset(test_df)
 dataloader = DataLoader(dataset, batchsize=test_batchsize)
 

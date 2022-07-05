@@ -19,11 +19,9 @@ from SlashNextPhishingIR import SlashNextPhishingIR
 
 
 class SlashNextClient(object):
-
-    def __init__(self,
-                 api_key,
-                 snx_ir_workspace,
-                 base_url="https://oti.slashnext.cloud/api"):
+    def __init__(
+        self, api_key, snx_ir_workspace, base_url="https://oti.slashnext.cloud/api"
+    ):
         if api_key is None:
             raise ValueError("SlashNext API key is None")
         if snx_ir_workspace is not None:
@@ -32,8 +30,7 @@ class SlashNextClient(object):
                     print("Creating directory {}".format(snx_ir_workspace))
                     os.makedirs(snx_ir_workspace)
                 except Exception as error:
-                    raise Exception("Error while creating workspace: " +
-                                    repr(error))
+                    raise Exception("Error while creating workspace: " + repr(error))
         self._snx_phishing_ir = SlashNextPhishingIR(snx_ir_workspace)
         self._snx_phishing_ir.set_conf(api_key=api_key, base_url=base_url)
 
@@ -61,8 +58,8 @@ class SlashNextClient(object):
             return "success"
         else:
             raise Exception(
-                "Connection to SlashNext cloud failed due to {}.".format(
-                    details))
+                "Connection to SlashNext cloud failed due to {}.".format(details)
+            )
 
     def _execute(self, command):
         """
@@ -77,8 +74,9 @@ class SlashNextClient(object):
         if status == "ok":
             return responses_list
         else:
-            raise Exception("Action '{}' execution failed due to {}.".format(
-                command, details))
+            raise Exception(
+                "Action '{}' execution failed due to {}.".format(command, details)
+            )
 
     def host_reputation(self, host):
         """
@@ -179,8 +177,8 @@ class SlashNextClient(object):
         <class 'dict'>
         """
         command = "slashnext-url-scan url={} extended_info={}".format(
-            url,
-            str(extended_info).lower())
+            url, str(extended_info).lower()
+        )
         try:
             return self._execute(command)
         except Exception as error:
@@ -210,8 +208,8 @@ class SlashNextClient(object):
         <class 'dict'>
         """
         command = "slashnext-url-scan-sync url={} extended_info={} timeout={}".format(
-            url,
-            str(extended_info).lower(), timeout)
+            url, str(extended_info).lower(), timeout
+        )
         try:
             return self._execute(command)
         except Exception as error:
@@ -239,8 +237,8 @@ class SlashNextClient(object):
         <class 'dict'>
         """
         command = "slashnext-scan-report scanid={} extended_info={}".format(
-            scanid,
-            str(extended_info).lower())
+            scanid, str(extended_info).lower()
+        )
         try:
             return self._execute(command)
         except Exception as error:
@@ -268,7 +266,8 @@ class SlashNextClient(object):
         <class 'dict'>
         """
         command = "slashnext-download-screenshot scanid={} resolution={}".format(
-            scanid, resolution.lower())
+            scanid, resolution.lower()
+        )
         try:
             return self._execute(command)
         except Exception as error:

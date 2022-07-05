@@ -24,7 +24,6 @@ from tornado import ioloop
 
 
 class StreamzWorkflow(ABC):
-
     def __init__(self):
         self.args = utils.parse_arguments()
         self.config = utils.load_yaml(self.args.conf)
@@ -74,13 +73,15 @@ class StreamzWorkflow(ABC):
         """
         print("Exiting streamz script...")
         if self.args.benchmark:
-            (time_diff, throughput_mbps,
-             avg_batch_size) = utils.calc_benchmark(output,
-                                                    self.args.benchmark)
+            (time_diff, throughput_mbps, avg_batch_size) = utils.calc_benchmark(
+                output, self.args.benchmark
+            )
             print("*** BENCHMARK ***")
             print(
-                "Job duration: {:.3f} secs, Throughput(mb/sec):{:.3f}, Avg. Batch size(mb):{:.3f}"
-                .format(time_diff, throughput_mbps, avg_batch_size))
+                "Job duration: {:.3f} secs, Throughput(mb/sec):{:.3f}, Avg. Batch size(mb):{:.3f}".format(
+                    time_diff, throughput_mbps, avg_batch_size
+                )
+            )
         sys.exit(0)
 
     def _start_stream(self):
@@ -114,12 +115,15 @@ class StreamzWorkflow(ABC):
         # If benchmark arg is True, use streamz to compute benchmark
         if self.args.benchmark:
             print("Benchmark will be calculated")
-            output = (source.map(self.inference).map(
-                lambda x: (x[0], x[1], int(round(time.time())), x[2])).map(
-                    self.sink_dict[sink]).gather().sink_to_list())
+            output = (
+                source.map(self.inference)
+                .map(lambda x: (x[0], x[1], int(round(time.time())), x[2]))
+                .map(self.sink_dict[sink])
+                .gather()
+                .sink_to_list()
+            )
         else:
-            output = source.map(self.inference).map(
-                self.sink_dict[sink]).gather()
+            output = source.map(self.inference).map(self.sink_dict[sink]).gather()
 
         source.start()
 

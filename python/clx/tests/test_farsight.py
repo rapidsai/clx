@@ -23,36 +23,27 @@ apikey = "dummy-api-key"
 
 ip_response = mock(
     {
-        "status_code":
-        200,
-        "raise_for_status":
-        lambda: None,
-        "text":
-        '{"count":69435,"time_first":1428433465,"time_last":1538014110,"rrname":"io.","rrtype":"A","rdata":"100.0.0.1"}',
+        "status_code": 200,
+        "raise_for_status": lambda: None,
+        "text": '{"count":69435,"time_first":1428433465,"time_last":1538014110,"rrname":"io.","rrtype":"A","rdata":"100.0.0.1"}',
     },
     spec=requests.Response,
 )
 
 rrset_response = mock(
     {
-        "status_code":
-        200,
-        "raise_for_status":
-        lambda: None,
-        "text":
-        '{"count":81556,"time_first":1374184718,"time_last":1564909243,"rrname":"www.dnsdb.info.","rrtype":"CNAME","bailiwick":"dnsdb.info.","rdata":["dnsdb.info."]}',
+        "status_code": 200,
+        "raise_for_status": lambda: None,
+        "text": '{"count":81556,"time_first":1374184718,"time_last":1564909243,"rrname":"www.dnsdb.info.","rrtype":"CNAME","bailiwick":"dnsdb.info.","rdata":["dnsdb.info."]}',
     },
     spec=requests.Response,
 )
 
 rdata_name_response = mock(
     {
-        "status_code":
-        200,
-        "raise_for_status":
-        lambda: None,
-        "text":
-        '{"count":497,"time_first":1386638408,"time_last":1561176503,"rrname":"81.64-26.140.160.66.in-addr.arpa.","rrtype":"PTR","rdata":"www.farsightsecurity.com."}',
+        "status_code": 200,
+        "raise_for_status": lambda: None,
+        "text": '{"count":497,"time_first":1386638408,"time_last":1561176503,"rrname":"81.64-26.140.160.66.in-addr.arpa.","rrtype":"PTR","rdata":"www.farsightsecurity.com."}',
     },
     spec=requests.Response,
 )
@@ -144,10 +135,9 @@ def test_query_rdata_name(server, apikey, rdata_name_response):
 def test_query_rdata_name2(server, apikey, rdata_name_response):
     client = FarsightLookupClient(server, apikey)
     when(requests).get(...).thenReturn(rdata_name_response)
-    result = client.query_rdata_name("www.farsightsecurity.com",
-                                     rrtype="PTR",
-                                     before=1386638408,
-                                     after=1561176503)
+    result = client.query_rdata_name(
+        "www.farsightsecurity.com", rrtype="PTR", before=1386638408, after=1561176503
+    )
     result = result[0]
     assert "count" in result
     assert "time_first" in result

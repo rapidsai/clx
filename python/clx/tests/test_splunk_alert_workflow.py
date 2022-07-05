@@ -59,8 +59,13 @@ def test_splunk_alert_workflow(threshold, interval, window):
     actual_df = sa_workflow.workflow(raw_df)
     expected_df = cudf.DataFrame()
     expected_df["time"] = [
-        1517702400, 1516924800, 1517097600, 1517788800, 1517184000, 1517270400,
-        1517616000
+        1517702400,
+        1516924800,
+        1517097600,
+        1517788800,
+        1517184000,
+        1517270400,
+        1517616000,
     ]
     expected_df["rule"] = [
         "Endpoint - Brute Force against Known User - Rule",
@@ -79,15 +84,13 @@ def test_splunk_alert_workflow(threshold, interval, window):
 @pytest.mark.parametrize("interval", ["hour"])
 @pytest.mark.parametrize("window", [24, 48])
 def test_splunk_alert_workflow_hour(threshold, interval, window):
-    SplunkAlertWorkflow("splunk-alert-workflow",
-                        threshold=threshold,
-                        interval=interval)
+    SplunkAlertWorkflow("splunk-alert-workflow", threshold=threshold, interval=interval)
 
 
 @pytest.mark.parametrize("threshold", [2.0])
 @pytest.mark.parametrize("interval", ["minute"])
 def test_splunk_alert_workflow_min(threshold, interval):
     with pytest.raises(Exception):
-        SplunkAlertWorkflow("splunk-alert-workflow",
-                            threshold=threshold,
-                            interval=interval)
+        SplunkAlertWorkflow(
+            "splunk-alert-workflow", threshold=threshold, interval=interval
+        )

@@ -74,8 +74,7 @@ class EDA:
 
     def __init__(self, dataframe):
         self.__dataframe = dataframe
-        self.__analysis, self.__module_ref = self.__generate_analysis(
-            dataframe)
+        self.__analysis, self.__module_ref = self.__generate_analysis(dataframe)
 
     @property
     def analysis(self):

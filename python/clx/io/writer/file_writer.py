@@ -18,7 +18,6 @@ from clx.io.writer.writer import Writer
 
 
 class FileWriter(Writer):
-
     @property
     def config(self):
         return self._config

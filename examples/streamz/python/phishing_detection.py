@@ -20,7 +20,6 @@ from clx_streamz_tools import streamz_workflow, utils
 
 
 class PhisingDetectionWorkflow(streamz_workflow.StreamzWorkflow):
-
     def inference(messages):
         # Messages will be received and run through sequence classifier inferencing
         worker = dask.distributed.get_worker()
@@ -45,9 +44,12 @@ class PhisingDetectionWorkflow(streamz_workflow.StreamzWorkflow):
 
         worker = dask.distributed.get_worker()
         seq_classifier = SequenceClassifier()
-        print("Initializing Dask worker: " + str(worker) +
-              " with sequence classifier model. Model File: " +
-              str(self.args.model))
+        print(
+            "Initializing Dask worker: "
+            + str(worker)
+            + " with sequence classifier model. Model File: "
+            + str(self.args.model)
+        )
         seq_classifier.init_model(self.args.model)
         # this dict can be used for adding more objects to distributed dask worker
         obj_dict = {"seq_classifier": seq_classifier}

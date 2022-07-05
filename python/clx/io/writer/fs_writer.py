@@ -62,8 +62,9 @@ class FileSystemWriter(FileWriter):
         elif "json" == output_format:
             cudf.io.json.to_json(df, filepath, **kwargs)
         else:
-            raise NotImplementedError("%s is not a supported output_format" %
-                                      (output_format))
+            raise NotImplementedError(
+                "%s is not a supported output_format" % (output_format)
+            )
 
     def close(self):
         """

@@ -34,7 +34,6 @@ class Factory:
         return Factory.__cls_dict
 
     class InstanceGenerator(object):
-
         def __init__(self, func):
             self.func = func
 
@@ -56,7 +55,8 @@ class Factory:
         else:
             raise KeyError(
                 "Dictionary doesn't have { %s } corresponding component class."
-                % (io_comp))
+                % (io_comp)
+            )
 
     @staticmethod
     def get_reader(io_comp, config):

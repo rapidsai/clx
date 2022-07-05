@@ -24,6 +24,7 @@ log = logging.getLogger(__name__)
 class SplunkNotableParser(EventParser):
     """This is class parses splunk notable logs.
     """
+
     REGEX_FILE = "resources/splunk_notable_regex.yaml"
     EVENT_NAME = "notable"
 
@@ -31,8 +32,9 @@ class SplunkNotableParser(EventParser):
         """Constructor method
         """
         event_regex = {}
-        regex_filepath = (os.path.dirname(os.path.abspath(__file__)) + "/" +
-                          self.REGEX_FILE)
+        regex_filepath = (
+            os.path.dirname(os.path.abspath(__file__)) + "/" + self.REGEX_FILE
+        )
         self.event_regex = self._load_regex_yaml(regex_filepath)
         EventParser.__init__(self, event_regex.keys(), self.EVENT_NAME)
 
@@ -48,8 +50,7 @@ class SplunkNotableParser(EventParser):
         """
         # Cleaning raw data to be consistent.
         dataframe[raw_column] = dataframe[raw_column].str.replace("\\\\", "")
-        parsed_dataframe = self.parse_raw_event(dataframe, raw_column,
-                                                self.event_regex)
+        parsed_dataframe = self.parse_raw_event(dataframe, raw_column, self.event_regex)
         # Replace null values of all columns with empty.
         parsed_dataframe = parsed_dataframe.fillna("")
         # Post-processing: for src_ip and dest_ip.
@@ -76,11 +77,12 @@ class SplunkNotableParser(EventParser):
                 # Assign ip2 column values to empty ip column values.
                 tmp_dataframe[ip] = tmp_dataframe[ip2]
                 if not parsed_dataframe.empty:
-                    log.debug("parsed_dataframe is not empty %s" %
-                              (str(parsed_dataframe.shape)))
+                    log.debug(
+                        "parsed_dataframe is not empty %s"
+                        % (str(parsed_dataframe.shape))
+                    )
                     # Concat, if both parsed_dataframe and tmp_df are not empty.
-                    parsed_dataframe = cudf.concat(
-                        [parsed_dataframe, tmp_dataframe])
+                    parsed_dataframe = cudf.concat([parsed_dataframe, tmp_dataframe])
                 else:
                     # If parsed_dataframe is empty assign tmp_df.
                     parsed_dataframe = tmp_dataframe

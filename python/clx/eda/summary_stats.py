@@ -17,7 +17,6 @@ from clx.eda.analysis import Analysis
 
 
 class SummaryStatistics(Analysis):
-
     def __init__(self, dataframe):
         super().__init__(dataframe)
 
@@ -52,7 +51,8 @@ class SummaryStatistics(Analysis):
         minutes = (seconds % 3600) // 60
         seconds = seconds % 60
         msg = "{0} days, {1} hours, {2} minutes, {3} seconds".format(
-            days, hours, minutes, seconds)
+            days, hours, minutes, seconds
+        )
         summary["timespan"] = msg
         return summary
 
@@ -63,20 +63,15 @@ class SummaryStatistics(Analysis):
             summary_dict[col] = {}
             summary_dict[col]["dtype"] = str(dataframe[col].dtype)
             if dataframe[col].dtype == "object":
-                summary_dict[col]["summary"] = self.__summary_obj(
-                    dataframe[col])
+                summary_dict[col]["summary"] = self.__summary_obj(dataframe[col])
             elif dataframe[col].dtype == "bool":
-                summary_dict[col]["summary"] = self.__summary_bool(
-                    dataframe[col])
+                summary_dict[col]["summary"] = self.__summary_bool(dataframe[col])
             elif dataframe[col].dtype in ["int64", "float64", "int8"]:
-                summary_dict[col]["summary"] = self.__summary_num(
-                    dataframe[col])
+                summary_dict[col]["summary"] = self.__summary_num(dataframe[col])
             elif dataframe[col].dtype == "datetime64[ns]":
-                summary_dict[col]["summary"] = self.__summary_time(
-                    dataframe[col])
+                summary_dict[col]["summary"] = self.__summary_time(dataframe[col])
             else:
-                msg = "\t column type (" + str(
-                    dataframe[col].dtype) + ") not supported"
+                msg = "\t column type (" + str(dataframe[col].dtype) + ") not supported"
                 summary_dict[col]["error"] = msg
         return summary_dict
 

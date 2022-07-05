@@ -32,7 +32,8 @@ def test_int_to_ip():
 
 def test_is_ip():
     input = cudf.Series(
-        ["5.79.97.178", "1.2.3.4", "5", "5.79", "5.79.97", "5.79.97.178.100"])
+        ["5.79.97.178", "1.2.3.4", "5", "5.79", "5.79.97", "5.79.97.178.100"]
+    )
     expected = cudf.Series([True, True, False, False, False, False])
     actual = clx.ip.is_ip(input)
     assert actual.equals(expected)

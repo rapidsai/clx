@@ -56,8 +56,7 @@ def test_splunk_notable_parser():
     assert test_output_df["message_ip"][0] == "100.100.100.123"
     assert test_output_df["message_username"][0] == "user@test.com"
     assert test_output_df["message_hostname"][0] == "msg.test.hostname"
-    assert test_output_df["message_description"][
-        0] == "Test Message Description"
+    assert test_output_df["message_description"][0] == "Test Message Description"
 
     test_input_df2 = cudf.DataFrame()
     test_input_df2[raw_colname] = [TEST_DATA2]
@@ -123,8 +122,10 @@ def test_splunk_notable_parser():
     test_output_df4 = snp.parse(test_input_df4, raw_colname)
     assert len(test_output_df4.columns) == 23
     assert test_output_df4["time"][0] == "1566345700"
-    assert (test_output_df4["search_name"][0] ==
-            "Endpoint - Brute Force against Known User - Rule")
+    assert (
+        test_output_df4["search_name"][0]
+        == "Endpoint - Brute Force against Known User - Rule"
+    )
     assert test_output_df4["orig_time"][0] == ""
     assert test_output_df4["urgency"][0] == ""
     assert test_output_df4["user"][0] == "pjame"
@@ -180,8 +181,10 @@ def test_splunk_notable_parser():
     test_output_df6 = snp.parse(test_input_df6, raw_colname)
     assert len(test_output_df6.columns) == 23
     assert test_output_df6["time"][0] == "1566345700"
-    assert (test_output_df6["search_name"][0] ==
-            "Endpoint - FireEye NX alert for Incident Review (Minor) - Rule")
+    assert (
+        test_output_df6["search_name"][0]
+        == "Endpoint - FireEye NX alert for Incident Review (Minor) - Rule"
+    )
     assert test_output_df6["orig_time"][0] == ""
     assert test_output_df6["urgency"][0] == ""
     assert test_output_df6["user"][0] == ""
@@ -210,8 +213,9 @@ def test_splunk_notable_parser():
     assert len(test_output_df7.columns) == 23
     assert test_output_df7["time"][0] == "1566345700"
     assert (
-        test_output_df7["search_name"][0] ==
-        "Endpoint - Host With Malware Detected (Quarantined or Waived) - Rule")
+        test_output_df7["search_name"][0]
+        == "Endpoint - Host With Malware Detected (Quarantined or Waived) - Rule"
+    )
     assert test_output_df7["orig_time"][0] == ""
     assert test_output_df7["urgency"][0] == ""
     assert test_output_df7["user"][0] == ""

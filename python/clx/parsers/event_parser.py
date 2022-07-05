@@ -72,8 +72,12 @@ class EventParser(ABC):
         :return: parsed information.
         :rtype: cudf.DataFrame
         """
-        log.debug("Parsing raw events. Event type: " + self.event_name +
-                  " DataFrame shape: " + str(dataframe.shape))
+        log.debug(
+            "Parsing raw events. Event type: "
+            + self.event_name
+            + " DataFrame shape: "
+            + str(dataframe.shape)
+        )
 
         parsed_gdf = cudf.DataFrame({col: [""] for col in self.columns})
         parsed_gdf = parsed_gdf[:0]
