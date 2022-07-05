@@ -30,7 +30,7 @@ def ip_to_int(values):
     -------
     rtype : cudf.Series, integer
         Integer representations of IP addresses
-    
+
     Examples
     --------
     >>> import clx.ip
@@ -57,7 +57,7 @@ def int_to_ip(values):
     -------
     rtype : cudf.Series, IPv4 address
         IP addresses to be converted
-    
+
     Examples
     --------
     >>> import clx.ip
@@ -84,7 +84,7 @@ def is_ip(ips):
     -------
     rtype : cudf.Series, booleans
         Boolean values true or false
-    
+
     Examples
     --------
     >>> import clx.ip
@@ -112,7 +112,7 @@ def is_reserved(ips):
     -------
     rtype : cudf.Series, booleans
         Boolean values true or false
-    
+
     Examples
     --------
     >>> import clx.ip
@@ -140,7 +140,7 @@ def is_loopback(ips):
     -------
     rtype : cudf.Series, booleans
         Boolean values true or false
-    
+
     Examples
     --------
     >>> import clx.ip
@@ -168,7 +168,7 @@ def is_link_local(ips):
     -------
     rtype : cudf.Series, booleans
         Boolean values true or false
-    
+
     Examples
     --------
     >>> import clx.ip
@@ -196,7 +196,7 @@ def is_unspecified(ips):
     -------
     rtype : cudf.Series, booleans
         Boolean values true or false
-    
+
     Examples
     --------
     >>> import clx.ip
@@ -322,7 +322,7 @@ def netmask(ips, prefixlen=16):
     rtype : cudf.Series, netmask
         Netmask ouput from set of IP address
 
-    
+
     Examples
     --------
     >>> import clx.ip
@@ -375,7 +375,7 @@ def hostmask(ips, prefixlen=16):
     -------
     rtype : cudf.Series, hostmask
         Hostmask ouput from set of IP address
-  
+
     Examples
     --------
     >>> import clx.ip
@@ -428,7 +428,6 @@ def mask(ips, masks):
     -------
     rtype : cudf.Series, masked IPv4 address
         Masked IP address from list of IPs
-
     Examples
     --------
     >>> import clx.ip
