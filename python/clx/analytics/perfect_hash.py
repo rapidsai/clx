@@ -48,8 +48,7 @@ def hash_func(k, a, b, size):
 
 def longest_bin_length(bins):
   return len(max(bins, key=len))
-  
-  
+
 def make_bins(data, num_bins, a, b):
   h = lambda k: hash_func(k, a, b, num_bins)
 
@@ -88,7 +87,7 @@ def pick_initial_a_b(data, max_constant, init_bins, compact):
 def find_hash_for_internal(hash_bin, compact):
   if not hash_bin:
     return [[], 0, 0]
-  
+
   new_length = new_bin_length(len(hash_bin), compact)
 
   while True:
@@ -106,7 +105,7 @@ def perfect_hash(integers, max_constant, compact):
 
   init_bins, init_a, init_b = pick_initial_a_b(integers, max_constant, num_top_level_bins, compact)
   flattened_bins = []
-  
+
   internal_table_coeffs = np.zeros(shape=[num_top_level_bins], dtype=np.uint64)
   offset_into_flattened_table = np.zeros(shape=[num_top_level_bins + 1], dtype=np.uint64)
 
@@ -122,7 +121,7 @@ def perfect_hash(integers, max_constant, compact):
 
   print("Final table size {} elements compared to {} for original".
         format(len(flattened_bins), len(integers)))
-  
+
   print("Max bin length was", max_bin_length)
 
   return init_a, init_b, num_top_level_bins, flattened_bins, internal_table_coeffs, offset_into_flattened_table
@@ -144,19 +143,19 @@ def load_vocab_dict(path):
     for line in f:
       vocab[line.strip()] = counter
       counter += 1
-  
+
   return vocab
 
 
 def hash_vocab(path, store_path, compact, unk_tok="[UNK]", first_token="[CLS]", sep_token="[SEP]"):
   vocab = load_vocab_dict(path)
   keys = list(map(sdbm_hash, vocab.keys()))
-  
+
   hashed_vocab = {sdbm_hash(key) : value for key, value in vocab.items()}
 
   assert len(hashed_vocab) == len(vocab), "Collision occurred and only sdbm token hash current supported :(. \
                                            Can be extended to use random hashes if needed"
-  
+
   outer_a, outer_b, num_outer_bins, hash_table, inner_table_coeffs, offsets_into_ht = perfect_hash(keys, 10, compact)
 
   pack_keys_and_values(hash_table, hashed_vocab)
@@ -166,7 +165,7 @@ def hash_vocab(path, store_path, compact, unk_tok="[UNK]", first_token="[CLS]", 
   for key, value in hashed_vocab.items():
     val = retrieve(key, outer_a, outer_b, num_outer_bins, hash_table, inner_table_coeffs, offsets_into_ht)
     assert val == value, "Incorrect value found. Got {} expected {}".format(val, value)
-  
+
   print("All present tokens return correct value.")
 
 
@@ -200,7 +199,7 @@ def retrieve(k, outer_a, outer_b, num_outer_bins, hash_table, inner_table_coeffs
 
   key, value = kv >> 16, kv & ((1 << 16) - 1)
   indicator = key == k
-  
+
   return indicator*value + (not indicator)*NOT_FOUND
 
 def sdbm_pop(h, last_val):
