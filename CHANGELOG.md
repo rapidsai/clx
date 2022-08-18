@@ -1,3 +1,13 @@
+# clx 22.08.00 (17 Aug 2022)
+
+## 🐛 Bug Fixes
+
+- Fix style and invalid regex pattern ([#503](https://github.com/rapidsai/clx/pull/503)) [@bsuryadevara](https://github.com/bsuryadevara)
+
+## 📖 Documentation
+
+- Switch to using common `js` &amp; `css` code ([#507](https://github.com/rapidsai/clx/pull/507)) [@galipremsagar](https://github.com/galipremsagar)
+
 # clx 22.06.00 (7 Jun 2022)
 
 ## 🐛 Bug Fixes
