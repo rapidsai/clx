@@ -1,6 +1,6 @@
-# clx 22.10.00 (Date TBD)
+# clx 22.10.00 (12 Oct 2022)
 
-Please see https://github.com/rapidsai/clx/releases/tag/v22.10.00a for the latest changes to this development branch.
+
 
 # clx 22.08.00 (Date TBD)
 
