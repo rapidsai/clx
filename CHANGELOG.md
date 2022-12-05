@@ -2,13 +2,18 @@
 
 Please see https://github.com/rapidsai/clx/releases/tag/v22.12.00a for the latest changes to this development branch.
 
-# clx 22.10.00 (Date TBD)
+# clx 22.10.00 (12 Oct 2022)
 
-Please see https://github.com/rapidsai/clx/releases/tag/v22.10.00a for the latest changes to this development branch.
 
-# clx 22.08.00 (Date TBD)
+# clx 22.08.00 (17 Aug 2022)
 
-Please see https://github.com/rapidsai/clx/releases/tag/v22.08.00a for the latest changes to this development branch.
+## 🐛 Bug Fixes
+
+- Fix style and invalid regex pattern ([#503](https://github.com/rapidsai/clx/pull/503)) [@bsuryadevara](https://github.com/bsuryadevara)
+
+## 📖 Documentation
+
+- Switch to using common `js` &amp; `css` code ([#507](https://github.com/rapidsai/clx/pull/507)) [@galipremsagar](https://github.com/galipremsagar)
 
 # clx 22.06.00 (7 Jun 2022)
 
