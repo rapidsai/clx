@@ -31,7 +31,9 @@ def str2ascii(df, col_name):
     """
     df["len"] = df[col_name].str.len()
     df = df.sort_values("len", ascending=False)
-    split_df = df[col_name].str.findall("[\w\W\d\D\s\S]")
+    split_ser = df[col_name].str.findall("[\w\W\d\D\s\S]")
+    split_df = split_ser.to_frame()
+    split_df = cudf.DataFrame(split_df[col_name].to_arrow().to_pylist())
     columns_cnt = len(split_df.columns)
 
     # Replace null's with ^.

@@ -110,7 +110,7 @@ def test_get_reader_parquet(tmpdir, expected_df):
     config = {
         "type": "fs",
         "input_path": fname,
-        "usecols": ["firstname", "lastname", "gender"],
+        "columns": ["firstname", "lastname", "gender"],
         "input_format": "parquet",
     }
     reader_from_factory = Factory.get_reader("fs", config)
