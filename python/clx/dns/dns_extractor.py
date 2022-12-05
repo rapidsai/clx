@@ -309,7 +309,9 @@ def parse_url(url_series, req_cols=None):
     url_index = url_series.index
     del url_series
     log.info("Extracting hostnames is successfully completed.")
-    hostname_split_df = hostnames.str.findall("([^.]+)")
+    hostname_split_ser = hostnames.str.findall("([^.]+)")
+    hostname_split_df = hostname_split_ser.to_frame()
+    hostname_split_df = cudf.DataFrame(hostname_split_df[0].to_arrow().to_pylist())
     col_len = len(hostname_split_df.columns) - 1
     log.info("Generating tld columns...")
     hostname_split_df = generate_tld_cols(hostname_split_df, hostnames, col_len)

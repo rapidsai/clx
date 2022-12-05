@@ -80,9 +80,9 @@ class SplunkAlertWorkflow(Workflow):
         alerts_gdf["time"] = alerts_gdf["time"].astype("int")
         alerts_gdf = alerts_gdf.rename(columns={"search_name": "rule"})
         if interval == "day":
-            alerts_gdf[interval] = alerts_gdf.time.applymap(self.__round2day)
+            alerts_gdf[interval] = alerts_gdf.time.apply(self.__round2day)
         else:  # hour
-            alerts_gdf[interval] = alerts_gdf.time.applymap(self.__round2hour)
+            alerts_gdf[interval] = alerts_gdf.time.apply(self.__round2hour)
 
         # Group alerts by interval and pivot table
         day_rule_df = (
