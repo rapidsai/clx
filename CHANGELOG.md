@@ -1,6 +1,8 @@
-# clx 22.12.00 (Date TBD)
+# clx 22.12.00 (8 Dec 2022)
 
-Please see https://github.com/rapidsai/clx/releases/tag/v22.12.00a for the latest changes to this development branch.
+## 🛠️ Improvements
+
+- Remove stale labeler ([#514](https://github.com/rapidsai/clx/pull/514)) [@raydouglass](https://github.com/raydouglass)
 
 # clx 22.10.00 (12 Oct 2022)
 
