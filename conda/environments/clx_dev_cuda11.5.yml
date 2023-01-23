@@ -6,9 +6,9 @@ channels:
 dependencies:
 - cudatoolkit=11.5
 - python>=3.6,<3.9
-- cugraph=23.02.*
-- cuml=23.02.*
-- cuxfilter=23.02.*
+- cugraph=23.04.*
+- cuml=23.04.*
+- cuxfilter=23.04.*
 - scikit-learn=0.23.1
 - s3fs
 - ipywidgets
