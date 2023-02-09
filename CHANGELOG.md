@@ -1,6 +1,13 @@
-# clx 23.02.00 (Date TBD)
+# clx 23.02.00 (9 Feb 2023)
 
-Please see https://github.com/rapidsai/clx/releases/tag/v23.02.00a for the latest changes to this development branch.
+## 🐛 Bug Fixes
+
+- Fixes to work with latest cuDF ([#520](https://github.com/rapidsai/clx/pull/520)) [@efajardo-nv](https://github.com/efajardo-nv)
+
+## 🛠️ Improvements
+
+- Enable copy_prs. ([#523](https://github.com/rapidsai/clx/pull/523)) [@bdice](https://github.com/bdice)
+- new phishingnotebook ([#518](https://github.com/rapidsai/clx/pull/518)) [@gbatmaz](https://github.com/gbatmaz)
 
 # clx 22.12.00 (8 Dec 2022)
 
