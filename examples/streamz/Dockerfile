@@ -50,11 +50,11 @@ RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_
 RUN wget -q http://models.huggingface.co.s3.amazonaws.com/bert/raykallen/cybert_apache_parser/pytorch_model.bin -O "$CLX_STREAMZ_HOME"/ml/models/cybert/pytorch_model.bin
 
 # Download apache logs
-RUN wget -q https://rapidsai-data.s3.us-east-2.amazonaws.com/cyber/clx/apache_raw_sample_1k.txt -O "$CLX_STREAMZ_HOME"/data/apache_raw_sample_1k.txt
+RUN wget -q https://data.rapids.ai/cyber/clx/apache_raw_sample_1k.txt -O "$CLX_STREAMZ_HOME"/data/apache_raw_sample_1k.txt
 
 # Download dga detection model and sample input data
-RUN wget -q https://rapidsai-data.s3.us-east-2.amazonaws.com/cyber/clx/dga_detection_pytorch_model.bin -O "$CLX_STREAMZ_HOME"/ml/models/dga/pytorch_model.bin
-RUN wget -q https://rapidsai-data.s3.us-east-2.amazonaws.com/cyber/clx/dga_detection_input.jsonlines -O "$CLX_STREAMZ_HOME"/data/dga_detection_input.jsonlines
+RUN wget -q https://data.rapids.ai/cyber/clx/dga_detection_pytorch_model.bin -O "$CLX_STREAMZ_HOME"/ml/models/dga/pytorch_model.bin
+RUN wget -q https://data.rapids.ai/cyber/clx/dga_detection_input.jsonlines -O "$CLX_STREAMZ_HOME"/data/dga_detection_input.jsonlines
 
 # Zookeeper
 EXPOSE 2181
