@@ -173,13 +173,14 @@ CLX is targeted towards cybersecurity data scientists, senior security analysts,
 
 ```python
 import cudf
-import s3fs
+import requests
 from os import path
 
 # download data
-if not path.exists("./splunk_faker_raw4"):
-    fs = s3fs.S3FileSystem(anon=True)
-    fs.get("rapidsai-data/cyber/clx/splunk_faker_raw4", "./splunk_faker_raw4")
+if not path.exists('./splunk_faker_raw4'):
+    url = 'https://data.rapids.ai/cyber/clx/splunk_faker_raw4'
+    r = requests.get(url)
+    open('./splunk_faker_raw4', 'wb').write(r.content)
 
 # read in alert data
 gdf = cudf.read_csv('./splunk_faker_raw4')
