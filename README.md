@@ -4,7 +4,7 @@
 
 ## Deprecation Notice
 
-CLX has been deprecated in favor of [Morpheus](https://github.com/nv-morpheus/Morpheus), a new highly optimized AI framework that includes pre-trained AI capabilities for cybersecurity. Many of the CLX use cases and examples have been migrated to the Morpheus. The Morpheus framework also allows you to build your own pipelines for cybersecurity and information security use cases.
+CLX has been deprecated in favor of [Morpheus](https://github.com/nv-morpheus/Morpheus), a new highly optimized AI framework that includes pre-trained AI capabilities for cybersecurity. Many of the CLX use cases and examples have been migrated to Morpheus. The Morpheus framework also allows you to build your own pipelines for cybersecurity and information security use cases.
 
 - Morpheus GitHub repo: https://github.com/nv-morpheus/Morpheus
 - Full documentation for the latest official Morpheus release: https://docs.nvidia.com/morpheus
