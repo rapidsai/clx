@@ -1,7 +1,17 @@
-# <div align="left"><img src="img/rapids_logo.png" width="90px"/>&nbsp;&nbsp;CLX - Cyber Log Accelerators</div>
+# <div align="left"><img src="img/rapids_logo.png" width="90px"/>&nbsp;&nbsp;CLX - Cyber Log Accelerators [DEPRECATED]</div>
 
 [![Build Status](https://gpuci.gpuopenanalytics.com/job/rapidsai/job/gpuci/job/clx/job/branches/job/clx-branch-pipeline/badge/icon)](https://gpuci.gpuopenanalytics.com/job/rapidsai/job/gpuci/job/clx/job/branches/job/clx-branch-pipeline/)
 
+## Deprecation Notice
+
+CLX has been deprecated in favor of [Morpheus](https://github.com/nv-morpheus/Morpheus), a new highly optimized AI framework that includes pre-trained AI capabilities for cybersecurity. Many of the CLX use cases and examples have been migrated to the Morpheus. The Morpheus framework also allows you to build your own pipelines for cybersecurity and information security use cases.
+
+- Morpheus GitHub repo: https://github.com/nv-morpheus/Morpheus
+- Full documentation for the latest official Morpheus release: https://docs.nvidia.com/morpheus
+
+----
+
+&nbsp;  
 **NOTE:** For the latest stable [README.md](https://github.com/rapidsai/clx/blob/main/README.md) ensure you are on the `main` branch.
 
 CLX ("clicks") provides a collection of [RAPIDS](https://rapids.ai/) examples for security analysts, data scientists, and engineers to quickly get started applying RAPIDS and GPU acceleration to real-world cybersecurity use cases.
